@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MANBAGA Comics — La tua fumetteria a Canosa di Puglia. Manga, Comics, Giochi di Carte e Gadget Anime.">
+    <meta name="theme-color" content="#0d0d0d">
+
+    <title>MANBAGA — Comics · Manga · Games · Canosa di Puglia</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Noto+Serif+JP:wght@700;900&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+    <!-- Stili -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="is-loading">
+
+<!-- WhatsApp Float — SOSTITUISCI 393XXXXXXXXX con il numero reale (es. 393331234567) -->
+<a href="https://wa.me/393XXXXXXXXX"
+   class="whatsapp-float"
+   target="_blank"
+   rel="noopener noreferrer"
+   aria-label="Contattaci su WhatsApp">
+    <!-- Sakura / Fiore di ciliegio giapponese -->
+    <svg width="36" height="36" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <g transform="translate(30,30)">
+            <ellipse cx="0" cy="-13" rx="8"   ry="12"  fill="#F4B8C8" transform="rotate(5)"/>
+            <ellipse cx="0" cy="-13" rx="7.5" ry="11.5" fill="#F0AABE" transform="rotate(77)"/>
+            <ellipse cx="0" cy="-13" rx="8"   ry="12"  fill="#F4B8C8" transform="rotate(149)"/>
+            <ellipse cx="0" cy="-13" rx="7.5" ry="11.5" fill="#F0AABE" transform="rotate(221)"/>
+            <ellipse cx="0" cy="-13" rx="8"   ry="12"  fill="#F4B8C8" transform="rotate(293)"/>
+            <circle cx="0" cy="0" r="7.5" fill="#FFEEF4"/>
+            <circle cx="0" cy="0" r="3"   fill="#D4778A"/>
+            <circle cx="0"    cy="-5.5" r="1.2" fill="#C4607A"/>
+            <circle cx="5.2"  cy="-1.7" r="1.2" fill="#C4607A"/>
+            <circle cx="3.2"  cy="4.5"  r="1.2" fill="#C4607A"/>
+            <circle cx="-3.2" cy="4.5"  r="1.2" fill="#C4607A"/>
+            <circle cx="-5.2" cy="-1.7" r="1.2" fill="#C4607A"/>
+        </g>
+    </svg>
+    <span class="whatsapp-tooltip">Scrivici su WhatsApp</span>
+</a>
+
+
+<!-- ============================================================
+     LOADING SCREEN
+     ============================================================ -->
+<div id="loader" aria-hidden="true">
+    <div class="loader-wrap">
+        <div class="loader-kanji-bg">&#28450;&#30011;</div>
+
+        <div class="loader-logo">
+            <span class="loader-char"        style="--i:0">M</span><span
+                  class="loader-char"        style="--i:1">A</span><span
+                  class="loader-char"        style="--i:2">N</span><span
+                  class="loader-char accent" style="--i:3">B</span><span
+                  class="loader-char"        style="--i:4">A</span><span
+                  class="loader-char"        style="--i:5">G</span><span
+                  class="loader-char"        style="--i:6">A</span>
+        </div>
+
+        <div class="loader-line"></div>
+        <div class="loader-sub">Comics &amp; Games &mdash; Canosa di Puglia</div>
+
+        <div class="loader-bar-track">
+            <div class="loader-bar-fill"></div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ============================================================
+     MODAL — DETTAGLIO PRODOTTO
+     ============================================================ -->
+<div id="product-modal" class="modal-wrap hidden" onclick="if(event.target===this)closeProductModal()">
+    <div class="modal-box" role="dialog" aria-modal="true" aria-label="Dettaglio prodotto">
+        <div class="modal-head">
+            <span class="modal-head-title">DETTAGLIO PRODOTTO</span>
+            <div class="modal-head-actions">
+                <button class="btn-modal-close" onclick="closeProductModal()">&#10005; Chiudi</button>
+            </div>
+        </div>
+        <div class="modal-body" id="product-detail-content"></div>
+    </div>
+</div>
+
+
+<!-- ============================================================
+     MODAL — ADMIN
+     ============================================================ -->
+<div id="admin-modal" class="modal-wrap hidden" onclick="if(event.target===this)closeAdminModal()">
+    <div class="modal-box" style="max-width:980px" role="dialog" aria-modal="true" aria-label="Area admin">
+        <div class="modal-head">
+            <span class="modal-head-title">&#9881;&#65039; AREA ADMIN</span>
+            <div class="modal-head-actions">
+                <button id="admin-logout-btn" class="btn-modal-close hidden" onclick="logoutAdmin()" style="background:#444">Esci</button>
+                <button class="btn-modal-close" onclick="closeAdminModal()">&#10005;</button>
+            </div>
+        </div>
+
+        <div class="modal-body">
+
+            <!-- LOGIN -->
+            <div id="admin-login" class="login-card">
+                <div class="login-title">&#128272; Accedi</div>
+                <p class="login-sub">Area riservata al personale</p>
+                <div class="form-row">
+                    <label class="form-label" for="password-input">Password</label>
+                    <input type="password" id="password-input" class="form-input"
+                           placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;"
+                           onkeypress="if(event.key==='Enter')checkAdminPassword()">
+                </div>
+                <button onclick="checkAdminPassword()"
+                        class="btn btn-primary"
+                        style="clip-path:none;width:100%;border-radius:0;margin-top:8px">
+                    ACCEDI
+                </button>
+            </div>
+
+            <!-- DASHBOARD -->
+            <div id="admin-dashboard" class="hidden">
+
+                <div class="tab-nav">
+                    <button class="tab-btn active" onclick="switchAdminTab('events', this)">EVENTI</button>
+                    <button class="tab-btn"         onclick="switchAdminTab('products', this)">PRODOTTI</button>
+                </div>
+
+                <!-- TAB EVENTI -->
+                <div id="admin-tab-events" class="admin-tab-content">
+                    <div class="admin-grid">
+                        <div class="admin-panel">
+                            <div class="admin-panel-title">&#10133; Aggiungi Evento</div>
+                            <div class="form-row">
+                                <label class="form-label">Giorno</label>
+                                <input type="text" id="event-day" class="form-input" placeholder="12" maxlength="2">
+                            </div>
+                            <div class="form-row">
+                                <label class="form-label">Mese</label>
+                                <input type="text" id="event-month" class="form-input" placeholder="Gen">
+                            </div>
+                            <div class="form-row">
+                                <label class="form-label">Anno</label>
+                                <input type="text" id="event-year" class="form-input" placeholder="2026" maxlength="4">
+                            </div>
+                            <div class="form-row">
+                                <label class="form-label">Titolo *</label>
+                                <input type="text" id="event-title" class="form-input" placeholder="Titolo evento">
+                            </div>
+                            <div class="form-row">
+                                <label class="form-label">Descrizione *</label>
+                                <textarea id="event-desc" class="form-input" placeholder="Descrizione..."></textarea>
+                            </div>
+                            <div class="form-row">
+                                <label class="form-label">Orario</label>
+                                <input type="text" id="event-time" class="form-input" placeholder="15:30">
+                            </div>
+                            <div class="form-row">
+                                <label class="form-label">Info / Prezzo</label>
+                                <input type="text" id="event-price" class="form-input" placeholder="Ingresso 5&#8364;">
+                            </div>
+                            <button onclick="addAdminEvent()"
+                                    class="btn btn-primary"
+                                    style="clip-path:none;width:100%;border-radius:0;margin-top:8px">
+                                + AGGIUNGI EVENTO
+                            </button>
+                        </div>
+                        <div class="admin-panel">
+                            <div class="admin-panel-title">&#128203; Eventi salvati</div>
+                            <div id="admin-events-list" class="admin-list"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB PRODOTTI -->
+                <div id="admin-tab-products" class="admin-tab-content hidden">
+                    <div class="admin-grid">
+                        <div class="admin-panel">
+                            <div class="admin-panel-title">&#10133; Aggiungi Prodotto</div>
+                            <div class="form-row">
+                                <label class="form-label">Titolo *</label>
+                                <input type="text" id="product-title" class="form-input" placeholder="Dragon Ball">
+                            </div>
+                            <div class="form-row">
+                                <label class="form-label">Volume</label>
+                                <input type="text" id="product-volume" class="form-input" placeholder="Vol. 12">
+                            </div>
+                            <div class="form-row">
+                                <label class="form-label">Descrizione *</label>
+                                <textarea id="product-desc" class="form-input" placeholder="Descrizione dettagliata..."></textarea>
+                            </div>
+                            <div class="form-row">
+                                <label class="form-label">URL Immagine *</label>
+                                <input type="text" id="product-image" class="form-input" placeholder="https://...">
+                            </div>
+                            <div class="form-row">
+                                <label class="form-label">Prezzo</label>
+                                <input type="text" id="product-price" class="form-input" placeholder="8,99&#8364;">
+                            </div>
+                            <div class="form-row">
+                                <label class="form-label">Stato / Badge</label>
+                                <select id="product-badge" class="form-input">
+                                    <option value="">Nessuno</option>
+                                    <option value="NOVIT&#192;">NOVIT&#192;</option>
+                                    <option value="HOT">HOT</option>
+                                    <option value="PREORDINA">PREORDINA</option>
+                                    <option value="IN ARRIVO">IN ARRIVO</option>
+                                    <option value="OUT OF STOCK">OUT OF STOCK</option>
+                                    <option value="ESAURITO">ESAURITO</option>
+                                </select>
+                            </div>
+                            <button onclick="addAdminProduct()"
+                                    class="btn btn-primary"
+                                    style="clip-path:none;width:100%;border-radius:0;margin-top:8px">
+                                + AGGIUNGI PRODOTTO
+                            </button>
+                        </div>
+                        <div class="admin-panel">
+                            <div class="admin-panel-title">&#128230; Prodotti salvati</div>
+                            <div id="admin-products-list" class="admin-list"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ============================================================
+     NAV
+     ============================================================ -->
+<nav id="nav">
+    <div class="nav-inner">
+
+        <a id="logo-link" class="nav-logo" href="#">
+            MAN<span class="dot">B</span>AGA<span class="dot">.</span>
+        </a>
+
+        <ul class="nav-links" id="nav-links">
+            <li><a href="#catalogo">Catalogo</a></li>
+            <li><a href="#nuovi-arrivi">Novit&#224;</a></li>
+            <li><a href="#eventi">Eventi</a></li>
+            <li><a href="#contatti" class="nav-cta">Contatti</a></li>
+        </ul>
+
+        <button class="nav-burger" id="nav-burger" aria-label="Apri menu">
+            <span></span><span></span><span></span>
+        </button>
+
+    </div>
+</nav>
+
+
+<!-- ============================================================
+     HERO
+     ============================================================ -->
+<header id="hero">
+    <div class="hero-dots"  aria-hidden="true"></div>
+    <div class="hero-rays"  aria-hidden="true"></div>
+    <div class="hero-slash" aria-hidden="true"></div>
+    <div class="hero-jp"    aria-hidden="true">&#28450;&#30011;</div>
+
+    <div class="hero-content">
+        <div class="hero-tag">Canosa di Puglia &mdash; Fumetteria</div>
+
+        <h1 class="hero-title">
+            MAN<span class="red">B</span>AGA<br>
+            <span class="stroke">COMICS</span>
+        </h1>
+
+        <div class="hero-divider">
+            <span>Manga &middot; Comics &middot; Giochi &middot; Gadget</span>
+        </div>
+
+        <div class="hero-btns">
+            <a href="#catalogo" class="btn btn-primary">Scopri il Catalogo</a>
+            <a href="https://www.instagram.com/_manbaga_/" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                    <rect x="2" y="2" width="20" height="20" rx="5"/>
+                    <circle cx="12" cy="12" r="4"/>
+                    <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/>
+                </svg>
+                @_manbaga_
+            </a>
+        </div>
+    </div>
+
+    <div class="hero-scroll-hint" aria-hidden="true">
+        <span>Scroll</span>
+        <div class="scroll-line"></div>
+    </div>
+</header>
+
+
+<!-- ============================================================
+     MARQUEE
+     ============================================================ -->
+<div class="marquee-bar" aria-hidden="true">
+    <div class="marquee-track">
+        <span class="marquee-item">MANGA</span>
+        <span class="marquee-item">COMICS</span>
+        <span class="marquee-item">TRADING CARDS</span>
+        <span class="marquee-item">BOARD GAMES</span>
+        <span class="marquee-item">FIGURES</span>
+        <span class="marquee-item">ANIME GADGET</span>
+        <span class="marquee-item">FUNKO POP</span>
+        <span class="marquee-item">YU-GI-OH!</span>
+        <span class="marquee-item">POK&Eacute;MON TCG</span>
+        <span class="marquee-item">MAGIC MTG</span>
+        <span class="marquee-item">ONE PIECE</span>
+        <span class="marquee-item">MANGA</span>
+        <span class="marquee-item">COMICS</span>
+        <span class="marquee-item">TRADING CARDS</span>
+        <span class="marquee-item">BOARD GAMES</span>
+        <span class="marquee-item">FIGURES</span>
+        <span class="marquee-item">ANIME GADGET</span>
+        <span class="marquee-item">FUNKO POP</span>
+        <span class="marquee-item">YU-GI-OH!</span>
+        <span class="marquee-item">POK&Eacute;MON TCG</span>
+        <span class="marquee-item">MAGIC MTG</span>
+        <span class="marquee-item">ONE PIECE</span>
+    </div>
+</div>
+
+
+<!-- ============================================================
+     CATALOGO
+     ============================================================ -->
+<section id="catalogo" class="section">
+    <div class="section-inner">
+        <div class="section-label">Cosa trovi da noi</div>
+        <h2 class="section-title reveal">IL NOSTRO<br>CATALOGO</h2>
+
+        <div class="catalog-grid">
+
+            <div class="cat-card reveal reveal-d1">
+                <div class="cat-num">01</div>
+                <div class="cat-icon" aria-hidden="true">&#128214;</div>
+                <h3 class="cat-title">Manga &amp; Comics</h3>
+                <p class="cat-desc">Shonen, Seinen, Shojo, Josei e le migliori graphic novel italiane e americane. Sempre aggiornati sulle ultime uscite Panini, Star Comics e J-Pop.</p>
+            </div>
+
+            <div class="cat-card reveal reveal-d2">
+                <div class="cat-num">02</div>
+                <div class="cat-icon" aria-hidden="true">&#127183;</div>
+                <h3 class="cat-title">Carte &amp; Giochi</h3>
+                <p class="cat-desc">Magic: The Gathering, Pok&eacute;mon TCG, Yu-Gi-Oh!, One Piece Card Game, Dragon Ball Super. Booster pack, mazzi pronti e collector item rari.</p>
+            </div>
+
+            <div class="cat-card reveal reveal-d3">
+                <div class="cat-num">03</div>
+                <div class="cat-icon" aria-hidden="true">&#127945;</div>
+                <h3 class="cat-title">Gadget &amp; Figures</h3>
+                <p class="cat-desc">Action figures, Funko Pop, statuette, modellini, poster, abbigliamento e accessori ispirati ai tuoi anime e manga preferiti.</p>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- ============================================================
+     NUOVI ARRIVI
+     ============================================================ -->
+<section id="nuovi-arrivi" class="section">
+    <div class="section-inner">
+        <div class="section-label">Aggiornato frequentemente</div>
+        <h2 class="section-title reveal">APPENA<br>ARRIVATI</h2>
+
+        <div id="products-display" class="products-grid"></div>
+
+        <div style="text-align:center;margin-top:48px" class="reveal">
+            <a href="https://www.instagram.com/_manbaga_/" target="_blank" rel="noopener noreferrer"
+               class="btn btn-primary" style="clip-path:none;border-radius:0">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                    <rect x="2" y="2" width="20" height="20" rx="5"/>
+                    <circle cx="12" cy="12" r="4"/>
+                    <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/>
+                </svg>
+                Tutte le novit&#224; su Instagram
+            </a>
+        </div>
+    </div>
+</section>
+
+
+<!-- ============================================================
+     EVENTI
+     ============================================================ -->
+<section id="eventi" class="section">
+    <div class="section-inner">
+        <div class="section-label">Non mancare</div>
+        <h2 class="section-title reveal">PROSSIMI<br>EVENTI</h2>
+
+        <div id="events-display" class="events-wrap"></div>
+    </div>
+</section>
+
+
+<!-- ============================================================
+     INSTAGRAM STRIP
+     ============================================================ -->
+<div id="ig-strip">
+    <div class="ig-inner">
+        <div>
+            <div class="ig-label">Seguici per non perderti nulla</div>
+            <div class="ig-title">RESTA SEMPRE<br>AGGIORNATO</div>
+        </div>
+        <a href="https://www.instagram.com/_manbaga_/" target="_blank" rel="noopener noreferrer" class="btn-ig">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                <rect x="2" y="2" width="20" height="20" rx="5"/>
+                <circle cx="12" cy="12" r="4"/>
+                <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/>
+            </svg>
+            Seguici su Instagram
+        </a>
+    </div>
+</div>
+
+
+<!-- ============================================================
+     CONTATTI
+     ============================================================ -->
+<section id="contatti" class="section">
+    <div class="contact-jp-bg" aria-hidden="true">連絡</div>
+
+    <div class="section-inner">
+        <div class="section-label">Parliamo</div>
+        <h2 class="section-title reveal">
+            CONTATTI<br>
+            <span class="contact-subtitle-jp">連絡先</span>
+        </h2>
+
+        <div class="contact-grid">
+
+            <!-- Info -->
+            <div class="contact-info-col reveal reveal-d1">
+
+                <div class="contact-info-item">
+                    <div class="contact-info-icon">📍</div>
+                    <div>
+                        <div class="contact-info-label">Indirizzo</div>
+                        <div class="contact-info-val">Via Padre Reginaldo Giuliani, 21<br>Canosa di Puglia (BT)</div>
+                    </div>
+                </div>
+
+                <div class="contact-info-item">
+                    <div class="contact-info-icon">🕐</div>
+                    <div>
+                        <div class="contact-info-label">Orari</div>
+                        <div class="contact-info-val">
+                            Lun &ndash; Sab: 10:00&ndash;13:00 &middot; 17:00&ndash;21:00<br>
+                            <span style="opacity:0.45">Domenica: Chiuso</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact-info-item">
+                    <div class="contact-info-icon">
+                        <svg width="19" height="19" viewBox="0 0 24 24" fill="white" aria-hidden="true">
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="contact-info-label">WhatsApp</div>
+                        <div class="contact-info-val">
+                            <!-- SOSTITUISCI 393XXXXXXXXX con il numero reale -->
+                            <a href="https://wa.me/393XXXXXXXXX" class="contact-link" target="_blank" rel="noopener noreferrer">Scrivici direttamente &rarr;</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact-info-item">
+                    <div class="contact-info-icon">📸</div>
+                    <div>
+                        <div class="contact-info-label">Instagram</div>
+                        <div class="contact-info-val">
+                            <a href="https://www.instagram.com/_manbaga_/" target="_blank" rel="noopener noreferrer" class="contact-link">@_manbaga_ &rarr;</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact-hanko" aria-hidden="true"><span>店</span></div>
+            </div>
+
+            <!-- Form email -->
+            <div class="contact-form-wrap reveal reveal-d2">
+                <div class="contact-form-head">
+                    <span class="contact-form-head-label">INVIA UN MESSAGGIO</span>
+                    <span class="contact-form-head-jp">メッセージ</span>
+                </div>
+                <form onsubmit="sendContactMail(event)" class="contact-form-body">
+                    <div class="form-row">
+                        <label class="form-label" for="contact-nome">Nome</label>
+                        <input type="text" id="contact-nome" class="form-input contact-input" placeholder="Il tuo nome" required>
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label" for="contact-email">Email</label>
+                        <input type="email" id="contact-email" class="form-input contact-input" placeholder="tua@email.it" required>
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label" for="contact-oggetto">Oggetto</label>
+                        <input type="text" id="contact-oggetto" class="form-input contact-input" placeholder="Di cosa si tratta?">
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label" for="contact-msg">Messaggio</label>
+                        <textarea id="contact-msg" class="form-input contact-input" placeholder="Scrivi il tuo messaggio..." rows="5" required></textarea>
+                    </div>
+                    <!-- SOSTITUISCI l'email qui sotto con la tua email reale nello script.js -->
+                    <button type="submit" id="contact-submit-btn" class="btn btn-primary contact-submit">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                            <line x1="22" y1="2" x2="11" y2="13"/>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                        </svg>
+                        INVIA MESSAGGIO
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer id="footer">
+    <div class="footer-jp-bg" aria-hidden="true">漫</div>
+
+    <div class="footer-top-bar">
+        <div class="footer-top-inner">
+            <span class="footer-jp-deco" aria-hidden="true">漫画 &nbsp;&middot;&nbsp; 本屋 &nbsp;&middot;&nbsp; ゲーム &nbsp;&middot;&nbsp; 店</span>
+        </div>
+    </div>
+
+    <div class="footer-inner">
+        <div class="footer-grid">
+
+            <div class="footer-col footer-col--brand">
+                <span class="footer-logo">MAN<span class="dot">B</span>AGA<span class="dot">.</span></span>
+                <p class="footer-tagline">
+                    La tua fumetteria di riferimento a Canosa di Puglia.
+                    Manga, comics, giochi di carte e gadget anime ti aspettano ogni giorno.
+                </p>
+                <div class="footer-seal" aria-hidden="true"><span>漫</span></div>
+            </div>
+
+            <div class="footer-col">
+                <div class="footer-col-h">ORARI <span class="footer-col-h-jp">営業時間</span></div>
+                <div class="footer-hours">
+                    <div class="footer-hours-row">
+                        <span>Lun &ndash; Sabato</span>
+                        <span>10:00 &ndash; 13:00</span>
+                    </div>
+                    <div class="footer-hours-row">
+                        <span></span>
+                        <span>17:00 &ndash; 21:00</span>
+                    </div>
+                    <div class="footer-hours-row footer-hours-closed">
+                        <span>Domenica</span>
+                        <span>Chiuso</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <div class="footer-col-h">DOVE SIAMO <span class="footer-col-h-jp">所在地</span></div>
+                <address class="footer-address">
+                    Via Padre Reginaldo<br>
+                    Giuliani, 21<br>
+                    Canosa di Puglia (BT)
+                </address>
+                <a href="https://maps.google.com/?q=Via+Padre+Reginaldo+Giuliani+21+Canosa+di+Puglia"
+                   target="_blank" rel="noopener noreferrer" class="footer-map-link">
+                    Apri in Maps &rarr;
+                </a>
+            </div>
+
+            <div class="footer-col">
+                <div class="footer-col-h">SEGUICI <span class="footer-col-h-jp">ソーシャル</span></div>
+                <a href="https://www.instagram.com/_manbaga_/" target="_blank" rel="noopener noreferrer"
+                   class="footer-social-link footer-social-link--ig">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" aria-hidden="true">
+                        <rect x="2" y="2" width="20" height="20" rx="5"/>
+                        <circle cx="12" cy="12" r="4"/>
+                        <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/>
+                    </svg>
+                    @_manbaga_
+                </a>
+                <!-- SOSTITUISCI 393XXXXXXXXX con il numero reale -->
+                <a href="https://wa.me/393XXXXXXXXX" target="_blank" rel="noopener noreferrer"
+                   class="footer-social-link footer-social-link--wa">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                    </svg>
+                    WhatsApp
+                </a>
+                <a href="#contatti" class="footer-social-link footer-social-link--mail">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" aria-hidden="true">
+                        <rect x="2" y="4" width="20" height="16" rx="2"/>
+                        <polyline points="2,4 12,13 22,4"/>
+                    </svg>
+                    Invia un messaggio
+                </a>
+            </div>
+
+        </div>
+
+        <div class="footer-divider">
+            <div class="footer-divider-line"></div>
+            <span class="footer-divider-mark" aria-hidden="true">&#10022;</span>
+            <div class="footer-divider-line"></div>
+        </div>
+
+        <div class="footer-bottom">
+            <span>&copy; 2025 MANBAGA Comics &amp; Games &mdash; Canosa di Puglia</span>
+            <span class="footer-bottom-jp" aria-hidden="true">漫画店</span>
+            <span>Fatto con passione per i fan</span>
+        </div>
+    </div>
+</footer>
+
+
+<!-- Lightbox zoom immagine prodotto -->
+<div id="img-lightbox" class="img-lightbox hidden" onclick="closeImageZoom()">
+    <button class="lightbox-close" onclick="closeImageZoom()" aria-label="Chiudi">&#10005;</button>
+    <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()">
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
