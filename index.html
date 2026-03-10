@@ -13,18 +13,21 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Noto+Serif+JP:wght@700;900&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
 
+    <!-- EmailJS — servizio email gratuito (200 email/mese) -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
     <!-- Stili -->
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body class="is-loading">
 
-<!-- WhatsApp Float — SOSTITUISCI 393XXXXXXXXX con il numero reale (es. 393331234567) -->
-<a href="https://wa.me/393XXXXXXXXX"
-   class="whatsapp-float"
+<!-- Fiore di loto — Collegato a Instagram -->
+<a href="https://www.instagram.com/_manbaga_/"
+   class="lotus-float"
    target="_blank"
    rel="noopener noreferrer"
-   aria-label="Contattaci su WhatsApp">
+   aria-label="Seguici su Instagram">
     <!-- Sakura / Fiore di ciliegio giapponese -->
     <svg width="36" height="36" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <g transform="translate(30,30)">
@@ -42,7 +45,7 @@
             <circle cx="-5.2" cy="-1.7" r="1.2" fill="#C4607A"/>
         </g>
     </svg>
-    <span class="whatsapp-tooltip">Scrivici su WhatsApp</span>
+    <span class="lotus-tooltip">Seguici su Instagram</span>
 </a>
 
 
@@ -331,32 +334,59 @@
 <!-- ============================================================
      CATALOGO
      ============================================================ -->
-<section id="catalogo" class="section">
+<section id="catalogo" class="section section--dark">
     <div class="section-inner">
-        <div class="section-label">Cosa trovi da noi</div>
+        <div class="section-label">カタログ &mdash; Cosa trovi da noi</div>
         <h2 class="section-title reveal">IL NOSTRO<br>CATALOGO</h2>
 
         <div class="catalog-grid">
 
             <div class="cat-card reveal reveal-d1">
-                <div class="cat-num">01</div>
-                <div class="cat-icon" aria-hidden="true">&#128214;</div>
-                <h3 class="cat-title">Manga &amp; Comics</h3>
-                <p class="cat-desc">Shonen, Seinen, Shojo, Josei e le migliori graphic novel italiane e americane. Sempre aggiornati sulle ultime uscite Panini, Star Comics e J-Pop.</p>
+                <div class="cat-bg-kanji" aria-hidden="true">漫</div>
+                <div class="cat-num-badge">01</div>
+                <div class="cat-content">
+                    <div class="cat-jp">マンガ・コミック</div>
+                    <h3 class="cat-title">Manga &amp; Comics</h3>
+                    <p class="cat-desc">Shonen, Seinen, Shojo, Josei e le migliori graphic novel italiane e americane. Sempre aggiornati sulle ultime uscite Panini, Star Comics e J-Pop.</p>
+                    <div class="cat-tags">
+                        <span class="cat-tag">Shonen</span>
+                        <span class="cat-tag">Seinen</span>
+                        <span class="cat-tag">Shojo</span>
+                        <span class="cat-tag">Comics</span>
+                    </div>
+                </div>
             </div>
 
             <div class="cat-card reveal reveal-d2">
-                <div class="cat-num">02</div>
-                <div class="cat-icon" aria-hidden="true">&#127183;</div>
-                <h3 class="cat-title">Carte &amp; Giochi</h3>
-                <p class="cat-desc">Magic: The Gathering, Pok&eacute;mon TCG, Yu-Gi-Oh!, One Piece Card Game, Dragon Ball Super. Booster pack, mazzi pronti e collector item rari.</p>
+                <div class="cat-bg-kanji" aria-hidden="true">遊</div>
+                <div class="cat-num-badge">02</div>
+                <div class="cat-content">
+                    <div class="cat-jp">カード・ゲーム</div>
+                    <h3 class="cat-title">Carte &amp; Giochi</h3>
+                    <p class="cat-desc">Magic: The Gathering, Pok&eacute;mon TCG, Yu-Gi-Oh!, One Piece Card Game, Dragon Ball Super. Booster pack, mazzi pronti e collector item rari.</p>
+                    <div class="cat-tags">
+                        <span class="cat-tag">Pok&eacute;mon</span>
+                        <span class="cat-tag">Yu-Gi-Oh!</span>
+                        <span class="cat-tag">Magic</span>
+                        <span class="cat-tag">One Piece</span>
+                    </div>
+                </div>
             </div>
 
             <div class="cat-card reveal reveal-d3">
-                <div class="cat-num">03</div>
-                <div class="cat-icon" aria-hidden="true">&#127945;</div>
-                <h3 class="cat-title">Gadget &amp; Figures</h3>
-                <p class="cat-desc">Action figures, Funko Pop, statuette, modellini, poster, abbigliamento e accessori ispirati ai tuoi anime e manga preferiti.</p>
+                <div class="cat-bg-kanji" aria-hidden="true">具</div>
+                <div class="cat-num-badge">03</div>
+                <div class="cat-content">
+                    <div class="cat-jp">フィギュア・グッズ</div>
+                    <h3 class="cat-title">Gadget &amp; Figures</h3>
+                    <p class="cat-desc">Action figures, Funko Pop, statuette, modellini, poster, abbigliamento e accessori ispirati ai tuoi anime e manga preferiti.</p>
+                    <div class="cat-tags">
+                        <span class="cat-tag">Figure</span>
+                        <span class="cat-tag">Funko Pop</span>
+                        <span class="cat-tag">Poster</span>
+                        <span class="cat-tag">Accessori</span>
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -372,7 +402,16 @@
         <div class="section-label">Aggiornato frequentemente</div>
         <h2 class="section-title reveal">APPENA<br>ARRIVATI</h2>
 
-        <div id="products-display" class="products-grid"></div>
+        <div class="carousel-outer">
+            <div class="carousel-nav-row">
+                <button id="carousel-prev" class="carousel-btn" aria-label="Prodotto precedente">&#8592;</button>
+                <div class="carousel-viewport">
+                    <div id="products-display" class="carousel-track"></div>
+                </div>
+                <button id="carousel-next" class="carousel-btn" aria-label="Prodotto successivo">&#8594;</button>
+            </div>
+            <div id="carousel-dots" class="carousel-dots-bar"></div>
+        </div>
 
         <div style="text-align:center;margin-top:48px" class="reveal">
             <a href="https://www.instagram.com/_manbaga_/" target="_blank" rel="noopener noreferrer"
@@ -454,8 +493,9 @@
                     <div>
                         <div class="contact-info-label">Orari</div>
                         <div class="contact-info-val">
-                            Lun &ndash; Sab: 10:00&ndash;13:00 &middot; 17:00&ndash;21:00<br>
-                            <span style="opacity:0.45">Domenica: Chiuso</span>
+                            Lun &ndash; Sab: 10:00&ndash;13:30 &middot; 17:00&ndash;21:00<br>
+                            Domenica: 10:00&ndash;13:00<br>
+                            <span style="opacity:0.45">Domenica pomeriggio: Chiuso</span>
                         </div>
                     </div>
                 </div>
@@ -520,7 +560,11 @@
 
     <div class="footer-top-bar">
         <div class="footer-top-inner">
-            <span class="footer-jp-deco" aria-hidden="true">漫画 &nbsp;&middot;&nbsp; 本屋 &nbsp;&middot;&nbsp; ゲーム &nbsp;&middot;&nbsp; 店</span>
+            <span class="footer-top-tagline">
+                <span class="footer-jp-deco" aria-hidden="true">漫画</span>
+                La tua fumetteria a Canosa di Puglia dal primo giorno
+                <span class="footer-jp-deco" aria-hidden="true">店</span>
+            </span>
         </div>
     </div>
 
@@ -530,9 +574,15 @@
             <div class="footer-col footer-col--brand">
                 <span class="footer-logo">MAN<span class="dot">B</span>AGA<span class="dot">.</span></span>
                 <p class="footer-tagline">
-                    La tua fumetteria di riferimento a Canosa di Puglia.
-                    Manga, comics, giochi di carte e gadget anime ti aspettano ogni giorno.
+                    Manga, comics, giochi di carte e gadget anime.<br>
+                    Il punto di riferimento per gli appassionati<br>di Canosa di Puglia e dintorni.
                 </p>
+                <div class="footer-brand-badges">
+                    <span class="footer-badge">Manga</span>
+                    <span class="footer-badge">TCG</span>
+                    <span class="footer-badge">Figures</span>
+                    <span class="footer-badge">Gadget</span>
+                </div>
                 <div class="footer-seal" aria-hidden="true"><span>漫</span></div>
             </div>
 
@@ -541,16 +591,24 @@
                 <div class="footer-hours">
                     <div class="footer-hours-row">
                         <span>Lun &ndash; Sabato</span>
-                        <span>10:00 &ndash; 13:00</span>
+                        <span class="footer-hours-time">10:00 &ndash; 13:00</span>
                     </div>
                     <div class="footer-hours-row">
                         <span></span>
-                        <span>17:00 &ndash; 21:00</span>
+                        <span class="footer-hours-time">17:00 &ndash; 20:30</span>
+                    </div>
+                    <div class="footer-hours-row">
+                        <span>Domenica</span>
+                        <span class="footer-hours-time">10:00 &ndash; 13:00</span>
                     </div>
                     <div class="footer-hours-row footer-hours-closed">
-                        <span>Domenica</span>
-                        <span>Chiuso</span>
+                        <span></span>
+                        <span>Pomeriggio chiuso</span>
                     </div>
+                </div>
+                <div class="footer-open-badge">
+                    <span class="footer-open-dot"></span>
+                    Aperto oggi
                 </div>
             </div>
 
@@ -559,16 +617,17 @@
                 <address class="footer-address">
                     Via Padre Reginaldo<br>
                     Giuliani, 21<br>
-                    Canosa di Puglia (BT)
+                    76012 Canosa di Puglia (BT)
                 </address>
                 <a href="https://maps.google.com/?q=Via+Padre+Reginaldo+Giuliani+21+Canosa+di+Puglia"
                    target="_blank" rel="noopener noreferrer" class="footer-map-link">
-                    Apri in Maps &rarr;
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    Apri in Google Maps
                 </a>
             </div>
 
             <div class="footer-col">
-                <div class="footer-col-h">SEGUICI <span class="footer-col-h-jp">ソーシャル</span></div>
+                <div class="footer-col-h">CONTATTI <span class="footer-col-h-jp">連絡先</span></div>
                 <a href="https://www.instagram.com/_manbaga_/" target="_blank" rel="noopener noreferrer"
                    class="footer-social-link footer-social-link--ig">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" aria-hidden="true">
@@ -576,22 +635,30 @@
                         <circle cx="12" cy="12" r="4"/>
                         <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/>
                     </svg>
-                    @_manbaga_
+                    <span>
+                        <span class="footer-link-label">Instagram</span>
+                        <span class="footer-link-sub">@_manbaga_</span>
+                    </span>
                 </a>
-                <!-- SOSTITUISCI 393XXXXXXXXX con il numero reale -->
-                <a href="https://wa.me/393XXXXXXXXX" target="_blank" rel="noopener noreferrer"
-                   class="footer-social-link footer-social-link--wa">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                    </svg>
-                    WhatsApp
-                </a>
-                <a href="#contatti" class="footer-social-link footer-social-link--mail">
+                <a href="mailto:manbagacomics@gmail.com"
+                   class="footer-social-link footer-social-link--mail">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" aria-hidden="true">
                         <rect x="2" y="4" width="20" height="16" rx="2"/>
                         <polyline points="2,4 12,13 22,4"/>
                     </svg>
-                    Invia un messaggio
+                    <span>
+                        <span class="footer-link-label">Email</span>
+                        <span class="footer-link-sub">manbagacomics@gmail.com</span>
+                    </span>
+                </a>
+                <a href="#contatti" class="footer-social-link footer-social-link--form">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" aria-hidden="true">
+                        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                    </svg>
+                    <span>
+                        <span class="footer-link-label">Form contatti</span>
+                        <span class="footer-link-sub">Scrivici dal sito</span>
+                    </span>
                 </a>
             </div>
 
@@ -604,9 +671,12 @@
         </div>
 
         <div class="footer-bottom">
-            <span>&copy; 2025 MANBAGA Comics &amp; Games &mdash; Canosa di Puglia</span>
+            <span>&copy; 2026 MANBAGA Comics &amp; Games &mdash; Canosa di Puglia</span>
             <span class="footer-bottom-jp" aria-hidden="true">漫画店</span>
-            <span>Fatto con passione per i fan</span>
+            <span class="footer-bottom-right">
+                Realizzato con passione per i fan
+                <span class="footer-bottom-heart" aria-hidden="true">&#10084;</span>
+            </span>
         </div>
     </div>
 </footer>

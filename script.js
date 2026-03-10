@@ -5,12 +5,62 @@
 'use strict';
 
 /* ============================================================
+   EMAIL CONFIG — EmailJS (GRATUITO fino a 200 email/mese)
+   ============================================================
+   ISTRUZIONI SETUP (5 minuti):
+   1. Vai su https://www.emailjs.com e crea un account gratuito
+   2. Dashboard → "Add New Service" → Gmail
+      → collegalo a manbagacomics@gmail.com → copia il SERVICE ID
+   3. Dashboard → "Email Templates" → crea DUE template:
+
+      ─ Template 1: ID = "template_contact"
+        Subject: {{subject}}
+        Body:
+          Da: {{from_name}} <{{from_email}}>
+          ---
+          {{message}}
+        To email: manbagacomics@gmail.com
+
+      ─ Template 2: ID = "template_preorder"
+        Subject: [PREORDINE] {{product_title}} {{product_volume}}
+        Body:
+          ⭐ NUOVA RICHIESTA DI PREORDINE
+
+          Prodotto: {{product_title}}
+          Volume:   {{product_volume}}
+          Stato:    {{product_badge}}
+
+          ─────────────────────────────
+          Cliente:  {{customer_name}}
+          Contatto: {{customer_contact}}
+          Note:     {{customer_notes}}
+        To email: manbagacomics@gmail.com
+
+   4. Dashboard → Account → General → API Keys → copia la Public Key
+   5. Sostituisci i valori nelle costanti qui sotto
+   ============================================================ */
+var EMAILJS_CONFIG = {
+    publicKey:         'Sog-jCJquh3AIZPiB',
+    serviceId:         'service_xaub67a',
+    templateContact:   'template_b1d0xcy',
+    templateAutoreply: 'template_88f0erj'
+};
+
+var _emailjsReady = false;
+
+document.addEventListener('DOMContentLoaded', function () {
+    if (typeof emailjs !== 'undefined' && EMAILJS_CONFIG.publicKey !== 'YOUR_PUBLIC_KEY') {
+        emailjs.init({ publicKey: EMAILJS_CONFIG.publicKey });
+        _emailjsReady = true;
+    }
+});
+
+/* ============================================================
    LOADER
    ============================================================ */
 window.addEventListener('load', function () {
-    // Minimo 2.4s per far vedere tutta l'animazione
     setTimeout(function () {
-        const loader = document.getElementById('loader');
+        var loader = document.getElementById('loader');
         if (!loader) return;
 
         loader.classList.add('exit');
@@ -18,7 +68,6 @@ window.addEventListener('load', function () {
 
         setTimeout(function () {
             loader.remove();
-            // Avvia reveal per elementi già in viewport
             checkReveal();
         }, 900);
     }, 2400);
@@ -28,7 +77,7 @@ window.addEventListener('load', function () {
    SCROLL REVEAL
    ============================================================ */
 function checkReveal() {
-    const observer = new IntersectionObserver(function (entries) {
+    var observer = new IntersectionObserver(function (entries) {
         entries.forEach(function (entry) {
             if (entry.isIntersecting) {
                 entry.target.classList.add('visible');
@@ -48,11 +97,10 @@ document.addEventListener('DOMContentLoaded', checkReveal);
    NAVIGATION — scrolled state + mobile
    ============================================================ */
 document.addEventListener('DOMContentLoaded', function () {
-    const nav = document.getElementById('nav');
-    const burger = document.getElementById('nav-burger');
-    const navLinks = document.getElementById('nav-links');
+    var nav     = document.getElementById('nav');
+    var burger  = document.getElementById('nav-burger');
+    var navLinks = document.getElementById('nav-links');
 
-    // Classe scrolled per stile nav
     window.addEventListener('scroll', function () {
         if (window.scrollY > 40) {
             nav.classList.add('scrolled');
@@ -61,7 +109,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Hamburger toggle
     if (burger) {
         burger.addEventListener('click', function () {
             burger.classList.toggle('open');
@@ -69,7 +116,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Chiudi nav su click link
     if (navLinks) {
         navLinks.querySelectorAll('a').forEach(function (a) {
             a.addEventListener('click', function () {
@@ -79,7 +125,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Chiudi modal con ESC
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
             closeImageZoom();
@@ -92,11 +137,11 @@ document.addEventListener('DOMContentLoaded', function () {
 /* ============================================================
    LOGO — triplo click → admin
    ============================================================ */
-let _logoClicks = 0;
-let _logoTimer;
+var _logoClicks = 0;
+var _logoTimer;
 
 document.addEventListener('DOMContentLoaded', function () {
-    const logoLink = document.getElementById('logo-link');
+    var logoLink = document.getElementById('logo-link');
     if (!logoLink) return;
 
     logoLink.addEventListener('click', function (e) {
@@ -141,8 +186,8 @@ function setProducts(data) {
    RENDER EVENTI
    ============================================================ */
 function renderEvents() {
-    const events = getEvents();
-    const container = document.getElementById('events-display');
+    var events = getEvents();
+    var container = document.getElementById('events-display');
     if (!container) return;
 
     if (events.length === 0) {
@@ -171,19 +216,26 @@ function renderEvents() {
 }
 
 /* ============================================================
-   RENDER PRODOTTI
+   RENDER PRODOTTI — CAROSELLO
    ============================================================ */
 function renderProducts() {
-    const products = getProducts();
-    const container = document.getElementById('products-display');
-    if (!container) return;
+    var products = getProducts();
+    var track = document.getElementById('products-display');
+    if (!track) return;
 
     if (products.length === 0) {
-        container.innerHTML = '<div class="products-empty">Nessun prodotto ancora caricato.<br><small>Seguici su Instagram per scoprire le novità in negozio!</small></div>';
+        /* Nascondi i bottoni carosello se non ci sono prodotti */
+        var prevBtn = document.getElementById('carousel-prev');
+        var nextBtn = document.getElementById('carousel-next');
+        if (prevBtn) prevBtn.style.display = 'none';
+        if (nextBtn) nextBtn.style.display = 'none';
+
+        track.innerHTML = '<div class="products-empty">Nessun prodotto ancora caricato.<br>'
+            + '<small>Seguici su Instagram per scoprire le novità in negozio!</small></div>';
         return;
     }
 
-    container.innerHTML = products.map(function (p) {
+    track.innerHTML = products.map(function (p) {
         var isOos = (p.badge === 'OUT OF STOCK' || p.badge === 'ESAURITO');
         return '<div class="product-card' + (isOos ? ' product-card--oos' : '') + '" data-badge="' + (p.badge || '') + '" onclick="openProductModal(' + p.id + ')">'
             + (p.badge ? '<div class="product-badge" data-badge="' + p.badge + '">' + p.badge + '</div>' : '')
@@ -195,9 +247,168 @@ function renderProducts() {
             + '<div class="product-store-tag">MANBAGA.</div>'
             + '<div class="product-name">' + p.title + '</div>'
             + '<div class="product-vol">' + (p.volume || '') + '</div>'
+            + (p.price ? '<div class="product-price">' + p.price + '</div>' : '')
             + '</div>'
             + '</div>';
     }).join('');
+
+    /* Init carosello dopo render */
+    initCarousel();
+}
+
+/* ============================================================
+   CAROSELLO — LOGICA
+   ============================================================ */
+var _carouselIdx  = 0;
+var _carouselAuto = null;
+var _carouselGap  = 20;
+
+function getVisibleCount() {
+    var w = window.innerWidth;
+    if (w >= 1100) return 3;
+    if (w >= 640)  return 2;
+    return 1;
+}
+
+function initCarousel() {
+    _carouselIdx = 0;
+
+    var prevBtn = document.getElementById('carousel-prev');
+    var nextBtn = document.getElementById('carousel-next');
+
+    if (prevBtn) {
+        prevBtn.replaceWith(prevBtn.cloneNode(true)); /* rimuove listener precedenti */
+        prevBtn = document.getElementById('carousel-prev');
+        prevBtn.addEventListener('click', function () { carouselStep(-1); });
+    }
+    if (nextBtn) {
+        nextBtn.replaceWith(nextBtn.cloneNode(true));
+        nextBtn = document.getElementById('carousel-next');
+        nextBtn.addEventListener('click', function () { carouselStep(1); });
+    }
+
+    /* Pausa autoplay al mouseenter del viewport */
+    var viewport = document.querySelector('.carousel-viewport');
+    if (viewport) {
+        viewport.addEventListener('mouseenter', stopCarouselAuto);
+        viewport.addEventListener('mouseleave', startCarouselAuto);
+    }
+
+    /* Resize handler */
+    window.addEventListener('resize', debounce(function () {
+        updateCarousel(false);
+    }, 200));
+
+    buildCarouselDots();
+    updateCarousel(false);
+    startCarouselAuto();
+}
+
+function carouselStep(dir) {
+    var products    = getProducts();
+    var visible     = getVisibleCount();
+    var maxIdx      = Math.max(0, products.length - visible);
+    var next        = _carouselIdx + dir;
+
+    /* Loop infinito */
+    if (next < 0)       next = maxIdx;
+    if (next > maxIdx)  next = 0;
+
+    _carouselIdx = next;
+    updateCarousel(true);
+    resetCarouselAuto();
+}
+
+function buildCarouselDots() {
+    var dotsBar  = document.getElementById('carousel-dots');
+    if (!dotsBar) return;
+
+    var products = getProducts();
+    var visible  = getVisibleCount();
+    var total    = Math.max(1, products.length - visible + 1);
+
+    dotsBar.innerHTML = '';
+    for (var i = 0; i < total; i++) {
+        var dot = document.createElement('button');
+        dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+        dot.setAttribute('aria-label', 'Slide ' + (i + 1));
+        (function (idx) {
+            dot.addEventListener('click', function () {
+                _carouselIdx = idx;
+                updateCarousel(true);
+                resetCarouselAuto();
+            });
+        })(i);
+        dotsBar.appendChild(dot);
+    }
+}
+
+function updateCarousel(animate) {
+    var track    = document.getElementById('products-display');
+    var viewport = document.querySelector('.carousel-viewport');
+    if (!track || !viewport) return;
+
+    var visible    = getVisibleCount();
+    var products   = getProducts();
+    var maxIdx     = Math.max(0, products.length - visible);
+    _carouselIdx   = Math.min(_carouselIdx, maxIdx);
+
+    /* Calcola larghezza card */
+    var vw       = viewport.offsetWidth;
+    var totalGap = (visible - 1) * _carouselGap;
+    var cardW    = (vw - totalGap) / visible;
+
+    track.querySelectorAll('.product-card').forEach(function (card) {
+        card.style.width    = cardW + 'px';
+        card.style.minWidth = cardW + 'px';
+    });
+
+    /* Transizione */
+    track.style.transition = animate
+        ? 'transform 0.55s cubic-bezier(0.19,1,0.22,1)'
+        : 'none';
+
+    var offset = _carouselIdx * (cardW + _carouselGap);
+    track.style.transform = 'translateX(-' + offset + 'px)';
+
+    /* Dots */
+    var dots = document.querySelectorAll('.carousel-dot');
+    dots.forEach(function (d, i) {
+        d.classList.toggle('active', i === _carouselIdx);
+    });
+
+    /* Bottoni */
+    var prevBtn = document.getElementById('carousel-prev');
+    var nextBtn = document.getElementById('carousel-next');
+    if (prevBtn) prevBtn.disabled = (_carouselIdx <= 0);
+    if (nextBtn) nextBtn.disabled = (_carouselIdx >= maxIdx);
+}
+
+function startCarouselAuto() {
+    stopCarouselAuto();
+    var products = getProducts();
+    if (products.length <= getVisibleCount()) return; /* nulla da scorrere */
+
+    _carouselAuto = setInterval(function () {
+        carouselStep(1);
+    }, 4000);
+}
+
+function stopCarouselAuto() {
+    if (_carouselAuto) { clearInterval(_carouselAuto); _carouselAuto = null; }
+}
+
+function resetCarouselAuto() {
+    stopCarouselAuto();
+    startCarouselAuto();
+}
+
+function debounce(fn, delay) {
+    var t;
+    return function () {
+        clearTimeout(t);
+        t = setTimeout(fn, delay);
+    };
 }
 
 /* ============================================================
@@ -206,6 +417,19 @@ function renderProducts() {
 function openProductModal(productId) {
     var product = getProducts().find(function (p) { return p.id === productId; });
     if (!product) return;
+
+    var isPreorder = (product.badge === 'PREORDINA' || product.badge === 'IN ARRIVO');
+
+    /* Bottone azione principale */
+    var actionBtn = isPreorder
+        ? '<button class="btn btn-primary" style="clip-path:none;flex:1;border-radius:0;min-width:160px;background:#4F46E5;border:none" onclick="showPreorderForm(' + product.id + ')">'
+            + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 12v6a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h6"/><polyline points="16 2 22 2 22 8"/><line x1="11" y1="13" x2="22" y2="2"/></svg>'
+            + ' Richiedi Preordine'
+            + '</button>'
+        : '<button class="btn btn-primary" style="clip-path:none;flex:1;border-radius:0;min-width:140px" onclick="window.open(\'https://www.instagram.com/_manbaga_/\',\'_blank\')">'
+            + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>'
+            + ' Vedi su Instagram'
+            + '</button>';
 
     document.getElementById('product-detail-content').innerHTML =
         '<div class="pd-grid">'
@@ -217,19 +441,33 @@ function openProductModal(productId) {
         + (product.badge ? '<div class="pd-badge" data-badge="' + product.badge + '">' + product.badge + '</div>' : '')
         + '<h2 class="pd-title">' + product.title + '</h2>'
         + '<div class="pd-vol">' + (product.volume || '') + '</div>'
+        + (product.price ? '<div class="pd-price">' + product.price + '</div>' : '')
         + '<div class="pd-desc-block" style="margin-bottom:24px">'
         + '<h3>Descrizione</h3>'
         + '<p>' + product.desc.replace(/\n/g, '<br>') + '</p>'
         + '</div>'
         + '<div style="display:flex;gap:10px;flex-wrap:wrap">'
-        + '<button class="btn btn-primary" style="clip-path:none;flex:1;border-radius:0;min-width:140px" onclick="window.open(\'https://wa.me/393XXXXXXXXX\',\'_blank\')">'
-        + '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>'
-        + ' WhatsApp'
-        + '</button>'
+        + actionBtn
         + '<button class="btn btn-ghost" style="flex:1;border-radius:0;min-width:140px" onclick="window.open(\'https://www.instagram.com/_manbaga_/\',\'_blank\')">'
         + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>'
         + ' Instagram'
         + '</button>'
+        + '</div>'
+        /* Form preordine (nascosto) */
+        + '<div id="preorder-form-' + product.id + '" class="preorder-panel hidden" data-product-id="' + product.id + '">'
+        + '<div class="preorder-panel-head">&#9993; Richiesta Preordine — ' + product.title + '</div>'
+        + '<div class="form-row"><label class="form-label">Il tuo nome *</label>'
+        + '<input type="text" id="po-name-' + product.id + '" class="form-input" placeholder="Nome e Cognome"></div>'
+        + '<div class="form-row"><label class="form-label">Email o Telefono *</label>'
+        + '<input type="text" id="po-contact-' + product.id + '" class="form-input" placeholder="email@esempio.it oppure +39 …"></div>'
+        + '<div class="form-row"><label class="form-label">Note (opzionale)</label>'
+        + '<textarea id="po-notes-' + product.id + '" class="form-input" rows="2" placeholder="Quantità, variante, data prevista ritiro…"></textarea></div>'
+        + '<div style="display:flex;gap:8px;margin-top:4px">'
+        + '<button class="btn btn-primary" style="clip-path:none;flex:1;border-radius:0;background:#4F46E5;border:none" onclick="submitPreorder(' + product.id + ')">'
+        + '&#10003; INVIA RICHIESTA'
+        + '</button>'
+        + '<button class="btn btn-ghost" style="border-radius:0;min-width:100px" onclick="hidePreorderForm(' + product.id + ')">Annulla</button>'
+        + '</div>'
         + '</div>'
         + '</div>'
         + '</div>';
@@ -241,6 +479,91 @@ function openProductModal(productId) {
 function closeProductModal() {
     document.getElementById('product-modal').classList.add('hidden');
     document.body.style.overflow = '';
+}
+
+/* ============================================================
+   PREORDINE — mostra/nascondi form + invio mail
+   ============================================================ */
+function showPreorderForm(productId) {
+    var panel = document.getElementById('preorder-form-' + productId);
+    if (panel) {
+        panel.classList.remove('hidden');
+        panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+}
+
+function hidePreorderForm(productId) {
+    var panel = document.getElementById('preorder-form-' + productId);
+    if (panel) panel.classList.add('hidden');
+}
+
+function submitPreorder(productId) {
+    var product = getProducts().find(function (p) { return p.id === productId; });
+    if (!product) return;
+
+    var name    = document.getElementById('po-name-'    + productId).value.trim();
+    var contact = document.getElementById('po-contact-' + productId).value.trim();
+    var notes   = document.getElementById('po-notes-'   + productId).value.trim();
+
+    if (!name || !contact) {
+        alert('⚠️ Inserisci nome e contatto per procedere.');
+        return;
+    }
+
+    var submitBtn = document.querySelector('#preorder-form-' + productId + ' .btn-primary');
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Invio in corso…'; }
+
+    /* Prova EmailJS; fallback a mailto: */
+    if (_emailjsReady) {
+        emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templatePreorder, {
+            product_title:    product.title,
+            product_volume:   product.volume || '—',
+            product_badge:    product.badge  || '—',
+            customer_name:    name,
+            customer_contact: contact,
+            customer_notes:   notes || 'Nessuna nota'
+        })
+        .then(function () {
+            _preorderSuccess(productId, submitBtn);
+        })
+        .catch(function (err) {
+            console.error('EmailJS error:', err);
+            _preorderMailtoFallback(product, name, contact, notes);
+            _preorderSuccess(productId, submitBtn);
+        });
+    } else {
+        /* Fallback mailto: */
+        _preorderMailtoFallback(product, name, contact, notes);
+        _preorderSuccess(productId, submitBtn);
+    }
+}
+
+function _preorderMailtoFallback(product, name, contact, notes) {
+    var subject = encodeURIComponent('[PREORDINE] ' + product.title + ' ' + (product.volume || ''));
+    var body    = encodeURIComponent(
+        '⭐ NUOVA RICHIESTA DI PREORDINE\n\n'
+        + 'Prodotto: ' + product.title + '\n'
+        + 'Volume:   ' + (product.volume || '—') + '\n'
+        + 'Stato:    ' + (product.badge  || '—') + '\n\n'
+        + '─────────────────────────────\n'
+        + 'Cliente:  ' + name    + '\n'
+        + 'Contatto: ' + contact + '\n'
+        + 'Note:     ' + (notes || 'Nessuna nota')
+    );
+    window.open('mailto:manbagacomics@gmail.com?subject=' + subject + '&body=' + body, '_self');
+}
+
+function _preorderSuccess(productId, btn) {
+    var panel = document.getElementById('preorder-form-' + productId);
+    if (panel) {
+        panel.innerHTML = '<div class="preorder-success">'
+            + '<div class="preorder-success-icon">&#10003;</div>'
+            + '<div class="preorder-success-title">Richiesta inviata!</div>'
+            + '<p class="preorder-success-msg">Ti contatteremo presto a conferma del preordine.<br>'
+            + '<strong>Grazie per la fiducia!</strong></p>'
+            + '</div>';
+    }
+    if (btn) { btn.disabled = false; }
 }
 
 /* ============================================================
@@ -262,10 +585,10 @@ function closeAdminModal() {
 }
 
 function _resetAdminView() {
-    var login = document.getElementById('admin-login');
-    var dash  = document.getElementById('admin-dashboard');
-    var logoutBtn = document.getElementById('admin-logout-btn');
-    var pwdInput  = document.getElementById('password-input');
+    var login    = document.getElementById('admin-login');
+    var dash     = document.getElementById('admin-dashboard');
+    var logoutBtn= document.getElementById('admin-logout-btn');
+    var pwdInput = document.getElementById('password-input');
 
     if (login)     login.classList.remove('hidden');
     if (dash)      dash.classList.add('hidden');
@@ -311,7 +634,6 @@ function switchAdminTab(tab, btn) {
    ADMIN — LOAD DATA
    ============================================================ */
 function loadAdminData() {
-    // Eventi
     var events = getEvents();
     var evList = document.getElementById('admin-events-list');
     if (evList) {
@@ -330,7 +652,6 @@ function loadAdminData() {
         }
     }
 
-    // Prodotti
     var products = getProducts();
     var prList = document.getElementById('admin-products-list');
     if (prList) {
@@ -423,7 +744,7 @@ function deleteAdminProduct(id) {
 }
 
 /* ============================================================
-   DEMO SEED — dati di esempio (verrà sostituito da Supabase)
+   DEMO SEED
    ============================================================ */
 var _DEMO_PRODUCTS = [
     {
@@ -479,9 +800,8 @@ var _DEMO_EVENTS = [
 ];
 
 function seedDemoData() {
-    var VERSION = 'v7';
+    var VERSION = 'v8';
     if (localStorage.getItem('manbaga-demo-seeded') === VERSION) return;
-    /* Forza aggiornamento demo: sovrascrive solo i record con id demo (9xxx / 8xxx) */
     var existingProducts = getProducts().filter(function (p) { return p.id < 9000; });
     var existingEvents   = getEvents().filter(function (e) { return e.id < 8000; });
     setProducts(existingProducts.concat(_DEMO_PRODUCTS));
@@ -502,7 +822,7 @@ document.addEventListener('DOMContentLoaded', function () {
    ZOOM IMMAGINE PRODOTTO (lightbox)
    ============================================================ */
 function zoomProductImage(src, alt) {
-    var lb = document.getElementById('img-lightbox');
+    var lb  = document.getElementById('img-lightbox');
     var img = document.getElementById('lightbox-img');
     if (!lb || !img) return;
     img.src = src;
@@ -522,17 +842,62 @@ function closeImageZoom() {
 }
 
 /* ============================================================
-   CONTATTI — FORM EMAIL
-   SOSTITUISCI "INSERIRE_TUA_EMAIL" con la tua email reale
+   CONTATTI — FORM EMAIL (con EmailJS o mailto: fallback)
    ============================================================ */
 function sendContactMail(e) {
     e.preventDefault();
 
-    var nome     = document.getElementById('contact-nome').value.trim();
-    var email    = document.getElementById('contact-email').value.trim();
-    var oggetto  = document.getElementById('contact-oggetto').value.trim();
-    var msg      = document.getElementById('contact-msg').value.trim();
+    var nome    = document.getElementById('contact-nome').value.trim();
+    var email   = document.getElementById('contact-email').value.trim();
+    var oggetto = document.getElementById('contact-oggetto').value.trim();
+    var msg     = document.getElementById('contact-msg').value.trim();
 
+    var btn = document.getElementById('contact-submit-btn');
+    var origHTML = btn ? btn.innerHTML : '';
+
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '…Invio in corso';
+    }
+
+    if (_emailjsReady) {
+        var subjectText = oggetto
+            ? oggetto + ' — Messaggio da ' + nome
+            : 'Messaggio dal sito MANBAGA — ' + nome;
+
+        /* 1) Notifica al negozio */
+        emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateContact, {
+            from_name:  nome,
+            from_email: email,
+            subject:    subjectText,
+            message:    msg,
+            reply_to:   email
+        })
+        .then(function () {
+            _contactSuccess(btn, origHTML);
+            /* 2) Autoreply al cliente — errori silenziosi, non bloccano l'UX */
+            emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateAutoreply, {
+                to_email:     email,
+                to_name:      nome,
+                orig_subject: subjectText,
+                orig_message: msg
+            }).catch(function (err) {
+                console.warn('Autoreply non inviato:', err);
+            });
+        })
+        .catch(function (err) {
+            console.error('EmailJS error:', err);
+            _contactMailtoFallback(nome, email, oggetto, msg);
+            _contactSuccess(btn, origHTML);
+        });
+    } else {
+        /* Fallback mailto: */
+        _contactMailtoFallback(nome, email, oggetto, msg);
+        _contactSuccess(btn, origHTML);
+    }
+}
+
+function _contactMailtoFallback(nome, email, oggetto, msg) {
     var subjectText = oggetto
         ? oggetto + ' — Messaggio da ' + nome
         : 'Messaggio dal sito MANBAGA — ' + nome;
@@ -543,18 +908,20 @@ function sendContactMail(e) {
         'Email risposta: ' + email + '\r\n\r\n' +
         'Messaggio:\r\n' + msg
     );
+    window.open('mailto:manbagacomics@gmail.com?subject=' + subject + '&body=' + body, '_self');
+}
 
-    /* ⬇ SOSTITUISCI con la tua email reale */
-    window.open('mailto:INSERIRE_TUA_EMAIL@gmail.com?subject=' + subject + '&body=' + body, '_self');
+function _contactSuccess(btn, origHTML) {
+    if (!btn) return;
+    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Messaggio inviato!';
+    setTimeout(function () {
+        btn.innerHTML = origHTML;
+        btn.disabled  = false;
 
-    var btn = document.getElementById('contact-submit-btn');
-    if (btn) {
-        var orig = btn.innerHTML;
-        btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Client email aperto!';
-        btn.disabled = true;
-        setTimeout(function () {
-            btn.innerHTML = orig;
-            btn.disabled = false;
-        }, 3500);
-    }
+        /* Reset form */
+        ['contact-nome','contact-email','contact-oggetto','contact-msg'].forEach(function (id) {
+            var el = document.getElementById(id);
+            if (el) el.value = '';
+        });
+    }, 3500);
 }
