@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#080808">
+    <title>Prenota il tuo tavolo — MANBAGA Comics &amp; Games</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+
+    <style>
+    /* ─── RESET ─────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+        --bg:        #080808;
+        --bg2:       #0f0f0f;
+        --bg3:       #161616;
+        --border:    rgba(255,255,255,0.07);
+        --red:       #DC2626;
+        --red-glow:  rgba(220,38,38,0.25);
+        --green:     #22c55e;
+        --green-glow:rgba(34,197,94,0.22);
+        --white:     #f5f0e8;
+        --gray:      rgba(255,255,255,0.35);
+        --font:      'Inter', sans-serif;
+        --comic:     'Bangers', cursive;
+        --nav-h:     64px;
+        --ease:      cubic-bezier(0.19, 1, 0.22, 1);
+        --bounce:    cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+        font-family: var(--font);
+        background: var(--bg);
+        color: var(--white);
+        min-height: 100vh;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .hidden { display: none !important; }
+
+    /* ─── TOAST ─────────────────────────────────────────────── */
+    #toast-wrap {
+        position: fixed;
+        top: calc(var(--nav-h) + 14px);
+        right: 18px;
+        z-index: 9000;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        pointer-events: none;
+        max-width: 360px;
+        width: calc(100vw - 36px);
+    }
+
+    .toast {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 13px 18px;
+        background: #1a1a1a;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--white);
+        pointer-events: auto;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+        animation: tIn .32s var(--bounce) forwards;
+        letter-spacing: .02em;
+        line-height: 1.4;
+        border-left: 3px solid rgba(255,255,255,.12);
+    }
+    .toast.out { animation: tOut .26s ease forwards; }
+    .toast--ok   { border-left-color: var(--green); }
+    .toast--err  { border-left-color: var(--red); }
+    .toast--info { border-left-color: #3b82f6; }
+    .toast-icon  { font-size: 15px; flex-shrink: 0; }
+
+    @keyframes tIn  { from { transform: translateX(calc(100% + 20px)); opacity: 0; } to { transform: none; opacity: 1; } }
+    @keyframes tOut { from { transform: none; opacity: 1; max-height: 80px; } to { transform: translateX(calc(100% + 20px)); opacity: 0; max-height: 0; padding: 0; margin: 0; } }
+
+    /* ─── HEADER ─────────────────────────────────────────────── */
+    #header {
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        height: var(--nav-h);
+        background: rgba(8,8,8,.95);
+        backdrop-filter: blur(14px);
+        border-bottom: 1px solid rgba(220,38,38,.35);
+        z-index: 800;
+        display: flex;
+        align-items: center;
+        padding: 0 28px;
+        gap: 24px;
+        justify-content: space-between;
+    }
+
+    .header-logo {
+        font-family: var(--comic);
+        font-size: 26px;
+        letter-spacing: .06em;
+        color: var(--white);
+        text-decoration: none;
+        flex-shrink: 0;
+    }
+    .header-logo span { color: var(--red); }
+
+    .header-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .15em;
+        text-transform: uppercase;
+        color: var(--gray);
+        text-decoration: none;
+        transition: color .2s;
+    }
+    .header-back:hover { color: var(--white); }
+
+    #header-user {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    #header-nome {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .18em;
+        text-transform: uppercase;
+        color: var(--red);
+    }
+
+    .btn-logout {
+        background: none;
+        border: 1px solid rgba(255,255,255,.1);
+        color: var(--gray);
+        font-family: var(--font);
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: .15em;
+        text-transform: uppercase;
+        padding: 6px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all .2s;
+    }
+    .btn-logout:hover { border-color: var(--red); color: var(--red); }
+
+    /* ─── MAIN ───────────────────────────────────────────────── */
+    main {
+        padding-top: var(--nav-h);
+        min-height: 100vh;
+    }
+
+    .page-inner {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 52px 24px 80px;
+    }
+
+    /* Page heading */
+    .page-label {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: .42em;
+        text-transform: uppercase;
+        color: var(--red);
+        margin-bottom: 10px;
+    }
+
+    .page-title {
+        font-family: var(--comic);
+        font-size: clamp(52px, 9vw, 90px);
+        line-height: .92;
+        letter-spacing: .02em;
+        color: var(--white);
+        margin-bottom: 40px;
+    }
+    .page-title span { color: var(--red); }
+
+    /* ─── AUTH CARD ──────────────────────────────────────────── */
+    #auth-screen {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: calc(100vh - var(--nav-h));
+    }
+
+    .auth-card {
+        width: 100%;
+        max-width: 400px;
+        padding: 44px 40px;
+        background: var(--bg2);
+        border: 1px solid rgba(220,38,38,.18);
+        border-radius: 10px;
+        box-shadow: 0 24px 64px rgba(0,0,0,.55);
+    }
+
+    .auth-head {
+        text-align: center;
+        margin-bottom: 32px;
+    }
+
+    .auth-eyebrow {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: .42em;
+        text-transform: uppercase;
+        color: var(--red);
+        margin-bottom: 12px;
+    }
+
+    .auth-logo {
+        font-family: var(--comic);
+        font-size: 38px;
+        letter-spacing: .06em;
+        color: var(--white);
+    }
+    .auth-logo span { color: var(--red); }
+
+    .auth-fields {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .field-input {
+        width: 100%;
+        padding: 12px 15px;
+        background: rgba(255,255,255,.05);
+        border: 1px solid rgba(255,255,255,.1);
+        border-radius: 5px;
+        color: var(--white);
+        font-family: var(--font);
+        font-size: 14px;
+        outline: none;
+        transition: border-color .2s, background .2s;
+    }
+    .field-input::placeholder { color: rgba(255,255,255,.22); }
+    .field-input:focus { border-color: var(--red); background: rgba(255,255,255,.07); }
+
+    .btn-primary {
+        width: 100%;
+        padding: 13px;
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        border: none;
+        border-radius: 5px;
+        color: #fff;
+        font-family: var(--font);
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: .22em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all .2s;
+        margin-top: 4px;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(220,38,38,.4); }
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-toggle {
+        background: none;
+        border: none;
+        color: rgba(255,255,255,.28);
+        font-family: var(--font);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        cursor: pointer;
+        padding: 4px 0;
+        text-align: center;
+        transition: color .2s;
+    }
+    .btn-toggle:hover { color: var(--red); }
+
+    /* ─── APP ────────────────────────────────────────────────── */
+    #app-screen { display: none; }
+    #app-screen.visible { display: block; }
+
+    /* Stats bar */
+    .stats-bar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 20px;
+        background: var(--bg2);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+    }
+
+    .stat-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        padding: 6px 16px;
+        border-radius: 30px;
+    }
+    .stat-pill::before {
+        content: '';
+        width: 7px; height: 7px;
+        border-radius: 50%;
+        animation: pulse 2s ease infinite;
+    }
+    .stat-pill--free   { background: rgba(34,197,94,.1); color: var(--green); border: 1px solid rgba(34,197,94,.2); }
+    .stat-pill--free::before { background: var(--green); box-shadow: 0 0 8px var(--green); }
+    .stat-pill--occ    { background: rgba(220,38,38,.1); color: var(--red); border: 1px solid rgba(220,38,38,.2); }
+    .stat-pill--occ::before  { background: var(--red); box-shadow: 0 0 8px var(--red); }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50%       { opacity: .4; }
+    }
+
+    .stats-spacer { flex: 1; }
+
+    /* Tabs */
+    .tabs {
+        display: flex;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 30px;
+        gap: 0;
+    }
+
+    .tab-btn {
+        background: none;
+        border: none;
+        border-bottom: 2px solid transparent;
+        padding: 11px 24px 14px;
+        font-family: var(--font);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .2em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,.3);
+        cursor: pointer;
+        transition: all .2s;
+        margin-bottom: -1px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .tab-btn:hover { color: rgba(255,255,255,.65); }
+    .tab-btn.active { color: var(--white); border-bottom-color: var(--red); }
+
+    .tab-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 20px;
+        height: 18px;
+        padding: 0 6px;
+        background: var(--red);
+        color: #fff;
+        font-size: 10px;
+        font-weight: 800;
+        border-radius: 10px;
+        line-height: 1;
+    }
+
+    /* ─── TABLES GRID ────────────────────────────────────────── */
+    #grid-tavoli {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+    }
+
+    /* ─── TABLE CARD ─────────────────────────────────────────── */
+    .t-card {
+        position: relative;
+        background: var(--bg2);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 24px 16px 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        transition: transform .25s var(--ease), border-color .25s, box-shadow .25s, background .25s;
+        min-height: 220px;
+    }
+
+    .t-card--free {
+        cursor: pointer;
+    }
+    .t-card--free:hover {
+        transform: translateY(-5px);
+        border-color: rgba(34,197,94,.45);
+        background: rgba(34,197,94,.04);
+        box-shadow: 0 12px 34px rgba(34,197,94,.13), 0 0 0 1px rgba(34,197,94,.18);
+    }
+
+    .t-card--occ {
+        border-color: rgba(220,38,38,.28);
+        background: rgba(220,38,38,.04);
+        cursor: default;
+    }
+
+    /* Status ribbon */
+    .t-ribbon {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        font-size: 8px;
+        font-weight: 900;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+        padding: 4px 9px;
+        border-radius: 20px;
+    }
+    .t-ribbon--free { background: rgba(34,197,94,.15); color: var(--green); border: 1px solid rgba(34,197,94,.3); }
+    .t-ribbon--occ  { background: rgba(220,38,38,.18); color: var(--red);   border: 1px solid rgba(220,38,38,.35); }
+
+    /* Restaurant table top-view */
+    .t-visual {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+    }
+
+    /* Seats row (top / bottom) */
+    .seats-row {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+    }
+
+    /* Individual seat */
+    .seat {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.1);
+        border: 1px solid rgba(255,255,255,.08);
+        transition: background .25s, box-shadow .25s;
+        flex-shrink: 0;
+    }
+
+    /* Seat filled states */
+    .seat--taken-free  { background: rgba(34,197,94,.55);  border-color: rgba(34,197,94,.6); }
+    .seat--taken-occ   { background: rgba(220,38,38,.55);  border-color: rgba(220,38,38,.6); }
+    .seat--preview     { background: rgba(34,197,94,.3);   border-color: rgba(34,197,94,.4); }
+
+    .t-card--free:hover .seat.seat--empty { background: rgba(34,197,94,.2); }
+
+    /* Table top */
+    .t-top {
+        width: 90px;
+        height: 54px;
+        border-radius: 12px;
+        background: rgba(255,255,255,.06);
+        border: 1px solid rgba(255,255,255,.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all .25s;
+        position: relative;
+    }
+    .t-card--free:hover .t-top {
+        background: rgba(34,197,94,.1);
+        border-color: rgba(34,197,94,.3);
+    }
+    .t-card--occ .t-top {
+        background: rgba(220,38,38,.1);
+        border-color: rgba(220,38,38,.3);
+    }
+
+    .t-num {
+        font-family: var(--comic);
+        font-size: 28px;
+        letter-spacing: .04em;
+        color: rgba(255,255,255,.35);
+        line-height: 1;
+        transition: color .25s;
+    }
+    .t-card--free:hover .t-num { color: var(--green); }
+    .t-card--occ .t-num         { color: var(--red); }
+
+    /* Seat count indicator in corner of table */
+    .t-seats-count {
+        position: absolute;
+        bottom: -8px;
+        right: -8px;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        font-weight: 800;
+        color: #fff;
+        line-height: 1;
+    }
+    .t-seats-count--free { background: var(--green); }
+    .t-seats-count--occ  { background: var(--red); }
+
+    /* Info section below visual */
+    .t-info {
+        text-align: center;
+        width: 100%;
+    }
+
+    .t-cta {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: .2em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,.18);
+        transition: color .25s;
+        display: block;
+    }
+    .t-card--free:hover .t-cta { color: var(--green); }
+
+    .t-guest-name {
+        display: block;
+        font-size: 14px;
+        font-weight: 800;
+        color: var(--white);
+        letter-spacing: .04em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
+
+    .t-guest-meta {
+        display: block;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--gray);
+        margin-top: 3px;
+        letter-spacing: .06em;
+    }
+
+    .t-guest-people {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--red);
+        margin-top: 5px;
+    }
+
+    /* ─── LISTA PRENOTAZIONI ─────────────────────────────────── */
+    #lista-mie {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .pren-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 18px 22px;
+        background: var(--bg2);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--red);
+        border-radius: 6px;
+        transition: background .2s;
+    }
+    .pren-row:hover { background: var(--bg3); }
+
+    .pren-main { display: flex; flex-direction: column; gap: 3px; }
+
+    .pren-table {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: .3em;
+        text-transform: uppercase;
+        color: var(--red);
+    }
+
+    .pren-name {
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--white);
+    }
+
+    .pren-meta {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--gray);
+        letter-spacing: .06em;
+    }
+
+    .pren-people-dots {
+        display: flex;
+        gap: 5px;
+        margin-top: 5px;
+    }
+
+    .pren-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.08);
+        border: 1px solid rgba(255,255,255,.06);
+    }
+    .pren-dot.filled { background: var(--red); border-color: rgba(220,38,38,.6); }
+
+    .btn-del {
+        flex-shrink: 0;
+        width: 38px; height: 38px;
+        border-radius: 6px;
+        border: 1px solid rgba(220,38,38,.25);
+        background: rgba(220,38,38,.08);
+        color: var(--red);
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all .2s;
+    }
+    .btn-del:hover { background: var(--red); color: #fff; transform: scale(1.05); }
+
+    .empty-msg {
+        text-align: center;
+        padding: 64px 0;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .38em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,.15);
+    }
+
+    /* ─── MODAL PRENOTAZIONE ─────────────────────────────────── */
+    #modal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 4000;
+        background: rgba(0,0,0,.82);
+        backdrop-filter: blur(10px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .modal-box {
+        width: 100%;
+        max-width: 400px;
+        background: #111;
+        border: 1px solid rgba(220,38,38,.22);
+        border-radius: 12px;
+        overflow: hidden;
+        animation: mIn .3s var(--bounce);
+    }
+
+    @keyframes mIn {
+        from { transform: scale(.88) translateY(24px); opacity: 0; }
+        to   { transform: none; opacity: 1; }
+    }
+
+    .modal-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        padding: 22px 26px 18px;
+        border-bottom: 1px solid rgba(255,255,255,.05);
+        background: rgba(220,38,38,.05);
+    }
+
+    .modal-eyebrow {
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: .45em;
+        text-transform: uppercase;
+        color: var(--red);
+        margin-bottom: 6px;
+    }
+
+    .modal-title {
+        font-family: var(--comic);
+        font-size: 30px;
+        color: var(--white);
+        letter-spacing: .05em;
+        line-height: 1;
+    }
+
+    .modal-close {
+        background: none;
+        border: none;
+        color: rgba(255,255,255,.3);
+        font-size: 18px;
+        cursor: pointer;
+        padding: 2px;
+        line-height: 1;
+        margin-top: 4px;
+        transition: color .2s;
+    }
+    .modal-close:hover { color: var(--red); }
+
+    .modal-body {
+        padding: 26px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .field-label {
+        display: block;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: .22em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,.4);
+        margin-bottom: 8px;
+    }
+
+    /* Time row (arrival + departure side by side) */
+    .time-row {
+        display: flex;
+        align-items: flex-end;
+        gap: 10px;
+    }
+    .time-row > div { flex: 1; }
+    .time-arrow {
+        font-size: 18px;
+        color: rgba(255,255,255,.2);
+        padding-bottom: 10px;
+        flex-shrink: 0;
+    }
+
+    /* Time range badge on card */
+    .t-time-range {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 11px;
+        font-weight: 700;
+        color: rgba(255,255,255,.45);
+        letter-spacing: .04em;
+        margin-top: 2px;
+    }
+    .t-time-range .t-arr { color: rgba(255,255,255,.55); }
+    .t-time-range .t-sep { color: rgba(220,38,38,.6); font-size: 13px; }
+    .t-time-range .t-usc { color: var(--red); }
+
+    /* Expiry countdown */
+    .t-expire-soon {
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        color: #f59e0b;
+        margin-top: 3px;
+        animation: pulse 1s ease infinite;
+    }
+
+    /* People selector */
+    .people-selector {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+    }
+
+    .people-btn {
+        aspect-ratio: 1;
+        background: rgba(255,255,255,.05);
+        border: 1px solid rgba(255,255,255,.1);
+        border-radius: 8px;
+        color: rgba(255,255,255,.5);
+        font-family: var(--font);
+        font-size: 18px;
+        font-weight: 800;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        transition: all .18s;
+        padding: 10px 0;
+    }
+
+    .people-btn .people-icon {
+        font-size: 13px;
+        display: flex;
+        gap: 2px;
+        line-height: 1;
+    }
+
+    .people-btn:hover {
+        background: rgba(220,38,38,.1);
+        border-color: rgba(220,38,38,.3);
+        color: var(--white);
+    }
+
+    .people-btn.selected {
+        background: rgba(220,38,38,.18);
+        border-color: var(--red);
+        color: var(--white);
+        box-shadow: 0 0 0 2px rgba(220,38,38,.25);
+    }
+
+    .modal-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 4px;
+    }
+
+    .btn-cancel {
+        flex: 1;
+        padding: 13px;
+        background: rgba(255,255,255,.04);
+        border: 1px solid rgba(255,255,255,.1);
+        border-radius: 5px;
+        color: var(--gray);
+        font-family: var(--font);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: .15em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all .2s;
+    }
+    .btn-cancel:hover { border-color: rgba(255,255,255,.25); color: var(--white); }
+
+    .btn-confirm {
+        flex: 1;
+        padding: 13px;
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        border: none;
+        border-radius: 5px;
+        color: #fff;
+        font-family: var(--font);
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: .15em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all .2s;
+    }
+    .btn-confirm:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(220,38,38,.4); }
+    .btn-confirm:disabled { opacity: .45; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    /* ─── RESPONSIVE ─────────────────────────────────────────── */
+    @media (max-width: 700px) {
+        #grid-tavoli { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .page-inner  { padding: 36px 16px 60px; }
+        .auth-card   { padding: 32px 24px; }
+        .tab-btn     { padding: 10px 14px 13px; font-size: 10px; }
+    }
+
+    @media (max-width: 400px) {
+        #grid-tavoli { grid-template-columns: 1fr 1fr; gap: 10px; }
+        .t-card      { min-height: 190px; padding: 18px 12px 16px; }
+    }
+
+    /* ─── GRAIN overlay ──────────────────────────────────────── */
+    body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+        pointer-events: none;
+        z-index: 0;
+        opacity: .5;
+    }
+
+    main, #header { position: relative; z-index: 1; }
+    </style>
+</head>
+<body>
+
+<!-- Toast -->
+<div id="toast-wrap" aria-live="polite"></div>
+
+<!-- Header -->
+<header id="header">
+    <a href="index.html" class="header-logo">MAN<span>B</span>AGA<span style="opacity:.4">.</span></a>
+    <a href="index.html" class="header-back">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+            <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+        </svg>
+        Torna al sito
+    </a>
+    <div id="header-user" class="hidden">
+        <span id="header-nome"></span>
+        <button onclick="doLogout()" class="btn-logout">Esci</button>
+    </div>
+</header>
+
+<main>
+    <div class="page-inner">
+
+        <!-- Titolo pagina -->
+        <div class="page-label">テーブル予約 &mdash; Prenota il tuo posto</div>
+        <h1 class="page-title">PRENOTA<br>IL TUO <span>TAVOLO</span></h1>
+
+        <!-- ── AUTH ─────────────────────────────────────────── -->
+        <div id="auth-screen">
+            <div class="auth-card">
+                <div class="auth-head">
+                    <p id="auth-eyebrow" class="auth-eyebrow">Accedi per prenotare</p>
+                    <div class="auth-logo">MAN<span>B</span>AGA</div>
+                </div>
+                <div class="auth-fields">
+                    <input type="text" id="reg-nome" class="field-input hidden" placeholder="IL TUO NOME" autocomplete="name">
+                    <input type="email" id="auth-email" class="field-input" placeholder="Email" autocomplete="email">
+                    <input type="password" id="auth-pass" class="field-input" placeholder="Password"
+                           autocomplete="current-password"
+                           onkeypress="if(event.key==='Enter')doAuth()">
+                    <button id="auth-btn" onclick="doAuth()" class="btn-primary">ACCEDI</button>
+                    <button id="auth-toggle" onclick="toggleMode()" class="btn-toggle">
+                        Non hai un account? Registrati
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── APP ──────────────────────────────────────────── -->
+        <div id="app-screen">
+
+            <!-- Stats bar -->
+            <div class="stats-bar">
+                <span class="stat-pill stat-pill--free">
+                    <span id="n-liberi">0</span>&nbsp;Liberi
+                </span>
+                <span class="stat-pill stat-pill--occ">
+                    <span id="n-occ">0</span>&nbsp;Occupati
+                </span>
+                <span class="stats-spacer"></span>
+                <span style="font-size:11px;font-weight:600;color:rgba(255,255,255,.28);letter-spacing:.08em">
+                    6 tavoli &middot; max 4 posti
+                </span>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('mappa', this)">Mappa Tavoli</button>
+                <button class="tab-btn" onclick="switchTab('lista', this)">
+                    Le Mie Prenotazioni
+                    <span class="tab-badge" id="badge-count">0</span>
+                </button>
+            </div>
+
+            <!-- Mappa -->
+            <div id="view-mappa">
+                <div id="grid-tavoli"></div>
+            </div>
+
+            <!-- Lista -->
+            <div id="view-lista" class="hidden">
+                <div id="lista-mie"></div>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<!-- Modal prenotazione -->
+<div id="modal-overlay" class="hidden" onclick="if(event.target===this)closeModal()">
+    <div class="modal-box" role="dialog" aria-modal="true" aria-label="Prenota tavolo">
+        <div class="modal-head">
+            <div>
+                <p class="modal-eyebrow">Nuova Prenotazione</p>
+                <h2 id="modal-title" class="modal-title">TAVOLO 1</h2>
+            </div>
+            <button class="modal-close" onclick="closeModal()" aria-label="Chiudi">&#10005;</button>
+        </div>
+        <div class="modal-body">
+
+            <div>
+                <label class="field-label" for="p-nome">Nome Prenotazione</label>
+                <input type="text" id="p-nome" class="field-input" placeholder="Es. Mario Rossi"
+                       onkeypress="if(event.key==='Enter')document.getElementById('p-ora').focus()">
+            </div>
+
+            <div class="time-row">
+                <div>
+                    <label class="field-label" for="p-ora">Orario di Arrivo</label>
+                    <input type="time" id="p-ora" class="field-input">
+                </div>
+                <div class="time-arrow" aria-hidden="true">&#8594;</div>
+                <div>
+                    <label class="field-label" for="p-uscita">Orario di Uscita</label>
+                    <input type="time" id="p-uscita" class="field-input">
+                </div>
+            </div>
+
+            <div>
+                <label class="field-label">Numero di Persone</label>
+                <div class="people-selector" id="people-selector">
+                    <button class="people-btn" onclick="selectPeople(1)" data-n="1">
+                        <span class="people-icon">&#128100;</span>
+                        <span>1</span>
+                    </button>
+                    <button class="people-btn" onclick="selectPeople(2)" data-n="2">
+                        <span class="people-icon">&#128100;&#128100;</span>
+                        <span>2</span>
+                    </button>
+                    <button class="people-btn" onclick="selectPeople(3)" data-n="3">
+                        <span class="people-icon">&#128100;&#128100;&#128100;</span>
+                        <span>3</span>
+                    </button>
+                    <button class="people-btn" onclick="selectPeople(4)" data-n="4">
+                        <span class="people-icon">&#128100;&#128100;&#128100;&#128100;</span>
+                        <span>4</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button onclick="closeModal()" class="btn-cancel">Annulla</button>
+                <button onclick="submitPren()" class="btn-confirm" id="confirm-btn">Prenota</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+/* ── FIREBASE ─────────────────────────────────────────────── */
+const FB_CONFIG = {
+    apiKey:      'AIzaSyCG0-J2wxZGSz6eDh_E-aAe2uvpTGLmXz0',
+    authDomain:  'prenotazioninegozio-65eb1.firebaseapp.com',
+    projectId:   'prenotazioninegozio-65eb1',
+    databaseURL: 'https://prenotazioninegozio-65eb1-default-rtdb.europe-west1.firebasedatabase.app',
+    appId:       '1:466874129336:web:fd07925523c35921fe8d4d'
+};
+
+firebase.initializeApp(FB_CONFIG);
+const auth = firebase.auth();
+const db   = firebase.database();
+
+/* ── STATE ───────────────────────────────────────────────── */
+let selectedTavolo = null;
+let selectedPeople = null;
+let isReg = false;
+
+/* ── TOAST ───────────────────────────────────────────────── */
+function toast(msg, type = 'info') {
+    const wrap = document.getElementById('toast-wrap');
+    const icons = { ok: '✓', err: '✕', info: 'ℹ' };
+    const el = document.createElement('div');
+    el.className = `toast toast--${type}`;
+    el.setAttribute('role', 'alert');
+    el.innerHTML = `<span class="toast-icon">${icons[type] || icons.info}</span><span>${msg}</span>`;
+    wrap.appendChild(el);
+    setTimeout(() => {
+        el.classList.add('out');
+        setTimeout(() => el.remove(), 280);
+    }, 3700);
+}
+
+/* ── AUTH ────────────────────────────────────────────────── */
+function toggleMode() {
+    isReg = !isReg;
+    document.getElementById('reg-nome').classList.toggle('hidden', !isReg);
+    document.getElementById('auth-eyebrow').textContent = isReg ? 'Crea il tuo account' : 'Accedi per prenotare';
+    document.getElementById('auth-btn').textContent     = isReg ? 'REGISTRATI' : 'ACCEDI';
+    document.getElementById('auth-toggle').textContent  = isReg ? 'Hai già un account? Accedi' : 'Non hai un account? Registrati';
+}
+
+function doAuth() {
+    const email = (document.getElementById('auth-email').value || '').trim();
+    const pass  = document.getElementById('auth-pass').value || '';
+    if (!email || !pass) { toast('Inserisci email e password.', 'err'); return; }
+
+    if (isReg) {
+        const nome = (document.getElementById('reg-nome').value || '').trim();
+        if (!nome) { toast('Inserisci il tuo nome.', 'err'); return; }
+        auth.createUserWithEmailAndPassword(email, pass)
+            .then(r => db.ref('utenti/' + r.user.uid).set({ nome }))
+            .then(() => toast('Account creato! Benvenuto.', 'ok'))
+            .catch(e => toast(e.message, 'err'));
+    } else {
+        auth.signInWithEmailAndPassword(email, pass)
+            .then(() => toast('Accesso effettuato!', 'ok'))
+            .catch(() => toast('Credenziali non valide. Riprova.', 'err'));
+    }
+}
+
+function doLogout() {
+    auth.signOut().then(() => toast('Disconnesso.', 'info')).catch(() => {});
+}
+
+/* ── AUTH STATE ──────────────────────────────────────────── */
+auth.onAuthStateChanged(user => {
+    const authEl   = document.getElementById('auth-screen');
+    const appEl    = document.getElementById('app-screen');
+    const userEl   = document.getElementById('header-user');
+    const nomeEl   = document.getElementById('header-nome');
+
+    if (user) {
+        authEl.style.display = 'none';
+        appEl.classList.add('visible');
+        userEl.classList.remove('hidden');
+
+        db.ref('utenti/' + user.uid).once('value', snap => {
+            const nome = snap.val()?.nome || user.email;
+            if (nomeEl) nomeEl.textContent = nome;
+        });
+
+        db.ref('prenotazioni').on('value', snap => render(snap.val() || {}));
+    } else {
+        authEl.style.display = 'flex';
+        appEl.classList.remove('visible');
+        userEl.classList.add('hidden');
+    }
+});
+
+/* ── RENDER ──────────────────────────────────────────────── */
+function render(data) {
+    if (!auth.currentUser) return;
+    const all = Object.values(data);
+    autoCleanExpired(all);
+    let liberi = 0, occ = 0;
+
+    /* Grid */
+    const grid = document.getElementById('grid-tavoli');
+    grid.innerHTML = '';
+
+    for (let i = 1; i <= 6; i++) {
+        const p = all.find(x => String(x.tavolo) === String(i));
+        const card = document.createElement('div');
+
+        if (p) {
+            occ++;
+            card.className = 't-card t-card--occ';
+            card.innerHTML = buildOcc(i, p);
+        } else {
+            liberi++;
+            card.className = 't-card t-card--free';
+            card.onclick = () => openModal(i);
+            card.innerHTML = buildFree(i);
+        }
+        grid.appendChild(card);
+    }
+
+    document.getElementById('n-liberi').textContent = liberi;
+    document.getElementById('n-occ').textContent    = occ;
+
+    /* Lista mie */
+    const uid  = auth.currentUser.uid;
+    const mie  = all.filter(x => x.utenteId === uid);
+    document.getElementById('badge-count').textContent = mie.length;
+
+    const lista = document.getElementById('lista-mie');
+    if (mie.length === 0) {
+        lista.innerHTML = '<p class="empty-msg">Nessuna prenotazione attiva</p>';
+    } else {
+        lista.innerHTML = mie.map(x => {
+            const n    = Number(x.persone) || 1;
+            const dots = [1,2,3,4].map(d =>
+                `<span class="pren-dot${d <= n ? ' filled' : ''}"></span>`
+            ).join('');
+            const timeStr = x.orarioUscita
+                ? `${esc(x.orario)} &rarr; ${esc(x.orarioUscita)}`
+                : `ore ${esc(x.orario)}`;
+            const soon = x.orarioUscita ? isExpiringSoon(x.orarioUscita) : false;
+            return `<div class="pren-row">
+                <div class="pren-main">
+                    <span class="pren-table">Tavolo ${x.tavolo}</span>
+                    <span class="pren-name">${esc(x.nome)}</span>
+                    <span class="pren-meta">${timeStr}</span>
+                    <div class="pren-people-dots">${dots}</div>
+                    ${soon ? '<span class="t-expire-soon" style="margin-top:4px">⏱ In scadenza</span>' : ''}
+                </div>
+                <button class="btn-del" onclick="delPren('${x.id}')" title="Cancella" aria-label="Cancella prenotazione">&#10005;</button>
+            </div>`;
+        }).join('');
+    }
+}
+
+/* ── CARD BUILDERS ───────────────────────────────────────── */
+function seats(n, type) {
+    // 4 seat positions: top-left, top-right, bottom-left, bottom-right
+    // fill first n seats
+    const filled = (idx) => idx < n;
+    const cls    = (idx) => filled(idx) ? `seat seat--taken-${type}` : 'seat seat--empty';
+    return `
+        <div class="seats-row">
+            <span class="${cls(0)}"></span>
+            <span class="${cls(1)}"></span>
+        </div>`;
+}
+
+function seatsBottom(n, type, offset = 2) {
+    const filled = (idx) => idx < n;
+    const cls    = (idx) => filled(idx + offset) ? `seat seat--taken-${type}` : 'seat seat--empty';
+    return `
+        <div class="seats-row">
+            <span class="${cls(0)}"></span>
+            <span class="${cls(1)}"></span>
+        </div>`;
+}
+
+function buildFree(num) {
+    return `
+        <span class="t-ribbon t-ribbon--free">LIBERO</span>
+        <div class="t-visual">
+            ${seats(0, 'free')}
+            <div class="t-top">
+                <span class="t-num">${num}</span>
+                <span class="t-seats-count t-seats-count--free" title="Posti disponibili">4</span>
+            </div>
+            ${seatsBottom(0, 'free')}
+        </div>
+        <div class="t-info">
+            <span class="t-cta">Tocca per prenotare</span>
+        </div>`;
+}
+
+function buildOcc(num, p) {
+    const n      = Number(p.persone) || 1;
+    const uscita = p.orarioUscita || '';
+    const soon   = uscita ? isExpiringSoon(uscita) : false;
+    const timeHtml = uscita
+        ? `<span class="t-time-range">
+               <span class="t-arr">${esc(p.orario)}</span>
+               <span class="t-sep">&#8594;</span>
+               <span class="t-usc">${esc(uscita)}</span>
+           </span>`
+        : `<span class="t-guest-meta">ore ${esc(p.orario)}</span>`;
+
+    return `
+        <span class="t-ribbon t-ribbon--occ">OCCUPATO</span>
+        <div class="t-visual">
+            ${seats(n, 'occ')}
+            <div class="t-top">
+                <span class="t-num">${num}</span>
+                <span class="t-seats-count t-seats-count--occ" title="${n} persone">${n}</span>
+            </div>
+            ${seatsBottom(n, 'occ')}
+        </div>
+        <div class="t-info">
+            <span class="t-guest-name">${esc(p.nome)}</span>
+            ${timeHtml}
+            <span class="t-guest-people">${'👤'.repeat(n)} &nbsp;${n} ${n === 1 ? 'persona' : 'persone'}</span>
+            ${soon ? '<span class="t-expire-soon">⏱ In scadenza</span>' : ''}
+        </div>`;
+}
+
+function esc(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ── MODAL ───────────────────────────────────────────────── */
+function openModal(num) {
+    selectedTavolo = num;
+    selectedPeople = null;
+    document.getElementById('modal-title').textContent = 'TAVOLO ' + num;
+    document.getElementById('p-nome').value   = '';
+    document.getElementById('p-ora').value    = '';
+    document.getElementById('p-uscita').value = '';
+    document.querySelectorAll('.people-btn').forEach(b => b.classList.remove('selected'));
+    document.getElementById('modal-overlay').classList.remove('hidden');
+    setTimeout(() => document.getElementById('p-nome').focus(), 60);
+}
+
+function closeModal() {
+    document.getElementById('modal-overlay').classList.add('hidden');
+    selectedTavolo = null;
+    selectedPeople = null;
+}
+
+function selectPeople(n) {
+    selectedPeople = n;
+    document.querySelectorAll('.people-btn').forEach(b => {
+        b.classList.toggle('selected', Number(b.dataset.n) === n);
+    });
+}
+
+function submitPren() {
+    const nome   = (document.getElementById('p-nome').value   || '').trim();
+    const ora    = (document.getElementById('p-ora').value    || '').trim();
+    const uscita = (document.getElementById('p-uscita').value || '').trim();
+
+    if (!nome)           { toast('Inserisci il nome per la prenotazione.', 'err'); return; }
+    if (!ora)            { toast('Inserisci l\'orario di arrivo.', 'err'); return; }
+    if (!uscita)         { toast('Inserisci l\'orario di uscita.', 'err'); return; }
+    if (uscita <= ora)   { toast('L\'orario di uscita deve essere dopo l\'arrivo.', 'err'); return; }
+    if (!selectedPeople) { toast('Seleziona il numero di persone.', 'err'); return; }
+    if (!selectedTavolo) return;
+
+    const btn = document.getElementById('confirm-btn');
+    btn.disabled = true;
+    btn.textContent = 'Salvataggio...';
+
+    const id = Date.now();
+    db.ref('prenotazioni/' + id).set({
+        id,
+        tavolo:        selectedTavolo,
+        nome,
+        orario:        ora,
+        orarioUscita:  uscita,
+        persone:       selectedPeople,
+        utenteId:      auth.currentUser.uid
+    })
+    .then(() => {
+        closeModal();
+        toast(`Tavolo ${selectedTavolo} prenotato per ${nome} (${ora} → ${uscita})!`, 'ok');
+    })
+    .catch(() => toast('Errore. Verifica le regole del database Firebase.', 'err'))
+    .finally(() => {
+        btn.disabled = false;
+        btn.textContent = 'Prenota';
+    });
+}
+
+function delPren(id) {
+    if (!confirm('Cancellare questa prenotazione?')) return;
+    db.ref('prenotazioni/' + id).remove()
+        .then(() => toast('Prenotazione cancellata.', 'info'))
+        .catch(() => toast('Errore durante la cancellazione.', 'err'));
+}
+
+/* ── TABS ────────────────────────────────────────────────── */
+function switchTab(tab, btn) {
+    document.getElementById('view-mappa').classList.toggle('hidden', tab !== 'mappa');
+    document.getElementById('view-lista').classList.toggle('hidden', tab !== 'lista');
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+}
+
+/* ── AUTO-SCADENZA ───────────────────────────────────────── */
+function nowHHMM() {
+    const d = new Date();
+    return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+}
+
+function isExpiringSoon(orarioUscita) {
+    // Avvisa se mancano ≤ 15 minuti all'uscita
+    const now = nowHHMM();
+    if (orarioUscita <= now) return false; // già scaduta (verrà rimossa)
+    const [nh, nm] = now.split(':').map(Number);
+    const [uh, um] = orarioUscita.split(':').map(Number);
+    const diff = (uh * 60 + um) - (nh * 60 + nm);
+    return diff <= 15;
+}
+
+function autoCleanExpired(all) {
+    if (!auth.currentUser) return;
+    const now = nowHHMM();
+    all.forEach(p => {
+        if (p.orarioUscita && p.orarioUscita <= now) {
+            // Rimuovi solo se sei il proprietario per rispettare le regole Firebase
+            if (p.utenteId === auth.currentUser.uid) {
+                db.ref('prenotazioni/' + p.id).remove()
+                    .then(() => toast(`Tavolo ${p.tavolo} liberato automaticamente (${p.orarioUscita}).`, 'info'))
+                    .catch(() => {});
+            }
+        }
+    });
+}
+
+// Controllo ogni minuto
+setInterval(() => {
+    db.ref('prenotazioni').once('value', snap => {
+        const all = Object.values(snap.val() || {});
+        autoCleanExpired(all);
+    });
+}, 60000);
+
+/* ── KEYBOARD ────────────────────────────────────────────── */
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+        const m = document.getElementById('modal-overlay');
+        if (!m.classList.contains('hidden')) closeModal();
+    }
+});
+</script>
+</body>
+</html>

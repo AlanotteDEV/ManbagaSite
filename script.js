@@ -145,11 +145,11 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!logoLink) return;
 
     logoLink.addEventListener('click', function (e) {
-        e.preventDefault();
         _logoClicks++;
         clearTimeout(_logoTimer);
 
         if (_logoClicks >= 3) {
+            e.preventDefault();
             _logoClicks = 0;
             openAdminModal();
             return;
@@ -958,3 +958,298 @@ function _contactSuccess(btn, origHTML) {
         });
     }, 3500);
 }
+
+
+/* ============================================================
+   TOAST NOTIFICATIONS
+   ============================================================ */
+function showToast(message, type) {
+    type = type || 'info';
+    var container = document.getElementById('toast-container');
+    if (!container) return;
+
+    var icons = { success: '✓', error: '✕', info: 'ℹ', warn: '⚠' };
+    var toast = document.createElement('div');
+    toast.className = 'toast toast--' + type;
+    toast.setAttribute('role', 'alert');
+    toast.innerHTML =
+        '<span class="toast-icon">' + (icons[type] || icons.info) + '</span>' +
+        '<span>' + message + '</span>';
+
+    container.appendChild(toast);
+
+    setTimeout(function () {
+        toast.classList.add('toast--exit');
+        setTimeout(function () {
+            if (toast.parentNode) toast.parentNode.removeChild(toast);
+        }, 300);
+    }, 3600);
+}
+
+
+/* ============================================================
+   FIREBASE — GESTIONE TAVOLI
+   ============================================================ */
+var _tavFirebaseConfig = {
+    apiKey:      'AIzaSyCG0-J2wxZGSz6eDh_E-aAe2uvpTGLmXz0',
+    authDomain:  'prenotazioninegozio-65eb1.firebaseapp.com',
+    projectId:   'prenotazioninegozio-65eb1',
+    databaseURL: 'https://prenotazioninegozio-65eb1-default-rtdb.europe-west1.firebasedatabase.app',
+    appId:       '1:466874129336:web:fd07925523c35921fe8d4d'
+};
+
+var _tavApp            = null;
+var _tavAuth           = null;
+var _tavDb             = null;
+var _tavSelectedTavolo = null;
+var _tavIsReg          = false;
+var _tavListener       = null;
+
+function tavInit() {
+    if (typeof firebase === 'undefined') return;
+
+    try { _tavApp = firebase.app('tavoli'); }
+    catch (e) { _tavApp = firebase.initializeApp(_tavFirebaseConfig, 'tavoli'); }
+
+    _tavAuth = _tavApp.auth();
+    _tavDb   = _tavApp.database();
+
+    _tavAuth.onAuthStateChanged(function (user) {
+        var authEl = document.getElementById('tavoli-auth');
+        var appEl  = document.getElementById('tavoli-app');
+        if (!authEl || !appEl) return;
+
+        if (user) {
+            authEl.classList.add('hidden');
+            appEl.classList.remove('hidden');
+
+            _tavDb.ref('utenti/' + user.uid).once('value', function (snap) {
+                var nome = (snap.val() && snap.val().nome) ? snap.val().nome : user.email;
+                var el = document.getElementById('tav-nome');
+                if (el) el.textContent = 'Benvenuto, ' + nome;
+            });
+
+            if (_tavListener) _tavDb.ref('prenotazioni').off('value', _tavListener);
+            _tavListener = _tavDb.ref('prenotazioni').on('value', function (snap) {
+                _tavRender(snap.val() || {});
+            });
+
+        } else {
+            authEl.classList.remove('hidden');
+            appEl.classList.add('hidden');
+            if (_tavListener) {
+                _tavDb.ref('prenotazioni').off('value', _tavListener);
+                _tavListener = null;
+            }
+        }
+    });
+}
+
+function tavHandleAuthSubmit() {
+    var email = (document.getElementById('tav-email') || {}).value;
+    var pass  = (document.getElementById('tav-password') || {}).value;
+    if (!email || !pass) { showToast('Inserisci email e password.', 'error'); return; }
+
+    if (_tavIsReg) {
+        var nome = (document.getElementById('tav-reg-nome') || {}).value.trim();
+        if (!nome) { showToast('Inserisci il tuo nome.', 'error'); return; }
+        _tavAuth.createUserWithEmailAndPassword(email.trim(), pass)
+            .then(function (r) {
+                return _tavDb.ref('utenti/' + r.user.uid).set({ nome: nome });
+            })
+            .then(function () { showToast('Account creato! Benvenuto.', 'success'); })
+            .catch(function (e) { showToast(e.message, 'error'); });
+    } else {
+        _tavAuth.signInWithEmailAndPassword(email.trim(), pass)
+            .then(function () { showToast('Accesso effettuato!', 'success'); })
+            .catch(function () { showToast('Credenziali non valide. Riprova.', 'error'); });
+    }
+}
+
+function tavToggleAuthMode() {
+    _tavIsReg = !_tavIsReg;
+    var nomeEl   = document.getElementById('tav-reg-nome');
+    var subEl    = document.getElementById('tav-auth-sub');
+    var btnEl    = document.getElementById('tav-auth-btn');
+    var toggleEl = document.getElementById('tav-auth-toggle');
+
+    if (nomeEl)   nomeEl.classList.toggle('hidden', !_tavIsReg);
+    if (subEl)    subEl.textContent   = _tavIsReg ? 'Crea il tuo account' : 'Accedi per prenotare';
+    if (btnEl)    btnEl.textContent   = _tavIsReg ? 'REGISTRATI' : 'ACCEDI';
+    if (toggleEl) toggleEl.textContent = _tavIsReg ? 'Hai già un account? Accedi' : 'Non hai un account? Registrati';
+}
+
+function _tavRender(data) {
+    if (!_tavAuth || !_tavAuth.currentUser) return;
+    var prenotazioni = Object.values(data);
+    var liberi = 0, occupati = 0;
+    var grid = document.getElementById('tav-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    for (var i = 1; i <= 16; i++) {
+        var p = null;
+        for (var j = 0; j < prenotazioni.length; j++) {
+            if (String(prenotazioni[j].tavolo) === String(i)) { p = prenotazioni[j]; break; }
+        }
+
+        var card = document.createElement('div');
+        if (p) {
+            occupati++;
+            card.className = 'tavolo-card tavolo-card--occupato';
+            card.innerHTML = _buildTavoloOccupato(i, p);
+        } else {
+            liberi++;
+            card.className = 'tavolo-card tavolo-card--libero';
+            (function (num) {
+                card.onclick = function () { tavOpenModal(num); };
+            }(i));
+            card.innerHTML = _buildTavoloLibero(i);
+        }
+        grid.appendChild(card);
+    }
+
+    var elL = document.getElementById('count-liberi');
+    var elO = document.getElementById('count-occupati');
+    if (elL) elL.textContent = liberi;
+    if (elO) elO.textContent = occupati;
+
+    /* Lista (solo prenotazioni proprie) */
+    var uid = _tavAuth.currentUser.uid;
+    var mie = prenotazioni.filter(function (x) { return x.utenteId === uid; });
+    var badge = document.getElementById('tav-count-pre');
+    if (badge) badge.textContent = mie.length;
+
+    var lista = document.getElementById('tav-lista');
+    if (!lista) return;
+    if (mie.length === 0) {
+        lista.innerHTML = '<p class="tav-empty-msg">Nessuna prenotazione attiva</p>';
+    } else {
+        lista.innerHTML = mie.map(function (x) {
+            return '<div class="tav-pren-item">' +
+                '<div class="tav-pren-main">' +
+                    '<span class="tav-pren-table">Tavolo ' + x.tavolo + '</span>' +
+                    '<span class="tav-pren-name">' + _esc(x.nome) + '</span>' +
+                    '<span class="tav-pren-time">Arrivo ore ' + _esc(x.orario) + '</span>' +
+                '</div>' +
+                '<button class="tav-cancel-btn" onclick="tavCancella(\'' + x.id + '\')" title="Cancella prenotazione" aria-label="Cancella prenotazione">&#10005;</button>' +
+            '</div>';
+        }).join('');
+    }
+}
+
+function _buildTavoloLibero(n) {
+    return '<div class="tavolo-shape">' +
+        '<div class="chair-row"><span class="chair"></span><span class="chair"></span></div>' +
+        '<div class="tavolo-top">' +
+            '<span class="tavolo-num">' + n + '</span>' +
+            '<span class="tavolo-status-badge badge--libero">FREE</span>' +
+        '</div>' +
+        '<div class="chair-row"><span class="chair"></span><span class="chair"></span></div>' +
+    '</div>' +
+    '<div class="tavolo-info"><span class="tavolo-cta">Tocca per prenotare</span></div>';
+}
+
+function _buildTavoloOccupato(n, p) {
+    return '<div class="tavolo-shape">' +
+        '<div class="chair-row"><span class="chair"></span><span class="chair"></span></div>' +
+        '<div class="tavolo-top">' +
+            '<span class="tavolo-num">' + n + '</span>' +
+            '<span class="tavolo-status-badge badge--occupato">OCC.</span>' +
+        '</div>' +
+        '<div class="chair-row"><span class="chair"></span><span class="chair"></span></div>' +
+    '</div>' +
+    '<div class="tavolo-info">' +
+        '<span class="tavolo-guest-name">' + _esc(p.nome) + '</span>' +
+        '<span class="tavolo-guest-time">ore ' + _esc(p.orario) + '</span>' +
+    '</div>';
+}
+
+function _esc(str) {
+    return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+function tavOpenModal(num) {
+    _tavSelectedTavolo = num;
+    var titleEl = document.getElementById('tav-modal-title');
+    var nomeEl  = document.getElementById('tav-p-nome');
+    var oraEl   = document.getElementById('tav-p-ora');
+    var modal   = document.getElementById('tav-modal');
+    if (titleEl) titleEl.textContent = 'TAVOLO ' + num;
+    if (nomeEl)  nomeEl.value = '';
+    if (oraEl)   oraEl.value  = '';
+    if (modal)   modal.classList.remove('hidden');
+    setTimeout(function () { if (nomeEl) nomeEl.focus(); }, 60);
+}
+
+function tavCloseModal() {
+    var modal = document.getElementById('tav-modal');
+    if (modal) modal.classList.add('hidden');
+    _tavSelectedTavolo = null;
+}
+
+function tavSubmitPrenotazione() {
+    var nome = ((document.getElementById('tav-p-nome') || {}).value || '').trim();
+    var ora  = ((document.getElementById('tav-p-ora')  || {}).value || '').trim();
+
+    if (!nome) { showToast('Inserisci il nome per la prenotazione.', 'error'); return; }
+    if (!ora)  { showToast('Inserisci l\'orario di arrivo.', 'error'); return; }
+    if (!_tavSelectedTavolo) return;
+
+    var id = Date.now();
+    _tavDb.ref('prenotazioni/' + id).set({
+        id:       id,
+        tavolo:   _tavSelectedTavolo,
+        nome:     nome,
+        orario:   ora,
+        utenteId: _tavAuth.currentUser.uid
+    })
+    .then(function () {
+        tavCloseModal();
+        showToast('Tavolo ' + _tavSelectedTavolo + ' prenotato per ' + nome + '!', 'success');
+    })
+    .catch(function () {
+        showToast('Errore. Verifica le regole del database Firebase.', 'error');
+    });
+}
+
+function tavCancella(id) {
+    if (!confirm('Vuoi cancellare questa prenotazione?')) return;
+    _tavDb.ref('prenotazioni/' + id).remove()
+        .then(function () { showToast('Prenotazione cancellata.', 'info'); })
+        .catch(function () { showToast('Errore durante la cancellazione.', 'error'); });
+}
+
+function tavSwitchTab(tab, btn) {
+    var mappa = document.getElementById('tav-view-mappa');
+    var lista = document.getElementById('tav-view-lista');
+    if (mappa) mappa.classList.toggle('hidden', tab !== 'mappa');
+    if (lista) lista.classList.toggle('hidden', tab !== 'lista');
+    document.querySelectorAll('.tav-tab').forEach(function (b) { b.classList.remove('active'); });
+    if (btn) btn.classList.add('active');
+}
+
+function tavLogout() {
+    if (_tavAuth) {
+        _tavAuth.signOut()
+            .then(function () { showToast('Disconnesso correttamente.', 'info'); })
+            .catch(function () {});
+    }
+}
+
+/* Chiudi modal tavolo con Escape */
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+        var modal = document.getElementById('tav-modal');
+        if (modal && !modal.classList.contains('hidden')) tavCloseModal();
+    }
+});
+
+/* Init tavoli quando DOM pronto */
+document.addEventListener('DOMContentLoaded', function () {
+    if (typeof firebase !== 'undefined') tavInit();
+});

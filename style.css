@@ -3306,3 +3306,720 @@ textarea.form-input {
         gap: 12px;
     }
 }
+
+
+/* ============================================================
+   TOAST NOTIFICATIONS
+   ============================================================ */
+.toast-container {
+    position: fixed;
+    top: calc(var(--nav-h) + 16px);
+    right: 20px;
+    z-index: 9998;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+    max-width: 380px;
+    width: calc(100vw - 40px);
+}
+
+.toast {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background: #111;
+    border-radius: 4px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    color: #f5f0e8;
+    pointer-events: auto;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.55), 0 2px 8px rgba(0,0,0,0.3);
+    animation: toastSlideIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    border-left: 3px solid rgba(255,255,255,0.15);
+    letter-spacing: 0.02em;
+    line-height: 1.4;
+}
+
+.toast.toast--exit {
+    animation: toastSlideOut 0.28s ease forwards;
+}
+
+.toast--success { border-left-color: #22c55e; }
+.toast--error   { border-left-color: #DC2626; }
+.toast--info    { border-left-color: #3b82f6; }
+.toast--warn    { border-left-color: #f59e0b; }
+
+.toast-icon {
+    font-size: 17px;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+@keyframes toastSlideIn {
+    from { transform: translateX(calc(100% + 24px)); opacity: 0; }
+    to   { transform: translateX(0); opacity: 1; }
+}
+@keyframes toastSlideOut {
+    from { transform: translateX(0); opacity: 1; max-height: 80px; margin-bottom: 0; }
+    to   { transform: translateX(calc(100% + 24px)); opacity: 0; max-height: 0; padding-top: 0; padding-bottom: 0; }
+}
+
+
+/* ============================================================
+   SEZIONE TAVOLI
+   ============================================================ */
+.tavoli-section {
+    position: relative;
+    overflow: hidden;
+}
+
+.tavoli-bg-kanji {
+    position: absolute;
+    top: 50%;
+    right: -30px;
+    transform: translateY(-50%);
+    font-family: var(--font-jp);
+    font-size: clamp(200px, 26vw, 360px);
+    font-weight: 900;
+    color: rgba(255,255,255,0.018);
+    pointer-events: none;
+    user-select: none;
+    line-height: 1;
+}
+
+/* Titolo sezione in dark mode */
+.tavoli-section .section-title {
+    color: #f5f0e8;
+}
+.tavoli-section .section-label {
+    color: rgba(220,38,38,0.8);
+}
+
+/* ——— Auth card ——— */
+.tavoli-auth-card {
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 40px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(220,38,38,0.2);
+    border-radius: 6px;
+}
+
+.tavoli-auth-head {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.tavoli-auth-sub {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 10px;
+}
+
+.tavoli-auth-logo {
+    font-family: var(--font-comic);
+    font-size: 32px;
+    color: #f5f0e8;
+    letter-spacing: 0.06em;
+}
+
+.tavoli-auth-logo-dot {
+    color: var(--red);
+}
+
+.tavoli-auth-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Override form-input for dark section */
+.tavoli-auth-card .form-input,
+.tav-modal-box .form-input {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: #f5f0e8;
+    border-radius: 3px;
+    font-size: 14px;
+}
+
+.tavoli-auth-card .form-input::placeholder,
+.tav-modal-box .form-input::placeholder {
+    color: rgba(255,255,255,0.25);
+}
+
+.tavoli-auth-card .form-input:focus,
+.tav-modal-box .form-input:focus {
+    border-color: var(--red);
+    outline: none;
+    background: rgba(255,255,255,0.08);
+}
+
+.tavoli-auth-toggle {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.3);
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 4px 0;
+    transition: color var(--t);
+    text-align: center;
+}
+
+.tavoli-auth-toggle:hover {
+    color: var(--red);
+}
+
+/* ——— App container ——— */
+.tavoli-app-inner {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* ——— User bar ——— */
+.tavoli-user-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 20px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 4px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+}
+
+.tavoli-user-name {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--red);
+}
+
+.tavoli-stats {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.tav-stat {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 5px 13px;
+    border-radius: 30px;
+}
+
+.tav-stat::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+}
+
+.tav-stat--libero {
+    background: rgba(34,197,94,0.1);
+    color: #22c55e;
+    border: 1px solid rgba(34,197,94,0.2);
+}
+
+.tav-stat--libero::before { background: #22c55e; box-shadow: 0 0 6px #22c55e; }
+
+.tav-stat--occupato {
+    background: rgba(220,38,38,0.1);
+    color: var(--red);
+    border: 1px solid rgba(220,38,38,0.2);
+}
+
+.tav-stat--occupato::before { background: var(--red); box-shadow: 0 0 6px var(--red); }
+
+.tav-logout-btn {
+    background: none;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.35);
+    font-family: var(--font-body);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all var(--t);
+}
+
+.tav-logout-btn:hover {
+    border-color: var(--red);
+    color: var(--red);
+}
+
+/* ——— Tabs ——— */
+.tavoli-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 28px;
+}
+
+.tav-tab {
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 10px 22px 13px;
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+    cursor: pointer;
+    transition: all var(--t);
+    margin-bottom: -1px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tav-tab:hover { color: rgba(255,255,255,0.65); }
+
+.tav-tab.active {
+    color: #f5f0e8;
+    border-bottom-color: var(--red);
+}
+
+.tav-count-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 18px;
+    padding: 0 6px;
+    background: var(--red);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 800;
+    border-radius: 10px;
+    line-height: 1;
+}
+
+/* ——— Table grid ——— */
+.tavoli-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+}
+
+/* ——— Table card ——— */
+.tavolo-card {
+    position: relative;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.07);
+    padding: 18px 12px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.25s ease;
+    background: rgba(255,255,255,0.03);
+    min-height: 165px;
+    justify-content: space-between;
+}
+
+.tavolo-card--libero {
+    cursor: pointer;
+}
+
+.tavolo-card--libero:hover {
+    border-color: rgba(34,197,94,0.4);
+    background: rgba(34,197,94,0.05);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 28px rgba(34,197,94,0.12), 0 0 0 1px rgba(34,197,94,0.15);
+}
+
+.tavolo-card--occupato {
+    border-color: rgba(220,38,38,0.25);
+    background: rgba(220,38,38,0.04);
+}
+
+/* Icona tavolo top-view */
+.tavolo-shape {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+}
+
+.chair-row {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+}
+
+.chair {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+    transition: background 0.25s, box-shadow 0.25s;
+}
+
+.tavolo-card--libero:hover .chair {
+    background: rgba(34,197,94,0.5);
+    box-shadow: 0 0 6px rgba(34,197,94,0.4);
+}
+
+.tavolo-card--occupato .chair {
+    background: rgba(220,38,38,0.35);
+}
+
+.tavolo-top {
+    width: 68px;
+    height: 44px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s;
+    position: relative;
+}
+
+.tavolo-card--libero:hover .tavolo-top {
+    background: rgba(34,197,94,0.1);
+    border-color: rgba(34,197,94,0.3);
+}
+
+.tavolo-card--occupato .tavolo-top {
+    background: rgba(220,38,38,0.1);
+    border-color: rgba(220,38,38,0.3);
+}
+
+.tavolo-num {
+    font-family: var(--font-comic);
+    font-size: 24px;
+    letter-spacing: 0.04em;
+    color: rgba(255,255,255,0.4);
+    line-height: 1;
+    transition: color 0.25s;
+}
+
+.tavolo-card--libero:hover .tavolo-num {
+    color: #22c55e;
+}
+
+.tavolo-card--occupato .tavolo-num {
+    color: var(--red);
+}
+
+/* Status badge piccolo */
+.tavolo-status-badge {
+    position: absolute;
+    top: -9px;
+    right: -9px;
+    font-size: 7px;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 7px;
+    border-radius: 10px;
+}
+
+.badge--libero {
+    background: rgba(34,197,94,0.15);
+    color: #22c55e;
+    border: 1px solid rgba(34,197,94,0.3);
+}
+
+.badge--occupato {
+    background: rgba(220,38,38,0.2);
+    color: var(--red);
+    border: 1px solid rgba(220,38,38,0.4);
+}
+
+/* Info sotto il tavolo */
+.tavolo-info {
+    text-align: center;
+    width: 100%;
+}
+
+.tavolo-guest-name {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: #f5f0e8;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.tavolo-guest-time {
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: rgba(255,255,255,0.3);
+    margin-top: 2px;
+}
+
+.tavolo-cta {
+    display: block;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.2);
+    transition: color 0.25s;
+}
+
+.tavolo-card--libero:hover .tavolo-cta {
+    color: #4ade80;
+}
+
+/* ——— Lista prenotazioni ——— */
+.tav-lista-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.tav-pren-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 22px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-left: 3px solid var(--red);
+    border-radius: 4px;
+    transition: background var(--t);
+}
+
+.tav-pren-item:hover {
+    background: rgba(255,255,255,0.05);
+}
+
+.tav-pren-main {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.tav-pren-table {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--red);
+}
+
+.tav-pren-name {
+    font-size: 17px;
+    font-weight: 700;
+    color: #f5f0e8;
+    letter-spacing: 0.02em;
+}
+
+.tav-pren-time {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.35);
+}
+
+.tav-cancel-btn {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 4px;
+    border: 1px solid rgba(220,38,38,0.25);
+    background: rgba(220,38,38,0.08);
+    color: var(--red);
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--t);
+    font-weight: 700;
+}
+
+.tav-cancel-btn:hover {
+    background: var(--red);
+    color: #fff;
+    transform: scale(1.05);
+}
+
+.tav-empty-msg {
+    text-align: center;
+    padding: 60px 0;
+    color: rgba(255,255,255,0.18);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+}
+
+/* ——— Modal prenotazione ——— */
+.tav-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 5000;
+    background: rgba(0,0,0,0.82);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.tav-modal-box {
+    width: 100%;
+    max-width: 390px;
+    background: #0f0f0f;
+    border: 1px solid rgba(220,38,38,0.22);
+    border-radius: 8px;
+    overflow: hidden;
+    animation: tavModalIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes tavModalIn {
+    from { transform: scale(0.88) translateY(20px); opacity: 0; }
+    to   { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.tav-modal-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 22px 24px 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    background: rgba(220,38,38,0.05);
+}
+
+.tav-modal-sub {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.45em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 5px;
+}
+
+.tav-modal-title-text {
+    font-family: var(--font-comic);
+    font-size: 28px;
+    color: #f5f0e8;
+    letter-spacing: 0.05em;
+    line-height: 1;
+}
+
+.tav-modal-close {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.3);
+    font-size: 16px;
+    cursor: pointer;
+    padding: 4px;
+    line-height: 1;
+    margin-top: 4px;
+    transition: color var(--t);
+    border-radius: 2px;
+}
+
+.tav-modal-close:hover {
+    color: var(--red);
+}
+
+.tav-modal-body {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.tav-modal-body .form-label {
+    color: rgba(255,255,255,0.45);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+}
+
+.tav-modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 6px;
+}
+
+.tav-modal-actions .btn {
+    flex: 1;
+    justify-content: center;
+}
+
+/* Ghost button for dark backgrounds */
+.btn-ghost-white {
+    background: none !important;
+    border: 2px solid rgba(255,255,255,0.12) !important;
+    color: rgba(255,255,255,0.45) !important;
+    clip-path: none !important;
+    border-radius: 3px !important;
+    transition: all var(--t) !important;
+}
+
+.btn-ghost-white:hover {
+    border-color: rgba(255,255,255,0.3) !important;
+    color: #f5f0e8 !important;
+}
+
+/* ——— Responsive ——— */
+@media (max-width: 640px) {
+    .tavoli-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .tavoli-user-bar {
+        gap: 10px;
+        padding: 12px 16px;
+    }
+
+    .tavolo-card {
+        min-height: 145px;
+        padding: 14px 10px 12px;
+    }
+
+    .tav-tab {
+        padding: 10px 14px 13px;
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 400px) {
+    .tavoli-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .tavoli-stats {
+        gap: 6px;
+    }
+}
