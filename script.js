@@ -717,6 +717,8 @@ function addAdminProduct() {
     var image  = document.getElementById('product-image').value.trim();
     var price  = document.getElementById('product-price').value.trim();
     var badge  = document.getElementById('product-badge').value;
+    var cat    = document.getElementById('product-cat')    ? document.getElementById('product-cat').value    : '';
+    var subcat = document.getElementById('product-subcat') ? document.getElementById('product-subcat').value : '';
 
     if (!title || !desc || !image) {
         alert('⚠️ Titolo, descrizione e immagine sono obbligatori.');
@@ -724,16 +726,39 @@ function addAdminProduct() {
     }
 
     var products = getProducts();
-    products.push({ id: Date.now(), title: title, volume: volume, desc: desc, image: image, price: price, badge: badge });
+    products.push({ id: Date.now(), title: title, volume: volume, desc: desc, image: image, price: price, badge: badge, cat: cat, subcat: subcat });
     setProducts(products);
 
     ['product-title','product-volume','product-desc','product-image','product-price'].forEach(function (id) {
         document.getElementById(id).value = '';
     });
     document.getElementById('product-badge').value = '';
+    if (document.getElementById('product-cat'))    document.getElementById('product-cat').value = '';
+    if (document.getElementById('product-subcat')) document.getElementById('product-subcat').value = '';
 
     loadAdminData();
     renderProducts();
+}
+
+/* ============================================================
+   ADMIN — AGGIORNA SOTTOCATEGORIE IN BASE ALLA CATEGORIA
+   ============================================================ */
+function updateAdminSubcats() {
+    var catSel    = document.getElementById('product-cat');
+    var subcatSel = document.getElementById('product-subcat');
+    if (!catSel || !subcatSel) return;
+    var cat = catSel.value;
+    var SUBCATS = {
+        manga:  [ ['shonen','Shonen'],['seinen','Seinen'],['shojo','Shojo / Josei'],['comics','Comics & Graphic Novel'] ],
+        carte:  [ ['pokemon','Pokémon TCG'],['yugioh','Yu-Gi-Oh!'],['magic','Magic: The Gathering'],['onepiece','One Piece TCG'],['dragonball','Dragon Ball Super'],['altri','Board Games & Altri'] ],
+        gadget: [ ['figure','Action Figures'],['funko','Funko Pop'],['statuette','Statuette'],['poster','Poster & Art'],['abbigliamento','Abbigliamento'],['accessori','Accessori'] ]
+    };
+    if (!cat || !SUBCATS[cat]) {
+        subcatSel.innerHTML = '<option value="">-- Prima scegli la categoria --</option>';
+        return;
+    }
+    subcatSel.innerHTML = '<option value="">-- Sottocategoria --</option>'
+        + SUBCATS[cat].map(function(s) { return '<option value="' + s[0] + '">' + s[1] + '</option>'; }).join('');
 }
 
 function deleteAdminProduct(id) {
@@ -754,7 +779,9 @@ var _DEMO_PRODUCTS = [
         desc: 'L\'Elite Trainer Box dell\'espansione Scarlet & Violet — Destined Rivals include 9 bustine, carte energia, segnalini, dado, divisori e la coin da collezione. Nuovi Pokémon ex, illustrazioni speciali olografiche e carte Tera rarissime. In arrivo nel nostro store: contattaci per prenotare!',
         image: 'https://raw.githubusercontent.com/1niceroli/ptcg-assets/main/sv10/elite-trainer-box-svp-203.png',
         price: '',
-        badge: 'IN ARRIVO'
+        badge: 'IN ARRIVO',
+        cat: 'carte',
+        subcat: 'pokemon'
     },
     {
         id: 9002,
@@ -763,7 +790,9 @@ var _DEMO_PRODUCTS = [
         desc: 'La leggendaria Mega-Pack Tin 2025 di Konami: ogni tin contiene 3 Mega Pack con reprint di carte da torneo di altissimo livello, incluse Starlight Rare e Prismatic Secret Rare. Ideale per potenziare qualsiasi mazzo competitivo. Disponibile a preordine — ritira in negozio alla data di uscita.',
         image: 'https://www.yugioh-card.com/en/wp-content/uploads/2025/04/2025-tin_MPtin_01.png',
         price: '',
-        badge: 'PREORDINA'
+        badge: 'PREORDINA',
+        cat: 'carte',
+        subcat: 'yugioh'
     },
     {
         id: 9003,
@@ -772,7 +801,9 @@ var _DEMO_PRODUCTS = [
         desc: 'La nona espansione del One Piece Card Game celebra il 2° anniversario dell\'edizione inglese con carte dal design più ricercato che mai. I Quattro Imperatori — Luffy, Buggy, Shanks e Teach — protagonisti assoluti. Display da 24 bustine, 12 carte per busta. Bustine singole disponibili in store.',
         image: 'https://cdn11.bigcommerce.com/s-ua4dd/images/stencil/1280x1280/products/247527/329332/BJP2746340__90219.1730152686.png?c=2',
         price: '',
-        badge: ''
+        badge: '',
+        cat: 'carte',
+        subcat: 'onepiece'
     },
     {
         id: 9004,
@@ -781,7 +812,9 @@ var _DEMO_PRODUCTS = [
         desc: 'L\'Elite Trainer Box di Scarlet & Violet — Journey Together ha fatto sold-out mondiale in pochi giorni. Include 9 bustine, carte energia, accessori da torneo e coin da collezione. Seguici su Instagram per sapere quando torniamo disponibili.',
         image: 'https://raw.githubusercontent.com/1niceroli/ptcg-assets/main/sv9/elite-trainer-box-svp-189.png',
         price: '',
-        badge: 'OUT OF STOCK'
+        badge: 'OUT OF STOCK',
+        cat: 'carte',
+        subcat: 'pokemon'
     }
 ];
 
@@ -800,7 +833,7 @@ var _DEMO_EVENTS = [
 ];
 
 function seedDemoData() {
-    var VERSION = 'v8';
+    var VERSION = 'v9';
     if (localStorage.getItem('manbaga-demo-seeded') === VERSION) return;
     var existingProducts = getProducts().filter(function (p) { return p.id < 9000; });
     var existingEvents   = getEvents().filter(function (e) { return e.id < 8000; });

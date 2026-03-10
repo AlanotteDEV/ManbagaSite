@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MANBAGA Comics — Catalogo completo: Manga, Comics, Carte & Giochi, Gadget & Figures. Canosa di Puglia.">
+    <meta name="theme-color" content="#0d0d0d">
+
+    <title>Catalogo — MANBAGA Comics &amp; Games</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Noto+Serif+JP:wght@700;900&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+    <!-- EmailJS -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+    <!-- Stili -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- Fiore di loto — Collegato a Instagram -->
+<a href="https://www.instagram.com/_manbaga_/"
+   class="lotus-float"
+   target="_blank"
+   rel="noopener noreferrer"
+   aria-label="Seguici su Instagram">
+    <svg width="36" height="36" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <g transform="translate(30,30)">
+            <ellipse cx="0" cy="-13" rx="8"   ry="12"  fill="#F4B8C8" transform="rotate(5)"/>
+            <ellipse cx="0" cy="-13" rx="7.5" ry="11.5" fill="#F0AABE" transform="rotate(77)"/>
+            <ellipse cx="0" cy="-13" rx="8"   ry="12"  fill="#F4B8C8" transform="rotate(149)"/>
+            <ellipse cx="0" cy="-13" rx="7.5" ry="11.5" fill="#F0AABE" transform="rotate(221)"/>
+            <ellipse cx="0" cy="-13" rx="8"   ry="12"  fill="#F4B8C8" transform="rotate(293)"/>
+            <circle cx="0" cy="0" r="7.5" fill="#FFEEF4"/>
+            <circle cx="0" cy="0" r="3"   fill="#D4778A"/>
+            <circle cx="0"    cy="-5.5" r="1.2" fill="#C4607A"/>
+            <circle cx="5.2"  cy="-1.7" r="1.2" fill="#C4607A"/>
+            <circle cx="3.2"  cy="4.5"  r="1.2" fill="#C4607A"/>
+            <circle cx="-3.2" cy="4.5"  r="1.2" fill="#C4607A"/>
+            <circle cx="-5.2" cy="-1.7" r="1.2" fill="#C4607A"/>
+        </g>
+    </svg>
+    <span class="lotus-tooltip">Seguici su Instagram</span>
+</a>
+
+
+<!-- ============================================================
+     MODAL — DETTAGLIO PRODOTTO
+     ============================================================ -->
+<div id="product-modal" class="modal-wrap hidden" onclick="if(event.target===this)closeProductModal()">
+    <div class="modal-box" role="dialog" aria-modal="true" aria-label="Dettaglio prodotto">
+        <div class="modal-head">
+            <span class="modal-head-title">DETTAGLIO PRODOTTO</span>
+            <div class="modal-head-actions">
+                <button class="btn-modal-close" onclick="closeProductModal()">&#10005; Chiudi</button>
+            </div>
+        </div>
+        <div class="modal-body" id="product-detail-content"></div>
+    </div>
+</div>
+
+
+<!-- ============================================================
+     MODAL — ADMIN
+     ============================================================ -->
+<div id="admin-modal" class="modal-wrap hidden" onclick="if(event.target===this)closeAdminModal()">
+    <div class="modal-box" style="max-width:980px" role="dialog" aria-modal="true" aria-label="Area admin">
+        <div class="modal-head">
+            <span class="modal-head-title">&#9881;&#65039; AREA ADMIN</span>
+            <div class="modal-head-actions">
+                <button id="admin-logout-btn" class="btn-modal-close hidden" onclick="logoutAdmin()" style="background:#444">Esci</button>
+                <button class="btn-modal-close" onclick="closeAdminModal()">&#10005;</button>
+            </div>
+        </div>
+
+        <div class="modal-body">
+
+            <!-- LOGIN -->
+            <div id="admin-login" class="login-card">
+                <div class="login-title">&#128272; Accedi</div>
+                <p class="login-sub">Area riservata al personale</p>
+                <div class="form-row">
+                    <label class="form-label" for="password-input">Password</label>
+                    <input type="password" id="password-input" class="form-input"
+                           placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;"
+                           onkeypress="if(event.key==='Enter')checkAdminPassword()">
+                </div>
+                <button onclick="checkAdminPassword()"
+                        class="btn btn-primary"
+                        style="clip-path:none;width:100%;border-radius:0;margin-top:8px">
+                    ACCEDI
+                </button>
+            </div>
+
+            <!-- DASHBOARD -->
+            <div id="admin-dashboard" class="hidden">
+
+                <div class="tab-nav">
+                    <button class="tab-btn active" onclick="switchAdminTab('events', this)">EVENTI</button>
+                    <button class="tab-btn"         onclick="switchAdminTab('products', this)">PRODOTTI</button>
+                </div>
+
+                <!-- TAB EVENTI -->
+                <div id="admin-tab-events" class="admin-tab-content">
+                    <div class="admin-grid">
+                        <div class="admin-panel">
+                            <div class="admin-panel-title">&#10133; Aggiungi Evento</div>
+                            <div class="form-row">
+                                <label class="form-label">Giorno</label>
+                                <input type="text" id="event-day" class="form-input" placeholder="12" maxlength="2">
+                            </div>
+                            <div class="form-row">
+                                <label class="form-label">Mese</label>
+                                <input type="text" id="event-month" class="form-input" placeholder="Gen">
+                            </div>
+                            <div class="form-row">
+                                <label class="form-label">Anno</label>
+                                <input type="text" id="event-year" class="form-input" placeholder="2026" maxlength="4">
+                            </div>
+                            <div class="form-row">
+                                <label class="form-label">Titolo *</label>
+                                <input type="text" id="event-title" class="form-input" placeholder="Titolo evento">
+                            </div>
+                            <div class="form-row">
+                                <label class="form-label">Descrizione *</label>
+                                <textarea id="event-desc" class="form-input" placeholder="Descrizione..."></textarea>
+                            </div>
+                            <div class="form-row">
+                                <label class="form-label">Orario</label>
+                                <input type="text" id="event-time" class="form-input" placeholder="15:30">
+                            </div>
+                            <div class="form-row">
+                                <label class="form-label">Info / Prezzo</label>
+                                <input type="text" id="event-price" class="form-input" placeholder="Ingresso 5&#8364;">
+                            </div>
+                            <button onclick="addAdminEvent()"
+                                    class="btn btn-primary"
+                                    style="clip-path:none;width:100%;border-radius:0;margin-top:8px">
+                                + AGGIUNGI EVENTO
+                            </button>
+                        </div>
+                        <div class="admin-panel">
+                            <div class="admin-panel-title">&#128203; Eventi salvati</div>
+                            <div id="admin-events-list" class="admin-list"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB PRODOTTI -->
+                <div id="admin-tab-products" class="admin-tab-content hidden">
+                    <div class="admin-grid">
+                        <div class="admin-panel">
+                            <div class="admin-panel-title">&#10133; Aggiungi Prodotto</div>
+                            <div class="form-row">
+                                <label class="form-label">Titolo *</label>
+                                <input type="text" id="product-title" class="form-input" placeholder="Dragon Ball">
+                            </div>
+                            <div class="form-row">
+                                <label class="form-label">Volume</label>
+                                <input type="text" id="product-volume" class="form-input" placeholder="Vol. 12">
+                            </div>
+                            <div class="form-row">
+                                <label class="form-label">Descrizione *</label>
+                                <textarea id="product-desc" class="form-input" placeholder="Descrizione dettagliata..."></textarea>
+                            </div>
+                            <div class="form-row">
+                                <label class="form-label">URL Immagine *</label>
+                                <input type="text" id="product-image" class="form-input" placeholder="https://...">
+                            </div>
+                            <div class="form-row">
+                                <label class="form-label">Prezzo</label>
+                                <input type="text" id="product-price" class="form-input" placeholder="8,99&#8364;">
+                            </div>
+                            <div class="form-row">
+                                <label class="form-label">Stato / Badge</label>
+                                <select id="product-badge" class="form-input">
+                                    <option value="">Nessuno</option>
+                                    <option value="NOVIT&#192;">NOVIT&#192;</option>
+                                    <option value="HOT">HOT</option>
+                                    <option value="PREORDINA">PREORDINA</option>
+                                    <option value="IN ARRIVO">IN ARRIVO</option>
+                                    <option value="OUT OF STOCK">OUT OF STOCK</option>
+                                    <option value="ESAURITO">ESAURITO</option>
+                                </select>
+                            </div>
+                            <div class="form-row">
+                                <label class="form-label">Categoria</label>
+                                <select id="product-cat" class="form-input" onchange="updateAdminSubcats()">
+                                    <option value="">-- Seleziona --</option>
+                                    <option value="manga">Manga &amp; Comics</option>
+                                    <option value="carte">Carte &amp; Giochi</option>
+                                    <option value="gadget">Gadget &amp; Figures</option>
+                                </select>
+                            </div>
+                            <div class="form-row">
+                                <label class="form-label">Sottocategoria</label>
+                                <select id="product-subcat" class="form-input">
+                                    <option value="">-- Prima scegli la categoria --</option>
+                                </select>
+                            </div>
+                            <button onclick="addAdminProduct()"
+                                    class="btn btn-primary"
+                                    style="clip-path:none;width:100%;border-radius:0;margin-top:8px">
+                                + AGGIUNGI PRODOTTO
+                            </button>
+                        </div>
+                        <div class="admin-panel">
+                            <div class="admin-panel-title">&#128230; Prodotti salvati</div>
+                            <div id="admin-products-list" class="admin-list"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ============================================================
+     NAV
+     ============================================================ -->
+<nav id="nav">
+    <div class="nav-inner">
+
+        <a id="logo-link" class="nav-logo" href="index.html">
+            MAN<span class="dot">B</span>AGA<span class="dot">.</span>
+        </a>
+
+        <ul class="nav-links" id="nav-links">
+            <li><a href="index.html#catalogo">Catalogo</a></li>
+            <li><a href="index.html#nuovi-arrivi">Novit&#224;</a></li>
+            <li><a href="index.html#eventi">Eventi</a></li>
+            <li><a href="index.html#contatti" class="nav-cta">Contatti</a></li>
+        </ul>
+
+        <button class="nav-burger" id="nav-burger" aria-label="Apri menu">
+            <span></span><span></span><span></span>
+        </button>
+
+    </div>
+</nav>
+
+
+<!-- ============================================================
+     HERO
+     ============================================================ -->
+<header class="cp-hero">
+    <div class="cp-hero-rays" aria-hidden="true"></div>
+    <div class="cp-hero-bg-kanji" aria-hidden="true">カタログ</div>
+    <div class="cp-hero-inner">
+        <nav class="cp-breadcrumb" aria-label="Breadcrumb">
+            <a href="index.html" class="cp-bc-link">Home</a>
+            <span class="cp-bc-sep">›</span>
+            <span class="cp-bc-sep">Catalogo</span>
+            <span class="cp-bc-sep">›</span>
+            <span class="cp-bc-current" id="cp-bc-cat">Catalogo</span>
+        </nav>
+        <h1 class="cp-hero-title">IL NOSTRO<br><span class="stroke">CATALOGO</span></h1>
+        <p class="cp-hero-sub">Manga · Comics · Carte &amp; Giochi · Gadget &amp; Figures</p>
+    </div>
+</header>
+
+
+<!-- ============================================================
+     MOBILE CATEGORY TABS
+     ============================================================ -->
+<div class="cp-mob-tabs" id="cp-mob-tabs" role="tablist" aria-label="Categorie">
+    <button class="cp-mob-tab" role="tab" data-cat="manga" onclick="catPage.setCat('manga')">
+        <span class="cp-mob-tab-kanji">漫</span>
+        <span>Manga</span>
+    </button>
+    <button class="cp-mob-tab" role="tab" data-cat="carte" onclick="catPage.setCat('carte')">
+        <span class="cp-mob-tab-kanji">遊</span>
+        <span>Carte</span>
+    </button>
+    <button class="cp-mob-tab" role="tab" data-cat="gadget" onclick="catPage.setCat('gadget')">
+        <span class="cp-mob-tab-kanji">具</span>
+        <span>Gadget</span>
+    </button>
+</div>
+
+
+<!-- ============================================================
+     MAIN WRAP
+     ============================================================ -->
+<div class="cp-wrap">
+
+    <!-- SIDEBAR -->
+    <aside class="cp-sidebar" id="cp-sidebar" aria-label="Categorie catalogo">
+
+        <div class="cp-sidebar-hd">
+            <span class="cp-sidebar-jp">目</span>
+            <span class="cp-sidebar-label">Categorie</span>
+        </div>
+
+        <!-- Manga -->
+        <div class="cp-nav-block" id="cpnb-manga">
+            <button class="cp-nav-hd" onclick="catPage.setCat('manga')" aria-expanded="false">
+                <span class="cp-nav-num">01</span>
+                <span class="cp-nav-kanji">漫</span>
+                <span class="cp-nav-info">
+                    <span class="cp-nav-name">Manga &amp; Comics</span>
+                    <span class="cp-nav-jp">マンガ・コミック</span>
+                </span>
+                <span class="cp-nav-arrow">›</span>
+            </button>
+            <ul class="cp-sub-list" id="cpsub-manga">
+                <li><button class="cp-sub-btn" data-sub="all" onclick="catPage.setSub('all')">Tutti <span class="cp-cnt" id="cnt-manga-all">0</span></button></li>
+                <li><button class="cp-sub-btn" data-sub="shonen" onclick="catPage.setSub('shonen')">Shonen <span class="cp-cnt" id="cnt-manga-shonen">0</span></button></li>
+                <li><button class="cp-sub-btn" data-sub="seinen" onclick="catPage.setSub('seinen')">Seinen <span class="cp-cnt" id="cnt-manga-seinen">0</span></button></li>
+                <li><button class="cp-sub-btn" data-sub="shojo" onclick="catPage.setSub('shojo')">Shojo / Josei <span class="cp-cnt" id="cnt-manga-shojo">0</span></button></li>
+                <li><button class="cp-sub-btn" data-sub="comics" onclick="catPage.setSub('comics')">Comics &amp; Graphic Novel <span class="cp-cnt" id="cnt-manga-comics">0</span></button></li>
+            </ul>
+        </div>
+
+        <!-- Carte -->
+        <div class="cp-nav-block" id="cpnb-carte">
+            <button class="cp-nav-hd" onclick="catPage.setCat('carte')" aria-expanded="false">
+                <span class="cp-nav-num">02</span>
+                <span class="cp-nav-kanji">遊</span>
+                <span class="cp-nav-info">
+                    <span class="cp-nav-name">Carte &amp; Giochi</span>
+                    <span class="cp-nav-jp">カード・ゲーム</span>
+                </span>
+                <span class="cp-nav-arrow">›</span>
+            </button>
+            <ul class="cp-sub-list" id="cpsub-carte">
+                <li><button class="cp-sub-btn" data-sub="all" onclick="catPage.setSub('all')">Tutti <span class="cp-cnt" id="cnt-carte-all">0</span></button></li>
+                <li><button class="cp-sub-btn" data-sub="pokemon" onclick="catPage.setSub('pokemon')">Pok&eacute;mon TCG <span class="cp-cnt" id="cnt-carte-pokemon">0</span></button></li>
+                <li><button class="cp-sub-btn" data-sub="yugioh" onclick="catPage.setSub('yugioh')">Yu-Gi-Oh! <span class="cp-cnt" id="cnt-carte-yugioh">0</span></button></li>
+                <li><button class="cp-sub-btn" data-sub="magic" onclick="catPage.setSub('magic')">Magic: The Gathering <span class="cp-cnt" id="cnt-carte-magic">0</span></button></li>
+                <li><button class="cp-sub-btn" data-sub="onepiece" onclick="catPage.setSub('onepiece')">One Piece TCG <span class="cp-cnt" id="cnt-carte-onepiece">0</span></button></li>
+                <li><button class="cp-sub-btn" data-sub="dragonball" onclick="catPage.setSub('dragonball')">Dragon Ball Super <span class="cp-cnt" id="cnt-carte-dragonball">0</span></button></li>
+                <li><button class="cp-sub-btn" data-sub="altri" onclick="catPage.setSub('altri')">Board Games &amp; Altri <span class="cp-cnt" id="cnt-carte-altri">0</span></button></li>
+            </ul>
+        </div>
+
+        <!-- Gadget -->
+        <div class="cp-nav-block" id="cpnb-gadget">
+            <button class="cp-nav-hd" onclick="catPage.setCat('gadget')" aria-expanded="false">
+                <span class="cp-nav-num">03</span>
+                <span class="cp-nav-kanji">具</span>
+                <span class="cp-nav-info">
+                    <span class="cp-nav-name">Gadget &amp; Figures</span>
+                    <span class="cp-nav-jp">フィギュア・グッズ</span>
+                </span>
+                <span class="cp-nav-arrow">›</span>
+            </button>
+            <ul class="cp-sub-list" id="cpsub-gadget">
+                <li><button class="cp-sub-btn" data-sub="all" onclick="catPage.setSub('all')">Tutti <span class="cp-cnt" id="cnt-gadget-all">0</span></button></li>
+                <li><button class="cp-sub-btn" data-sub="figure" onclick="catPage.setSub('figure')">Action Figures <span class="cp-cnt" id="cnt-gadget-figure">0</span></button></li>
+                <li><button class="cp-sub-btn" data-sub="funko" onclick="catPage.setSub('funko')">Funko Pop <span class="cp-cnt" id="cnt-gadget-funko">0</span></button></li>
+                <li><button class="cp-sub-btn" data-sub="statuette" onclick="catPage.setSub('statuette')">Statuette <span class="cp-cnt" id="cnt-gadget-statuette">0</span></button></li>
+                <li><button class="cp-sub-btn" data-sub="poster" onclick="catPage.setSub('poster')">Poster &amp; Art <span class="cp-cnt" id="cnt-gadget-poster">0</span></button></li>
+                <li><button class="cp-sub-btn" data-sub="abbigliamento" onclick="catPage.setSub('abbigliamento')">Abbigliamento <span class="cp-cnt" id="cnt-gadget-abbigliamento">0</span></button></li>
+                <li><button class="cp-sub-btn" data-sub="accessori" onclick="catPage.setSub('accessori')">Accessori <span class="cp-cnt" id="cnt-gadget-accessori">0</span></button></li>
+            </ul>
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="cp-main" id="cp-main">
+
+        <!-- Content header -->
+        <div class="cp-content-hd">
+            <div>
+                <div class="cp-content-jp" id="cp-content-jp">カード・ゲーム</div>
+                <div class="cp-content-title" id="cp-content-title">
+                    Carte &amp; Giochi
+                    <span class="cp-sub-active-label" id="cp-sub-label"></span>
+                </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+                <span class="cp-result-count" id="cp-result-count">0 prodotti</span>
+                <select class="cp-sort" id="cp-sort" onchange="catPage.render()">
+                    <option value="recent">Pi&ugrave; recenti</option>
+                    <option value="az">A &#8594; Z</option>
+                    <option value="stato">Per stato</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Pills bar (subcategories) -->
+        <div class="cp-pills-bar" id="cp-pills-bar">
+            <!-- populated by JS -->
+        </div>
+
+        <!-- Product grid -->
+        <div class="cp-grid" id="cp-grid">
+            <!-- populated by JS -->
+        </div>
+
+    </main>
+
+</div>
+
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer id="footer">
+    <div class="footer-jp-bg" aria-hidden="true">漫</div>
+
+    <div class="footer-top-bar">
+        <div class="footer-top-inner">
+            <span class="footer-top-tagline">
+                <span class="footer-jp-deco" aria-hidden="true">漫画</span>
+                La tua fumetteria a Canosa di Puglia dal primo giorno
+                <span class="footer-jp-deco" aria-hidden="true">店</span>
+            </span>
+        </div>
+    </div>
+
+    <div class="footer-inner">
+        <div class="footer-grid">
+
+            <div class="footer-col footer-col--brand">
+                <span class="footer-logo">MAN<span class="dot">B</span>AGA<span class="dot">.</span></span>
+                <p class="footer-tagline">
+                    Manga, comics, giochi di carte e gadget anime.<br>
+                    Il punto di riferimento per gli appassionati<br>di Canosa di Puglia e dintorni.
+                </p>
+                <div class="footer-brand-badges">
+                    <span class="footer-badge">Manga</span>
+                    <span class="footer-badge">TCG</span>
+                    <span class="footer-badge">Figures</span>
+                    <span class="footer-badge">Gadget</span>
+                </div>
+                <div class="footer-seal" aria-hidden="true"><span>漫</span></div>
+            </div>
+
+            <div class="footer-col">
+                <div class="footer-col-h">ORARI <span class="footer-col-h-jp">営業時間</span></div>
+                <div class="footer-hours">
+                    <div class="footer-hours-row">
+                        <span>Lun &ndash; Sabato</span>
+                        <span class="footer-hours-time">10:00 &ndash; 13:00</span>
+                    </div>
+                    <div class="footer-hours-row">
+                        <span></span>
+                        <span class="footer-hours-time">17:00 &ndash; 20:30</span>
+                    </div>
+                    <div class="footer-hours-row">
+                        <span>Domenica</span>
+                        <span class="footer-hours-time">10:00 &ndash; 13:00</span>
+                    </div>
+                    <div class="footer-hours-row footer-hours-closed">
+                        <span></span>
+                        <span>Pomeriggio chiuso</span>
+                    </div>
+                </div>
+                <div class="footer-open-badge">
+                    <span class="footer-open-dot"></span>
+                    Aperto oggi
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <div class="footer-col-h">DOVE SIAMO <span class="footer-col-h-jp">所在地</span></div>
+                <address class="footer-address">
+                    Via Padre Reginaldo<br>
+                    Giuliani, 21<br>
+                    76012 Canosa di Puglia (BT)
+                </address>
+                <a href="https://maps.google.com/?q=Via+Padre+Reginaldo+Giuliani+21+Canosa+di+Puglia"
+                   target="_blank" rel="noopener noreferrer" class="footer-map-link">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    Apri in Google Maps
+                </a>
+            </div>
+
+            <div class="footer-col">
+                <div class="footer-col-h">CONTATTI <span class="footer-col-h-jp">連絡先</span></div>
+                <a href="https://www.instagram.com/_manbaga_/" target="_blank" rel="noopener noreferrer"
+                   class="footer-social-link footer-social-link--ig">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" aria-hidden="true">
+                        <rect x="2" y="2" width="20" height="20" rx="5"/>
+                        <circle cx="12" cy="12" r="4"/>
+                        <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/>
+                    </svg>
+                    <span>
+                        <span class="footer-link-label">Instagram</span>
+                        <span class="footer-link-sub">@_manbaga_</span>
+                    </span>
+                </a>
+                <a href="mailto:manbagacomics@gmail.com"
+                   class="footer-social-link footer-social-link--mail">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" aria-hidden="true">
+                        <rect x="2" y="4" width="20" height="16" rx="2"/>
+                        <polyline points="2,4 12,13 22,4"/>
+                    </svg>
+                    <span>
+                        <span class="footer-link-label">Email</span>
+                        <span class="footer-link-sub">manbagacomics@gmail.com</span>
+                    </span>
+                </a>
+                <a href="index.html#contatti" class="footer-social-link footer-social-link--form">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" aria-hidden="true">
+                        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                    </svg>
+                    <span>
+                        <span class="footer-link-label">Form contatti</span>
+                        <span class="footer-link-sub">Scrivici dal sito</span>
+                    </span>
+                </a>
+            </div>
+
+        </div>
+
+        <div class="footer-divider">
+            <div class="footer-divider-line"></div>
+            <span class="footer-divider-mark" aria-hidden="true">&#10022;</span>
+            <div class="footer-divider-line"></div>
+        </div>
+
+        <div class="footer-bottom">
+            <span>&copy; 2026 MANBAGA Comics &amp; Games &mdash; Canosa di Puglia</span>
+            <span class="footer-bottom-jp" aria-hidden="true">漫画店</span>
+            <span class="footer-bottom-right">
+                Realizzato con passione per i fan
+                <span class="footer-bottom-heart" aria-hidden="true">&#10084;</span>
+            </span>
+        </div>
+    </div>
+</footer>
+
+
+<!-- Lightbox zoom immagine prodotto -->
+<div id="img-lightbox" class="img-lightbox hidden" onclick="closeImageZoom()">
+    <button class="lightbox-close" onclick="closeImageZoom()" aria-label="Chiudi">&#10005;</button>
+    <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()">
+</div>
+
+
+<script src="script.js"></script>
+
+<script>
+/* ============================================================
+   CATALOG PAGE — catPage module
+   ============================================================ */
+var catPage = (function () {
+
+    /* ---- Category definitions ---- */
+    var CATS = {
+        manga: {
+            label: 'Manga & Comics',
+            jp: 'マンガ・コミック',
+            kanji: '漫',
+            subs: [
+                { key: 'shonen',  label: 'Shonen' },
+                { key: 'seinen',  label: 'Seinen' },
+                { key: 'shojo',   label: 'Shojo / Josei' },
+                { key: 'comics',  label: 'Comics & Graphic Novel' }
+            ]
+        },
+        carte: {
+            label: 'Carte & Giochi',
+            jp: 'カード・ゲーム',
+            kanji: '遊',
+            subs: [
+                { key: 'pokemon',    label: 'Pokémon TCG' },
+                { key: 'yugioh',     label: 'Yu-Gi-Oh!' },
+                { key: 'magic',      label: 'Magic: The Gathering' },
+                { key: 'onepiece',   label: 'One Piece TCG' },
+                { key: 'dragonball', label: 'Dragon Ball Super' },
+                { key: 'altri',      label: 'Board Games & Altri' }
+            ]
+        },
+        gadget: {
+            label: 'Gadget & Figures',
+            jp: 'フィギュア・グッズ',
+            kanji: '具',
+            subs: [
+                { key: 'figure',        label: 'Action Figures' },
+                { key: 'funko',         label: 'Funko Pop' },
+                { key: 'statuette',     label: 'Statuette' },
+                { key: 'poster',        label: 'Poster & Art' },
+                { key: 'abbigliamento', label: 'Abbigliamento' },
+                { key: 'accessori',     label: 'Accessori' }
+            ]
+        }
+    };
+
+    /* ---- State ---- */
+    var _cat = 'carte';
+    var _sub = 'all';
+
+    /* ---- Parse URL params ---- */
+    function _parseUrl() {
+        var params = new URLSearchParams(window.location.search);
+        var c = params.get('cat');
+        var s = params.get('sub');
+        if (c && CATS[c]) _cat = c;
+        if (s) _sub = s;
+    }
+
+    /* ---- Update URL ---- */
+    function _updateUrl() {
+        var url = 'catalogo.html?cat=' + _cat + (_sub && _sub !== 'all' ? '&sub=' + _sub : '');
+        history.replaceState(null, '', url);
+    }
+
+    /* ---- Count helpers ---- */
+    function _countCat(products, cat) {
+        return products.filter(function (p) { return p.cat === cat; }).length;
+    }
+    function _countSub(products, cat, sub) {
+        if (sub === 'all') return _countCat(products, cat);
+        return products.filter(function (p) { return p.cat === cat && p.subcat === sub; }).length;
+    }
+
+    /* ---- Update sidebar counts ---- */
+    function _updateCounts(products) {
+        Object.keys(CATS).forEach(function (catKey) {
+            var el = document.getElementById('cnt-' + catKey + '-all');
+            if (el) el.textContent = _countCat(products, catKey);
+            CATS[catKey].subs.forEach(function (s) {
+                var sel = document.getElementById('cnt-' + catKey + '-' + s.key);
+                if (sel) sel.textContent = _countSub(products, catKey, s.key);
+            });
+        });
+    }
+
+    /* ---- Update sidebar active states ---- */
+    function _updateSidebar() {
+        Object.keys(CATS).forEach(function (catKey) {
+            var block = document.getElementById('cpnb-' + catKey);
+            if (!block) return;
+            if (catKey === _cat) {
+                block.classList.add('is-active');
+                var hdBtn = block.querySelector('.cp-nav-hd');
+                if (hdBtn) hdBtn.setAttribute('aria-expanded', 'true');
+            } else {
+                block.classList.remove('is-active');
+                var hdBtn2 = block.querySelector('.cp-nav-hd');
+                if (hdBtn2) hdBtn2.setAttribute('aria-expanded', 'false');
+            }
+
+            /* Subcategory buttons */
+            var subList = document.getElementById('cpsub-' + catKey);
+            if (!subList) return;
+            subList.querySelectorAll('.cp-sub-btn').forEach(function (btn) {
+                btn.classList.toggle('is-active', catKey === _cat && btn.dataset.sub === _sub);
+            });
+        });
+    }
+
+    /* ---- Update mobile tabs ---- */
+    function _updateMobTabs() {
+        var tabs = document.querySelectorAll('#cp-mob-tabs .cp-mob-tab');
+        tabs.forEach(function (tab) {
+            tab.classList.toggle('is-active', tab.dataset.cat === _cat);
+        });
+    }
+
+    /* ---- Update pills bar ---- */
+    function _updatePills(products) {
+        var bar = document.getElementById('cp-pills-bar');
+        if (!bar) return;
+
+        var catDef = CATS[_cat];
+        if (!catDef) { bar.innerHTML = ''; return; }
+
+        var allCount = _countCat(products, _cat);
+
+        var html = '<button class="cp-pill' + (_sub === 'all' ? ' is-active' : '') + '" onclick="catPage.setSub(\'all\')">'
+            + 'Tutti'
+            + '<span class="cp-pill-cnt">' + allCount + '</span>'
+            + '</button>';
+
+        catDef.subs.forEach(function (s) {
+            var cnt = _countSub(products, _cat, s.key);
+            html += '<button class="cp-pill' + (_sub === s.key ? ' is-active' : '') + '" onclick="catPage.setSub(\'' + s.key + '\')">'
+                + s.label
+                + '<span class="cp-pill-cnt">' + cnt + '</span>'
+                + '</button>';
+        });
+
+        bar.innerHTML = html;
+    }
+
+    /* ---- Update content header ---- */
+    function _updateHeader(filteredCount) {
+        var catDef = CATS[_cat] || { label: 'Catalogo', jp: 'カタログ' };
+
+        var jpEl    = document.getElementById('cp-content-jp');
+        var titleEl = document.getElementById('cp-content-title');
+        var subLbl  = document.getElementById('cp-sub-label');
+        var countEl = document.getElementById('cp-result-count');
+        var bcCat   = document.getElementById('cp-bc-cat');
+
+        if (jpEl)    jpEl.textContent = catDef.jp;
+        if (bcCat)   bcCat.textContent = catDef.label;
+
+        var subLabel = '';
+        if (_sub && _sub !== 'all') {
+            var found = (catDef.subs || []).find(function (s) { return s.key === _sub; });
+            if (found) subLabel = ' — ' + found.label;
+        }
+        if (titleEl) {
+            titleEl.innerHTML = catDef.label.replace(/&/g, '&amp;')
+                + (subLabel ? ' <span class="cp-sub-active-label">' + subLabel.replace(/&/g, '&amp;') + '</span>' : '');
+        }
+        if (subLbl) subLbl.style.display = 'none'; /* handled inline above */
+
+        if (countEl) {
+            countEl.textContent = filteredCount === 1 ? '1 prodotto' : filteredCount + ' prodotti';
+        }
+    }
+
+    /* ---- Sort products ---- */
+    function _sortProducts(products) {
+        var sortEl = document.getElementById('cp-sort');
+        var mode = sortEl ? sortEl.value : 'recent';
+
+        var copy = products.slice();
+        if (mode === 'recent') {
+            copy.sort(function (a, b) { return b.id - a.id; });
+        } else if (mode === 'az') {
+            copy.sort(function (a, b) { return a.title.localeCompare(b.title, 'it'); });
+        } else if (mode === 'stato') {
+            var BADGE_ORDER = { 'NOVITÀ': 0, 'HOT': 1, 'IN ARRIVO': 2, 'PREORDINA': 3, 'OUT OF STOCK': 4, 'ESAURITO': 5, '': 6 };
+            copy.sort(function (a, b) {
+                var oa = BADGE_ORDER[a.badge] !== undefined ? BADGE_ORDER[a.badge] : 6;
+                var ob = BADGE_ORDER[b.badge] !== undefined ? BADGE_ORDER[b.badge] : 6;
+                return oa - ob;
+            });
+        }
+        return copy;
+    }
+
+    /* ---- Build a single card HTML ---- */
+    function _cardHtml(p) {
+        var isOos = (p.badge === 'OUT OF STOCK' || p.badge === 'ESAURITO');
+        var html = '<div class="cp-card' + (isOos ? ' cp-card--oos' : '') + '" onclick="openProductModal(' + p.id + ')">';
+        if (p.badge) {
+            html += '<div class="product-badge" data-badge="' + p.badge + '">' + p.badge + '</div>';
+        }
+        html += '<div class="cp-card-img-wrap">'
+            + '<img class="cp-card-img" src="' + p.image + '" alt="' + _esc(p.title) + '" loading="lazy" onerror="this.src=\'https://placehold.co/300x400/0d0d0d/333?text=Cover\'">'
+            + '<div class="cp-card-overlay"><span>Scopri &#8250;</span></div>'
+            + '</div>'
+            + '<div class="cp-card-body">'
+            + '<div class="cp-card-store">MANBAGA.</div>'
+            + '<div class="cp-card-title">' + _esc(p.title) + '</div>';
+        if (p.volume) {
+            html += '<div class="cp-card-vol">' + _esc(p.volume) + '</div>';
+        }
+        if (p.price) {
+            html += '<div class="cp-card-price">' + _esc(p.price) + '</div>';
+        }
+        html += '</div></div>';
+        return html;
+    }
+
+    /* ---- Escape HTML ---- */
+    function _esc(str) {
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
+    /* ---- Render grid ---- */
+    function render() {
+        var allProducts = getProducts();
+
+        /* Only products with a cat field appear in catalog */
+        var catProducts = allProducts.filter(function (p) { return p.cat === _cat; });
+
+        /* Apply subcategory filter */
+        var filtered = (_sub && _sub !== 'all')
+            ? catProducts.filter(function (p) { return p.subcat === _sub; })
+            : catProducts;
+
+        /* Sort */
+        filtered = _sortProducts(filtered);
+
+        _updateCounts(allProducts);
+        _updateSidebar();
+        _updateMobTabs();
+        _updatePills(allProducts);
+        _updateHeader(filtered.length);
+        _updateUrl();
+
+        var grid = document.getElementById('cp-grid');
+        if (!grid) return;
+
+        if (filtered.length === 0) {
+            grid.innerHTML = '<div class="cp-empty">'
+                + '<div class="cp-empty-kanji">空</div>'
+                + '<div class="cp-empty-title">Nessun prodotto in questa sezione</div>'
+                + '<p class="cp-empty-msg">Non ci sono ancora prodotti qui.<br>'
+                + 'Seguici su <a href="https://www.instagram.com/_manbaga_/" target="_blank" rel="noopener noreferrer" style="color:#DC2626">Instagram</a> per scoprire le novità!</p>'
+                + '</div>';
+            return;
+        }
+
+        grid.innerHTML = filtered.map(function (p, i) {
+            return '<div style="animation-delay:' + (i * 0.05) + 's">' + _cardHtml(p) + '</div>';
+        }).join('');
+
+        /* Unwrap delay wrappers — inject delay on the card itself */
+        var wrappers = grid.querySelectorAll(':scope > div[style]');
+        wrappers.forEach(function (wrapper) {
+            var card = wrapper.querySelector('.cp-card');
+            if (card) {
+                card.style.animationDelay = wrapper.style.animationDelay;
+                wrapper.replaceWith(card);
+            }
+        });
+    }
+
+    /* ---- Public: setCat ---- */
+    function setCat(cat) {
+        if (!CATS[cat]) return;
+        _cat = cat;
+        _sub = 'all';
+        render();
+    }
+
+    /* ---- Public: setSub ---- */
+    function setSub(sub) {
+        _sub = sub || 'all';
+        render();
+    }
+
+    /* ---- Init ---- */
+    function init() {
+        _parseUrl();
+        render();
+    }
+
+    return {
+        setCat:  setCat,
+        setSub:  setSub,
+        render:  render,
+        init:    init
+    };
+
+})();
+
+/* ---- Bootstrap on DOMContentLoaded ---- */
+document.addEventListener('DOMContentLoaded', function () {
+    seedDemoData();
+    catPage.init();
+});
+</script>
+
+</body>
+</html>

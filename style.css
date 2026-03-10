@@ -2654,3 +2654,655 @@ textarea.form-input {
         width: 18px;
     }
 }
+
+/* ============================================================
+   CAT-EXPLORE LINK (index.html catalog cards)
+   ============================================================ */
+.cat-explore-link {
+    display: inline-block;
+    margin-top: 16px;
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #DC2626;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.15s ease;
+}
+.cat-explore-link:hover {
+    border-bottom-color: #DC2626;
+}
+
+/* ============================================================
+   CATALOG PAGE — catalogo.html
+   ============================================================ */
+
+/* ---- Hero ---- */
+.cp-hero {
+    position: relative;
+    background: #0d0d0d;
+    color: #f5f0e8;
+    padding: 80px 0 60px;
+    overflow: hidden;
+    margin-top: var(--nav-h);
+}
+
+.cp-hero-rays {
+    position: absolute;
+    inset: 0;
+    background-image: conic-gradient(
+        from 0deg at 50% 110%,
+        transparent 0deg,
+        rgba(220,38,38,0.06) 10deg,
+        transparent 20deg,
+        rgba(220,38,38,0.04) 30deg,
+        transparent 40deg,
+        rgba(220,38,38,0.06) 50deg,
+        transparent 60deg,
+        rgba(220,38,38,0.04) 70deg,
+        transparent 80deg,
+        rgba(220,38,38,0.06) 90deg,
+        transparent 100deg,
+        rgba(220,38,38,0.04) 110deg,
+        transparent 120deg,
+        rgba(220,38,38,0.06) 130deg,
+        transparent 140deg,
+        rgba(220,38,38,0.04) 150deg,
+        transparent 160deg,
+        rgba(220,38,38,0.06) 170deg,
+        transparent 180deg
+    );
+    pointer-events: none;
+}
+
+.cp-hero-bg-kanji {
+    position: absolute;
+    font-family: 'Noto Serif JP', serif;
+    font-size: 180px;
+    opacity: 0.04;
+    color: white;
+    top: 50%;
+    right: 10%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    user-select: none;
+    white-space: nowrap;
+    line-height: 1;
+}
+
+.cp-hero-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 40px;
+}
+
+.cp-breadcrumb {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.cp-bc-link {
+    color: rgba(245,240,232,0.5);
+    text-decoration: none;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: color 0.15s ease;
+}
+.cp-bc-link:hover {
+    color: #f5f0e8;
+}
+
+.cp-bc-sep {
+    color: rgba(245,240,232,0.3);
+    font-size: 13px;
+}
+
+.cp-bc-current {
+    color: rgba(245,240,232,0.85);
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.cp-hero-title {
+    font-family: 'Bangers', cursive;
+    font-size: clamp(52px, 8vw, 96px);
+    line-height: 0.95;
+    letter-spacing: 0.01em;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+}
+
+.cp-hero-title .stroke {
+    -webkit-text-stroke: 2px #f5f0e8;
+    color: transparent;
+}
+
+.cp-hero-sub {
+    font-size: 14px;
+    color: rgba(245,240,232,0.5);
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+/* ---- Mobile category tabs ---- */
+.cp-mob-tabs {
+    display: none;
+    overflow-x: auto;
+    gap: 0;
+    background: #0d0d0d;
+    padding: 0 20px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+.cp-mob-tabs::-webkit-scrollbar { display: none; }
+
+.cp-mob-tab {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 12px 20px;
+    border-bottom: 3px solid transparent;
+    color: rgba(245,240,232,0.5);
+    transition: all 0.2s ease;
+}
+.cp-mob-tab.is-active {
+    color: #f5f0e8;
+    border-bottom-color: #DC2626;
+}
+.cp-mob-tab-kanji {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 20px;
+    line-height: 1;
+}
+.cp-mob-tab span:last-child {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+/* ---- Main layout wrapper ---- */
+.cp-wrap {
+    display: flex;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 48px 40px;
+    gap: 48px;
+    align-items: flex-start;
+}
+
+/* ---- Sidebar ---- */
+.cp-sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    position: sticky;
+    top: calc(var(--nav-h) + 24px);
+}
+
+.cp-sidebar-hd {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #0d0d0d;
+    margin-bottom: 8px;
+}
+
+.cp-sidebar-jp {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 22px;
+    color: #DC2626;
+}
+
+.cp-sidebar-label {
+    font-family: 'Inter', sans-serif;
+    font-weight: 900;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.cp-nav-block {
+    border-bottom: 1px solid rgba(0,0,0,0.12);
+}
+
+.cp-nav-hd {
+    width: 100%;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 0;
+    text-align: left;
+    transition: all 0.2s ease;
+}
+
+.cp-nav-num {
+    font-family: 'Bangers', cursive;
+    font-size: 13px;
+    color: #888;
+    letter-spacing: 0.05em;
+    min-width: 20px;
+}
+
+.cp-nav-kanji {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 28px;
+    color: #ccc;
+    transition: color 0.2s ease;
+    line-height: 1;
+}
+
+.cp-nav-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.cp-nav-name {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.cp-nav-jp {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 10px;
+    color: #888;
+    margin-top: 1px;
+}
+
+.cp-nav-arrow {
+    font-size: 16px;
+    color: #888;
+    transition: transform 0.2s ease;
+}
+
+.cp-nav-block.is-active .cp-nav-hd {
+    border-left: 3px solid #DC2626;
+    padding-left: 10px;
+}
+
+.cp-nav-block.is-active .cp-nav-kanji {
+    color: #DC2626;
+}
+
+.cp-nav-block.is-active .cp-nav-arrow {
+    transform: rotate(90deg);
+    color: #DC2626;
+}
+
+.cp-nav-block.is-active .cp-nav-num {
+    color: #DC2626;
+}
+
+.cp-sub-list {
+    display: none;
+    list-style: none;
+    padding: 0 0 12px 33px;
+    margin: 0;
+}
+
+.cp-nav-block.is-active .cp-sub-list {
+    display: block;
+}
+
+.cp-sub-list li {
+    padding: 0;
+}
+
+.cp-sub-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #555;
+    padding: 6px 0;
+    width: 100%;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+    letter-spacing: 0.03em;
+    transition: color 0.15s ease;
+}
+.cp-sub-btn:hover {
+    color: #0d0d0d;
+}
+
+.cp-sub-btn.is-active {
+    color: #DC2626;
+    font-weight: 700;
+}
+
+.cp-cnt {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    color: #888;
+    min-width: 18px;
+    text-align: right;
+}
+
+/* ---- Pills bar ---- */
+.cp-pills-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0 0 24px;
+    background: none;
+}
+
+.cp-pill {
+    background: none;
+    border: 1.5px solid rgba(0,0,0,0.2);
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    color: #555;
+    transition: all 0.15s ease;
+}
+.cp-pill:hover {
+    border-color: #DC2626;
+    color: #DC2626;
+}
+
+.cp-pill.is-active {
+    background: #DC2626;
+    border-color: #DC2626;
+    color: white;
+}
+
+.cp-pill-cnt {
+    font-size: 10px;
+    margin-left: 4px;
+    opacity: 0.75;
+}
+
+/* ---- Main content area ---- */
+.cp-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.cp-content-hd {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #0d0d0d;
+    margin-bottom: 28px;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.cp-content-jp {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 11px;
+    color: #DC2626;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+}
+
+.cp-content-title {
+    font-family: 'Bangers', cursive;
+    font-size: clamp(32px, 5vw, 52px);
+    letter-spacing: 0.02em;
+    line-height: 1;
+}
+
+.cp-sub-active-label {
+    font-size: 0.65em;
+    color: #888;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0;
+}
+
+.cp-result-count {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #888;
+}
+
+.cp-sort {
+    background: #f5f0e8;
+    border: 2px solid #0d0d0d;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 6px 10px;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+/* ---- Product grid ---- */
+.cp-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+/* ---- Catalog product cards ---- */
+.cp-card {
+    background: #0d0d0d;
+    cursor: pointer;
+    position: relative;
+    border: 2px solid transparent;
+    transition: all 0.25s ease;
+}
+.cp-card:hover {
+    border-color: #DC2626;
+    transform: translateY(-4px);
+}
+
+.cp-card--oos {
+    opacity: 0.55;
+}
+
+.cp-card-img-wrap {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 3 / 4;
+}
+
+.cp-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+.cp-card:hover .cp-card-img {
+    transform: scale(1.05);
+}
+
+.cp-card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(220,38,38,0.85), transparent);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 16px;
+}
+.cp-card:hover .cp-card-overlay {
+    opacity: 1;
+}
+
+.cp-card-overlay span {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: white;
+}
+
+.cp-card-body {
+    padding: 12px;
+    border-top: 2px solid rgba(255,255,255,0.06);
+}
+
+.cp-card-store {
+    font-family: 'Bangers', cursive;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: #DC2626;
+    margin-bottom: 4px;
+}
+
+.cp-card-title {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    color: #f5f0e8;
+    line-height: 1.3;
+    margin-bottom: 2px;
+}
+
+.cp-card-vol {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    color: rgba(245,240,232,0.5);
+    margin-bottom: 4px;
+    line-height: 1.3;
+}
+
+.cp-card-price {
+    font-family: 'Bangers', cursive;
+    font-size: 16px;
+    color: #FBBF24;
+    letter-spacing: 0.03em;
+}
+
+/* ---- Empty state ---- */
+.cp-empty {
+    text-align: center;
+    padding: 80px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.cp-empty-kanji {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 120px;
+    color: #ddd;
+    line-height: 1;
+    margin-bottom: 8px;
+}
+
+.cp-empty-title {
+    font-family: 'Bangers', cursive;
+    font-size: 28px;
+    letter-spacing: 0.04em;
+    color: #0d0d0d;
+}
+
+.cp-empty-msg {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: #666;
+    line-height: 1.7;
+}
+
+/* ---- Stagger fade-in animation ---- */
+@keyframes cpCardIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.cp-card {
+    animation: cpCardIn 0.35s ease both;
+}
+
+/* ---- Catalog responsive breakpoints ---- */
+@media (max-width: 1100px) {
+    .cp-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .cp-sidebar {
+        display: none;
+    }
+    .cp-mob-tabs {
+        display: flex;
+    }
+    .cp-wrap {
+        flex-direction: column;
+        padding: 0 0 48px;
+    }
+    .cp-main {
+        width: 100%;
+    }
+    .cp-content-hd {
+        padding: 16px 20px;
+        border-bottom-width: 2px;
+        margin-bottom: 0;
+    }
+    .cp-pills-bar {
+        padding: 16px 20px;
+        background: rgba(245,240,232,0.5);
+    }
+    .cp-main .cp-grid {
+        padding: 16px 20px;
+    }
+    .cp-hero-inner {
+        padding: 0 20px;
+    }
+    .cp-hero-bg-kanji {
+        font-size: 100px;
+        right: 5%;
+    }
+}
+
+@media (max-width: 768px) {
+    .cp-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .cp-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+}

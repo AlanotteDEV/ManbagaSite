@@ -215,6 +215,21 @@
                                     <option value="ESAURITO">ESAURITO</option>
                                 </select>
                             </div>
+                            <div class="form-row">
+                                <label class="form-label">Categoria</label>
+                                <select id="product-cat" class="form-input" onchange="updateAdminSubcats()">
+                                    <option value="">-- Seleziona --</option>
+                                    <option value="manga">Manga &amp; Comics</option>
+                                    <option value="carte">Carte &amp; Giochi</option>
+                                    <option value="gadget">Gadget &amp; Figures</option>
+                                </select>
+                            </div>
+                            <div class="form-row">
+                                <label class="form-label">Sottocategoria</label>
+                                <select id="product-subcat" class="form-input">
+                                    <option value="">-- Prima scegli la categoria --</option>
+                                </select>
+                            </div>
                             <button onclick="addAdminProduct()"
                                     class="btn btn-primary"
                                     style="clip-path:none;width:100%;border-radius:0;margin-top:8px">
@@ -354,6 +369,7 @@
                         <span class="cat-tag">Shojo</span>
                         <span class="cat-tag">Comics</span>
                     </div>
+                    <a href="catalogo.html?cat=manga" class="cat-explore-link">Sfoglia il catalogo &#8594;</a>
                 </div>
             </div>
 
@@ -370,6 +386,7 @@
                         <span class="cat-tag">Magic</span>
                         <span class="cat-tag">One Piece</span>
                     </div>
+                    <a href="catalogo.html?cat=carte" class="cat-explore-link">Sfoglia il catalogo &#8594;</a>
                 </div>
             </div>
 
@@ -386,6 +403,7 @@
                         <span class="cat-tag">Poster</span>
                         <span class="cat-tag">Accessori</span>
                     </div>
+                    <a href="catalogo.html?cat=gadget" class="cat-explore-link">Sfoglia il catalogo &#8594;</a>
                 </div>
             </div>
 
