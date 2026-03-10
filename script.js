@@ -40,10 +40,10 @@
    5. Sostituisci i valori nelle costanti qui sotto
    ============================================================ */
 var EMAILJS_CONFIG = {
-    publicKey:         'Sog-jCJquh3AIZPiB',
-    serviceId:         'service_xaub67a',
-    templateContact:   'template_b1d0xcy',
-    templateAutoreply: 'template_88f0erj'
+    publicKey:         'RMUoD23dWNtheAZiE',
+    serviceId:         'service_x1xol32',
+    templateContact:   'template_z2rchyq',
+    templateAutoreply: 'template_xar3ak7'
 };
 
 var _emailjsReady = false;
