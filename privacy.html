@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#080808">
     <meta name="robots" content="noindex">
+    <link rel="icon" type="image/png" href="WhatsApp_Image_2026-03-10_at_11.15.27-removebg-preview.png">
     <title>Privacy &amp; Cookie Policy — MANBAGA Comics &amp; Games</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -321,7 +322,8 @@
             <span style="font-size:20px;flex-shrink:0">📋</span>
             <div>
                 <strong>Informativa sintetica</strong> — Questo sito raccoglie solo i dati strettamente necessari al suo funzionamento:
-                autenticazione utenti (Firebase Auth) e prenotazioni tavoli. Non vendiamo né cediamo i tuoi dati a terzi per scopi commerciali.
+                prenotazione tavoli (Firebase Auth + Realtime Database), pubblicazione di recensioni, catalogo prodotti ed eventi (Firebase Firestore), modulo di contatto (EmailJS).
+                Non vendiamo né cediamo i tuoi dati a terzi per scopi commerciali.
             </div>
         </div>
 
@@ -341,12 +343,27 @@
         <!-- 2 - Dati raccolti -->
         <div class="section">
             <h2 class="section-title"><span class="s-icon">📦</span> 2. Dati Personali Raccolti</h2>
-            <p>Durante l'utilizzo del sito raccogliamo i seguenti dati:</p>
+            <p>Durante l'utilizzo del sito raccogliamo i seguenti dati a seconda della funzione utilizzata:</p>
+
+            <p><strong style="color:var(--white)">Prenotazione Tavoli</strong></p>
             <ul>
-                <li><strong>Dati di registrazione:</strong> nome, indirizzo email e password (memorizzata in forma crittografata tramite Firebase Authentication).</li>
-                <li><strong>Dati di prenotazione:</strong> nome prenotazione, data, orario di arrivo e uscita, numero di persone al tavolo.</li>
-                <li><strong>Dati tecnici:</strong> indirizzo IP, tipo di browser e sistema operativo (raccolti automaticamente dai server Firebase per sicurezza e funzionamento del servizio).</li>
-                <li><strong>Dati del modulo di contatto:</strong> nome, email, testo del messaggio inviato tramite il form nella homepage (trasmessi via EmailJS).</li>
+                <li><strong>Dati di accesso:</strong> indirizzo email e password (conservata in forma crittografata tramite Firebase Authentication). La registrazione è necessaria per accedere al sistema di prenotazione.</li>
+                <li><strong>Dati di prenotazione:</strong> nome indicato per la prenotazione, data, orario di arrivo e di uscita, numero di persone al tavolo.</li>
+            </ul>
+
+            <p style="margin-top:12px"><strong style="color:var(--white)">Recensioni</strong></p>
+            <ul>
+                <li><strong>Dati della recensione:</strong> nome o pseudonimo, valutazione da 1 a 5 stelle, testo della recensione. Le recensioni sono soggette ad approvazione prima della pubblicazione e non richiedono registrazione.</li>
+            </ul>
+
+            <p style="margin-top:12px"><strong style="color:var(--white)">Modulo di Contatto</strong></p>
+            <ul>
+                <li><strong>Dati del messaggio:</strong> nome, indirizzo email, testo del messaggio inviato tramite il form nella homepage. Questi dati vengono trasmessi via EmailJS direttamente alla nostra casella di posta.</li>
+            </ul>
+
+            <p style="margin-top:12px"><strong style="color:var(--white)">Dati Tecnici (raccolti automaticamente)</strong></p>
+            <ul>
+                <li>Indirizzo IP, tipo di browser e sistema operativo, raccolti automaticamente dall'infrastruttura Google/Firebase per sicurezza e funzionamento del servizio. Non vengono utilizzati per profilare l'utente.</li>
             </ul>
         </div>
 
@@ -355,21 +372,35 @@
             <h2 class="section-title"><span class="s-icon">🎯</span> 3. Finalità del Trattamento</h2>
             <p>I dati raccolti vengono utilizzati esclusivamente per:</p>
             <ul>
-                <li>Consentire la registrazione e l'accesso al sistema di prenotazione tavoli.</li>
-                <li>Gestire e mostrare in tempo reale le prenotazioni dei tavoli del negozio.</li>
+                <li>Consentire la registrazione e l'accesso al sistema di prenotazione tavoli del negozio.</li>
+                <li>Gestire e mostrare in tempo reale la disponibilità e le prenotazioni dei tavoli.</li>
+                <li>Ricevere, moderare e pubblicare le recensioni degli utenti sul sito.</li>
+                <li>Visualizzare il catalogo prodotti ed eventi del negozio (dati gestiti internamente, non personali).</li>
                 <li>Rispondere alle richieste di contatto inviate tramite il modulo nella homepage.</li>
                 <li>Garantire la sicurezza del servizio e prevenire usi fraudolenti.</li>
             </ul>
             <p>
-                <strong>Non utilizziamo i tuoi dati per profilazione, pubblicità comportamentale o altre finalità commerciali.</strong>
+                <strong>Non utilizziamo i tuoi dati per profilazione, pubblicità comportamentale, marketing diretto o altre finalità commerciali non indicate in questa informativa.</strong>
             </p>
         </div>
 
-        <!-- 4 - Cookie -->
+        <!-- 4 - Base giuridica -->
         <div class="section">
-            <h2 class="section-title"><span class="s-icon">🍪</span> 4. Cookie Policy</h2>
+            <h2 class="section-title"><span class="s-icon">⚖️</span> 4. Base Giuridica del Trattamento</h2>
+            <ul>
+                <li><strong>Prenotazione tavoli:</strong> esecuzione di un contratto / misure precontrattuali (art. 6.1.b GDPR) — i dati sono necessari per fornire il servizio richiesto.</li>
+                <li><strong>Recensioni:</strong> consenso espresso dell'utente (art. 6.1.a GDPR) — l'invio è volontario. L'utente può richiedere la cancellazione in qualsiasi momento.</li>
+                <li><strong>Modulo di contatto:</strong> legittimo interesse a rispondere alle richieste (art. 6.1.f GDPR).</li>
+                <li><strong>Dati tecnici:</strong> legittimo interesse alla sicurezza e al corretto funzionamento del servizio (art. 6.1.f GDPR).</li>
+            </ul>
+        </div>
+
+        <!-- 5 - Cookie -->
+        <div class="section">
+            <h2 class="section-title"><span class="s-icon">🍪</span> 5. Cookie &amp; Storage Policy</h2>
             <p>
-                Un cookie è un piccolo file di testo salvato nel tuo browser. Il nostro sito utilizza i seguenti cookie:
+                Un cookie è un piccolo file di testo salvato nel tuo browser. Il nostro sito utilizza cookie tecnici necessari
+                al funzionamento e cookie di terze parti legati ai servizi esterni che utilizziamo. Non utilizziamo cookie di profilazione o pubblicitari.
             </p>
 
             <table class="cookie-table">
@@ -392,105 +423,191 @@
                         <td>Firebase Auth Token<br><small>(localStorage / IndexedDB)</small></td>
                         <td><span class="badge-necessary">Necessario</span></td>
                         <td>Sessione / 1 anno</td>
-                        <td>Mantiene la sessione di autenticazione per il sistema di prenotazione tavoli.</td>
+                        <td>Mantiene la sessione di autenticazione per il sistema di prenotazione tavoli. Senza questo token non è possibile effettuare o gestire prenotazioni.</td>
                     </tr>
                     <tr>
-                        <td>Firebase Database<br><small>(google.com)</small></td>
+                        <td>Firebase Realtime Database<br><small>(firebaseio.com)</small></td>
                         <td><span class="badge-necessary">Necessario</span></td>
                         <td>Sessione</td>
-                        <td>Connessione in tempo reale al database prenotazioni.</td>
+                        <td>Connessione in tempo reale al database prenotazioni tavoli. Gestisce la disponibilità e le prenotazioni live.</td>
+                    </tr>
+                    <tr>
+                        <td>Firebase Firestore<br><small>(firestore.googleapis.com)</small></td>
+                        <td><span class="badge-necessary">Necessario</span></td>
+                        <td>Sessione</td>
+                        <td>Database per catalogo prodotti, eventi, recensioni. Utilizzato per mostrare le informazioni del negozio sul sito.</td>
+                    </tr>
+                    <tr>
+                        <td>Firebase Storage<br><small>(firebasestorage.app)</small></td>
+                        <td><span class="badge-necessary">Necessario</span></td>
+                        <td>Sessione</td>
+                        <td>Archiviazione delle immagini dei prodotti del catalogo.</td>
                     </tr>
                     <tr>
                         <td>Google Fonts<br><small>(fonts.googleapis.com)</small></td>
                         <td><span class="badge-analytics">Tecnico</span></td>
                         <td>1 anno</td>
-                        <td>Caricamento dei font tipografici del sito. Google potrebbe registrare l'IP della richiesta.</td>
+                        <td>Caricamento dei font tipografici del sito. Google potrebbe registrare l'indirizzo IP della richiesta come dato di accesso ai propri server.</td>
                     </tr>
                     <tr>
                         <td>EmailJS<br><small>(emailjs.com)</small></td>
                         <td><span class="badge-analytics">Tecnico</span></td>
                         <td>Sessione</td>
-                        <td>Servizio di invio email per il modulo di contatto nella homepage.</td>
+                        <td>Servizio di invio email per il modulo di contatto nella homepage. I dati del form (nome, email, messaggio) vengono trasmessi ai server EmailJS per l'inoltro.</td>
+                    </tr>
+                    <tr>
+                        <td>Chart.js CDN<br><small>(cdn.jsdelivr.net)</small></td>
+                        <td><span class="badge-analytics">Tecnico</span></td>
+                        <td>Sessione</td>
+                        <td>Libreria JavaScript per la visualizzazione di grafici nel gestionale interno. Nessun dato personale trasmesso, solo richiesta del file JS.</td>
+                    </tr>
+                    <tr>
+                        <td>SheetJS CDN<br><small>(cdn.sheetjs.com)</small></td>
+                        <td><span class="badge-analytics">Tecnico</span></td>
+                        <td>Sessione</td>
+                        <td>Libreria JavaScript per l'export Excel nel gestionale interno. Nessun dato personale trasmesso, solo richiesta del file JS.</td>
                     </tr>
                 </tbody>
             </table>
 
             <p style="margin-top:14px">
                 Puoi gestire o cancellare i cookie in qualsiasi momento dalle impostazioni del tuo browser.
-                Disabilitare i cookie tecnici potrebbe compromettere il funzionamento del sito.
+                Disabilitare i cookie tecnici legati a Firebase potrebbe impedire il funzionamento del sistema di prenotazione tavoli.
             </p>
             <p>
-                Per revocare il consenso precedentemente dato, puoi eliminare la voce <code>manbaga_cookie_consent</code>
+                Per revocare il consenso al banner cookie, puoi eliminare la voce <code>manbaga_cookie_consent</code>
                 dallo storage del browser (DevTools &rarr; Application &rarr; LocalStorage).
             </p>
         </div>
 
-        <!-- 5 - Terze parti -->
+        <!-- 6 - Terze parti -->
         <div class="section">
-            <h2 class="section-title"><span class="s-icon">🔗</span> 5. Servizi di Terze Parti</h2>
-            <p>Il sito si avvale dei seguenti servizi esterni, ognuno dotato di propria informativa:</p>
+            <h2 class="section-title"><span class="s-icon">🔗</span> 6. Servizi di Terze Parti</h2>
+            <p>Il sito si avvale dei seguenti servizi esterni. Ogni fornitore è responsabile del trattamento dei dati nelle proprie infrastrutture e dispone di propria informativa privacy:</p>
             <ul>
                 <li>
-                    <strong>Firebase (Google LLC):</strong> autenticazione utenti e database in tempo reale.
+                    <strong>Firebase Authentication (Google LLC):</strong> gestione account utenti e sessioni per la prenotazione tavoli.
                     <a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener">Privacy Policy Firebase ↗</a>
                 </li>
                 <li>
-                    <strong>EmailJS:</strong> servizio di invio email per il modulo di contatto.
+                    <strong>Firebase Realtime Database (Google LLC):</strong> database in tempo reale per le prenotazioni tavoli.
+                    <a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener">Privacy Policy Firebase ↗</a>
+                </li>
+                <li>
+                    <strong>Firebase Firestore (Google LLC):</strong> database per catalogo prodotti, eventi e recensioni.
+                    <a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener">Privacy Policy Firebase ↗</a>
+                </li>
+                <li>
+                    <strong>Firebase Storage (Google LLC):</strong> archiviazione immagini prodotti.
+                    <a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener">Privacy Policy Firebase ↗</a>
+                </li>
+                <li>
+                    <strong>EmailJS:</strong> servizio di invio email per il modulo di contatto. I dati del form transitano sui loro server per il solo scopo dell'inoltro.
                     <a href="https://www.emailjs.com/legal/privacy-policy/" target="_blank" rel="noopener">Privacy Policy EmailJS ↗</a>
                 </li>
                 <li>
-                    <strong>Google Fonts:</strong> font tipografici.
+                    <strong>Google Fonts:</strong> font tipografici caricati da server Google.
                     <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Privacy Policy Google ↗</a>
                 </li>
+                <li>
+                    <strong>jsDelivr CDN (Fondazione jsdelivr.net):</strong> distribuzione della libreria Chart.js. Nessun dato personale trasmesso.
+                    <a href="https://www.jsdelivr.com/privacy-policy-jsdelivr-net" target="_blank" rel="noopener">Privacy Policy jsDelivr ↗</a>
+                </li>
+                <li>
+                    <strong>SheetJS / xlsx (cdn.sheetjs.com):</strong> libreria per export Excel usata solo nel gestionale interno. Nessun dato personale trasmesso.
+                </li>
+                <li>
+                    <strong>Instagram (Meta Platforms):</strong> link al profilo Instagram del negozio. Il click reindirizza alla piattaforma Instagram; eventuali dati raccolti da Meta sono soggetti alle loro policy.
+                    <a href="https://privacycenter.instagram.com/policy/" target="_blank" rel="noopener">Privacy Policy Instagram ↗</a>
+                </li>
+            </ul>
+            <p style="margin-top:12px">
+                Tutti i fornitori sopra citati che trattano dati personali nell'ambito dei servizi offerti a MANBAGA operano in qualità di
+                <strong>Responsabili del Trattamento</strong> ai sensi dell'art. 28 del GDPR.
+                Google LLC e Meta Platforms Inc. partecipano al framework <strong>EU-U.S. Data Privacy Framework</strong>,
+                garantendo un livello adeguato di protezione per i trasferimenti di dati verso gli USA.
+            </p>
+        </div>
+
+        <!-- 7 - Conservazione -->
+        <div class="section">
+            <h2 class="section-title"><span class="s-icon">🗂️</span> 7. Conservazione dei Dati</h2>
+            <ul>
+                <li><strong>Dati di prenotazione tavoli:</strong> le prenotazioni vengono eliminate automaticamente dal sistema quando l'orario di uscita previsto è scaduto. L'account Firebase Auth viene conservato finché l'utente non richiede la cancellazione.</li>
+                <li><strong>Recensioni:</strong> conservate fino a revoca del consenso o richiesta di cancellazione da parte dell'utente o del titolare.</li>
+                <li><strong>Messaggi di contatto:</strong> conservati nella casella email del titolare per il tempo necessario a gestire la richiesta, comunque non oltre 12 mesi.</li>
+                <li><strong>Dati tecnici:</strong> conservati dall'infrastruttura Firebase/Google secondo le proprie policy (generalmente 90–180 giorni per i log di accesso).</li>
             </ul>
         </div>
 
-        <!-- 6 - Diritti -->
+        <!-- 8 - Diritti -->
         <div class="section">
-            <h2 class="section-title"><span class="s-icon">⚖️</span> 6. I Tuoi Diritti (GDPR)</h2>
+            <h2 class="section-title"><span class="s-icon">🛡️</span> 8. I Tuoi Diritti (GDPR)</h2>
             <p>
                 In conformità al Regolamento (UE) 2016/679 (GDPR), hai diritto a:
             </p>
             <ul>
-                <li><strong>Accesso</strong> — richiedere copia dei tuoi dati personali in nostro possesso.</li>
-                <li><strong>Rettifica</strong> — correggere dati inesatti o incompleti.</li>
-                <li><strong>Cancellazione</strong> — richiedere l'eliminazione dei tuoi dati ("diritto all'oblio").</li>
-                <li><strong>Portabilità</strong> — ricevere i tuoi dati in formato leggibile da macchina.</li>
-                <li><strong>Opposizione</strong> — opporsi al trattamento in qualsiasi momento.</li>
-                <li><strong>Revoca del consenso</strong> — ritirare il consenso senza pregiudizio per il trattamento pregresso.</li>
+                <li><strong>Accesso (art. 15)</strong> — richiedere copia dei tuoi dati personali in nostro possesso.</li>
+                <li><strong>Rettifica (art. 16)</strong> — correggere dati inesatti o incompleti.</li>
+                <li><strong>Cancellazione (art. 17)</strong> — richiedere l'eliminazione dei tuoi dati ("diritto all'oblio").</li>
+                <li><strong>Limitazione (art. 18)</strong> — richiedere la sospensione temporanea del trattamento.</li>
+                <li><strong>Portabilità (art. 20)</strong> — ricevere i tuoi dati in formato strutturato e leggibile da macchina.</li>
+                <li><strong>Opposizione (art. 21)</strong> — opporsi al trattamento basato su legittimo interesse in qualsiasi momento.</li>
+                <li><strong>Revoca del consenso (art. 7.3)</strong> — ritirare il consenso senza pregiudizio per il trattamento pregresso.</li>
             </ul>
             <p>
-                Per esercitare questi diritti scrivi a <a href="mailto:manbagacomics@gmail.com">manbagacomics@gmail.com</a>.
+                Per esercitare questi diritti scrivi a <a href="mailto:manbagacomics@gmail.com">manbagacomics@gmail.com</a> indicando chiaramente la tua richiesta.
+                Risponderemo entro 30 giorni.
+            </p>
+            <p>
                 Hai inoltre il diritto di proporre reclamo al <strong>Garante per la protezione dei dati personali</strong>
-                (<a href="https://www.garanteprivacy.it" target="_blank" rel="noopener">garanteprivacy.it ↗</a>).
+                (<a href="https://www.garanteprivacy.it" target="_blank" rel="noopener">garanteprivacy.it ↗</a>)
+                qualora ritenga che il trattamento dei tuoi dati violi la normativa vigente.
             </p>
         </div>
 
-        <!-- 7 - Minori -->
+        <!-- 9 - Minori -->
         <div class="section">
-            <h2 class="section-title"><span class="s-icon">👶</span> 7. Minori</h2>
+            <h2 class="section-title"><span class="s-icon">👶</span> 9. Minori</h2>
             <p>
-                Il servizio di prenotazione tavoli è accessibile a tutti. I minori di 14 anni devono
-                ottenere il consenso di un genitore o tutore legale prima di registrarsi e fornire
-                dati personali, ai sensi dell'art. 8 del GDPR e dell'art. 2-quinquies del Codice Privacy italiano.
+                I servizi del sito sono accessibili a tutti. I minori di 14 anni devono ottenere il consenso
+                di un genitore o tutore legale prima di registrarsi o fornire dati personali,
+                ai sensi dell'art. 8 del GDPR e dell'art. 2-quinquies del Codice Privacy italiano (D.Lgs. 196/2003 e s.m.i.).
             </p>
         </div>
 
-        <!-- 8 - Modifiche -->
+        <!-- 10 - Sicurezza -->
         <div class="section">
-            <h2 class="section-title"><span class="s-icon">🔄</span> 8. Modifiche alla Policy</h2>
+            <h2 class="section-title"><span class="s-icon">🔒</span> 10. Sicurezza dei Dati</h2>
             <p>
-                Ci riserviamo il diritto di aggiornare questa informativa per riflettere eventuali
-                modifiche ai servizi o agli obblighi normativi. Le modifiche sostanziali saranno
-                segnalate tramite un avviso in homepage. La data dell'ultimo aggiornamento è indicata
-                in cima a questa pagina.
+                Adottiamo misure tecniche e organizzative adeguate per proteggere i dati personali da accessi non autorizzati,
+                perdita o divulgazione accidentale:
+            </p>
+            <ul>
+                <li>Tutte le comunicazioni avvengono su protocollo <strong>HTTPS/TLS</strong>.</li>
+                <li>Le password degli utenti sono gestite da <strong>Firebase Authentication</strong> e non vengono mai memorizzate in chiaro.</li>
+                <li>L'accesso al database è protetto da <strong>Firebase Security Rules</strong> che limitano le operazioni in base all'autenticazione e ai ruoli.</li>
+                <li>Le chiavi API Firebase visibili nel codice sorgente sono per design pubbliche: la sicurezza è garantita dalle Security Rules lato server, non dalla segretezza delle chiavi.</li>
+            </ul>
+        </div>
+
+        <!-- 11 - Modifiche -->
+        <div class="section">
+            <h2 class="section-title"><span class="s-icon">🔄</span> 11. Modifiche alla Policy</h2>
+            <p>
+                Ci riserviamo il diritto di aggiornare questa informativa per riflettere eventuali modifiche ai servizi
+                o agli obblighi normativi. Le modifiche sostanziali saranno segnalate tramite un avviso visibile sul sito.
+                La data dell'ultimo aggiornamento è indicata in cima a questa pagina.
+            </p>
+            <p>
+                L'utilizzo continuato del sito dopo la pubblicazione di una versione aggiornata costituisce accettazione delle modifiche.
             </p>
         </div>
 
         <!-- Footer -->
         <div class="privacy-footer">
             <p>
-                &copy; 2025 MANBAGA Comics &amp; Games &mdash; Via Padre Reginaldo Giuliani, 21, Canosa di Puglia (BT)<br>
+                &copy; 2026 MANBAGA Comics &amp; Games &mdash; Via Padre Reginaldo Giuliani, 21, Canosa di Puglia (BT)<br>
                 <a href="mailto:manbagacomics@gmail.com">manbagacomics@gmail.com</a>
                 &nbsp;&middot;&nbsp;
                 <a href="index.html">Torna alla homepage</a>
@@ -501,10 +618,9 @@
 </main>
 
 <script>
-// Show last update date
 document.getElementById('last-update').textContent = new Intl.DateTimeFormat('it-IT', {
     day: '2-digit', month: 'long', year: 'numeric'
-}).format(new Date('2025-03-11'));
+}).format(new Date('2026-03-11'));
 </script>
 </body>
 </html>

@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="WhatsApp_Image_2026-03-10_at_11.15.27-removebg-preview.png">
 <title>Gestionale · MANBAGA</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -123,7 +124,7 @@ input, textarea, select { font-family: inherit; color: inherit; }
   background: #0d0d0d;
 }
 .view {
-  flex: 1; display: flex; flex-direction: column;
+  flex: 1;
   overflow-y: auto; padding: 32px 36px;
   animation: fadeUp .25s ease-out;
 }
@@ -521,7 +522,13 @@ input, textarea, select { font-family: inherit; color: inherit; }
 
 /* ===================== CONTABILITÀ — CHART WRAPPER ===================== */
 .ct-chart-wrap {
-  padding: 20px; height: 260px; position: relative;
+  padding: 20px; height: 180px; position: relative;
+}
+
+/* ===================== CONTABILITÀ — TABELLA SCROLLABILE ===================== */
+#ct-table-container {
+  max-height: 420px;
+  overflow-y: auto;
 }
 
 /* ===================== AUTH OVERLAY ===================== */
@@ -762,10 +769,15 @@ input, textarea, select { font-family: inherit; color: inherit; }
           <div class="stat-card-value" id="stat-novita">—</div>
           <div class="stat-card-sub">nel carosello</div>
         </div>
+        <div class="stat-card">
+          <div class="stat-card-label"><span class="stat-dot" style="background:var(--blue)"></span>Pezzi in Stock</div>
+          <div class="stat-card-value" id="stat-pezzi">—</div>
+          <div class="stat-card-sub" id="stat-pezzi-sub">unità totali</div>
+        </div>
       </div>
 
       <!-- RECENT + EVENTS -->
-      <div style="display:grid;grid-template-columns:1fr 380px;gap:20px;flex:1;min-height:0" id="dash-bottom">
+      <div style="display:grid;grid-template-columns:1fr 380px;gap:20px;" id="dash-bottom">
         <div class="section-card">
           <div class="section-card-head">
             <span class="section-card-title">Prodotti Recenti</span>
@@ -1512,7 +1524,7 @@ function switchView(view) {
     _currentView = view;
     document.querySelectorAll('.view').forEach(function(v){ v.style.display = 'none'; });
     var el = document.getElementById('view-' + view);
-    if (el) el.style.display = 'flex';
+    if (el) el.style.display = 'block';
     document.querySelectorAll('.nav-item').forEach(function(i){ i.classList.remove('active'); });
     var nav = document.querySelector('[data-view="' + view + '"]');
     if (nav) nav.classList.add('active');
@@ -1541,12 +1553,18 @@ function renderDashboard() {
     var novita   = _products.filter(function(p){ return p.showInNovita; }).length;
 
     function set(id, v) { var el = document.getElementById(id); if(el) el.textContent = v; }
+    var pezzi    = _products.reduce(function(s, p){ return s + (parseInt(p.quantity) || 0); }, 0);
+    var pezziZero = _products.filter(function(p){ return (parseInt(p.quantity) || 0) === 0 && p.badge !== 'ESAURITO' && p.badge !== 'OUT OF STOCK' && p.badge !== 'PREORDINA' && p.badge !== 'IN ARRIVO'; }).length;
+
     set('stat-total', total);
     set('stat-avail', avail);
     set('stat-arrivo', arrivo);
     set('stat-preorder', preorder);
     set('stat-oos', oos);
     set('stat-novita', novita);
+    set('stat-pezzi', pezzi);
+    var subEl = document.getElementById('stat-pezzi-sub');
+    if (subEl) subEl.textContent = pezziZero > 0 ? '⚠ ' + pezziZero + ' prodott' + (pezziZero === 1 ? 'o a' : 'i a') + ' zero pezzi' : 'unità totali';
 
     /* Recent products */
     var rec = document.getElementById('dash-recent');
@@ -1618,7 +1636,7 @@ function renderProducts() {
         container.innerHTML = '<div class="product-grid">' + filtered.map(renderProductCard).join('') + '</div>';
     } else {
         container.innerHTML = '<div class="table-wrap"><table class="p-table">'
-            + '<thead><tr><th>Immagine</th><th>Prodotto</th><th>Categoria</th><th>Stato</th><th>Prezzo</th><th>Novità</th><th>Azioni</th></tr></thead>'
+            + '<thead><tr><th>Immagine</th><th>Prodotto</th><th>Categoria</th><th>Stato</th><th>Prezzo</th><th>Qty</th><th>Novità</th><th>Azioni</th></tr></thead>'
             + '<tbody>' + filtered.map(renderProductRow).join('') + '</tbody>'
             + '</table></div>';
     }
@@ -1635,10 +1653,12 @@ function renderProductCard(p) {
         + (p.price ? '<span class="p-card-price">' + esc(p.price) + '</span>' : '')
         + '</div>'
         + (p.showInNovita ? '<div style="margin-bottom:8px"><span class="novita-chip">⭐ In Novità</span></div>' : '')
+        + _qtyBadge(p.quantity)
         + '<div style="margin-bottom:8px"><select class="status-select" onchange="quickStatus(\'' + p.firestoreId + '\',this.value)">'
         + statusOptions(p.badge)
         + '</select></div>'
         + '<div class="p-card-actions">'
+        + '<button class="btn-icon" onclick="sellProduct(\'' + p.firestoreId + '\')" title="Vendi 1 unità" style="color:var(--green)">🛒</button>'
         + '<button class="btn-icon" onclick="editProduct(\'' + p.firestoreId + '\')" title="Modifica"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>'
         + '<button class="btn-icon" onclick="confirmDeleteProduct(\'' + p.firestoreId + '\',\'' + esc(p.title) + '\')" title="Elimina" style="color:#f87171"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>'
         + '</div>'
@@ -1652,8 +1672,9 @@ function renderProductRow(p) {
         + '<td style="font-size:12px;color:var(--muted)">' + (p.cat || '—') + (p.subcat ? ' · ' + p.subcat : '') + '</td>'
         + '<td><select class="status-select" onchange="quickStatus(\'' + p.firestoreId + '\',this.value)">' + statusOptions(p.badge) + '</select></td>'
         + '<td style="font-size:12px;font-weight:700;color:var(--accent)">' + esc(p.price || '—') + '</td>'
+        + '<td>' + _qtyBadge(p.quantity) + '</td>'
         + '<td>' + (p.showInNovita ? '<span class="novita-chip">⭐ Sì</span>' : '<span style="color:var(--muted);font-size:12px">No</span>') + '</td>'
-        + '<td style="white-space:nowrap"><button class="btn btn-ghost btn-sm" onclick="editProduct(\'' + p.firestoreId + '\')" style="margin-right:4px">Modifica</button><button class="btn btn-danger btn-sm" onclick="confirmDeleteProduct(\'' + p.firestoreId + '\',\'' + esc(p.title) + '\')">Elimina</button></td>'
+        + '<td style="white-space:nowrap"><button class="btn btn-sm" style="background:rgba(16,185,129,.12);color:var(--green);border:1px solid rgba(16,185,129,.2);margin-right:4px" onclick="sellProduct(\'' + p.firestoreId + '\')">🛒 Vendi</button><button class="btn btn-ghost btn-sm" onclick="editProduct(\'' + p.firestoreId + '\')" style="margin-right:4px">Modifica</button><button class="btn btn-danger btn-sm" onclick="confirmDeleteProduct(\'' + p.firestoreId + '\',\'' + esc(p.title) + '\')">Elimina</button></td>'
         + '</tr>';
 }
 
@@ -2710,6 +2731,65 @@ function eliminaRecensione(id, nome) {
                 .catch(function(e){ showToast('Errore: ' + e.message, 'error'); });
         }
     );
+}
+
+/* ─── QTY BADGE ─── */
+function _qtyBadge(qty) {
+    var n = parseInt(qty) || 0;
+    var color = n >= 5 ? 'rgba(16,185,129,.15)' : (n >= 1 ? 'rgba(245,158,11,.15)' : 'rgba(220,38,38,.12)');
+    var border = n >= 5 ? 'rgba(16,185,129,.3)' : (n >= 1 ? 'rgba(245,158,11,.3)' : 'rgba(220,38,38,.3)');
+    var text  = n >= 5 ? '#34d399' : (n >= 1 ? '#fbbf24' : '#f87171');
+    return '<span style="display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;background:' + color + ';border:1px solid ' + border + ';color:' + text + ';margin-bottom:6px">📦 ' + n + ' pz</span>';
+}
+
+/* ─── SELL PRODUCT ─── */
+function _parsePrice(priceStr) {
+    if (!priceStr) return 0;
+    var n = parseFloat(String(priceStr).replace(',', '.').replace(/[^0-9.]/g, ''));
+    return isNaN(n) ? 0 : n;
+}
+
+function sellProduct(firestoreId) {
+    var p = _products.find(function(x){ return x.firestoreId === firestoreId; });
+    if (!p) return;
+    var qty = parseInt(p.quantity) || 0;
+    if (qty <= 0) {
+        showToast('Quantità esaurita per «' + p.title + '»', 'warn');
+        return;
+    }
+    if (!_fbReady) { showToast('Firebase non disponibile', 'error'); return; }
+
+    var price   = _parsePrice(p.price);
+    var today   = new Date().toISOString().slice(0, 10);
+    var catMap  = { manga: 'vendite_manga', carte: 'vendite_carte', gadget: 'vendite_gadget' };
+    var transCat = catMap[p.cat] || 'altro_e';
+
+    var batch = _db.batch();
+
+    batch.update(_db.collection('products').doc(firestoreId), {
+        quantity:  qty - 1,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    batch.set(_db.collection('transazioni').doc(), {
+        tipo:      'entrata',
+        importo:   price,
+        data:      today,
+        categoria: transCat,
+        desc:      'Vendita: ' + p.title + (p.volume ? ' — ' + p.volume : ''),
+        nota:      '',
+        fromSell:  true,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    batch.commit()
+        .then(function() {
+            showToast('Vendita registrata — ' + p.title + ' (' + (qty - 1) + ' rimasti)', 'success');
+        })
+        .catch(function(e) {
+            showToast('Errore: ' + e.message, 'error');
+        });
 }
 
 /* ─── AVVIO AUTOMATICO ─── */

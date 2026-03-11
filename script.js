@@ -135,32 +135,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-/* ============================================================
-   LOGO — triplo click → admin
-   ============================================================ */
-var _logoClicks = 0;
-var _logoTimer;
-
-document.addEventListener('DOMContentLoaded', function () {
-    var logoLink = document.getElementById('logo-link');
-    if (!logoLink) return;
-
-    logoLink.addEventListener('click', function (e) {
-        _logoClicks++;
-        clearTimeout(_logoTimer);
-
-        if (_logoClicks >= 3) {
-            e.preventDefault();
-            _logoClicks = 0;
-            openAdminModal();
-            return;
-        }
-
-        _logoTimer = setTimeout(function () {
-            _logoClicks = 0;
-        }, 600);
-    });
-});
 
 /* ============================================================
    STORAGE HELPERS — con Firebase Firestore (+ localStorage cache)
@@ -367,6 +341,18 @@ function initCarousel() {
     if (viewport) {
         viewport.addEventListener('mouseenter', stopCarouselAuto);
         viewport.addEventListener('mouseleave', startCarouselAuto);
+
+        /* Touch swipe su mobile */
+        var _touchStartX = 0;
+        viewport.addEventListener('touchstart', function(e) {
+            _touchStartX = e.changedTouches[0].clientX;
+            stopCarouselAuto();
+        }, { passive: true });
+        viewport.addEventListener('touchend', function(e) {
+            var dx = e.changedTouches[0].clientX - _touchStartX;
+            if (Math.abs(dx) > 48) carouselStep(dx < 0 ? 1 : -1);
+            startCarouselAuto();
+        }, { passive: true });
     }
 
     /* Resize handler */
@@ -1404,7 +1390,7 @@ function renderRecensioni(list) {
         var avatarBg = avatarColors[idx % avatarColors.length];
         var loti = '';
         for (var i = 1; i <= 5; i++) {
-            loti += '<span class="lotus-star' + (i > n ? ' lotus-star--dim' : '') + '">' + _LOTUS_SVG + '</span>';
+            loti += '<span style="font-size:18px;color:' + (i <= n ? '#dc2626' : 'rgba(220,38,38,0.2)') + '">★</span>';
         }
         var delay = ['','reveal-d1','reveal-d2','reveal-d3','reveal-d1','reveal-d2'][idx % 6];
         return '<div class="review-card reveal ' + delay + '">'
@@ -1451,7 +1437,8 @@ function openReviewModal() {
     if (nome)  nome.value  = '';
     if (testo) testo.value = '';
     if (err)   { err.style.display = 'none'; err.textContent = ''; }
-    document.getElementById('rv-chars').textContent = '0';
+    var charsEl = document.getElementById('rv-chars');
+    if (charsEl) charsEl.textContent = '0';
     updateStarDisplay(0);
     if (modal) modal.classList.remove('hidden');
     if (nome) setTimeout(function(){ nome.focus(); }, 80);
@@ -1476,21 +1463,25 @@ function updateStarDisplay(n) {
     var label = document.getElementById('rv-star-label');
     btns.forEach(function(btn) {
         var v = parseInt(btn.dataset.v);
-        btn.innerHTML = '<span class="lotus-star' + (v > n ? ' lotus-star--dim' : '') + '">' + _LOTUS_SVG + '</span>';
+        btn.style.color  = v <= n ? '#dc2626' : 'rgba(220,38,38,0.25)';
+        btn.style.transform = v <= n ? 'scale(1.2)' : 'scale(1)';
     });
     if (label) {
-        label.textContent = _rvLabels[n] || 'Tocca un fiore di loto per votare';
+        label.textContent = _rvLabels[n] || 'Seleziona una valutazione';
         label.style.color = n ? (_rvColors[n-1] || '') : '';
     }
 }
 
-/* Contatore caratteri textarea */
+/* Contatore caratteri textarea + pre-popola stelle */
 document.addEventListener('DOMContentLoaded', function() {
     var ta = document.getElementById('rv-testo');
     if (ta) ta.addEventListener('input', function() {
         var el = document.getElementById('rv-chars');
         if (el) el.textContent = ta.value.length;
     });
+    /* Pre-popola i bottoni stelle con i fiori SVG al caricamento pagina,
+       così sono sempre visibili quando il modal si apre */
+    if (document.querySelector('.rv-star-btn')) updateStarDisplay(0);
 });
 
 function submitRecensione() {

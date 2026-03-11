@@ -4099,6 +4099,32 @@ textarea.form-input {
     50%       { opacity: 1; }
 }
 
+/* Review modal — sfondo scuro per visibilità stelle */
+#review-modal .modal-box {
+    background: #111;
+    border-color: rgba(244,114,182,.25);
+    color: #f5f0e8;
+}
+#review-modal .modal-head {
+    background: rgba(244,114,182,.07);
+    border-bottom-color: rgba(255,255,255,.08);
+}
+#review-modal .modal-head-title { color: #f5f0e8; }
+#review-modal .btn-modal-close {
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.1);
+    color: rgba(255,255,255,.55);
+}
+#review-modal .btn-modal-close:hover { background: var(--red); color: #fff; border-color: var(--red); }
+#review-modal .form-label { color: rgba(255,255,255,.55); }
+#review-modal .form-input {
+    background: rgba(255,255,255,.06);
+    border: 2px solid rgba(255,255,255,.12);
+    color: #f5f0e8;
+}
+#review-modal .form-input::placeholder { color: rgba(255,255,255,.22); }
+#review-modal .form-input:focus { border-color: #F472B6; background: rgba(244,114,182,.06); }
+
 /* Form recensione nel modal */
 .review-form-inner { display: flex; flex-direction: column; gap: 20px; }
 
@@ -4113,12 +4139,13 @@ textarea.form-input {
     background: none;
     border: none;
     cursor: pointer;
-    padding: 0;
-    line-height: 0;
-    transition: transform .15s;
+    padding: 2px;
+    font-size: 32px;
+    line-height: 1;
+    color: rgba(220,38,38,0.25);
+    transition: color .12s, transform .12s;
 }
-.rv-star-btn:hover { transform: scale(1.15); }
-.rv-star-btn .lotus-star { width: 30px; height: 30px; }
+.rv-star-btn:hover { transform: scale(1.2); }
 
 .rv-star-label {
     font-size: 12px;
@@ -4280,5 +4307,292 @@ textarea.form-input {
     }
     .review-card {
         padding: 22px 20px 20px;
+    }
+}
+
+/* ============================================================
+   MOBILE — MIGLIORAMENTI COMPLETI
+   ============================================================ */
+
+/* ---- Loading screen: overflow e centratura su mobile ---- */
+@media (max-width: 480px) {
+    .loader-wrap {
+        padding: 24px 16px;
+        width: 100%;
+    }
+    .loader-sub {
+        letter-spacing: 0.12em;
+        font-size: 10px;
+        padding: 0 8px;
+        word-break: break-word;
+    }
+    .loader-logo {
+        justify-content: center;
+    }
+    .loader-logo {
+        font-size: clamp(54px, 15vw, 100px);
+    }
+}
+
+/* ---- Nav inner padding su telefoni ---- */
+@media (max-width: 480px) {
+    .nav-inner {
+        padding: 0 16px;
+    }
+    .nav-logo {
+        font-size: 26px;
+    }
+}
+
+/* ---- Hero su schermi molto piccoli (<380px) ---- */
+@media (max-width: 380px) {
+    .hero-tag {
+        letter-spacing: 0.18em;
+        padding: 6px 12px;
+        font-size: 9px;
+    }
+    .hero-title {
+        font-size: clamp(46px, 18vw, 80px);
+    }
+    .hero-title .stroke {
+        -webkit-text-stroke: 1.5px var(--white);
+    }
+    .hero-divider span {
+        letter-spacing: 0.12em;
+        font-size: 10px;
+    }
+}
+
+/* ---- Section padding ridotto su mobile ---- */
+@media (max-width: 480px) {
+    .section {
+        padding: 52px 16px;
+    }
+}
+
+/* ---- Carousel migliorato su mobile ---- */
+@media (max-width: 520px) {
+    .carousel-nav-row {
+        gap: 6px;
+    }
+    .carousel-btn {
+        width: 32px;
+        font-size: 13px;
+    }
+    .carousel-viewport::before,
+    .carousel-viewport::after {
+        width: 16px;
+    }
+}
+
+/* ---- Modal come bottom-sheet su mobile ---- */
+@media (max-width: 640px) {
+    .modal-wrap {
+        padding: 0;
+        align-items: flex-end;
+    }
+    .modal-box {
+        max-width: 100%;
+        width: 100%;
+        max-height: 92vh;
+        border-radius: 20px 20px 0 0;
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
+        position: relative;
+    }
+    /* Drag handle visivo */
+    .modal-box::before {
+        content: '';
+        display: block;
+        width: 36px;
+        height: 4px;
+        background: rgba(255,255,255,0.18);
+        border-radius: 2px;
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 3;
+    }
+    .modal-head {
+        padding: 22px 20px 16px;
+    }
+    .modal-head-title {
+        font-size: 20px;
+    }
+    .modal-body {
+        padding: 20px 16px 40px;
+    }
+}
+
+/* ---- Recensioni: header stacked su mobile ---- */
+@media (max-width: 560px) {
+    .reviews-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 14px;
+        margin-bottom: 28px;
+    }
+    .reviews-header .btn {
+        width: 100%;
+        justify-content: center;
+    }
+    .reviews-grid {
+        gap: 12px;
+    }
+}
+
+/* ---- Stelle recensione su schermi piccoli ---- */
+@media (max-width: 380px) {
+    .rv-star-btn {
+        font-size: 26px;
+        padding: 1px;
+    }
+    .rv-stars {
+        gap: 4px;
+    }
+}
+
+/* ---- Score medio reviews footer mobile ---- */
+@media (max-width: 480px) {
+    .reviews-score {
+        flex-wrap: wrap;
+        justify-content: center;
+        text-align: center;
+        gap: 8px;
+        padding: 12px 20px;
+    }
+}
+
+/* ---- Sezione contatti ---- */
+@media (max-width: 480px) {
+    .contact-form-head {
+        padding: 14px 16px;
+    }
+    .contact-form-body {
+        padding: 20px 16px;
+    }
+    #contatti .section-title {
+        font-size: clamp(30px, 10vw, 52px);
+    }
+    .contact-hanko {
+        display: none;
+    }
+}
+
+/* ---- Footer compatto su mobile ---- */
+@media (max-width: 480px) {
+    .footer-inner {
+        padding: 40px 16px 28px;
+    }
+    .footer-logo {
+        font-size: 36px;
+    }
+    .footer-top-bar {
+        padding: 10px 16px;
+    }
+    .footer-tagline {
+        font-size: 12px;
+        line-height: 1.7;
+    }
+    .footer-bottom-right {
+        flex-direction: column;
+        gap: 4px;
+        text-align: center;
+        align-items: center;
+    }
+}
+
+/* ---- Instagram strip ---- */
+@media (max-width: 480px) {
+    #ig-strip {
+        padding: 40px 16px;
+    }
+}
+
+/* ---- Prodotto detail modal su mobile ---- */
+@media (max-width: 480px) {
+    .pd-title {
+        font-size: clamp(22px, 7vw, 36px);
+    }
+    .pd-price {
+        font-size: 32px;
+    }
+    .pd-desc-block {
+        padding: 18px 16px;
+    }
+    .pd-grid {
+        gap: 16px;
+    }
+}
+
+/* ---- Catalog page su mobile ---- */
+@media (max-width: 480px) {
+    .cp-hero {
+        padding: 52px 0 40px;
+    }
+    .cp-hero-inner {
+        padding: 0 16px;
+    }
+    .cp-hero-title {
+        font-size: clamp(36px, 11vw, 68px);
+    }
+    .cp-main .cp-grid {
+        padding: 12px 16px;
+        gap: 10px;
+    }
+    .cp-pills-bar {
+        padding: 12px 16px;
+        gap: 6px;
+    }
+    .cp-content-hd {
+        padding: 14px 16px;
+    }
+}
+
+/* ---- Grid 1 colonna su telefoni molto piccoli ---- */
+@media (max-width: 360px) {
+    .cp-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px;
+    }
+}
+
+/* ---- Toast notifications su mobile ---- */
+@media (max-width: 480px) {
+    .toast-container {
+        right: 12px;
+        left: 12px;
+        width: auto;
+    }
+}
+
+/* ---- Lotus float su schermi molto piccoli ---- */
+@media (max-width: 380px) {
+    .lotus-float {
+        right: 10px;
+        bottom: 14px;
+        width: 48px;
+        height: 48px;
+    }
+    .lotus-float svg {
+        width: 28px;
+        height: 28px;
+    }
+}
+
+/* ---- Sezione eventi su mobile ---- */
+@media (max-width: 480px) {
+    .event-title {
+        font-size: clamp(18px, 5vw, 26px);
+    }
+    .event-body {
+        padding: 16px;
+    }
+    .event-meta {
+        gap: 10px;
+        flex-wrap: wrap;
+        font-size: 12px;
     }
 }
