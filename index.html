@@ -97,164 +97,9 @@
         <div class="modal-body" id="product-detail-content"></div>
     </div>
 </div>
-
-
 <!-- ============================================================
-     MODAL — ADMIN
+     MODAL — ADMIN eliminata
      ============================================================ -->
-<div id="admin-modal" class="modal-wrap hidden" onclick="if(event.target===this)closeAdminModal()">
-    <div class="modal-box" style="max-width:980px" role="dialog" aria-modal="true" aria-label="Area admin">
-        <div class="modal-head">
-            <span class="modal-head-title">&#9881;&#65039; AREA ADMIN</span>
-            <div class="modal-head-actions">
-                <button id="admin-logout-btn" class="btn-modal-close hidden" onclick="logoutAdmin()" style="background:#444">Esci</button>
-                <button class="btn-modal-close" onclick="closeAdminModal()">&#10005;</button>
-            </div>
-        </div>
-
-        <div class="modal-body">
-
-            <!-- LOGIN -->
-            <div id="admin-login" class="login-card">
-                <div class="login-title">&#128272; Accedi</div>
-                <p class="login-sub">Area riservata al personale</p>
-                <div class="form-row">
-                    <label class="form-label" for="password-input">Password</label>
-                    <input type="password" id="password-input" class="form-input"
-                           placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;"
-                           onkeypress="if(event.key==='Enter')checkAdminPassword()">
-                </div>
-                <button onclick="checkAdminPassword()"
-                        class="btn btn-primary"
-                        style="clip-path:none;width:100%;border-radius:0;margin-top:8px">
-                    ACCEDI
-                </button>
-            </div>
-
-            <!-- DASHBOARD -->
-            <div id="admin-dashboard" class="hidden">
-
-                <div class="tab-nav">
-                    <button class="tab-btn active" onclick="switchAdminTab('events', this)">EVENTI</button>
-                    <button class="tab-btn"         onclick="switchAdminTab('products', this)">PRODOTTI</button>
-                </div>
-
-                <!-- TAB EVENTI -->
-                <div id="admin-tab-events" class="admin-tab-content">
-                    <div class="admin-grid">
-                        <div class="admin-panel">
-                            <div class="admin-panel-title">&#10133; Aggiungi Evento</div>
-                            <div class="form-row">
-                                <label class="form-label">Giorno</label>
-                                <input type="text" id="event-day" class="form-input" placeholder="12" maxlength="2">
-                            </div>
-                            <div class="form-row">
-                                <label class="form-label">Mese</label>
-                                <input type="text" id="event-month" class="form-input" placeholder="Gen">
-                            </div>
-                            <div class="form-row">
-                                <label class="form-label">Anno</label>
-                                <input type="text" id="event-year" class="form-input" placeholder="2026" maxlength="4">
-                            </div>
-                            <div class="form-row">
-                                <label class="form-label">Titolo *</label>
-                                <input type="text" id="event-title" class="form-input" placeholder="Titolo evento">
-                            </div>
-                            <div class="form-row">
-                                <label class="form-label">Descrizione *</label>
-                                <textarea id="event-desc" class="form-input" placeholder="Descrizione..."></textarea>
-                            </div>
-                            <div class="form-row">
-                                <label class="form-label">Orario</label>
-                                <input type="text" id="event-time" class="form-input" placeholder="15:30">
-                            </div>
-                            <div class="form-row">
-                                <label class="form-label">Info / Prezzo</label>
-                                <input type="text" id="event-price" class="form-input" placeholder="Ingresso 5&#8364;">
-                            </div>
-                            <button onclick="addAdminEvent()"
-                                    class="btn btn-primary"
-                                    style="clip-path:none;width:100%;border-radius:0;margin-top:8px">
-                                + AGGIUNGI EVENTO
-                            </button>
-                        </div>
-                        <div class="admin-panel">
-                            <div class="admin-panel-title">&#128203; Eventi salvati</div>
-                            <div id="admin-events-list" class="admin-list"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB PRODOTTI -->
-                <div id="admin-tab-products" class="admin-tab-content hidden">
-                    <div class="admin-grid">
-                        <div class="admin-panel">
-                            <div class="admin-panel-title">&#10133; Aggiungi Prodotto</div>
-                            <div class="form-row">
-                                <label class="form-label">Titolo *</label>
-                                <input type="text" id="product-title" class="form-input" placeholder="Dragon Ball">
-                            </div>
-                            <div class="form-row">
-                                <label class="form-label">Volume</label>
-                                <input type="text" id="product-volume" class="form-input" placeholder="Vol. 12">
-                            </div>
-                            <div class="form-row">
-                                <label class="form-label">Descrizione *</label>
-                                <textarea id="product-desc" class="form-input" placeholder="Descrizione dettagliata..."></textarea>
-                            </div>
-                            <div class="form-row">
-                                <label class="form-label">URL Immagine *</label>
-                                <input type="text" id="product-image" class="form-input" placeholder="https://...">
-                            </div>
-                            <div class="form-row">
-                                <label class="form-label">Prezzo</label>
-                                <input type="text" id="product-price" class="form-input" placeholder="8,99&#8364;">
-                            </div>
-                            <div class="form-row">
-                                <label class="form-label">Stato / Badge</label>
-                                <select id="product-badge" class="form-input">
-                                    <option value="">Nessuno</option>
-                                    <option value="NOVIT&#192;">NOVIT&#192;</option>
-                                    <option value="HOT">HOT</option>
-                                    <option value="PREORDINA">PREORDINA</option>
-                                    <option value="IN ARRIVO">IN ARRIVO</option>
-                                    <option value="OUT OF STOCK">OUT OF STOCK</option>
-                                    <option value="ESAURITO">ESAURITO</option>
-                                </select>
-                            </div>
-                            <div class="form-row">
-                                <label class="form-label">Categoria</label>
-                                <select id="product-cat" class="form-input" onchange="updateAdminSubcats()">
-                                    <option value="">-- Seleziona --</option>
-                                    <option value="manga">Manga &amp; Comics</option>
-                                    <option value="carte">Carte &amp; Giochi</option>
-                                    <option value="gadget">Gadget &amp; Figures</option>
-                                </select>
-                            </div>
-                            <div class="form-row">
-                                <label class="form-label">Sottocategoria</label>
-                                <select id="product-subcat" class="form-input">
-                                    <option value="">-- Prima scegli la categoria --</option>
-                                </select>
-                            </div>
-                            <button onclick="addAdminProduct()"
-                                    class="btn btn-primary"
-                                    style="clip-path:none;width:100%;border-radius:0;margin-top:8px">
-                                + AGGIUNGI PRODOTTO
-                            </button>
-                        </div>
-                        <div class="admin-panel">
-                            <div class="admin-panel-title">&#128230; Prodotti salvati</div>
-                            <div id="admin-products-list" class="admin-list"></div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-</div>
-
 
 <!-- ============================================================
      NAV
@@ -721,6 +566,7 @@
 </body>
 
 </html>
+
 
 
 
