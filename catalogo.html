@@ -13,6 +13,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Noto+Serif+JP:wght@700;900&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
 
+    <!-- Firebase — lettura prodotti dal gestionale -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+
     <!-- EmailJS -->
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
@@ -850,8 +854,13 @@ var catPage = (function () {
 
 /* ---- Bootstrap on DOMContentLoaded ---- */
 document.addEventListener('DOMContentLoaded', function () {
-    seedDemoData();
+    /* Render immediato da localStorage cache, poi Firebase aggiorna */
     catPage.init();
+    /* Firebase si connette (via script.js _initMainFirebase) e
+       chiama catPage.render() automaticamente quando i dati arrivano */
+    setTimeout(function () {
+        if (typeof _initMainFirebase === 'function') _initMainFirebase();
+    }, 0);
 });
 </script>
 <script src="cookie-banner.js"></script>

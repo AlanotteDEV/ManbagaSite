@@ -162,9 +162,78 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 /* ============================================================
-   STORAGE HELPERS
+   STORAGE HELPERS — con Firebase Firestore (+ localStorage cache)
    ============================================================ */
+
+/* Cache in-memory aggiornata da Firebase */
+var _fbProducts = null; /* null = non ancora caricati */
+var _fbEvents   = null;
+var _fbMainApp  = null;
+var _fbMainDb   = null;
+
+/* Config Firebase (stesso progetto del gestionale) */
+var _MAIN_FB_CONFIG = {
+    apiKey:            'AIzaSyCG0-J2wxZGSz6eDh_E-aAe2uvpTGLmXz0',
+    authDomain:        'prenotazioninegozio-65eb1.firebaseapp.com',
+    projectId:         'prenotazioninegozio-65eb1',
+    storageBucket:     'prenotazioninegozio-65eb1.appspot.com',
+    messagingSenderId: '466874129336',
+    appId:             '1:466874129336:web:fd07925523c35921fe8d4d'
+};
+
+function _initMainFirebase() {
+    if (_fbMainDb) return;
+    if (typeof firebase === 'undefined') return;
+    try {
+        try { _fbMainApp = firebase.app('main'); }
+        catch(e) { _fbMainApp = firebase.initializeApp(_MAIN_FB_CONFIG, 'main'); }
+        _fbMainDb = _fbMainApp.firestore();
+        _subscribeFirestoreProducts();
+        _subscribeFirestoreEvents();
+    } catch(e) {
+        console.warn('Firebase main init error:', e);
+    }
+}
+
+function _subscribeFirestoreProducts() {
+    if (!_fbMainDb) return;
+    _fbMainDb.collection('products').orderBy('createdAt', 'desc').onSnapshot(
+        function(snap) {
+            _fbProducts = snap.docs.map(function(doc) {
+                var d = doc.data();
+                if (!d.id) d.id = d.firestoreId || doc.id;
+                /* Normalizza imageUrl → image per compatibilità */
+                if (d.imageUrl && !d.image) d.image = d.imageUrl;
+                return d;
+            });
+            /* Aggiorna cache localStorage */
+            try { localStorage.setItem('manbaga-products', JSON.stringify(_fbProducts)); } catch(e){}
+            /* Re-render */
+            renderProducts();
+            if (typeof catPage !== 'undefined') catPage.render();
+        },
+        function(err) { console.warn('Firestore products error:', err); }
+    );
+}
+
+function _subscribeFirestoreEvents() {
+    if (!_fbMainDb) return;
+    _fbMainDb.collection('events').orderBy('createdAt', 'desc').onSnapshot(
+        function(snap) {
+            _fbEvents = snap.docs.map(function(doc) {
+                var d = doc.data();
+                if (!d.id) d.id = doc.id;
+                return d;
+            });
+            try { localStorage.setItem('manbaga-events', JSON.stringify(_fbEvents)); } catch(e){}
+            renderEvents();
+        },
+        function(err) { console.warn('Firestore events error:', err); }
+    );
+}
+
 function getEvents() {
+    if (_fbEvents !== null) return _fbEvents;
     try { return JSON.parse(localStorage.getItem('manbaga-events') || '[]'); }
     catch (e) { return []; }
 }
@@ -174,6 +243,7 @@ function setEvents(data) {
 }
 
 function getProducts() {
+    if (_fbProducts !== null) return _fbProducts;
     try { return JSON.parse(localStorage.getItem('manbaga-products') || '[]'); }
     catch (e) { return []; }
 }
@@ -219,7 +289,11 @@ function renderEvents() {
    RENDER PRODOTTI — CAROSELLO
    ============================================================ */
 function renderProducts() {
-    var products = getProducts();
+    var allProducts = getProducts();
+    /* Carosello homepage: solo prodotti con showInNovita === true */
+    var products = allProducts.filter(function(p) { return p.showInNovita; });
+    /* Se nessuno ha showInNovita, mostra tutti (retrocompatibilità demo data) */
+    if (products.length === 0 && allProducts.length > 0) products = allProducts;
     var track = document.getElementById('products-display');
     if (!track) return;
 
@@ -846,9 +920,19 @@ function seedDemoData() {
    INIT
    ============================================================ */
 document.addEventListener('DOMContentLoaded', function () {
-    seedDemoData();
+    /* Mostra subito i dati dalla cache localStorage (render veloce) */
     renderEvents();
     renderProducts();
+    /* Poi si connette a Firebase e aggiorna in real-time */
+    _initMainFirebase();
+    /* Demo data solo se Firestore non ha ancora dati (primo avvio) */
+    setTimeout(function () {
+        if (_fbProducts === null && getProducts().length === 0) {
+            seedDemoData();
+            renderEvents();
+            renderProducts();
+        }
+    }, 4000);
 });
 
 /* ============================================================
