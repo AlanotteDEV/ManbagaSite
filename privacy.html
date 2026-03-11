@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#080808">
+    <meta name="robots" content="noindex">
+    <title>Privacy &amp; Cookie Policy — MANBAGA Comics &amp; Games</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+
+    <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+        --bg:    #080808;
+        --bg2:   #0f0f0f;
+        --bg3:   #141414;
+        --red:   #DC2626;
+        --pink:  #F472B6;
+        --white: #f5f0e8;
+        --gray:  rgba(245,240,232,0.5);
+        --muted: rgba(245,240,232,0.32);
+        --border: rgba(255,255,255,0.07);
+        --font:  'Inter', sans-serif;
+        --comic: 'Bangers', cursive;
+        --nav-h: 64px;
+        --max:   780px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+        font-family: var(--font);
+        background: var(--bg);
+        color: var(--white);
+        min-height: 100vh;
+        -webkit-font-smoothing: antialiased;
+        line-height: 1.7;
+    }
+
+    /* ── HEADER ──────────────────────────────────────────── */
+    #header {
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        height: var(--nav-h);
+        background: rgba(8,8,8,.97);
+        backdrop-filter: blur(14px);
+        border-bottom: 2px solid rgba(244,114,182,.25);
+        z-index: 800;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 24px;
+        gap: 16px;
+    }
+
+    .header-logo {
+        font-family: var(--comic);
+        font-size: 26px;
+        letter-spacing: .06em;
+        text-decoration: none;
+        background: linear-gradient(135deg, var(--white) 40%, var(--pink));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        flex-shrink: 0;
+    }
+
+    .header-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        color: var(--gray);
+        text-decoration: none;
+        transition: color .2s, border-color .2s;
+        padding: 6px 14px;
+        border: 1px solid rgba(255,255,255,.08);
+        border-radius: 20px;
+    }
+    .header-back:hover { color: var(--pink); border-color: rgba(244,114,182,.4); }
+
+    /* ── MAIN ────────────────────────────────────────────── */
+    main {
+        padding-top: var(--nav-h);
+        min-height: 100vh;
+    }
+
+    .page-inner {
+        max-width: var(--max);
+        margin: 0 auto;
+        padding: 52px 24px 100px;
+    }
+
+    /* ── HERO ────────────────────────────────────────────── */
+    .hero-label {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: .4em;
+        text-transform: uppercase;
+        color: var(--pink);
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .hero-title {
+        font-family: var(--comic);
+        font-size: clamp(44px, 8vw, 80px);
+        line-height: .92;
+        letter-spacing: .02em;
+        color: var(--white);
+        margin-bottom: 10px;
+    }
+    .hero-title span {
+        background: linear-gradient(135deg, var(--red), var(--pink));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .hero-meta {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--muted);
+        letter-spacing: .06em;
+        margin-bottom: 48px;
+        padding-bottom: 32px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    /* ── SECTIONS ────────────────────────────────────────── */
+    .section {
+        margin-bottom: 44px;
+        padding: 28px 30px;
+        background: var(--bg2);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        border-left: 3px solid rgba(244,114,182,.4);
+    }
+
+    .section-title {
+        font-family: var(--comic);
+        font-size: 22px;
+        letter-spacing: .04em;
+        color: var(--white);
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .section-title .s-icon { font-size: 20px; }
+
+    .section p {
+        font-size: 14px;
+        color: rgba(245,240,232,.7);
+        line-height: 1.75;
+        margin-bottom: 12px;
+    }
+    .section p:last-child { margin-bottom: 0; }
+
+    .section ul {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin: 10px 0;
+    }
+    .section ul li {
+        font-size: 14px;
+        color: rgba(245,240,232,.7);
+        padding-left: 20px;
+        position: relative;
+        line-height: 1.65;
+    }
+    .section ul li::before {
+        content: '›';
+        position: absolute;
+        left: 0;
+        color: var(--pink);
+        font-weight: 700;
+    }
+
+    .section a {
+        color: var(--pink);
+        text-decoration: none;
+        font-weight: 600;
+        transition: opacity .2s;
+    }
+    .section a:hover { opacity: .75; }
+
+    /* Cookie table */
+    .cookie-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 16px 0;
+        font-size: 13px;
+    }
+    .cookie-table th {
+        text-align: left;
+        padding: 10px 14px;
+        background: rgba(244,114,182,.08);
+        color: var(--pink);
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: .18em;
+        text-transform: uppercase;
+        border-bottom: 1px solid rgba(244,114,182,.2);
+    }
+    .cookie-table td {
+        padding: 10px 14px;
+        color: rgba(245,240,232,.65);
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+        line-height: 1.55;
+    }
+    .cookie-table tr:last-child td { border-bottom: none; }
+    .cookie-table tr:hover td { background: rgba(255,255,255,.02); }
+
+    .badge-necessary {
+        display: inline-block;
+        padding: 2px 8px;
+        background: rgba(34,197,94,.12);
+        color: #22c55e;
+        border: 1px solid rgba(34,197,94,.25);
+        border-radius: 10px;
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+    .badge-analytics {
+        display: inline-block;
+        padding: 2px 8px;
+        background: rgba(244,114,182,.12);
+        color: var(--pink);
+        border: 1px solid rgba(244,114,182,.25);
+        border-radius: 10px;
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    /* Update banner */
+    .update-box {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 16px 20px;
+        background: rgba(244,114,182,.06);
+        border: 1px solid rgba(244,114,182,.18);
+        border-radius: 12px;
+        margin-bottom: 36px;
+        font-size: 13px;
+        color: var(--gray);
+    }
+    .update-box strong { color: var(--pink); }
+
+    /* Footer */
+    .privacy-footer {
+        text-align: center;
+        padding-top: 40px;
+        border-top: 1px solid var(--border);
+        font-size: 12px;
+        color: var(--muted);
+        letter-spacing: .04em;
+    }
+    .privacy-footer a { color: var(--pink); text-decoration: none; font-weight: 600; }
+
+    /* ── GRAIN ────────────────────────────────────────────── */
+    body::after {
+        content: '';
+        position: fixed; inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+        pointer-events: none; z-index: -1; opacity: .4;
+    }
+
+    @media (max-width: 640px) {
+        .section { padding: 22px 18px; }
+        .cookie-table { font-size: 12px; }
+        .cookie-table th,
+        .cookie-table td { padding: 8px 10px; }
+        #header { padding: 0 14px; }
+    }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<header id="header">
+    <a href="index.html" class="header-logo">MAN<span>B</span>AGA</a>
+    <a href="index.html" class="header-back">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+            <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+        </svg>
+        Torna al sito
+    </a>
+</header>
+
+<main>
+    <div class="page-inner">
+
+        <div class="hero-label">🌸 Informazioni legali</div>
+        <h1 class="hero-title">PRIVACY &amp;<br><span>COOKIE POLICY</span></h1>
+        <p class="hero-meta">
+            Titolare: MANBAGA Comics &amp; Games &mdash; Via Padre Reginaldo Giuliani, 21, Canosa di Puglia (BT)<br>
+            Ultimo aggiornamento: <strong id="last-update"></strong>
+        </p>
+
+        <div class="update-box">
+            <span style="font-size:20px;flex-shrink:0">📋</span>
+            <div>
+                <strong>Informativa sintetica</strong> — Questo sito raccoglie solo i dati strettamente necessari al suo funzionamento:
+                autenticazione utenti (Firebase Auth) e prenotazioni tavoli. Non vendiamo né cediamo i tuoi dati a terzi per scopi commerciali.
+            </div>
+        </div>
+
+        <!-- 1 - Titolare -->
+        <div class="section">
+            <h2 class="section-title"><span class="s-icon">🏪</span> 1. Titolare del Trattamento</h2>
+            <p>
+                Il Titolare del trattamento dei dati personali è <strong>MANBAGA Comics &amp; Games</strong>,
+                con sede in Via Padre Reginaldo Giuliani, 21 — 76012 Canosa di Puglia (BT), Italia.
+            </p>
+            <p>
+                Per qualsiasi richiesta relativa alla privacy puoi contattarci all'indirizzo email:
+                <a href="mailto:manbagacomics@gmail.com">manbagacomics@gmail.com</a>
+            </p>
+        </div>
+
+        <!-- 2 - Dati raccolti -->
+        <div class="section">
+            <h2 class="section-title"><span class="s-icon">📦</span> 2. Dati Personali Raccolti</h2>
+            <p>Durante l'utilizzo del sito raccogliamo i seguenti dati:</p>
+            <ul>
+                <li><strong>Dati di registrazione:</strong> nome, indirizzo email e password (memorizzata in forma crittografata tramite Firebase Authentication).</li>
+                <li><strong>Dati di prenotazione:</strong> nome prenotazione, data, orario di arrivo e uscita, numero di persone al tavolo.</li>
+                <li><strong>Dati tecnici:</strong> indirizzo IP, tipo di browser e sistema operativo (raccolti automaticamente dai server Firebase per sicurezza e funzionamento del servizio).</li>
+                <li><strong>Dati del modulo di contatto:</strong> nome, email, testo del messaggio inviato tramite il form nella homepage (trasmessi via EmailJS).</li>
+            </ul>
+        </div>
+
+        <!-- 3 - Finalità -->
+        <div class="section">
+            <h2 class="section-title"><span class="s-icon">🎯</span> 3. Finalità del Trattamento</h2>
+            <p>I dati raccolti vengono utilizzati esclusivamente per:</p>
+            <ul>
+                <li>Consentire la registrazione e l'accesso al sistema di prenotazione tavoli.</li>
+                <li>Gestire e mostrare in tempo reale le prenotazioni dei tavoli del negozio.</li>
+                <li>Rispondere alle richieste di contatto inviate tramite il modulo nella homepage.</li>
+                <li>Garantire la sicurezza del servizio e prevenire usi fraudolenti.</li>
+            </ul>
+            <p>
+                <strong>Non utilizziamo i tuoi dati per profilazione, pubblicità comportamentale o altre finalità commerciali.</strong>
+            </p>
+        </div>
+
+        <!-- 4 - Cookie -->
+        <div class="section">
+            <h2 class="section-title"><span class="s-icon">🍪</span> 4. Cookie Policy</h2>
+            <p>
+                Un cookie è un piccolo file di testo salvato nel tuo browser. Il nostro sito utilizza i seguenti cookie:
+            </p>
+
+            <table class="cookie-table">
+                <thead>
+                    <tr>
+                        <th>Nome / Origine</th>
+                        <th>Tipo</th>
+                        <th>Durata</th>
+                        <th>Scopo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>manbaga_cookie_consent</code></td>
+                        <td><span class="badge-necessary">Necessario</span></td>
+                        <td>Persistente</td>
+                        <td>Salva la tua scelta sul consenso cookie per non mostrare di nuovo il banner.</td>
+                    </tr>
+                    <tr>
+                        <td>Firebase Auth Token<br><small>(localStorage / IndexedDB)</small></td>
+                        <td><span class="badge-necessary">Necessario</span></td>
+                        <td>Sessione / 1 anno</td>
+                        <td>Mantiene la sessione di autenticazione per il sistema di prenotazione tavoli.</td>
+                    </tr>
+                    <tr>
+                        <td>Firebase Database<br><small>(google.com)</small></td>
+                        <td><span class="badge-necessary">Necessario</span></td>
+                        <td>Sessione</td>
+                        <td>Connessione in tempo reale al database prenotazioni.</td>
+                    </tr>
+                    <tr>
+                        <td>Google Fonts<br><small>(fonts.googleapis.com)</small></td>
+                        <td><span class="badge-analytics">Tecnico</span></td>
+                        <td>1 anno</td>
+                        <td>Caricamento dei font tipografici del sito. Google potrebbe registrare l'IP della richiesta.</td>
+                    </tr>
+                    <tr>
+                        <td>EmailJS<br><small>(emailjs.com)</small></td>
+                        <td><span class="badge-analytics">Tecnico</span></td>
+                        <td>Sessione</td>
+                        <td>Servizio di invio email per il modulo di contatto nella homepage.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p style="margin-top:14px">
+                Puoi gestire o cancellare i cookie in qualsiasi momento dalle impostazioni del tuo browser.
+                Disabilitare i cookie tecnici potrebbe compromettere il funzionamento del sito.
+            </p>
+            <p>
+                Per revocare il consenso precedentemente dato, puoi eliminare la voce <code>manbaga_cookie_consent</code>
+                dallo storage del browser (DevTools &rarr; Application &rarr; LocalStorage).
+            </p>
+        </div>
+
+        <!-- 5 - Terze parti -->
+        <div class="section">
+            <h2 class="section-title"><span class="s-icon">🔗</span> 5. Servizi di Terze Parti</h2>
+            <p>Il sito si avvale dei seguenti servizi esterni, ognuno dotato di propria informativa:</p>
+            <ul>
+                <li>
+                    <strong>Firebase (Google LLC):</strong> autenticazione utenti e database in tempo reale.
+                    <a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener">Privacy Policy Firebase ↗</a>
+                </li>
+                <li>
+                    <strong>EmailJS:</strong> servizio di invio email per il modulo di contatto.
+                    <a href="https://www.emailjs.com/legal/privacy-policy/" target="_blank" rel="noopener">Privacy Policy EmailJS ↗</a>
+                </li>
+                <li>
+                    <strong>Google Fonts:</strong> font tipografici.
+                    <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Privacy Policy Google ↗</a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- 6 - Diritti -->
+        <div class="section">
+            <h2 class="section-title"><span class="s-icon">⚖️</span> 6. I Tuoi Diritti (GDPR)</h2>
+            <p>
+                In conformità al Regolamento (UE) 2016/679 (GDPR), hai diritto a:
+            </p>
+            <ul>
+                <li><strong>Accesso</strong> — richiedere copia dei tuoi dati personali in nostro possesso.</li>
+                <li><strong>Rettifica</strong> — correggere dati inesatti o incompleti.</li>
+                <li><strong>Cancellazione</strong> — richiedere l'eliminazione dei tuoi dati ("diritto all'oblio").</li>
+                <li><strong>Portabilità</strong> — ricevere i tuoi dati in formato leggibile da macchina.</li>
+                <li><strong>Opposizione</strong> — opporsi al trattamento in qualsiasi momento.</li>
+                <li><strong>Revoca del consenso</strong> — ritirare il consenso senza pregiudizio per il trattamento pregresso.</li>
+            </ul>
+            <p>
+                Per esercitare questi diritti scrivi a <a href="mailto:manbagacomics@gmail.com">manbagacomics@gmail.com</a>.
+                Hai inoltre il diritto di proporre reclamo al <strong>Garante per la protezione dei dati personali</strong>
+                (<a href="https://www.garanteprivacy.it" target="_blank" rel="noopener">garanteprivacy.it ↗</a>).
+            </p>
+        </div>
+
+        <!-- 7 - Minori -->
+        <div class="section">
+            <h2 class="section-title"><span class="s-icon">👶</span> 7. Minori</h2>
+            <p>
+                Il servizio di prenotazione tavoli è accessibile a tutti. I minori di 14 anni devono
+                ottenere il consenso di un genitore o tutore legale prima di registrarsi e fornire
+                dati personali, ai sensi dell'art. 8 del GDPR e dell'art. 2-quinquies del Codice Privacy italiano.
+            </p>
+        </div>
+
+        <!-- 8 - Modifiche -->
+        <div class="section">
+            <h2 class="section-title"><span class="s-icon">🔄</span> 8. Modifiche alla Policy</h2>
+            <p>
+                Ci riserviamo il diritto di aggiornare questa informativa per riflettere eventuali
+                modifiche ai servizi o agli obblighi normativi. Le modifiche sostanziali saranno
+                segnalate tramite un avviso in homepage. La data dell'ultimo aggiornamento è indicata
+                in cima a questa pagina.
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="privacy-footer">
+            <p>
+                &copy; 2025 MANBAGA Comics &amp; Games &mdash; Via Padre Reginaldo Giuliani, 21, Canosa di Puglia (BT)<br>
+                <a href="mailto:manbagacomics@gmail.com">manbagacomics@gmail.com</a>
+                &nbsp;&middot;&nbsp;
+                <a href="index.html">Torna alla homepage</a>
+            </p>
+        </div>
+
+    </div>
+</main>
+
+<script>
+// Show last update date
+document.getElementById('last-update').textContent = new Intl.DateTimeFormat('it-IT', {
+    day: '2-digit', month: 'long', year: 'numeric'
+}).format(new Date('2025-03-11'));
+</script>
+</body>
+</html>

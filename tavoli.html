@@ -15,25 +15,27 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 
     <style>
-    /* ─── RESET ─────────────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-        --bg:        #080808;
-        --bg2:       #0f0f0f;
-        --bg3:       #161616;
-        --border:    rgba(255,255,255,0.07);
-        --red:       #DC2626;
-        --red-glow:  rgba(220,38,38,0.25);
-        --green:     #22c55e;
-        --green-glow:rgba(34,197,94,0.22);
-        --white:     #f5f0e8;
-        --gray:      rgba(255,255,255,0.35);
-        --font:      'Inter', sans-serif;
-        --comic:     'Bangers', cursive;
-        --nav-h:     64px;
-        --ease:      cubic-bezier(0.19, 1, 0.22, 1);
-        --bounce:    cubic-bezier(0.34, 1.56, 0.64, 1);
+        --bg:         #080808;
+        --bg2:        #0f0f0f;
+        --bg3:        #161616;
+        --border:     rgba(255,255,255,0.07);
+        --red:        #DC2626;
+        --red-glow:   rgba(220,38,38,0.25);
+        --pink:       #F472B6;
+        --pink-dark:  #e11d8d;
+        --pink-glow:  rgba(244,114,182,0.25);
+        --green:      #22c55e;
+        --green-glow: rgba(34,197,94,0.22);
+        --white:      #f5f0e8;
+        --gray:       rgba(255,255,255,0.35);
+        --font:       'Inter', sans-serif;
+        --comic:      'Bangers', cursive;
+        --nav-h:      64px;
+        --ease:       cubic-bezier(0.19, 1, 0.22, 1);
+        --bounce:     cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     html { scroll-behavior: smooth; }
@@ -44,9 +46,40 @@
         color: var(--white);
         min-height: 100vh;
         -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
     }
 
     .hidden { display: none !important; }
+
+    /* ─── SAKURA PETALS ──────────────────────────────────────── */
+    .sakura-wrap {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        overflow: hidden;
+    }
+    .sakura {
+        position: absolute;
+        top: -20px;
+        opacity: 0.55;
+        animation: sakura-fall linear infinite;
+    }
+    .sakura svg { display: block; }
+    .sakura:nth-child(1)  { left:  8%; animation-duration: 9s;  animation-delay: 0s;    width: 14px; }
+    .sakura:nth-child(2)  { left: 22%; animation-duration: 13s; animation-delay: 2.5s;  width: 10px; }
+    .sakura:nth-child(3)  { left: 38%; animation-duration: 10s; animation-delay: 5s;    width: 16px; }
+    .sakura:nth-child(4)  { left: 54%; animation-duration: 12s; animation-delay: 1s;    width: 11px; }
+    .sakura:nth-child(5)  { left: 68%; animation-duration:  8s; animation-delay: 3.5s;  width: 13px; }
+    .sakura:nth-child(6)  { left: 82%; animation-duration: 11s; animation-delay: 6s;    width: 12px; }
+    .sakura:nth-child(7)  { left: 93%; animation-duration: 14s; animation-delay: 0.8s;  width:  9px; }
+
+    @keyframes sakura-fall {
+        0%   { transform: translateY(-20px) rotate(0deg)   translateX(0px);   opacity: .65; }
+        30%  { transform: translateY(30vh)  rotate(120deg) translateX(25px); }
+        60%  { transform: translateY(60vh)  rotate(240deg) translateX(-18px); }
+        100% { transform: translateY(110vh) rotate(360deg) translateX(8px);   opacity: 0; }
+    }
 
     /* ─── TOAST ─────────────────────────────────────────────── */
     #toast-wrap {
@@ -58,49 +91,48 @@
         flex-direction: column;
         gap: 10px;
         pointer-events: none;
-        max-width: 360px;
+        max-width: 340px;
         width: calc(100vw - 36px);
     }
-
     .toast {
         display: flex;
         align-items: center;
         gap: 12px;
-        padding: 13px 18px;
-        background: #1a1a1a;
-        border-radius: 6px;
+        padding: 12px 16px;
+        background: #1c1c1c;
+        border-radius: 12px;
         font-size: 13px;
         font-weight: 600;
         color: var(--white);
         pointer-events: auto;
-        box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+        box-shadow: 0 8px 30px rgba(0,0,0,.65);
         animation: tIn .32s var(--bounce) forwards;
         letter-spacing: .02em;
-        line-height: 1.4;
+        line-height: 1.45;
         border-left: 3px solid rgba(255,255,255,.12);
     }
     .toast.out { animation: tOut .26s ease forwards; }
     .toast--ok   { border-left-color: var(--green); }
     .toast--err  { border-left-color: var(--red); }
-    .toast--info { border-left-color: #3b82f6; }
-    .toast-icon  { font-size: 15px; flex-shrink: 0; }
+    .toast--info { border-left-color: var(--pink); }
+    .toast-icon  { font-size: 16px; flex-shrink: 0; }
 
     @keyframes tIn  { from { transform: translateX(calc(100% + 20px)); opacity: 0; } to { transform: none; opacity: 1; } }
-    @keyframes tOut { from { transform: none; opacity: 1; max-height: 80px; } to { transform: translateX(calc(100% + 20px)); opacity: 0; max-height: 0; padding: 0; margin: 0; } }
+    @keyframes tOut { from { opacity: 1; max-height: 80px; } to { opacity: 0; max-height: 0; padding: 0; margin: 0; } }
 
     /* ─── HEADER ─────────────────────────────────────────────── */
     #header {
         position: fixed;
         top: 0; left: 0; right: 0;
         height: var(--nav-h);
-        background: rgba(8,8,8,.95);
+        background: rgba(8,8,8,.97);
         backdrop-filter: blur(14px);
-        border-bottom: 1px solid rgba(220,38,38,.35);
+        border-bottom: 2px solid rgba(244,114,182,.25);
         z-index: 800;
         display: flex;
         align-items: center;
-        padding: 0 28px;
-        gap: 24px;
+        padding: 0 20px;
+        gap: 12px;
         justify-content: space-between;
     }
 
@@ -108,11 +140,13 @@
         font-family: var(--comic);
         font-size: 26px;
         letter-spacing: .06em;
-        color: var(--white);
         text-decoration: none;
         flex-shrink: 0;
+        background: linear-gradient(135deg, var(--white) 40%, var(--pink));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
     }
-    .header-logo span { color: var(--red); }
 
     .header-back {
         display: inline-flex;
@@ -120,26 +154,35 @@
         gap: 7px;
         font-size: 11px;
         font-weight: 700;
-        letter-spacing: .15em;
+        letter-spacing: .12em;
         text-transform: uppercase;
         color: var(--gray);
         text-decoration: none;
-        transition: color .2s;
+        transition: color .2s, border-color .2s;
+        padding: 6px 14px;
+        border: 1px solid rgba(255,255,255,.08);
+        border-radius: 20px;
+        white-space: nowrap;
     }
-    .header-back:hover { color: var(--white); }
+    .header-back:hover { color: var(--pink); border-color: rgba(244,114,182,.4); }
 
     #header-user {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 10px;
+        flex-shrink: 0;
     }
 
     #header-nome {
         font-size: 11px;
         font-weight: 700;
-        letter-spacing: .18em;
+        letter-spacing: .16em;
         text-transform: uppercase;
-        color: var(--red);
+        color: var(--pink);
+        max-width: 120px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .btn-logout {
@@ -149,142 +192,168 @@
         font-family: var(--font);
         font-size: 10px;
         font-weight: 700;
-        letter-spacing: .15em;
+        letter-spacing: .12em;
         text-transform: uppercase;
-        padding: 6px 16px;
-        border-radius: 4px;
+        padding: 6px 14px;
+        border-radius: 20px;
         cursor: pointer;
         transition: all .2s;
+        white-space: nowrap;
     }
-    .btn-logout:hover { border-color: var(--red); color: var(--red); }
+    .btn-logout:hover { border-color: var(--pink); color: var(--pink); }
 
     /* ─── MAIN ───────────────────────────────────────────────── */
     main {
         padding-top: var(--nav-h);
         min-height: 100vh;
+        position: relative;
+        z-index: 1;
     }
 
     .page-inner {
         max-width: 960px;
         margin: 0 auto;
-        padding: 52px 24px 80px;
+        padding: 48px 20px 80px;
     }
 
-    /* Page heading */
     .page-label {
         font-size: 10px;
         font-weight: 700;
-        letter-spacing: .42em;
+        letter-spacing: .4em;
         text-transform: uppercase;
-        color: var(--red);
+        color: var(--pink);
         margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
 
     .page-title {
         font-family: var(--comic);
-        font-size: clamp(52px, 9vw, 90px);
+        font-size: clamp(48px, 9vw, 88px);
         line-height: .92;
         letter-spacing: .02em;
         color: var(--white);
+        margin-bottom: 10px;
+    }
+    .page-title span {
+        background: linear-gradient(135deg, var(--red), var(--pink));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .page-subtitle {
+        font-size: 13px;
+        font-weight: 600;
+        color: rgba(255,255,255,.3);
+        letter-spacing: .04em;
         margin-bottom: 40px;
     }
-    .page-title span { color: var(--red); }
 
     /* ─── AUTH CARD ──────────────────────────────────────────── */
     #auth-screen {
         display: flex;
         align-items: center;
         justify-content: center;
-        min-height: calc(100vh - var(--nav-h));
+        min-height: calc(100vh - var(--nav-h) - 48px);
     }
 
     .auth-card {
         width: 100%;
-        max-width: 400px;
-        padding: 44px 40px;
-        background: var(--bg2);
-        border: 1px solid rgba(220,38,38,.18);
-        border-radius: 10px;
-        box-shadow: 0 24px 64px rgba(0,0,0,.55);
+        max-width: 420px;
+        padding: 44px 36px;
+        background: linear-gradient(145deg, #0f0f0f, #131313);
+        border: 1px solid rgba(244,114,182,.18);
+        border-radius: 22px;
+        box-shadow: 0 24px 64px rgba(0,0,0,.55), 0 0 0 1px rgba(244,114,182,.04);
+        position: relative;
+        overflow: hidden;
+    }
+    .auth-card::before {
+        content: '予約';
+        position: absolute;
+        top: -15px; right: -5px;
+        font-family: var(--comic);
+        font-size: 100px;
+        color: rgba(244,114,182,.05);
+        pointer-events: none;
+        line-height: 1;
+        letter-spacing: -.02em;
     }
 
-    .auth-head {
-        text-align: center;
-        margin-bottom: 32px;
-    }
+    .auth-head { text-align: center; margin-bottom: 30px; }
 
     .auth-eyebrow {
         font-size: 10px;
         font-weight: 700;
-        letter-spacing: .42em;
+        letter-spacing: .4em;
         text-transform: uppercase;
-        color: var(--red);
-        margin-bottom: 12px;
+        color: var(--pink);
+        margin-bottom: 10px;
     }
 
     .auth-logo {
         font-family: var(--comic);
-        font-size: 38px;
+        font-size: 40px;
         letter-spacing: .06em;
-        color: var(--white);
+        background: linear-gradient(135deg, var(--white), var(--pink));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
     }
-    .auth-logo span { color: var(--red); }
 
-    .auth-fields {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-    }
+    .auth-fields { display: flex; flex-direction: column; gap: 12px; }
 
     .field-input {
         width: 100%;
-        padding: 12px 15px;
+        padding: 13px 15px;
         background: rgba(255,255,255,.05);
         border: 1px solid rgba(255,255,255,.1);
-        border-radius: 5px;
+        border-radius: 12px;
         color: var(--white);
         font-family: var(--font);
         font-size: 14px;
         outline: none;
-        transition: border-color .2s, background .2s;
+        transition: border-color .2s, background .2s, box-shadow .2s;
     }
-    .field-input::placeholder { color: rgba(255,255,255,.22); }
-    .field-input:focus { border-color: var(--red); background: rgba(255,255,255,.07); }
+    .field-input::placeholder { color: rgba(255,255,255,.2); }
+    .field-input:focus {
+        border-color: var(--pink);
+        background: rgba(244,114,182,.04);
+        box-shadow: 0 0 0 3px rgba(244,114,182,.1);
+    }
+    input[type="date"].field-input,
+    input[type="time"].field-input { color-scheme: dark; }
 
     .btn-primary {
         width: 100%;
-        padding: 13px;
-        background: linear-gradient(135deg, #ef4444, #dc2626);
+        padding: 14px;
+        background: linear-gradient(135deg, var(--pink), var(--pink-dark));
         border: none;
-        border-radius: 5px;
+        border-radius: 12px;
         color: #fff;
         font-family: var(--font);
         font-size: 13px;
         font-weight: 800;
-        letter-spacing: .22em;
+        letter-spacing: .2em;
         text-transform: uppercase;
         cursor: pointer;
-        transition: all .2s;
+        transition: all .25s var(--bounce);
         margin-top: 4px;
     }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(220,38,38,.4); }
-    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(244,114,182,.5); }
+    .btn-primary:active { transform: none; }
 
     .btn-toggle {
-        background: none;
-        border: none;
+        background: none; border: none;
         color: rgba(255,255,255,.28);
-        font-family: var(--font);
-        font-size: 11px;
-        font-weight: 600;
-        letter-spacing: .12em;
-        text-transform: uppercase;
-        cursor: pointer;
-        padding: 4px 0;
-        text-align: center;
+        font-family: var(--font); font-size: 11px; font-weight: 600;
+        letter-spacing: .1em; text-transform: uppercase;
+        cursor: pointer; padding: 4px 0; text-align: center;
         transition: color .2s;
     }
-    .btn-toggle:hover { color: var(--red); }
+    .btn-toggle:hover { color: var(--pink); }
 
     /* ─── APP ────────────────────────────────────────────────── */
     #app-screen { display: none; }
@@ -294,13 +363,23 @@
     .stats-bar {
         display: flex;
         align-items: center;
-        gap: 12px;
-        padding: 14px 20px;
-        background: var(--bg2);
+        gap: 10px;
+        padding: 14px 18px;
+        background: linear-gradient(135deg, #0f0f0f, #131313);
         border: 1px solid var(--border);
-        border-radius: 8px;
-        margin-bottom: 30px;
+        border-radius: 16px;
+        margin-bottom: 24px;
         flex-wrap: wrap;
+        position: relative;
+        overflow: hidden;
+    }
+    .stats-bar::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--green), var(--pink), var(--red));
+        opacity: .45;
     }
 
     .stat-pill {
@@ -309,78 +388,78 @@
         gap: 8px;
         font-size: 11px;
         font-weight: 700;
-        letter-spacing: .12em;
+        letter-spacing: .1em;
         text-transform: uppercase;
-        padding: 6px 16px;
+        padding: 7px 16px;
         border-radius: 30px;
     }
     .stat-pill::before {
         content: '';
         width: 7px; height: 7px;
         border-radius: 50%;
-        animation: pulse 2s ease infinite;
+        animation: blink 2s ease infinite;
     }
-    .stat-pill--free   { background: rgba(34,197,94,.1); color: var(--green); border: 1px solid rgba(34,197,94,.2); }
-    .stat-pill--free::before { background: var(--green); box-shadow: 0 0 8px var(--green); }
-    .stat-pill--occ    { background: rgba(220,38,38,.1); color: var(--red); border: 1px solid rgba(220,38,38,.2); }
-    .stat-pill--occ::before  { background: var(--red); box-shadow: 0 0 8px var(--red); }
+    .stat-pill--free   { background: rgba(34,197,94,.1);  color: var(--green); border: 1px solid rgba(34,197,94,.22); }
+    .stat-pill--free::before { background: var(--green); box-shadow: 0 0 7px var(--green); }
+    .stat-pill--occ    { background: rgba(244,114,182,.1); color: var(--pink);  border: 1px solid rgba(244,114,182,.22); }
+    .stat-pill--occ::before  { background: var(--pink);  box-shadow: 0 0 7px var(--pink); }
 
-    @keyframes pulse {
+    @keyframes blink {
         0%, 100% { opacity: 1; }
-        50%       { opacity: .4; }
+        50%       { opacity: .35; }
     }
 
     .stats-spacer { flex: 1; }
+
+    .stats-clock {
+        font-family: var(--comic);
+        font-size: 14px;
+        font-weight: 700;
+        color: rgba(255,255,255,.35);
+        letter-spacing: .08em;
+    }
+
+    .stats-info {
+        font-size: 11px;
+        font-weight: 600;
+        color: rgba(255,255,255,.18);
+        letter-spacing: .06em;
+    }
 
     /* Tabs */
     .tabs {
         display: flex;
         border-bottom: 1px solid var(--border);
-        margin-bottom: 30px;
-        gap: 0;
+        margin-bottom: 26px;
     }
 
     .tab-btn {
-        background: none;
-        border: none;
+        background: none; border: none;
         border-bottom: 2px solid transparent;
-        padding: 11px 24px 14px;
-        font-family: var(--font);
-        font-size: 11px;
-        font-weight: 700;
-        letter-spacing: .2em;
-        text-transform: uppercase;
-        color: rgba(255,255,255,.3);
-        cursor: pointer;
-        transition: all .2s;
+        padding: 10px 22px 13px;
+        font-family: var(--font); font-size: 11px; font-weight: 700;
+        letter-spacing: .18em; text-transform: uppercase;
+        color: rgba(255,255,255,.28);
+        cursor: pointer; transition: all .2s;
         margin-bottom: -1px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
+        display: flex; align-items: center; gap: 8px;
     }
-    .tab-btn:hover { color: rgba(255,255,255,.65); }
-    .tab-btn.active { color: var(--white); border-bottom-color: var(--red); }
+    .tab-btn:hover  { color: rgba(255,255,255,.6); }
+    .tab-btn.active { color: var(--white); border-bottom-color: var(--pink); }
 
     .tab-badge {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 20px;
-        height: 18px;
-        padding: 0 6px;
-        background: var(--red);
-        color: #fff;
-        font-size: 10px;
-        font-weight: 800;
-        border-radius: 10px;
-        line-height: 1;
+        display: inline-flex; align-items: center; justify-content: center;
+        min-width: 20px; height: 18px; padding: 0 6px;
+        background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+        color: #fff; font-size: 10px; font-weight: 800;
+        border-radius: 10px; line-height: 1;
     }
 
     /* ─── TABLES GRID ────────────────────────────────────────── */
     #grid-tavoli {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 18px;
+        gap: 14px;
     }
 
     /* ─── TABLE CARD ─────────────────────────────────────────── */
@@ -388,518 +467,352 @@
         position: relative;
         background: var(--bg2);
         border: 1px solid var(--border);
-        border-radius: 14px;
-        padding: 24px 16px 20px;
+        border-radius: 18px;
+        padding: 20px 14px 16px;
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 16px;
-        transition: transform .25s var(--ease), border-color .25s, box-shadow .25s, background .25s;
-        min-height: 220px;
+        gap: 12px;
+        transition: transform .3s var(--ease), border-color .3s, box-shadow .3s, background .3s;
+        min-height: 205px;
+        overflow: hidden;
     }
-
-    .t-card--free {
-        cursor: pointer;
+    .t-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 3px;
+        transition: background .3s;
     }
-    .t-card--free:hover {
-        transform: translateY(-5px);
+    .t-card--free        { cursor: pointer; }
+    .t-card--free::before { background: linear-gradient(90deg, var(--green), rgba(34,197,94,.15)); }
+    .t-card--free:hover  {
+        transform: translateY(-6px) scale(1.02);
         border-color: rgba(34,197,94,.45);
-        background: rgba(34,197,94,.04);
-        box-shadow: 0 12px 34px rgba(34,197,94,.13), 0 0 0 1px rgba(34,197,94,.18);
+        background: rgba(34,197,94,.03);
+        box-shadow: 0 16px 40px rgba(34,197,94,.14), 0 0 0 1px rgba(34,197,94,.15);
     }
-
-    .t-card--occ {
-        border-color: rgba(220,38,38,.28);
-        background: rgba(220,38,38,.04);
+    .t-card--occ::before { background: linear-gradient(90deg, var(--pink), rgba(244,114,182,.15)); }
+    .t-card--occ         {
+        border-color: rgba(244,114,182,.2);
+        background: rgba(244,114,182,.025);
         cursor: default;
     }
 
-    /* Status ribbon */
+    /* Ribbon */
     .t-ribbon {
-        position: absolute;
-        top: 14px;
-        right: 14px;
-        font-size: 8px;
-        font-weight: 900;
-        letter-spacing: .1em;
-        text-transform: uppercase;
-        padding: 4px 9px;
-        border-radius: 20px;
+        position: absolute; top: 13px; right: 13px;
+        font-size: 8px; font-weight: 900;
+        letter-spacing: .12em; text-transform: uppercase;
+        padding: 4px 10px; border-radius: 20px;
     }
-    .t-ribbon--free { background: rgba(34,197,94,.15); color: var(--green); border: 1px solid rgba(34,197,94,.3); }
-    .t-ribbon--occ  { background: rgba(220,38,38,.18); color: var(--red);   border: 1px solid rgba(220,38,38,.35); }
+    .t-ribbon--free { background: rgba(34,197,94,.12);  color: var(--green); border: 1px solid rgba(34,197,94,.28); }
+    .t-ribbon--occ  { background: rgba(244,114,182,.12); color: var(--pink);  border: 1px solid rgba(244,114,182,.28); }
 
-    /* Restaurant table top-view */
-    .t-visual {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 8px;
-        width: 100%;
-    }
+    /* Table visual */
+    .t-visual { display: flex; flex-direction: column; align-items: center; gap: 7px; width: 100%; }
 
-    /* Seats row (top / bottom) */
-    .seats-row {
-        display: flex;
-        gap: 16px;
-        justify-content: center;
-    }
+    .seats-row { display: flex; gap: 14px; justify-content: center; }
 
-    /* Individual seat */
     .seat {
-        width: 14px;
-        height: 14px;
+        width: 13px; height: 13px;
         border-radius: 50%;
-        background: rgba(255,255,255,.1);
-        border: 1px solid rgba(255,255,255,.08);
+        background: rgba(255,255,255,.07);
+        border: 1px solid rgba(255,255,255,.06);
         transition: background .25s, box-shadow .25s;
         flex-shrink: 0;
     }
+    .seat--taken-free { background: rgba(34,197,94,.55);  border-color: rgba(34,197,94,.65); box-shadow: 0 0 6px rgba(34,197,94,.35); }
+    .seat--taken-occ  { background: rgba(244,114,182,.55); border-color: rgba(244,114,182,.65); box-shadow: 0 0 6px rgba(244,114,182,.35); }
+    .t-card--free:hover .seat.seat--empty { background: rgba(34,197,94,.18); }
 
-    /* Seat filled states */
-    .seat--taken-free  { background: rgba(34,197,94,.55);  border-color: rgba(34,197,94,.6); }
-    .seat--taken-occ   { background: rgba(220,38,38,.55);  border-color: rgba(220,38,38,.6); }
-    .seat--preview     { background: rgba(34,197,94,.3);   border-color: rgba(34,197,94,.4); }
-
-    .t-card--free:hover .seat.seat--empty { background: rgba(34,197,94,.2); }
-
-    /* Table top */
     .t-top {
-        width: 90px;
-        height: 54px;
+        width: 84px; height: 50px;
         border-radius: 12px;
-        background: rgba(255,255,255,.06);
-        border: 1px solid rgba(255,255,255,.1);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all .25s;
-        position: relative;
+        background: rgba(255,255,255,.05);
+        border: 1px solid rgba(255,255,255,.08);
+        display: flex; align-items: center; justify-content: center;
+        transition: all .3s; position: relative;
     }
     .t-card--free:hover .t-top {
-        background: rgba(34,197,94,.1);
-        border-color: rgba(34,197,94,.3);
+        background: rgba(34,197,94,.09);
+        border-color: rgba(34,197,94,.28);
+        box-shadow: 0 0 18px rgba(34,197,94,.12);
     }
     .t-card--occ .t-top {
-        background: rgba(220,38,38,.1);
-        border-color: rgba(220,38,38,.3);
+        background: rgba(244,114,182,.07);
+        border-color: rgba(244,114,182,.22);
+        box-shadow: 0 0 14px rgba(244,114,182,.08);
     }
 
     .t-num {
-        font-family: var(--comic);
-        font-size: 28px;
-        letter-spacing: .04em;
-        color: rgba(255,255,255,.35);
-        line-height: 1;
-        transition: color .25s;
+        font-family: var(--comic); font-size: 26px;
+        letter-spacing: .04em; color: rgba(255,255,255,.28);
+        line-height: 1; transition: color .3s;
     }
     .t-card--free:hover .t-num { color: var(--green); }
-    .t-card--occ .t-num         { color: var(--red); }
+    .t-card--occ .t-num         { color: var(--pink); }
 
-    /* Seat count indicator in corner of table */
     .t-seats-count {
-        position: absolute;
-        bottom: -8px;
-        right: -8px;
-        width: 22px;
-        height: 22px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 10px;
-        font-weight: 800;
-        color: #fff;
-        line-height: 1;
+        position: absolute; bottom: -8px; right: -8px;
+        width: 21px; height: 21px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 10px; font-weight: 800; color: #fff; line-height: 1;
     }
     .t-seats-count--free { background: var(--green); }
-    .t-seats-count--occ  { background: var(--red); }
+    .t-seats-count--occ  { background: linear-gradient(135deg, var(--pink), var(--pink-dark)); }
 
-    /* Info section below visual */
-    .t-info {
-        text-align: center;
-        width: 100%;
-    }
+    /* Info */
+    .t-info { text-align: center; width: 100%; }
 
     .t-cta {
-        font-size: 10px;
-        font-weight: 700;
-        letter-spacing: .2em;
-        text-transform: uppercase;
-        color: rgba(255,255,255,.18);
-        transition: color .25s;
-        display: block;
+        font-size: 9px; font-weight: 700; letter-spacing: .18em;
+        text-transform: uppercase; color: rgba(255,255,255,.14);
+        transition: color .3s; display: block;
     }
     .t-card--free:hover .t-cta { color: var(--green); }
 
     .t-guest-name {
-        display: block;
-        font-size: 14px;
-        font-weight: 800;
-        color: var(--white);
-        letter-spacing: .04em;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 100%;
+        display: block; font-size: 13px; font-weight: 800;
+        color: var(--white); letter-spacing: .03em;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
     }
-
-    .t-guest-meta {
-        display: block;
-        font-size: 11px;
-        font-weight: 600;
-        color: var(--gray);
-        margin-top: 3px;
-        letter-spacing: .06em;
-    }
+    .t-guest-meta { display: block; font-size: 10px; font-weight: 600; color: var(--gray); margin-top: 2px; }
 
     .t-guest-people {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        font-size: 11px;
-        font-weight: 700;
-        color: var(--red);
-        margin-top: 5px;
+        display: inline-flex; align-items: center; gap: 3px;
+        font-size: 10px; font-weight: 700; color: var(--pink); margin-top: 4px;
     }
 
-    /* ─── LISTA PRENOTAZIONI ─────────────────────────────────── */
-    #lista-mie {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
+    .t-date-badge {
+        font-size: 9px; font-weight: 700;
+        color: rgba(255,255,255,.25); letter-spacing: .06em;
+        margin-top: 2px; display: block;
     }
+
+    .t-time-range {
+        display: inline-flex; align-items: center; gap: 4px;
+        font-size: 11px; font-weight: 700;
+        color: rgba(255,255,255,.38); letter-spacing: .04em; margin-top: 2px;
+    }
+    .t-time-range .t-arr { color: rgba(255,255,255,.5); }
+    .t-time-range .t-sep { color: var(--pink); font-size: 12px; }
+    .t-time-range .t-usc { color: var(--pink); }
+
+    .t-expire-soon {
+        display: block; font-size: 9px; font-weight: 800;
+        letter-spacing: .1em; text-transform: uppercase;
+        color: #f59e0b; margin-top: 3px;
+        animation: blink 1s ease infinite;
+    }
+
+    /* ─── LISTA ──────────────────────────────────────────────── */
+    #lista-mie { display: flex; flex-direction: column; gap: 10px; }
 
     .pren-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-        padding: 18px 22px;
-        background: var(--bg2);
-        border: 1px solid var(--border);
-        border-left: 3px solid var(--red);
-        border-radius: 6px;
-        transition: background .2s;
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 14px; padding: 16px 20px;
+        background: var(--bg2); border: 1px solid var(--border);
+        border-left: 3px solid var(--pink); border-radius: 14px;
+        transition: background .2s, transform .2s;
     }
-    .pren-row:hover { background: var(--bg3); }
+    .pren-row:hover { background: var(--bg3); transform: translateX(4px); }
 
     .pren-main { display: flex; flex-direction: column; gap: 3px; }
 
     .pren-table {
-        font-size: 10px;
-        font-weight: 700;
-        letter-spacing: .3em;
-        text-transform: uppercase;
-        color: var(--red);
+        font-size: 10px; font-weight: 700; letter-spacing: .28em;
+        text-transform: uppercase; color: var(--pink);
     }
+    .pren-name  { font-size: 17px; font-weight: 800; color: var(--white); }
+    .pren-meta  { font-size: 11px; font-weight: 600; color: var(--gray); letter-spacing: .05em; }
 
-    .pren-name {
-        font-size: 18px;
-        font-weight: 800;
-        color: var(--white);
-    }
-
-    .pren-meta {
-        font-size: 11px;
-        font-weight: 600;
-        color: var(--gray);
-        letter-spacing: .06em;
-    }
-
-    .pren-people-dots {
-        display: flex;
-        gap: 5px;
-        margin-top: 5px;
-    }
-
+    .pren-people-dots { display: flex; gap: 5px; margin-top: 5px; }
     .pren-dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: rgba(255,255,255,.08);
-        border: 1px solid rgba(255,255,255,.06);
+        width: 10px; height: 10px; border-radius: 50%;
+        background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.05);
     }
-    .pren-dot.filled { background: var(--red); border-color: rgba(220,38,38,.6); }
+    .pren-dot.filled {
+        background: var(--pink); border-color: rgba(244,114,182,.55);
+        box-shadow: 0 0 5px rgba(244,114,182,.4);
+    }
 
     .btn-del {
-        flex-shrink: 0;
-        width: 38px; height: 38px;
-        border-radius: 6px;
-        border: 1px solid rgba(220,38,38,.25);
-        background: rgba(220,38,38,.08);
-        color: var(--red);
-        font-size: 15px;
-        font-weight: 700;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        flex-shrink: 0; width: 36px; height: 36px;
+        border-radius: 10px; border: 1px solid rgba(244,114,182,.22);
+        background: rgba(244,114,182,.07); color: var(--pink);
+        font-size: 14px; font-weight: 700;
+        cursor: pointer; display: flex; align-items: center; justify-content: center;
         transition: all .2s;
     }
-    .btn-del:hover { background: var(--red); color: #fff; transform: scale(1.05); }
+    .btn-del:hover { background: var(--pink); color: #fff; transform: scale(1.1) rotate(8deg); }
 
     .empty-msg {
-        text-align: center;
-        padding: 64px 0;
-        font-size: 11px;
-        font-weight: 700;
-        letter-spacing: .38em;
-        text-transform: uppercase;
-        color: rgba(255,255,255,.15);
+        text-align: center; padding: 60px 0;
+        font-size: 11px; font-weight: 700; letter-spacing: .35em;
+        text-transform: uppercase; color: rgba(255,255,255,.13);
     }
 
-    /* ─── MODAL PRENOTAZIONE ─────────────────────────────────── */
+    /* ─── MODAL ──────────────────────────────────────────────── */
     #modal-overlay {
-        position: fixed;
-        inset: 0;
-        z-index: 4000;
-        background: rgba(0,0,0,.82);
-        backdrop-filter: blur(10px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
+        position: fixed; inset: 0; z-index: 4000;
+        background: rgba(0,0,0,.85); backdrop-filter: blur(12px);
+        display: flex; align-items: center; justify-content: center;
+        padding: 16px;
     }
 
     .modal-box {
-        width: 100%;
-        max-width: 400px;
-        background: #111;
-        border: 1px solid rgba(220,38,38,.22);
-        border-radius: 12px;
-        overflow: hidden;
-        animation: mIn .3s var(--bounce);
+        width: 100%; max-width: 420px;
+        background: #0f0f0f; border: 1px solid rgba(244,114,182,.22);
+        border-radius: 22px; overflow: hidden;
+        animation: mIn .35s var(--bounce);
+        box-shadow: 0 30px 80px rgba(0,0,0,.7), 0 0 0 1px rgba(244,114,182,.04);
+        max-height: 95vh;
+        overflow-y: auto;
     }
 
     @keyframes mIn {
-        from { transform: scale(.88) translateY(24px); opacity: 0; }
+        from { transform: scale(.88) translateY(30px); opacity: 0; }
         to   { transform: none; opacity: 1; }
     }
 
     .modal-head {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        padding: 22px 26px 18px;
+        display: flex; align-items: flex-start; justify-content: space-between;
+        padding: 20px 24px 16px;
         border-bottom: 1px solid rgba(255,255,255,.05);
-        background: rgba(220,38,38,.05);
+        background: linear-gradient(135deg, rgba(244,114,182,.07), rgba(220,38,38,.04));
+        position: relative; overflow: hidden;
+        position: sticky; top: 0; z-index: 2;
+    }
+    .modal-head::before {
+        content: '席'; position: absolute; right: 54px; top: -12px;
+        font-family: var(--comic); font-size: 72px;
+        color: rgba(244,114,182,.05); pointer-events: none; line-height: 1;
     }
 
     .modal-eyebrow {
-        font-size: 9px;
-        font-weight: 700;
-        letter-spacing: .45em;
-        text-transform: uppercase;
-        color: var(--red);
-        margin-bottom: 6px;
+        font-size: 9px; font-weight: 700; letter-spacing: .42em;
+        text-transform: uppercase; color: var(--pink); margin-bottom: 5px;
     }
-
-    .modal-title {
-        font-family: var(--comic);
-        font-size: 30px;
-        color: var(--white);
-        letter-spacing: .05em;
-        line-height: 1;
-    }
+    .modal-title { font-family: var(--comic); font-size: 28px; color: var(--white); letter-spacing: .05em; line-height: 1; }
 
     .modal-close {
-        background: none;
-        border: none;
-        color: rgba(255,255,255,.3);
-        font-size: 18px;
-        cursor: pointer;
-        padding: 2px;
-        line-height: 1;
-        margin-top: 4px;
-        transition: color .2s;
+        background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08);
+        color: rgba(255,255,255,.35); font-size: 15px; cursor: pointer;
+        width: 30px; height: 30px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        transition: all .2s; flex-shrink: 0; margin-top: 2px;
     }
-    .modal-close:hover { color: var(--red); }
+    .modal-close:hover { color: var(--pink); border-color: var(--pink); background: rgba(244,114,182,.1); }
 
-    .modal-body {
-        padding: 26px;
-        display: flex;
-        flex-direction: column;
-        gap: 18px;
-    }
+    .modal-body { padding: 22px; display: flex; flex-direction: column; gap: 16px; }
 
     .field-label {
-        display: block;
-        font-size: 10px;
-        font-weight: 700;
-        letter-spacing: .22em;
-        text-transform: uppercase;
-        color: rgba(255,255,255,.4);
-        margin-bottom: 8px;
+        display: block; font-size: 10px; font-weight: 700;
+        letter-spacing: .2em; text-transform: uppercase;
+        color: rgba(255,255,255,.32); margin-bottom: 7px;
     }
 
-    /* Time row (arrival + departure side by side) */
-    .time-row {
-        display: flex;
-        align-items: flex-end;
-        gap: 10px;
-    }
+    .time-row { display: flex; align-items: flex-end; gap: 8px; }
     .time-row > div { flex: 1; }
-    .time-arrow {
-        font-size: 18px;
-        color: rgba(255,255,255,.2);
-        padding-bottom: 10px;
-        flex-shrink: 0;
-    }
-
-    /* Time range badge on card */
-    .t-time-range {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        font-size: 11px;
-        font-weight: 700;
-        color: rgba(255,255,255,.45);
-        letter-spacing: .04em;
-        margin-top: 2px;
-    }
-    .t-time-range .t-arr { color: rgba(255,255,255,.55); }
-    .t-time-range .t-sep { color: rgba(220,38,38,.6); font-size: 13px; }
-    .t-time-range .t-usc { color: var(--red); }
-
-    /* Expiry countdown */
-    .t-expire-soon {
-        font-size: 9px;
-        font-weight: 800;
-        letter-spacing: .12em;
-        text-transform: uppercase;
-        color: #f59e0b;
-        margin-top: 3px;
-        animation: pulse 1s ease infinite;
-    }
+    .time-arrow { font-size: 16px; color: var(--pink); padding-bottom: 10px; flex-shrink: 0; opacity: .6; }
 
     /* People selector */
-    .people-selector {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 8px;
-    }
+    .people-selector { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
 
     .people-btn {
         aspect-ratio: 1;
-        background: rgba(255,255,255,.05);
-        border: 1px solid rgba(255,255,255,.1);
-        border-radius: 8px;
-        color: rgba(255,255,255,.5);
-        font-family: var(--font);
-        font-size: 18px;
-        font-weight: 800;
-        cursor: pointer;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 4px;
-        transition: all .18s;
-        padding: 10px 0;
+        background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.09);
+        border-radius: 12px; color: rgba(255,255,255,.4);
+        font-family: var(--font); font-weight: 800;
+        cursor: pointer; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; gap: 4px;
+        transition: all .2s var(--bounce); padding: 8px 0;
     }
-
-    .people-btn .people-icon {
-        font-size: 13px;
-        display: flex;
-        gap: 2px;
-        line-height: 1;
-    }
-
+    .people-btn .people-icon { font-size: 14px; display: flex; gap: 1px; line-height: 1; }
+    .people-btn .people-num  { font-size: 15px; }
     .people-btn:hover {
-        background: rgba(220,38,38,.1);
-        border-color: rgba(220,38,38,.3);
-        color: var(--white);
+        background: rgba(244,114,182,.1); border-color: rgba(244,114,182,.3);
+        color: var(--white); transform: translateY(-2px);
     }
-
     .people-btn.selected {
-        background: rgba(220,38,38,.18);
-        border-color: var(--red);
-        color: var(--white);
-        box-shadow: 0 0 0 2px rgba(220,38,38,.25);
+        background: linear-gradient(135deg, rgba(244,114,182,.18), rgba(220,38,38,.08));
+        border-color: var(--pink); color: var(--white);
+        box-shadow: 0 0 0 2px rgba(244,114,182,.18), 0 4px 12px rgba(244,114,182,.18);
+        transform: translateY(-2px);
     }
 
-    .modal-actions {
-        display: flex;
-        gap: 10px;
-        margin-top: 4px;
-    }
+    .modal-actions { display: flex; gap: 8px; margin-top: 2px; }
 
     .btn-cancel {
-        flex: 1;
-        padding: 13px;
-        background: rgba(255,255,255,.04);
-        border: 1px solid rgba(255,255,255,.1);
-        border-radius: 5px;
-        color: var(--gray);
-        font-family: var(--font);
-        font-size: 12px;
-        font-weight: 700;
-        letter-spacing: .15em;
-        text-transform: uppercase;
-        cursor: pointer;
-        transition: all .2s;
+        flex: 1; padding: 12px;
+        background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.09);
+        border-radius: 12px; color: var(--gray); font-family: var(--font);
+        font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+        cursor: pointer; transition: all .2s;
     }
-    .btn-cancel:hover { border-color: rgba(255,255,255,.25); color: var(--white); }
+    .btn-cancel:hover { border-color: rgba(255,255,255,.22); color: var(--white); }
 
     .btn-confirm {
-        flex: 1;
-        padding: 13px;
-        background: linear-gradient(135deg, #ef4444, #dc2626);
-        border: none;
-        border-radius: 5px;
-        color: #fff;
-        font-family: var(--font);
-        font-size: 12px;
-        font-weight: 800;
-        letter-spacing: .15em;
-        text-transform: uppercase;
-        cursor: pointer;
-        transition: all .2s;
+        flex: 2; padding: 12px;
+        background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+        border: none; border-radius: 12px; color: #fff;
+        font-family: var(--font); font-size: 12px; font-weight: 800;
+        letter-spacing: .16em; text-transform: uppercase;
+        cursor: pointer; transition: all .25s;
     }
-    .btn-confirm:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(220,38,38,.4); }
-    .btn-confirm:disabled { opacity: .45; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-confirm:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(244,114,182,.45); }
+    .btn-confirm:disabled { opacity: .4; cursor: not-allowed; transform: none; box-shadow: none; }
 
     /* ─── RESPONSIVE ─────────────────────────────────────────── */
     @media (max-width: 700px) {
-        #grid-tavoli { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-        .page-inner  { padding: 36px 16px 60px; }
-        .auth-card   { padding: 32px 24px; }
-        .tab-btn     { padding: 10px 14px 13px; font-size: 10px; }
+        #grid-tavoli { grid-template-columns: repeat(2, 1fr); gap: 11px; }
+        .page-inner  { padding: 28px 16px 60px; }
+        .auth-card   { padding: 30px 20px; }
+        .tab-btn     { padding: 10px 14px 12px; font-size: 10px; }
+        #header      { padding: 0 14px; gap: 8px; }
+        .header-logo { font-size: 22px; }
+        .header-back span { display: none; }
     }
-
     @media (max-width: 400px) {
-        #grid-tavoli { grid-template-columns: 1fr 1fr; gap: 10px; }
-        .t-card      { min-height: 190px; padding: 18px 12px 16px; }
+        #grid-tavoli { grid-template-columns: 1fr 1fr; gap: 9px; }
+        .t-card      { min-height: 185px; padding: 14px 10px 12px; }
     }
 
-    /* ─── GRAIN overlay ──────────────────────────────────────── */
-    body::before {
+    /* ─── GRAIN ──────────────────────────────────────────────── */
+    body::after {
         content: '';
-        position: fixed;
-        inset: 0;
+        position: fixed; inset: 0;
         background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
-        pointer-events: none;
-        z-index: 0;
-        opacity: .5;
+        pointer-events: none; z-index: 0; opacity: .4;
     }
-
     main, #header { position: relative; z-index: 1; }
     </style>
 </head>
 <body>
+
+<!-- Sakura petals -->
+<div class="sakura-wrap" aria-hidden="true">
+    <div class="sakura"><svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><ellipse cx="10" cy="4" rx="5" ry="8" fill="#FFB7C5" transform="rotate(0,10,10)"/><ellipse cx="10" cy="4" rx="4.5" ry="7.5" fill="#FF8FAB" transform="rotate(72,10,10)"/><ellipse cx="10" cy="4" rx="5" ry="8" fill="#FFB7C5" transform="rotate(144,10,10)"/><ellipse cx="10" cy="4" rx="4.5" ry="7.5" fill="#FF8FAB" transform="rotate(216,10,10)"/><ellipse cx="10" cy="4" rx="5" ry="8" fill="#FFB7C5" transform="rotate(288,10,10)"/><circle cx="10" cy="10" r="3.5" fill="#FFEEF4"/></svg></div>
+    <div class="sakura"><svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><ellipse cx="10" cy="4" rx="5" ry="8" fill="#F9A8D4" transform="rotate(0,10,10)"/><ellipse cx="10" cy="4" rx="4.5" ry="7.5" fill="#EC4899" transform="rotate(72,10,10)"/><ellipse cx="10" cy="4" rx="5" ry="8" fill="#F9A8D4" transform="rotate(144,10,10)"/><ellipse cx="10" cy="4" rx="4.5" ry="7.5" fill="#EC4899" transform="rotate(216,10,10)"/><ellipse cx="10" cy="4" rx="5" ry="8" fill="#F9A8D4" transform="rotate(288,10,10)"/><circle cx="10" cy="10" r="3.5" fill="#FDF2F8"/></svg></div>
+    <div class="sakura"><svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><ellipse cx="10" cy="4" rx="5" ry="8" fill="#FFB7C5" transform="rotate(36,10,10)"/><ellipse cx="10" cy="4" rx="4.5" ry="7.5" fill="#FF8FAB" transform="rotate(108,10,10)"/><ellipse cx="10" cy="4" rx="5" ry="8" fill="#FFB7C5" transform="rotate(180,10,10)"/><ellipse cx="10" cy="4" rx="4.5" ry="7.5" fill="#FF8FAB" transform="rotate(252,10,10)"/><ellipse cx="10" cy="4" rx="5" ry="8" fill="#FFB7C5" transform="rotate(324,10,10)"/><circle cx="10" cy="10" r="3.5" fill="#FFEEF4"/></svg></div>
+    <div class="sakura"><svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><ellipse cx="10" cy="4" rx="5" ry="8" fill="#F9A8D4" transform="rotate(0,10,10)"/><ellipse cx="10" cy="4" rx="4.5" ry="7.5" fill="#EC4899" transform="rotate(72,10,10)"/><ellipse cx="10" cy="4" rx="5" ry="8" fill="#F9A8D4" transform="rotate(144,10,10)"/><ellipse cx="10" cy="4" rx="4.5" ry="7.5" fill="#EC4899" transform="rotate(216,10,10)"/><ellipse cx="10" cy="4" rx="5" ry="8" fill="#F9A8D4" transform="rotate(288,10,10)"/><circle cx="10" cy="10" r="3.5" fill="#FDF2F8"/></svg></div>
+    <div class="sakura"><svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><ellipse cx="10" cy="4" rx="5" ry="8" fill="#FFB7C5" transform="rotate(0,10,10)"/><ellipse cx="10" cy="4" rx="4.5" ry="7.5" fill="#FF8FAB" transform="rotate(72,10,10)"/><ellipse cx="10" cy="4" rx="5" ry="8" fill="#FFB7C5" transform="rotate(144,10,10)"/><ellipse cx="10" cy="4" rx="4.5" ry="7.5" fill="#FF8FAB" transform="rotate(216,10,10)"/><ellipse cx="10" cy="4" rx="5" ry="8" fill="#FFB7C5" transform="rotate(288,10,10)"/><circle cx="10" cy="10" r="3.5" fill="#FFEEF4"/></svg></div>
+    <div class="sakura"><svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><ellipse cx="10" cy="4" rx="5" ry="8" fill="#F9A8D4" transform="rotate(36,10,10)"/><ellipse cx="10" cy="4" rx="4.5" ry="7.5" fill="#EC4899" transform="rotate(108,10,10)"/><ellipse cx="10" cy="4" rx="5" ry="8" fill="#F9A8D4" transform="rotate(180,10,10)"/><ellipse cx="10" cy="4" rx="4.5" ry="7.5" fill="#EC4899" transform="rotate(252,10,10)"/><ellipse cx="10" cy="4" rx="5" ry="8" fill="#F9A8D4" transform="rotate(324,10,10)"/><circle cx="10" cy="10" r="3.5" fill="#FDF2F8"/></svg></div>
+    <div class="sakura"><svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><ellipse cx="10" cy="4" rx="5" ry="8" fill="#FFB7C5" transform="rotate(0,10,10)"/><ellipse cx="10" cy="4" rx="4.5" ry="7.5" fill="#FF8FAB" transform="rotate(72,10,10)"/><ellipse cx="10" cy="4" rx="5" ry="8" fill="#FFB7C5" transform="rotate(144,10,10)"/><ellipse cx="10" cy="4" rx="4.5" ry="7.5" fill="#FF8FAB" transform="rotate(216,10,10)"/><ellipse cx="10" cy="4" rx="5" ry="8" fill="#FFB7C5" transform="rotate(288,10,10)"/><circle cx="10" cy="10" r="3.5" fill="#FFEEF4"/></svg></div>
+</div>
 
 <!-- Toast -->
 <div id="toast-wrap" aria-live="polite"></div>
 
 <!-- Header -->
 <header id="header">
-    <a href="index.html" class="header-logo">MAN<span>B</span>AGA<span style="opacity:.4">.</span></a>
+    <a href="index.html" class="header-logo">MAN<span>B</span>AGA</a>
     <a href="index.html" class="header-back">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
             <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
         </svg>
-        Torna al sito
+        <span>Torna al sito</span>
     </a>
     <div id="header-user" class="hidden">
         <span id="header-nome"></span>
@@ -910,24 +823,24 @@
 <main>
     <div class="page-inner">
 
-        <!-- Titolo pagina -->
-        <div class="page-label">テーブル予約 &mdash; Prenota il tuo posto</div>
+        <div class="page-label">🌸 テーブル予約 &mdash; Prenota il tuo posto</div>
         <h1 class="page-title">PRENOTA<br>IL TUO <span>TAVOLO</span></h1>
+        <p class="page-subtitle">Scegli il tavolo, scegli l'orario &mdash; gratis e veloce! 🎮✨</p>
 
-        <!-- ── AUTH ─────────────────────────────────────────── -->
+        <!-- AUTH -->
         <div id="auth-screen">
             <div class="auth-card">
                 <div class="auth-head">
                     <p id="auth-eyebrow" class="auth-eyebrow">Accedi per prenotare</p>
-                    <div class="auth-logo">MAN<span>B</span>AGA</div>
+                    <div class="auth-logo">MAN<span style="-webkit-text-fill-color:var(--pink);background:none">B</span>AGA</div>
                 </div>
                 <div class="auth-fields">
-                    <input type="text" id="reg-nome" class="field-input hidden" placeholder="IL TUO NOME" autocomplete="name">
-                    <input type="email" id="auth-email" class="field-input" placeholder="Email" autocomplete="email">
-                    <input type="password" id="auth-pass" class="field-input" placeholder="Password"
+                    <input type="text"     id="reg-nome"   class="field-input hidden" placeholder="IL TUO NOME" autocomplete="name">
+                    <input type="email"    id="auth-email" class="field-input" placeholder="Email" autocomplete="email">
+                    <input type="password" id="auth-pass"  class="field-input" placeholder="Password"
                            autocomplete="current-password"
                            onkeypress="if(event.key==='Enter')doAuth()">
-                    <button id="auth-btn" onclick="doAuth()" class="btn-primary">ACCEDI</button>
+                    <button id="auth-btn" onclick="doAuth()" class="btn-primary">ACCEDI 🌸</button>
                     <button id="auth-toggle" onclick="toggleMode()" class="btn-toggle">
                         Non hai un account? Registrati
                     </button>
@@ -935,7 +848,7 @@
             </div>
         </div>
 
-        <!-- ── APP ──────────────────────────────────────────── -->
+        <!-- APP -->
         <div id="app-screen">
 
             <!-- Stats bar -->
@@ -947,16 +860,15 @@
                     <span id="n-occ">0</span>&nbsp;Occupati
                 </span>
                 <span class="stats-spacer"></span>
-                <span style="font-size:11px;font-weight:600;color:rgba(255,255,255,.28);letter-spacing:.08em">
-                    6 tavoli &middot; max 4 posti
-                </span>
+                <span class="stats-clock" id="live-clock">00:00</span>
+                <span class="stats-info">6 tavoli &middot; 4 posti</span>
             </div>
 
             <!-- Tabs -->
             <div class="tabs">
-                <button class="tab-btn active" onclick="switchTab('mappa', this)">Mappa Tavoli</button>
+                <button class="tab-btn active" onclick="switchTab('mappa', this)">🗾 Mappa</button>
                 <button class="tab-btn" onclick="switchTab('lista', this)">
-                    Le Mie Prenotazioni
+                    📋 Le Mie Prenotazioni
                     <span class="tab-badge" id="badge-count">0</span>
                 </button>
             </div>
@@ -980,7 +892,7 @@
     <div class="modal-box" role="dialog" aria-modal="true" aria-label="Prenota tavolo">
         <div class="modal-head">
             <div>
-                <p class="modal-eyebrow">Nuova Prenotazione</p>
+                <p class="modal-eyebrow">🌸 Nuova Prenotazione</p>
                 <h2 id="modal-title" class="modal-title">TAVOLO 1</h2>
             </div>
             <button class="modal-close" onclick="closeModal()" aria-label="Chiudi">&#10005;</button>
@@ -990,17 +902,22 @@
             <div>
                 <label class="field-label" for="p-nome">Nome Prenotazione</label>
                 <input type="text" id="p-nome" class="field-input" placeholder="Es. Mario Rossi"
-                       onkeypress="if(event.key==='Enter')document.getElementById('p-ora').focus()">
+                       onkeypress="if(event.key==='Enter')document.getElementById('p-data').focus()">
+            </div>
+
+            <div>
+                <label class="field-label" for="p-data">Data</label>
+                <input type="date" id="p-data" class="field-input">
             </div>
 
             <div class="time-row">
                 <div>
-                    <label class="field-label" for="p-ora">Orario di Arrivo</label>
+                    <label class="field-label" for="p-ora">Orario Arrivo</label>
                     <input type="time" id="p-ora" class="field-input">
                 </div>
                 <div class="time-arrow" aria-hidden="true">&#8594;</div>
                 <div>
-                    <label class="field-label" for="p-uscita">Orario di Uscita</label>
+                    <label class="field-label" for="p-uscita">Orario Uscita</label>
                     <input type="time" id="p-uscita" class="field-input">
                 </div>
             </div>
@@ -1009,27 +926,27 @@
                 <label class="field-label">Numero di Persone</label>
                 <div class="people-selector" id="people-selector">
                     <button class="people-btn" onclick="selectPeople(1)" data-n="1">
-                        <span class="people-icon">&#128100;</span>
-                        <span>1</span>
+                        <span class="people-icon">👤</span>
+                        <span class="people-num">1</span>
                     </button>
                     <button class="people-btn" onclick="selectPeople(2)" data-n="2">
-                        <span class="people-icon">&#128100;&#128100;</span>
-                        <span>2</span>
+                        <span class="people-icon">👥</span>
+                        <span class="people-num">2</span>
                     </button>
                     <button class="people-btn" onclick="selectPeople(3)" data-n="3">
-                        <span class="people-icon">&#128100;&#128100;&#128100;</span>
-                        <span>3</span>
+                        <span class="people-icon">👥👤</span>
+                        <span class="people-num">3</span>
                     </button>
                     <button class="people-btn" onclick="selectPeople(4)" data-n="4">
-                        <span class="people-icon">&#128100;&#128100;&#128100;&#128100;</span>
-                        <span>4</span>
+                        <span class="people-icon">👥👥</span>
+                        <span class="people-num">4</span>
                     </button>
                 </div>
             </div>
 
             <div class="modal-actions">
                 <button onclick="closeModal()" class="btn-cancel">Annulla</button>
-                <button onclick="submitPren()" class="btn-confirm" id="confirm-btn">Prenota</button>
+                <button onclick="submitPren()" class="btn-confirm" id="confirm-btn">🌸 Prenota!</button>
             </div>
         </div>
     </div>
@@ -1045,7 +962,6 @@ const FB_CONFIG = {
     databaseURL: 'https://prenotazioninegozio-65eb1-default-rtdb.europe-west1.firebasedatabase.app',
     appId:       '1:466874129336:web:fd07925523c35921fe8d4d'
 };
-
 firebase.initializeApp(FB_CONFIG);
 const auth = firebase.auth();
 const db   = firebase.database();
@@ -1055,10 +971,20 @@ let selectedTavolo = null;
 let selectedPeople = null;
 let isReg = false;
 
+/* ── LIVE CLOCK ──────────────────────────────────────────── */
+function updateClock() {
+    const el = document.getElementById('live-clock');
+    if (!el) return;
+    const d = new Date();
+    el.textContent = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+}
+setInterval(updateClock, 1000);
+updateClock();
+
 /* ── TOAST ───────────────────────────────────────────────── */
 function toast(msg, type = 'info') {
     const wrap = document.getElementById('toast-wrap');
-    const icons = { ok: '✓', err: '✕', info: 'ℹ' };
+    const icons = { ok: '✅', err: '❌', info: '🌸' };
     const el = document.createElement('div');
     el.className = `toast toast--${type}`;
     el.setAttribute('role', 'alert');
@@ -1067,7 +993,7 @@ function toast(msg, type = 'info') {
     setTimeout(() => {
         el.classList.add('out');
         setTimeout(() => el.remove(), 280);
-    }, 3700);
+    }, 3800);
 }
 
 /* ── AUTH ────────────────────────────────────────────────── */
@@ -1075,7 +1001,7 @@ function toggleMode() {
     isReg = !isReg;
     document.getElementById('reg-nome').classList.toggle('hidden', !isReg);
     document.getElementById('auth-eyebrow').textContent = isReg ? 'Crea il tuo account' : 'Accedi per prenotare';
-    document.getElementById('auth-btn').textContent     = isReg ? 'REGISTRATI' : 'ACCEDI';
+    document.getElementById('auth-btn').textContent     = isReg ? 'REGISTRATI 🌸' : 'ACCEDI 🌸';
     document.getElementById('auth-toggle').textContent  = isReg ? 'Hai già un account? Accedi' : 'Non hai un account? Registrati';
 }
 
@@ -1089,25 +1015,25 @@ function doAuth() {
         if (!nome) { toast('Inserisci il tuo nome.', 'err'); return; }
         auth.createUserWithEmailAndPassword(email, pass)
             .then(r => db.ref('utenti/' + r.user.uid).set({ nome }))
-            .then(() => toast('Account creato! Benvenuto.', 'ok'))
+            .then(() => toast('Account creato! Benvenuto! 🎉', 'ok'))
             .catch(e => toast(e.message, 'err'));
     } else {
         auth.signInWithEmailAndPassword(email, pass)
-            .then(() => toast('Accesso effettuato!', 'ok'))
+            .then(() => toast('Accesso effettuato! 🌸', 'ok'))
             .catch(() => toast('Credenziali non valide. Riprova.', 'err'));
     }
 }
 
 function doLogout() {
-    auth.signOut().then(() => toast('Disconnesso.', 'info')).catch(() => {});
+    auth.signOut().then(() => toast('A presto! 👋', 'info')).catch(() => {});
 }
 
 /* ── AUTH STATE ──────────────────────────────────────────── */
 auth.onAuthStateChanged(user => {
-    const authEl   = document.getElementById('auth-screen');
-    const appEl    = document.getElementById('app-screen');
-    const userEl   = document.getElementById('header-user');
-    const nomeEl   = document.getElementById('header-nome');
+    const authEl = document.getElementById('auth-screen');
+    const appEl  = document.getElementById('app-screen');
+    const userEl = document.getElementById('header-user');
+    const nomeEl = document.getElementById('header-nome');
 
     if (user) {
         authEl.style.display = 'none';
@@ -1127,21 +1053,55 @@ auth.onAuthStateChanged(user => {
     }
 });
 
+/* ── EXPIRY HELPERS ──────────────────────────────────────── */
+/**
+ * Returns true if the booking is expired.
+ * Uses expiresAt (full timestamp) if available.
+ * For old bookings without expiresAt, falls back to same-day HH:MM comparison.
+ */
+function isExpired(p) {
+    if (p.expiresAt) {
+        return p.expiresAt <= Date.now();
+    }
+    // Legacy fallback: compare HH:MM strings (only reliable same-day)
+    // If no date stored, we can't reliably determine cross-day expiry — skip
+    if (!p.orarioUscita) return false;
+    if (!p.data) return false; // can't compare without a date
+    const todayStr = new Date().toISOString().split('T')[0];
+    if (p.data !== todayStr) {
+        // booking from a previous day without a timestamp → treat as expired
+        return new Date(p.data) < new Date(todayStr);
+    }
+    const [nh, nm] = [new Date().getHours(), new Date().getMinutes()];
+    const nowMins  = nh * 60 + nm;
+    const [uh, um] = p.orarioUscita.split(':').map(Number);
+    return (uh * 60 + um) <= nowMins;
+}
+
+function isExpiringSoon(expiresAt) {
+    if (!expiresAt) return false;
+    const diff = expiresAt - Date.now();
+    return diff > 0 && diff <= 15 * 60 * 1000; // ≤ 15 min
+}
+
 /* ── RENDER ──────────────────────────────────────────────── */
 function render(data) {
     if (!auth.currentUser) return;
     const all = Object.values(data);
-    autoCleanExpired(all);
-    let liberi = 0, occ = 0;
 
-    /* Grid */
+    // Clean expired (only owner can delete in Firebase)
+    autoCleanExpired(all);
+
+    // Filter expired from display so tables appear free immediately
+    const active = all.filter(p => !isExpired(p));
+
+    let liberi = 0, occ = 0;
     const grid = document.getElementById('grid-tavoli');
     grid.innerHTML = '';
 
     for (let i = 1; i <= 6; i++) {
-        const p = all.find(x => String(x.tavolo) === String(i));
+        const p    = active.find(x => String(x.tavolo) === String(i));
         const card = document.createElement('div');
-
         if (p) {
             occ++;
             card.className = 't-card t-card--occ';
@@ -1149,7 +1109,7 @@ function render(data) {
         } else {
             liberi++;
             card.className = 't-card t-card--free';
-            card.onclick = () => openModal(i);
+            card.onclick   = () => openModal(i);
             card.innerHTML = buildFree(i);
         }
         grid.appendChild(card);
@@ -1158,14 +1118,14 @@ function render(data) {
     document.getElementById('n-liberi').textContent = liberi;
     document.getElementById('n-occ').textContent    = occ;
 
-    /* Lista mie */
+    // My bookings list
     const uid  = auth.currentUser.uid;
-    const mie  = all.filter(x => x.utenteId === uid);
+    const mie  = active.filter(x => x.utenteId === uid);
     document.getElementById('badge-count').textContent = mie.length;
 
     const lista = document.getElementById('lista-mie');
     if (mie.length === 0) {
-        lista.innerHTML = '<p class="empty-msg">Nessuna prenotazione attiva</p>';
+        lista.innerHTML = '<p class="empty-msg">🌸 Nessuna prenotazione attiva</p>';
     } else {
         lista.innerHTML = mie.map(x => {
             const n    = Number(x.persone) || 1;
@@ -1173,18 +1133,19 @@ function render(data) {
                 `<span class="pren-dot${d <= n ? ' filled' : ''}"></span>`
             ).join('');
             const timeStr = x.orarioUscita
-                ? `${esc(x.orario)} &rarr; ${esc(x.orarioUscita)}`
+                ? `${esc(x.orario)} → ${esc(x.orarioUscita)}`
                 : `ore ${esc(x.orario)}`;
-            const soon = x.orarioUscita ? isExpiringSoon(x.orarioUscita) : false;
+            const dateStr  = x.data ? ` · ${fmtDate(x.data)}` : '';
+            const expSoon  = x.expiresAt ? isExpiringSoon(x.expiresAt) : false;
             return `<div class="pren-row">
                 <div class="pren-main">
                     <span class="pren-table">Tavolo ${x.tavolo}</span>
                     <span class="pren-name">${esc(x.nome)}</span>
-                    <span class="pren-meta">${timeStr}</span>
+                    <span class="pren-meta">${timeStr}${dateStr}</span>
                     <div class="pren-people-dots">${dots}</div>
-                    ${soon ? '<span class="t-expire-soon" style="margin-top:4px">⏱ In scadenza</span>' : ''}
+                    ${expSoon ? '<span class="t-expire-soon">⏱ In scadenza!</span>' : ''}
                 </div>
-                <button class="btn-del" onclick="delPren('${x.id}')" title="Cancella" aria-label="Cancella prenotazione">&#10005;</button>
+                <button class="btn-del" onclick="delPren('${x.id}')" title="Cancella" aria-label="Cancella prenotazione">✕</button>
             </div>`;
         }).join('');
     }
@@ -1192,75 +1153,66 @@ function render(data) {
 
 /* ── CARD BUILDERS ───────────────────────────────────────── */
 function seats(n, type) {
-    // 4 seat positions: top-left, top-right, bottom-left, bottom-right
-    // fill first n seats
-    const filled = (idx) => idx < n;
-    const cls    = (idx) => filled(idx) ? `seat seat--taken-${type}` : 'seat seat--empty';
-    return `
-        <div class="seats-row">
-            <span class="${cls(0)}"></span>
-            <span class="${cls(1)}"></span>
-        </div>`;
+    const c = i => i < n ? `seat seat--taken-${type}` : 'seat seat--empty';
+    return `<div class="seats-row"><span class="${c(0)}"></span><span class="${c(1)}"></span></div>`;
 }
-
-function seatsBottom(n, type, offset = 2) {
-    const filled = (idx) => idx < n;
-    const cls    = (idx) => filled(idx + offset) ? `seat seat--taken-${type}` : 'seat seat--empty';
-    return `
-        <div class="seats-row">
-            <span class="${cls(0)}"></span>
-            <span class="${cls(1)}"></span>
-        </div>`;
+function seatsBot(n, type) {
+    const c = i => i < n ? `seat seat--taken-${type}` : 'seat seat--empty';
+    return `<div class="seats-row"><span class="${c(2)}"></span><span class="${c(3)}"></span></div>`;
 }
 
 function buildFree(num) {
     return `
         <span class="t-ribbon t-ribbon--free">LIBERO</span>
         <div class="t-visual">
-            ${seats(0, 'free')}
+            ${seats(0,'free')}
             <div class="t-top">
                 <span class="t-num">${num}</span>
-                <span class="t-seats-count t-seats-count--free" title="Posti disponibili">4</span>
+                <span class="t-seats-count t-seats-count--free" title="4 posti disponibili">4</span>
             </div>
-            ${seatsBottom(0, 'free')}
+            ${seatsBot(0,'free')}
         </div>
-        <div class="t-info">
-            <span class="t-cta">Tocca per prenotare</span>
-        </div>`;
+        <div class="t-info"><span class="t-cta">Tocca per prenotare ✨</span></div>`;
 }
 
 function buildOcc(num, p) {
     const n      = Number(p.persone) || 1;
     const uscita = p.orarioUscita || '';
-    const soon   = uscita ? isExpiringSoon(uscita) : false;
+    const expSoon = p.expiresAt ? isExpiringSoon(p.expiresAt) : false;
     const timeHtml = uscita
         ? `<span class="t-time-range">
                <span class="t-arr">${esc(p.orario)}</span>
-               <span class="t-sep">&#8594;</span>
+               <span class="t-sep">→</span>
                <span class="t-usc">${esc(uscita)}</span>
            </span>`
         : `<span class="t-guest-meta">ore ${esc(p.orario)}</span>`;
-
+    const dateHtml = p.data ? `<span class="t-date-badge">${fmtDate(p.data)}</span>` : '';
     return `
         <span class="t-ribbon t-ribbon--occ">OCCUPATO</span>
         <div class="t-visual">
-            ${seats(n, 'occ')}
+            ${seats(n,'occ')}
             <div class="t-top">
                 <span class="t-num">${num}</span>
                 <span class="t-seats-count t-seats-count--occ" title="${n} persone">${n}</span>
             </div>
-            ${seatsBottom(n, 'occ')}
+            ${seatsBot(n,'occ')}
         </div>
         <div class="t-info">
             <span class="t-guest-name">${esc(p.nome)}</span>
             ${timeHtml}
-            <span class="t-guest-people">${'👤'.repeat(n)} &nbsp;${n} ${n === 1 ? 'persona' : 'persone'}</span>
-            ${soon ? '<span class="t-expire-soon">⏱ In scadenza</span>' : ''}
+            ${dateHtml}
+            <span class="t-guest-people">${'👤'.repeat(Math.min(n,4))} ${n} ${n===1?'persona':'persone'}</span>
+            ${expSoon ? '<span class="t-expire-soon">⏱ In scadenza!</span>' : ''}
         </div>`;
 }
 
 function esc(s) {
-    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function fmtDate(d) {
+    if (!d) return '';
+    try { const [y,m,g] = d.split('-'); return `${g}/${m}/${y}`; }
+    catch { return d; }
 }
 
 /* ── MODAL ───────────────────────────────────────────────── */
@@ -1271,6 +1223,9 @@ function openModal(num) {
     document.getElementById('p-nome').value   = '';
     document.getElementById('p-ora').value    = '';
     document.getElementById('p-uscita').value = '';
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('p-data').min   = today;
+    document.getElementById('p-data').value = today;
     document.querySelectorAll('.people-btn').forEach(b => b.classList.remove('selected'));
     document.getElementById('modal-overlay').classList.remove('hidden');
     setTimeout(() => document.getElementById('p-nome').focus(), 60);
@@ -1291,15 +1246,20 @@ function selectPeople(n) {
 
 function submitPren() {
     const nome   = (document.getElementById('p-nome').value   || '').trim();
+    const data   = (document.getElementById('p-data').value   || '').trim();
     const ora    = (document.getElementById('p-ora').value    || '').trim();
     const uscita = (document.getElementById('p-uscita').value || '').trim();
 
     if (!nome)           { toast('Inserisci il nome per la prenotazione.', 'err'); return; }
-    if (!ora)            { toast('Inserisci l\'orario di arrivo.', 'err'); return; }
-    if (!uscita)         { toast('Inserisci l\'orario di uscita.', 'err'); return; }
-    if (uscita <= ora)   { toast('L\'orario di uscita deve essere dopo l\'arrivo.', 'err'); return; }
+    if (!data)           { toast('Seleziona la data.', 'err'); return; }
+    if (!ora)            { toast("Inserisci l'orario di arrivo.", 'err'); return; }
+    if (!uscita)         { toast("Inserisci l'orario di uscita.", 'err'); return; }
+    if (uscita <= ora)   { toast("L'orario di uscita deve essere dopo l'arrivo.", 'err'); return; }
     if (!selectedPeople) { toast('Seleziona il numero di persone.', 'err'); return; }
     if (!selectedTavolo) return;
+
+    // Full timestamp for reliable auto-expiry (works across midnight / days)
+    const expiresAt = new Date(data + 'T' + uscita + ':00').getTime();
 
     const btn = document.getElementById('confirm-btn');
     btn.disabled = true;
@@ -1308,21 +1268,23 @@ function submitPren() {
     const id = Date.now();
     db.ref('prenotazioni/' + id).set({
         id,
-        tavolo:        selectedTavolo,
+        tavolo:       selectedTavolo,
         nome,
-        orario:        ora,
-        orarioUscita:  uscita,
-        persone:       selectedPeople,
-        utenteId:      auth.currentUser.uid
+        data,
+        orario:       ora,
+        orarioUscita: uscita,
+        expiresAt,
+        persone:      selectedPeople,
+        utenteId:     auth.currentUser.uid
     })
     .then(() => {
         closeModal();
-        toast(`Tavolo ${selectedTavolo} prenotato per ${nome} (${ora} → ${uscita})!`, 'ok');
+        toast(`Tavolo ${selectedTavolo} prenotato per ${nome}! 🌸`, 'ok');
     })
     .catch(() => toast('Errore. Verifica le regole del database Firebase.', 'err'))
     .finally(() => {
         btn.disabled = false;
-        btn.textContent = 'Prenota';
+        btn.textContent = '🌸 Prenota!';
     });
 }
 
@@ -1342,41 +1304,21 @@ function switchTab(tab, btn) {
 }
 
 /* ── AUTO-SCADENZA ───────────────────────────────────────── */
-function nowHHMM() {
-    const d = new Date();
-    return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
-}
-
-function isExpiringSoon(orarioUscita) {
-    // Avvisa se mancano ≤ 15 minuti all'uscita
-    const now = nowHHMM();
-    if (orarioUscita <= now) return false; // già scaduta (verrà rimossa)
-    const [nh, nm] = now.split(':').map(Number);
-    const [uh, um] = orarioUscita.split(':').map(Number);
-    const diff = (uh * 60 + um) - (nh * 60 + nm);
-    return diff <= 15;
-}
-
 function autoCleanExpired(all) {
     if (!auth.currentUser) return;
-    const now = nowHHMM();
     all.forEach(p => {
-        if (p.orarioUscita && p.orarioUscita <= now) {
-            // Rimuovi solo se sei il proprietario per rispettare le regole Firebase
-            if (p.utenteId === auth.currentUser.uid) {
-                db.ref('prenotazioni/' + p.id).remove()
-                    .then(() => toast(`Tavolo ${p.tavolo} liberato automaticamente (${p.orarioUscita}).`, 'info'))
-                    .catch(() => {});
-            }
+        if (isExpired(p) && p.utenteId === auth.currentUser.uid) {
+            db.ref('prenotazioni/' + p.id).remove()
+                .then(() => toast(`Tavolo ${p.tavolo} liberato automaticamente! 🌸`, 'info'))
+                .catch(() => {});
         }
     });
 }
 
-// Controllo ogni minuto
+// Check every minute
 setInterval(() => {
     db.ref('prenotazioni').once('value', snap => {
-        const all = Object.values(snap.val() || {});
-        autoCleanExpired(all);
+        autoCleanExpired(Object.values(snap.val() || {}));
     });
 }, 60000);
 
@@ -1388,5 +1330,6 @@ document.addEventListener('keydown', e => {
     }
 });
 </script>
+<script src="cookie-banner.js"></script>
 </body>
 </html>
