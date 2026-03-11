@@ -606,6 +606,73 @@
         animation: blink 1s ease infinite;
     }
 
+    /* ─── PARTIAL (posti rimasti) ───────────────────────────── */
+    .t-card--partial {
+        border-color: rgba(249,115,22,.22);
+        background: rgba(249,115,22,.025);
+        cursor: pointer;
+    }
+    .t-card--partial::before { background: linear-gradient(90deg, #f97316, rgba(249,115,22,.15)); }
+    .t-card--partial:hover {
+        transform: translateY(-6px) scale(1.02);
+        border-color: rgba(249,115,22,.45);
+        background: rgba(249,115,22,.04);
+        box-shadow: 0 16px 40px rgba(249,115,22,.14), 0 0 0 1px rgba(249,115,22,.15);
+    }
+    .t-card--partial .t-top {
+        background: rgba(249,115,22,.07);
+        border-color: rgba(249,115,22,.22);
+    }
+    .t-card--partial .t-num { color: #fb923c; }
+
+    .t-ribbon--partial { background: rgba(249,115,22,.12); color: #fb923c; border: 1px solid rgba(249,115,22,.28); }
+
+    .seat--taken-partial {
+        background: rgba(249,115,22,.55);
+        border-color: rgba(249,115,22,.65);
+        box-shadow: 0 0 6px rgba(249,115,22,.35);
+    }
+
+    .t-seats-count--partial { background: linear-gradient(135deg, #f97316, #ea580c); }
+
+    /* Multi-booking display inside card */
+    .t-info--multi { width: 100%; text-align: center; }
+
+    .t-booking-entry { margin-bottom: 5px; }
+    .t-booking-entry:last-child { margin-bottom: 0; }
+
+    .t-booking-sep {
+        height: 1px;
+        background: rgba(255,255,255,.06);
+        margin: 6px 4px;
+        border-radius: 1px;
+    }
+
+    .t-entry-people {
+        display: inline-flex; align-items: center; gap: 2px;
+        font-size: 9px; color: rgba(255,255,255,.28); margin-top: 1px;
+    }
+
+    .t-cta-partial {
+        display: block; font-size: 9px; font-weight: 700;
+        letter-spacing: .14em; text-transform: uppercase;
+        color: #fb923c; margin-top: 5px;
+        transition: opacity .2s;
+    }
+    .t-card--partial:hover .t-cta-partial { opacity: .7; }
+
+    /* Seats note in booking modal */
+    .seats-note {
+        font-size: 12px; font-weight: 600; color: #fb923c;
+        letter-spacing: .03em;
+        background: rgba(249,115,22,.08);
+        border: 1px solid rgba(249,115,22,.22);
+        border-radius: 10px; padding: 9px 13px;
+    }
+    .people-btn:disabled {
+        opacity: .25; cursor: not-allowed; transform: none !important;
+    }
+
     /* ─── LISTA ──────────────────────────────────────────────── */
     #lista-mie { display: flex; flex-direction: column; gap: 10px; }
 
@@ -924,7 +991,8 @@
 
             <div>
                 <label class="field-label">Numero di Persone</label>
-                <div class="people-selector" id="people-selector">
+                <div id="seats-note" class="seats-note hidden"></div>
+                <div class="people-selector" id="people-selector" style="margin-top:8px">
                     <button class="people-btn" onclick="selectPeople(1)" data-n="1">
                         <span class="people-icon">👤</span>
                         <span class="people-num">1</span>
@@ -967,9 +1035,11 @@ const auth = firebase.auth();
 const db   = firebase.database();
 
 /* ── STATE ───────────────────────────────────────────────── */
-let selectedTavolo = null;
-let selectedPeople = null;
+let selectedTavolo  = null;
+let selectedPeople  = null;
+let selectedMaxPeople = 4;
 let isReg = false;
+let currentData = {}; // cache of last Firebase snapshot
 
 /* ── LIVE CLOCK ──────────────────────────────────────────── */
 function updateClock() {
@@ -1045,7 +1115,10 @@ auth.onAuthStateChanged(user => {
             if (nomeEl) nomeEl.textContent = nome;
         });
 
-        db.ref('prenotazioni').on('value', snap => render(snap.val() || {}));
+        db.ref('prenotazioni').on('value', snap => {
+            currentData = snap.val() || {};
+            render(currentData);
+        });
     } else {
         authEl.style.display = 'flex';
         appEl.classList.remove('visible');
@@ -1100,16 +1173,26 @@ function render(data) {
     grid.innerHTML = '';
 
     for (let i = 1; i <= 6; i++) {
-        const p    = active.find(x => String(x.tavolo) === String(i));
-        const card = document.createElement('div');
-        if (p) {
+        // Collect ALL bookings for this table
+        const bookings    = active.filter(x => String(x.tavolo) === String(i));
+        const totalPeople = bookings.reduce((s, b) => s + (Number(b.persone) || 1), 0);
+        const isFull      = totalPeople >= 4;
+        const card        = document.createElement('div');
+
+        if (bookings.length > 0) {
             occ++;
-            card.className = 't-card t-card--occ';
-            card.innerHTML = buildOcc(i, p);
+            if (isFull) {
+                card.className = 't-card t-card--occ';
+            } else {
+                // Partially occupied: still bookable
+                card.className = 't-card t-card--partial';
+                card.onclick   = () => openModal(i, 4 - totalPeople);
+            }
+            card.innerHTML = buildOcc(i, bookings, totalPeople);
         } else {
             liberi++;
             card.className = 't-card t-card--free';
-            card.onclick   = () => openModal(i);
+            card.onclick   = () => openModal(i, 4);
             card.innerHTML = buildFree(i);
         }
         grid.appendChild(card);
@@ -1175,34 +1258,46 @@ function buildFree(num) {
         <div class="t-info"><span class="t-cta">Tocca per prenotare ✨</span></div>`;
 }
 
-function buildOcc(num, p) {
-    const n      = Number(p.persone) || 1;
-    const uscita = p.orarioUscita || '';
-    const expSoon = p.expiresAt ? isExpiringSoon(p.expiresAt) : false;
-    const timeHtml = uscita
-        ? `<span class="t-time-range">
-               <span class="t-arr">${esc(p.orario)}</span>
-               <span class="t-sep">→</span>
-               <span class="t-usc">${esc(uscita)}</span>
-           </span>`
-        : `<span class="t-guest-meta">ore ${esc(p.orario)}</span>`;
-    const dateHtml = p.data ? `<span class="t-date-badge">${fmtDate(p.data)}</span>` : '';
+function buildOcc(num, bookings, totalPeople) {
+    const MAX      = 4;
+    const isFull   = totalPeople >= MAX;
+    const remaining = MAX - totalPeople;
+    const seatType = isFull ? 'occ' : 'partial';
+    const expSoon  = bookings.some(b => b.expiresAt && isExpiringSoon(b.expiresAt));
+
+    // Build one entry per booking
+    const entries = bookings.map(b => {
+        const n = Number(b.persone) || 1;
+        const timeHtml = b.orarioUscita
+            ? `<span class="t-time-range">
+                   <span class="t-arr">${esc(b.orario)}</span>
+                   <span class="t-sep">→</span>
+                   <span class="t-usc">${esc(b.orarioUscita)}</span>
+               </span>`
+            : `<span class="t-guest-meta">ore ${esc(b.orario)}</span>`;
+        return `<div class="t-booking-entry">
+            <span class="t-guest-name">${esc(b.nome)}</span>
+            ${timeHtml}
+            <span class="t-entry-people">${'👤'.repeat(Math.min(n,4))} ${n} pers.</span>
+        </div>`;
+    }).join('<div class="t-booking-sep"></div>');
+
+    const ribbonLabel = isFull ? 'COMPLETO' : `${remaining} POSTI`;
+
     return `
-        <span class="t-ribbon t-ribbon--occ">OCCUPATO</span>
+        <span class="t-ribbon t-ribbon--${isFull ? 'occ' : 'partial'}">${ribbonLabel}</span>
         <div class="t-visual">
-            ${seats(n,'occ')}
+            ${seats(totalPeople, seatType)}
             <div class="t-top">
                 <span class="t-num">${num}</span>
-                <span class="t-seats-count t-seats-count--occ" title="${n} persone">${n}</span>
+                <span class="t-seats-count t-seats-count--${isFull ? 'occ' : 'partial'}" title="${totalPeople}/${MAX} persone">${totalPeople}/${MAX}</span>
             </div>
-            ${seatsBot(n,'occ')}
+            ${seatsBot(totalPeople, seatType)}
         </div>
-        <div class="t-info">
-            <span class="t-guest-name">${esc(p.nome)}</span>
-            ${timeHtml}
-            ${dateHtml}
-            <span class="t-guest-people">${'👤'.repeat(Math.min(n,4))} ${n} ${n===1?'persona':'persone'}</span>
+        <div class="t-info t-info--multi">
+            ${entries}
             ${expSoon ? '<span class="t-expire-soon">⏱ In scadenza!</span>' : ''}
+            ${!isFull ? `<span class="t-cta-partial">Tocca per aggiungere ✨</span>` : ''}
         </div>`;
 }
 
@@ -1216,9 +1311,12 @@ function fmtDate(d) {
 }
 
 /* ── MODAL ───────────────────────────────────────────────── */
-function openModal(num) {
-    selectedTavolo = num;
-    selectedPeople = null;
+function openModal(num, maxPeople) {
+    maxPeople = maxPeople || 4;
+    selectedTavolo    = num;
+    selectedPeople    = null;
+    selectedMaxPeople = maxPeople;
+
     document.getElementById('modal-title').textContent = 'TAVOLO ' + num;
     document.getElementById('p-nome').value   = '';
     document.getElementById('p-ora').value    = '';
@@ -1226,7 +1324,23 @@ function openModal(num) {
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('p-data').min   = today;
     document.getElementById('p-data').value = today;
-    document.querySelectorAll('.people-btn').forEach(b => b.classList.remove('selected'));
+
+    // Enable/disable people buttons based on available seats
+    document.querySelectorAll('.people-btn').forEach(b => {
+        b.classList.remove('selected');
+        const n = Number(b.dataset.n);
+        b.disabled = (n > maxPeople);
+    });
+
+    // Show remaining-seats note if table is partially booked
+    const note = document.getElementById('seats-note');
+    if (maxPeople < 4) {
+        note.textContent = `⚠️ Solo ${maxPeople} posto${maxPeople > 1 ? 'i' : ''} disponibile${maxPeople > 1 ? '' : ''} a questo tavolo`;
+        note.classList.remove('hidden');
+    } else {
+        note.classList.add('hidden');
+    }
+
     document.getElementById('modal-overlay').classList.remove('hidden');
     setTimeout(() => document.getElementById('p-nome').focus(), 60);
 }
@@ -1257,6 +1371,21 @@ function submitPren() {
     if (uscita <= ora)   { toast("L'orario di uscita deve essere dopo l'arrivo.", 'err'); return; }
     if (!selectedPeople) { toast('Seleziona il numero di persone.', 'err'); return; }
     if (!selectedTavolo) return;
+
+    // Real-time seat check against latest cached data
+    const activeNow    = Object.values(currentData).filter(x => !isExpired(x));
+    const alreadyBooked = activeNow
+        .filter(x => String(x.tavolo) === String(selectedTavolo))
+        .reduce((s, b) => s + (Number(b.persone) || 1), 0);
+    const remaining = 4 - alreadyBooked;
+    if (selectedPeople > remaining) {
+        if (remaining <= 0) {
+            toast('Questo tavolo è al completo!', 'err');
+        } else {
+            toast(`Solo ${remaining} posto${remaining > 1 ? 'i' : ''} disponibile${remaining > 1 ? '' : ''}!`, 'err');
+        }
+        return;
+    }
 
     // Full timestamp for reliable auto-expiry (works across midnight / days)
     const expiresAt = new Date(data + 'T' + uscita + ':00').getTime();
