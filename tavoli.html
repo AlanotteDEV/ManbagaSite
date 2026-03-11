@@ -458,7 +458,7 @@
     /* ─── TABLES GRID ────────────────────────────────────────── */
     #grid-tavoli {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(4, 1fr);
         gap: 14px;
     }
 
@@ -785,7 +785,7 @@
     .time-arrow { font-size: 16px; color: var(--pink); padding-bottom: 10px; flex-shrink: 0; opacity: .6; }
 
     /* People selector */
-    .people-selector { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .people-selector { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; max-width: 220px; }
 
     .people-btn {
         aspect-ratio: 1;
@@ -1001,14 +1001,6 @@
                         <span class="people-icon">👥</span>
                         <span class="people-num">2</span>
                     </button>
-                    <button class="people-btn" onclick="selectPeople(3)" data-n="3">
-                        <span class="people-icon">👥👤</span>
-                        <span class="people-num">3</span>
-                    </button>
-                    <button class="people-btn" onclick="selectPeople(4)" data-n="4">
-                        <span class="people-icon">👥👥</span>
-                        <span class="people-num">4</span>
-                    </button>
                 </div>
             </div>
 
@@ -1037,7 +1029,7 @@ const db   = firebase.database();
 /* ── STATE ───────────────────────────────────────────────── */
 let selectedTavolo  = null;
 let selectedPeople  = null;
-let selectedMaxPeople = 4;
+let selectedMaxPeople = 2;
 let isReg = false;
 let currentData = {}; // cache of last Firebase snapshot
 
@@ -1172,11 +1164,11 @@ function render(data) {
     const grid = document.getElementById('grid-tavoli');
     grid.innerHTML = '';
 
-    for (let i = 1; i <= 6; i++) {
+    for (let i = 1; i <= 8; i++) {
         // Collect ALL bookings for this table
         const bookings    = active.filter(x => String(x.tavolo) === String(i));
         const totalPeople = bookings.reduce((s, b) => s + (Number(b.persone) || 1), 0);
-        const isFull      = totalPeople >= 4;
+        const isFull      = totalPeople >= 2;
         const card        = document.createElement('div');
 
         if (bookings.length > 0) {
@@ -1186,13 +1178,13 @@ function render(data) {
             } else {
                 // Partially occupied: still bookable
                 card.className = 't-card t-card--partial';
-                card.onclick   = () => openModal(i, 4 - totalPeople);
+                card.onclick   = () => openModal(i, 2 - totalPeople);
             }
             card.innerHTML = buildOcc(i, bookings, totalPeople);
         } else {
             liberi++;
             card.className = 't-card t-card--free';
-            card.onclick   = () => openModal(i, 4);
+            card.onclick   = () => openModal(i, 2);
             card.innerHTML = buildFree(i);
         }
         grid.appendChild(card);
@@ -1212,7 +1204,7 @@ function render(data) {
     } else {
         lista.innerHTML = mie.map(x => {
             const n    = Number(x.persone) || 1;
-            const dots = [1,2,3,4].map(d =>
+            const dots = [1,2].map(d =>
                 `<span class="pren-dot${d <= n ? ' filled' : ''}"></span>`
             ).join('');
             const timeStr = x.orarioUscita
@@ -1251,15 +1243,14 @@ function buildFree(num) {
             ${seats(0,'free')}
             <div class="t-top">
                 <span class="t-num">${num}</span>
-                <span class="t-seats-count t-seats-count--free" title="4 posti disponibili">4</span>
+                <span class="t-seats-count t-seats-count--free" title="2 posti disponibili">2</span>
             </div>
-            ${seatsBot(0,'free')}
         </div>
         <div class="t-info"><span class="t-cta">Tocca per prenotare ✨</span></div>`;
 }
 
 function buildOcc(num, bookings, totalPeople) {
-    const MAX      = 4;
+    const MAX      = 2;
     const isFull   = totalPeople >= MAX;
     const remaining = MAX - totalPeople;
     const seatType = isFull ? 'occ' : 'partial';
@@ -1292,7 +1283,6 @@ function buildOcc(num, bookings, totalPeople) {
                 <span class="t-num">${num}</span>
                 <span class="t-seats-count t-seats-count--${isFull ? 'occ' : 'partial'}" title="${totalPeople}/${MAX} persone">${totalPeople}/${MAX}</span>
             </div>
-            ${seatsBot(totalPeople, seatType)}
         </div>
         <div class="t-info t-info--multi">
             ${entries}
@@ -1312,7 +1302,7 @@ function fmtDate(d) {
 
 /* ── MODAL ───────────────────────────────────────────────── */
 function openModal(num, maxPeople) {
-    maxPeople = maxPeople || 4;
+    maxPeople = maxPeople || 2;
     selectedTavolo    = num;
     selectedPeople    = null;
     selectedMaxPeople = maxPeople;
@@ -1334,7 +1324,7 @@ function openModal(num, maxPeople) {
 
     // Show remaining-seats note if table is partially booked
     const note = document.getElementById('seats-note');
-    if (maxPeople < 4) {
+    if (maxPeople < 2) {
         note.textContent = `⚠️ Solo ${maxPeople} posto${maxPeople > 1 ? 'i' : ''} disponibile${maxPeople > 1 ? '' : ''} a questo tavolo`;
         note.classList.remove('hidden');
     } else {
@@ -1377,7 +1367,7 @@ function submitPren() {
     const alreadyBooked = activeNow
         .filter(x => String(x.tavolo) === String(selectedTavolo))
         .reduce((s, b) => s + (Number(b.persone) || 1), 0);
-    const remaining = 4 - alreadyBooked;
+    const remaining = 2 - alreadyBooked;
     if (selectedPeople > remaining) {
         if (remaining <= 0) {
             toast('Questo tavolo è al completo!', 'err');

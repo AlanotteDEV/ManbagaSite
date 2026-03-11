@@ -4063,3 +4063,222 @@ textarea.form-input {
         gap: 6px;
     }
 }
+
+/* ============================================================
+   RECENSIONI — sezione fiori di loto
+   ============================================================ */
+
+/* Header titolo + bottone */
+.reviews-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 48px;
+    flex-wrap: wrap;
+}
+.reviews-header .section-title { margin-bottom: 0; }
+
+.reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-bottom: 48px;
+}
+
+/* Skeleton loader */
+.review-skeleton {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    height: 200px;
+    animation: rv-skeleton 1.6s ease infinite;
+}
+@keyframes rv-skeleton {
+    0%, 100% { opacity: 0.5; }
+    50%       { opacity: 1; }
+}
+
+/* Form recensione nel modal */
+.review-form-inner { display: flex; flex-direction: column; gap: 20px; }
+
+/* Stelle interattive nel form */
+.rv-stars {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-top: 6px;
+}
+.rv-star-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    line-height: 0;
+    transition: transform .15s;
+}
+.rv-star-btn:hover { transform: scale(1.15); }
+.rv-star-btn .lotus-star { width: 30px; height: 30px; }
+
+.rv-star-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: rgba(255,255,255,.4);
+    margin-top: 6px;
+    letter-spacing: .04em;
+    min-height: 18px;
+    transition: color .2s;
+}
+
+.rv-charcount {
+    font-size: 11px;
+    color: rgba(255,255,255,.28);
+    text-align: right;
+    margin-top: 4px;
+    display: block;
+}
+
+.rv-error {
+    font-size: 13px;
+    font-weight: 600;
+    color: #f87171;
+    background: rgba(220,38,38,.08);
+    border: 1px solid rgba(220,38,38,.2);
+    border-radius: 6px;
+    padding: 10px 14px;
+}
+
+.review-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px;
+    padding: 28px 26px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: border-color .25s, transform .25s;
+    position: relative;
+    overflow: hidden;
+}
+.review-card::before {
+    content: '口';
+    position: absolute;
+    top: -10px; right: 10px;
+    font-family: 'Noto Serif JP', serif;
+    font-size: 80px;
+    color: rgba(244,114,182,0.04);
+    pointer-events: none;
+    line-height: 1;
+}
+.review-card:hover {
+    border-color: rgba(244,114,182,0.22);
+    transform: translateY(-3px);
+}
+
+.review-lotus {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.lotus-star {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    filter: drop-shadow(0 0 4px rgba(244,114,182,0.45));
+    transition: transform .2s;
+}
+.lotus-star--dim {
+    opacity: 0.25;
+    filter: none;
+}
+.lotus-star--lg {
+    width: 32px;
+    height: 32px;
+    filter: drop-shadow(0 0 8px rgba(244,114,182,0.6));
+}
+
+.review-text {
+    font-size: 14px;
+    line-height: 1.75;
+    color: rgba(255,255,255,0.7);
+    font-style: italic;
+    flex: 1;
+}
+
+.review-author {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.review-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #dc2626, #f472b6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 900;
+    color: #fff;
+    flex-shrink: 0;
+    letter-spacing: -.02em;
+}
+
+.review-name {
+    font-size: 13px;
+    font-weight: 800;
+    color: rgba(255,255,255,0.9);
+    letter-spacing: .02em;
+}
+
+.review-sub {
+    font-size: 11px;
+    color: rgba(255,255,255,0.3);
+    margin-top: 2px;
+    letter-spacing: .04em;
+}
+
+.reviews-footer {
+    display: flex;
+    justify-content: center;
+    padding-top: 8px;
+}
+
+.reviews-score {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(244,114,182,0.06);
+    border: 1px solid rgba(244,114,182,0.14);
+    border-radius: 50px;
+    padding: 10px 24px;
+}
+
+.reviews-score-num {
+    font-size: 28px;
+    font-weight: 900;
+    letter-spacing: -.04em;
+    color: #fff;
+}
+
+.reviews-score-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: .04em;
+}
+
+@media (max-width: 768px) {
+    .reviews-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    .review-card {
+        padding: 22px 20px 20px;
+    }
+}

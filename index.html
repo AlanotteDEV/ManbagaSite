@@ -115,6 +115,7 @@
             <li><a href="#catalogo">Catalogo</a></li>
             <li><a href="#nuovi-arrivi">Novit&#224;</a></li>
             <li><a href="#eventi">Eventi</a></li>
+            <li><a href="#recensioni">Recensioni</a></li>
             <li><a href="tavoli.html">Tavoli</a></li>
             <li><a href="#contatti" class="nav-cta">Contatti</a></li>
         </ul>
@@ -329,6 +330,93 @@
             </svg>
             Seguici su Instagram
         </a>
+    </div>
+</div>
+
+
+<!-- ============================================================
+     RECENSIONI
+     ============================================================ -->
+<section id="recensioni" class="section section--dark">
+    <div class="section-inner">
+        <div class="section-label">レビュー &mdash; Cosa dicono di noi</div>
+        <div class="reviews-header reveal">
+            <h2 class="section-title" style="margin-bottom:0">COSA DICONO<br>I NOSTRI CLIENTI</h2>
+            <button class="btn btn-primary" onclick="openReviewModal()" style="clip-path:none;border-radius:0;flex-shrink:0">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                Lascia la tua recensione
+            </button>
+        </div>
+
+        <!-- Griglia dinamica: popolata da JS (Firebase) -->
+        <div id="reviews-container" class="reviews-grid">
+            <!-- Skeleton loader -->
+            <div class="review-skeleton"></div>
+            <div class="review-skeleton"></div>
+            <div class="review-skeleton"></div>
+            <div class="review-skeleton"></div>
+        </div>
+
+        <div class="reviews-footer reveal" id="reviews-footer" style="display:none">
+            <div class="reviews-score">
+                <svg class="lotus-star lotus-star--lg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g transform="translate(12,12)"><ellipse cx="0" cy="-5.5" rx="3.2" ry="5" fill="#F4B8C8"/><ellipse cx="0" cy="-5.5" rx="3" ry="4.7" fill="#F0AABE" transform="rotate(72)"/><ellipse cx="0" cy="-5.5" rx="3.2" ry="5" fill="#F4B8C8" transform="rotate(144)"/><ellipse cx="0" cy="-5.5" rx="3" ry="4.7" fill="#F0AABE" transform="rotate(216)"/><ellipse cx="0" cy="-5.5" rx="3.2" ry="5" fill="#F4B8C8" transform="rotate(288)"/><circle cx="0" cy="0" r="3" fill="#FFEEF4"/><circle cx="0" cy="0" r="1.2" fill="#D4778A"/></g></svg>
+                <span class="reviews-score-num" id="reviews-avg">—</span>
+                <span class="reviews-score-label">su 5 &middot; <span id="reviews-count">0</span> recensioni verificate</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- MODALE LASCIA RECENSIONE -->
+<div id="review-modal" class="modal-wrap hidden" onclick="if(event.target===this)closeReviewModal()">
+    <div class="modal-box" role="dialog" aria-modal="true" aria-label="Lascia una recensione" style="max-width:520px">
+        <div class="modal-head">
+            <span class="modal-head-title">LASCIA UNA RECENSIONE</span>
+            <div class="modal-head-actions">
+                <button class="btn-modal-close" onclick="closeReviewModal()">&#10005; Chiudi</button>
+            </div>
+        </div>
+        <div class="modal-body" id="review-modal-body">
+            <div class="review-form-inner">
+
+                <div class="form-row">
+                    <label class="form-label" for="rv-nome">Il tuo nome <span style="color:#dc2626">*</span></label>
+                    <input type="text" id="rv-nome" class="form-input contact-input" placeholder="Es. Marco R." maxlength="60">
+                </div>
+
+                <!-- Selettore stelle (fiori di loto interattivi) -->
+                <div class="form-row">
+                    <label class="form-label">Valutazione <span style="color:#dc2626">*</span></label>
+                    <div class="rv-stars" id="rv-stars">
+                        <button type="button" class="rv-star-btn" data-v="1" onclick="selectStar(1)" onmouseenter="hoverStar(1)" onmouseleave="hoverStar(0)"></button>
+                        <button type="button" class="rv-star-btn" data-v="2" onclick="selectStar(2)" onmouseenter="hoverStar(2)" onmouseleave="hoverStar(0)"></button>
+                        <button type="button" class="rv-star-btn" data-v="3" onclick="selectStar(3)" onmouseenter="hoverStar(3)" onmouseleave="hoverStar(0)"></button>
+                        <button type="button" class="rv-star-btn" data-v="4" onclick="selectStar(4)" onmouseenter="hoverStar(4)" onmouseleave="hoverStar(0)"></button>
+                        <button type="button" class="rv-star-btn" data-v="5" onclick="selectStar(5)" onmouseenter="hoverStar(5)" onmouseleave="hoverStar(0)"></button>
+                    </div>
+                    <div class="rv-star-label" id="rv-star-label">Tocca un fiore di loto per votare</div>
+                </div>
+
+                <div class="form-row">
+                    <label class="form-label" for="rv-testo">La tua esperienza <span style="color:#dc2626">*</span></label>
+                    <textarea id="rv-testo" class="form-input contact-input" rows="4" placeholder="Racconta la tua visita da MANBAGA…" maxlength="400" style="resize:vertical"></textarea>
+                    <span class="rv-charcount"><span id="rv-chars">0</span>/400</span>
+                </div>
+
+                <div id="rv-error" class="rv-error" style="display:none"></div>
+
+                <button class="btn btn-primary contact-submit" onclick="submitRecensione()" id="rv-submit-btn"
+                        style="width:100%;clip-path:none;border-radius:0;justify-content:center;margin-top:8px">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    Invia Recensione
+                </button>
+                <p style="font-size:11px;color:rgba(255,255,255,.3);text-align:center;margin-top:10px;line-height:1.5">
+                    La tua recensione sarà visibile dopo approvazione del negozio.
+                </p>
+            </div>
+        </div>
     </div>
 </div>
 

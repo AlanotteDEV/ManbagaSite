@@ -43,7 +43,8 @@ var EMAILJS_CONFIG = {
     publicKey:         'RMUoD23dWNtheAZiE',
     serviceId:         'service_x1xol32',
     templateContact:   'template_z2rchyq',
-    templateAutoreply: 'template_xar3ak7'
+    templateAutoreply: 'template_xar3ak7',
+    templatePreorder:  'template_preorder'
 };
 
 var _emailjsReady = false;
@@ -1337,3 +1338,226 @@ document.addEventListener('keydown', function (e) {
 document.addEventListener('DOMContentLoaded', function () {
     if (typeof firebase !== 'undefined') tavInit();
 });
+
+/* ============================================================
+   RECENSIONI — Sistema reale con Firebase + approvazione
+   ============================================================ */
+
+/* SVG fiore di loto (riutilizzato per le stelle) */
+var _LOTUS_SVG = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g transform="translate(12,12)"><ellipse cx="0" cy="-5.5" rx="3.2" ry="5" fill="#F4B8C8"/><ellipse cx="0" cy="-5.5" rx="3" ry="4.7" fill="#F0AABE" transform="rotate(72)"/><ellipse cx="0" cy="-5.5" rx="3.2" ry="5" fill="#F4B8C8" transform="rotate(144)"/><ellipse cx="0" cy="-5.5" rx="3" ry="4.7" fill="#F0AABE" transform="rotate(216)"/><ellipse cx="0" cy="-5.5" rx="3.2" ry="5" fill="#F4B8C8" transform="rotate(288)"/><circle cx="0" cy="0" r="3" fill="#FFEEF4"/><circle cx="0" cy="0" r="1.2" fill="#D4778A"/></g></svg>';
+
+var _rvStelle   = 0;   /* valutazione selezionata nel form */
+var _rvColors   = ['#ef4444','#f97316','#eab308','#22c55e','#10b981'];
+var _rvLabels   = ['','Pessimo','Scarso','Nella media','Ottimo','Eccellente'];
+
+/* --- Subscribe Firestore recensioni approvate --- */
+function _subscribeRecensioni() {
+    if (!_fbMainDb) return;
+    _fbMainDb.collection('recensioni')
+        .where('approvata', '==', true)
+        .orderBy('createdAt', 'desc')
+        .onSnapshot(function(snap) {
+            var list = snap.docs.map(function(doc) {
+                var d = doc.data(); d.id = doc.id; return d;
+            });
+            renderRecensioni(list);
+        }, function(_err) {
+            /* Se manca l'indice o i permessi, proviamo senza orderBy */
+            _fbMainDb.collection('recensioni')
+                .where('approvata', '==', true)
+                .onSnapshot(function(snap2) {
+                    var list = snap2.docs.map(function(doc) {
+                        var d = doc.data(); d.id = doc.id; return d;
+                    });
+                    list.sort(function(a,b){ return (b.createdAt?.seconds||0) - (a.createdAt?.seconds||0); });
+                    renderRecensioni(list);
+                });
+        });
+}
+
+function renderRecensioni(list) {
+    var container = document.getElementById('reviews-container');
+    var footer    = document.getElementById('reviews-footer');
+    if (!container) return;
+
+    if (list.length === 0) {
+        container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:48px 20px;color:rgba(255,255,255,.3);font-size:14px">'
+            + 'Ancora nessuna recensione &mdash; sii il primo! 🌸</div>';
+        if (footer) footer.style.display = 'none';
+        return;
+    }
+
+    /* Score medio */
+    var totStelle = list.reduce(function(s,r){ return s + (r.stelle||5); }, 0);
+    var avg = (totStelle / list.length).toFixed(1);
+
+    container.innerHTML = list.map(function(r, idx) {
+        var n    = Math.max(1, Math.min(5, r.stelle || 5));
+        var nome = r.nome || 'Anonimo';
+        var init = nome.charAt(0).toUpperCase();
+        var avatarColors = ['linear-gradient(135deg,#dc2626,#f472b6)',
+                            'linear-gradient(135deg,#8b5cf6,#6d28d9)',
+                            'linear-gradient(135deg,#10b981,#059669)',
+                            'linear-gradient(135deg,#f59e0b,#d97706)',
+                            'linear-gradient(135deg,#3b82f6,#1d4ed8)',
+                            'linear-gradient(135deg,#ec4899,#be185d)'];
+        var avatarBg = avatarColors[idx % avatarColors.length];
+        var loti = '';
+        for (var i = 1; i <= 5; i++) {
+            loti += '<span class="lotus-star' + (i > n ? ' lotus-star--dim' : '') + '">' + _LOTUS_SVG + '</span>';
+        }
+        var delay = ['','reveal-d1','reveal-d2','reveal-d3','reveal-d1','reveal-d2'][idx % 6];
+        return '<div class="review-card reveal ' + delay + '">'
+            + '<div class="review-lotus">' + loti + '</div>'
+            + '<p class="review-text">&laquo;' + _escHtml(r.testo || '') + '&raquo;</p>'
+            + '<div class="review-author">'
+            + '<div class="review-avatar" style="background:' + avatarBg + '">' + _escHtml(init) + '</div>'
+            + '<div><div class="review-name">' + _escHtml(nome) + '</div>'
+            + '<div class="review-sub">' + _fmtDataRecensione(r.createdAt) + '</div>'
+            + '</div></div></div>';
+    }).join('');
+
+    /* Footer score */
+    if (footer) {
+        footer.style.display = 'flex';
+        var avgEl   = document.getElementById('reviews-avg');
+        var countEl = document.getElementById('reviews-count');
+        if (avgEl)   avgEl.textContent   = avg;
+        if (countEl) countEl.textContent = list.length;
+    }
+
+    checkReveal();
+}
+
+function _fmtDataRecensione(ts) {
+    if (!ts) return 'Cliente MANBAGA';
+    try {
+        var d = ts.toDate ? ts.toDate() : new Date(ts.seconds * 1000);
+        return d.toLocaleDateString('it-IT', { month:'long', year:'numeric' });
+    } catch(e) { return 'Cliente MANBAGA'; }
+}
+
+function _escHtml(s) {
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+/* --- Modal form recensione --- */
+function openReviewModal() {
+    _rvStelle = 0;
+    var modal = document.getElementById('review-modal');
+    var nome  = document.getElementById('rv-nome');
+    var testo = document.getElementById('rv-testo');
+    var err   = document.getElementById('rv-error');
+    if (nome)  nome.value  = '';
+    if (testo) testo.value = '';
+    if (err)   { err.style.display = 'none'; err.textContent = ''; }
+    document.getElementById('rv-chars').textContent = '0';
+    updateStarDisplay(0);
+    if (modal) modal.classList.remove('hidden');
+    if (nome) setTimeout(function(){ nome.focus(); }, 80);
+}
+
+function closeReviewModal() {
+    var modal = document.getElementById('review-modal');
+    if (modal) modal.classList.add('hidden');
+}
+
+function selectStar(n) {
+    _rvStelle = n;
+    updateStarDisplay(n);
+}
+
+function hoverStar(n) {
+    updateStarDisplay(n || _rvStelle);
+}
+
+function updateStarDisplay(n) {
+    var btns  = document.querySelectorAll('.rv-star-btn');
+    var label = document.getElementById('rv-star-label');
+    btns.forEach(function(btn) {
+        var v = parseInt(btn.dataset.v);
+        btn.innerHTML = '<span class="lotus-star' + (v > n ? ' lotus-star--dim' : '') + '">' + _LOTUS_SVG + '</span>';
+    });
+    if (label) {
+        label.textContent = _rvLabels[n] || 'Tocca un fiore di loto per votare';
+        label.style.color = n ? (_rvColors[n-1] || '') : '';
+    }
+}
+
+/* Contatore caratteri textarea */
+document.addEventListener('DOMContentLoaded', function() {
+    var ta = document.getElementById('rv-testo');
+    if (ta) ta.addEventListener('input', function() {
+        var el = document.getElementById('rv-chars');
+        if (el) el.textContent = ta.value.length;
+    });
+});
+
+function submitRecensione() {
+    var nome  = (document.getElementById('rv-nome')  || {}).value || '';
+    var testo = (document.getElementById('rv-testo') || {}).value || '';
+    var errEl = document.getElementById('rv-error');
+    var btn   = document.getElementById('rv-submit-btn');
+
+    nome  = nome.trim();
+    testo = testo.trim();
+
+    function showErr(msg) {
+        if (errEl) { errEl.textContent = msg; errEl.style.display = 'block'; }
+    }
+
+    if (!nome)       { showErr('Inserisci il tuo nome.'); return; }
+    if (!_rvStelle)  { showErr('Seleziona una valutazione.'); return; }
+    if (!testo || testo.length < 10) { showErr('Scrivi almeno 10 caratteri.'); return; }
+    if (errEl) errEl.style.display = 'none';
+
+    if (!_fbMainDb) {
+        showErr('Connessione Firebase non disponibile. Riprova tra un secondo.');
+        return;
+    }
+
+    if (btn) { btn.disabled = true; btn.textContent = 'Invio…'; }
+
+    _fbMainDb.collection('recensioni').add({
+        nome:      nome,
+        testo:     testo,
+        stelle:    _rvStelle,
+        approvata: false,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(function() {
+        /* Mostra conferma nel body del modal */
+        var body = document.getElementById('review-modal-body');
+        if (body) body.innerHTML = '<div style="text-align:center;padding:48px 20px">'
+            + '<div style="font-size:48px;margin-bottom:16px">🌸</div>'
+            + '<div style="font-size:20px;font-weight:800;margin-bottom:10px">Grazie, ' + _escHtml(nome) + '!</div>'
+            + '<div style="font-size:14px;color:rgba(255,255,255,.5);line-height:1.6">La tua recensione è stata inviata.<br>Apparirà sul sito dopo approvazione del negozio.</div>'
+            + '<button class="btn btn-primary" onclick="closeReviewModal()" style="margin-top:28px;clip-path:none;border-radius:0">Chiudi</button>'
+            + '</div>';
+    }).catch(function(e) {
+        showErr('Errore: ' + e.message);
+        if (btn) { btn.disabled = false; btn.textContent = 'Invia Recensione'; }
+    });
+}
+
+/* Chiudi modal recensione con Escape */
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        var m = document.getElementById('review-modal');
+        if (m && !m.classList.contains('hidden')) closeReviewModal();
+    }
+});
+
+/* Avvia subscribe recensioni assieme agli altri dati */
+(function() {
+    var _origInit = _initMainFirebase;
+    _initMainFirebase = function() {
+        _origInit();
+        /* Aspetta che _fbMainDb sia pronto */
+        var tries = 0;
+        var check = setInterval(function() {
+            tries++;
+            if (_fbMainDb) { clearInterval(check); _subscribeRecensioni(); }
+            else if (tries > 30) clearInterval(check);
+        }, 200);
+    };
+})();
