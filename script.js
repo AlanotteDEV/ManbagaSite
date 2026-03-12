@@ -482,8 +482,9 @@ function openProductModal(productId) {
     var isPreorder = (product.badge === 'PREORDINA' || product.badge === 'IN ARRIVO');
 
     /* Bottone azione principale */
+    var _pid = String(product.id);
     var actionBtn = isPreorder
-        ? '<button class="btn btn-primary" style="clip-path:none;flex:1;border-radius:0;min-width:160px;background:#4F46E5;border:none" onclick="showPreorderForm(' + product.id + ')">'
+        ? '<button class="btn btn-primary" style="clip-path:none;flex:1;border-radius:0;min-width:160px;background:#4F46E5;border:none" onclick="showPreorderForm(\'' + _pid + '\')">'
             + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 12v6a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h6"/><polyline points="16 2 22 2 22 8"/><line x1="11" y1="13" x2="22" y2="2"/></svg>'
             + ' Richiedi Preordine'
             + '</button>'
@@ -515,19 +516,19 @@ function openProductModal(productId) {
         + '</button>'
         + '</div>'
         /* Form preordine (nascosto) */
-        + '<div id="preorder-form-' + product.id + '" class="preorder-panel hidden" data-product-id="' + product.id + '">'
+        + '<div id="preorder-form-' + _pid + '" class="preorder-panel hidden" data-product-id="' + _pid + '">'
         + '<div class="preorder-panel-head">&#9993; Richiesta Preordine — ' + product.title + '</div>'
         + '<div class="form-row"><label class="form-label">Il tuo nome *</label>'
-        + '<input type="text" id="po-name-' + product.id + '" class="form-input" placeholder="Nome e Cognome"></div>'
+        + '<input type="text" id="po-name-' + _pid + '" class="form-input" placeholder="Nome e Cognome"></div>'
         + '<div class="form-row"><label class="form-label">Email o Telefono *</label>'
-        + '<input type="text" id="po-contact-' + product.id + '" class="form-input" placeholder="email@esempio.it oppure +39 …"></div>'
+        + '<input type="text" id="po-contact-' + _pid + '" class="form-input" placeholder="email@esempio.it oppure +39 …"></div>'
         + '<div class="form-row"><label class="form-label">Note (opzionale)</label>'
-        + '<textarea id="po-notes-' + product.id + '" class="form-input" rows="2" placeholder="Quantità, variante, data prevista ritiro…"></textarea></div>'
+        + '<textarea id="po-notes-' + _pid + '" class="form-input" rows="2" placeholder="Quantità, variante, data prevista ritiro…"></textarea></div>'
         + '<div style="display:flex;gap:8px;margin-top:4px">'
-        + '<button class="btn btn-primary" style="clip-path:none;flex:1;border-radius:0;background:#4F46E5;border:none" onclick="submitPreorder(' + product.id + ')">'
+        + '<button class="btn btn-primary" style="clip-path:none;flex:1;border-radius:0;background:#4F46E5;border:none" onclick="submitPreorder(\'' + _pid + '\')">'
         + '&#10003; INVIA RICHIESTA'
         + '</button>'
-        + '<button class="btn btn-ghost" style="border-radius:0;min-width:100px" onclick="hidePreorderForm(' + product.id + ')">Annulla</button>'
+        + '<button class="btn btn-ghost" style="border-radius:0;min-width:100px" onclick="hidePreorderForm(\'' + _pid + '\')">Annulla</button>'
         + '</div>'
         + '</div>'
         + '</div>'
@@ -559,7 +560,7 @@ function hidePreorderForm(productId) {
 }
 
 function submitPreorder(productId) {
-    var product = getProducts().find(function (p) { return p.id === productId; });
+    var product = getProducts().find(function (p) { return String(p.id) === String(productId); });
     if (!product) return;
 
     var name    = document.getElementById('po-name-'    + productId).value.trim();
@@ -574,44 +575,30 @@ function submitPreorder(productId) {
     var submitBtn = document.querySelector('#preorder-form-' + productId + ' .btn-primary');
     if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Invio in corso…'; }
 
-    /* Prova EmailJS; fallback a mailto: */
-    if (_emailjsReady) {
-        emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templatePreorder, {
-            product_title:    product.title,
-            product_volume:   product.volume || '—',
-            product_badge:    product.badge  || '—',
-            customer_name:    name,
-            customer_contact: contact,
-            customer_notes:   notes || 'Nessuna nota'
-        })
-        .then(function () {
-            _preorderSuccess(productId, submitBtn);
-        })
-        .catch(function (err) {
-            console.error('EmailJS error:', err);
-            _preorderMailtoFallback(product, name, contact, notes);
-            _preorderSuccess(productId, submitBtn);
-        });
-    } else {
-        /* Fallback mailto: */
-        _preorderMailtoFallback(product, name, contact, notes);
-        _preorderSuccess(productId, submitBtn);
+    if (!_fbMainDb) {
+        alert('Connessione non disponibile. Riprova tra un momento.');
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Invia Richiesta'; }
+        return;
     }
-}
 
-function _preorderMailtoFallback(product, name, contact, notes) {
-    var subject = encodeURIComponent('[PREORDINE] ' + product.title + ' ' + (product.volume || ''));
-    var body    = encodeURIComponent(
-        '⭐ NUOVA RICHIESTA DI PREORDINE\n\n'
-        + 'Prodotto: ' + product.title + '\n'
-        + 'Volume:   ' + (product.volume || '—') + '\n'
-        + 'Stato:    ' + (product.badge  || '—') + '\n\n'
-        + '─────────────────────────────\n'
-        + 'Cliente:  ' + name    + '\n'
-        + 'Contatto: ' + contact + '\n'
-        + 'Note:     ' + (notes || 'Nessuna nota')
-    );
-    window.open('mailto:manbagacomics@gmail.com?subject=' + subject + '&body=' + body, '_self');
+    _fbMainDb.collection('preordini').add({
+        productId:       String(productId),
+        productTitle:    product.title    || '',
+        productVolume:   product.volume   || '',
+        productBadge:    product.badge    || '',
+        customerName:    name,
+        customerContact: contact,
+        customerNotes:   notes || '',
+        status:          'nuovo',
+        createdAt:       firebase.firestore.FieldValue.serverTimestamp()
+    }).then(function() {
+        _preorderSuccess(productId, submitBtn);
+    }).catch(function(err) {
+        console.error('Preorder save error:', err);
+        var msg = (err && err.message) ? err.message : String(err);
+        alert('Errore durante l\'invio:\n' + msg);
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Invia Richiesta'; }
+    });
 }
 
 function _preorderSuccess(productId, btn) {
@@ -1330,7 +1317,7 @@ document.addEventListener('DOMContentLoaded', function () {
    ============================================================ */
 
 /* SVG fiore di loto (riutilizzato per le stelle) */
-var _LOTUS_SVG = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g transform="translate(12,12)"><ellipse cx="0" cy="-5.5" rx="3.2" ry="5" fill="#F4B8C8"/><ellipse cx="0" cy="-5.5" rx="3" ry="4.7" fill="#F0AABE" transform="rotate(72)"/><ellipse cx="0" cy="-5.5" rx="3.2" ry="5" fill="#F4B8C8" transform="rotate(144)"/><ellipse cx="0" cy="-5.5" rx="3" ry="4.7" fill="#F0AABE" transform="rotate(216)"/><ellipse cx="0" cy="-5.5" rx="3.2" ry="5" fill="#F4B8C8" transform="rotate(288)"/><circle cx="0" cy="0" r="3" fill="#FFEEF4"/><circle cx="0" cy="0" r="1.2" fill="#D4778A"/></g></svg>';
+var _LOTUS_SVG = '<svg width="1em" height="1em" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="display:block"><g transform="translate(12,12)"><ellipse cx="0" cy="-5.5" rx="3.2" ry="5" fill="currentColor" opacity="0.9"/><ellipse cx="0" cy="-5.5" rx="3" ry="4.7" fill="currentColor" opacity="0.7" transform="rotate(72)"/><ellipse cx="0" cy="-5.5" rx="3.2" ry="5" fill="currentColor" opacity="0.9" transform="rotate(144)"/><ellipse cx="0" cy="-5.5" rx="3" ry="4.7" fill="currentColor" opacity="0.7" transform="rotate(216)"/><ellipse cx="0" cy="-5.5" rx="3.2" ry="5" fill="currentColor" opacity="0.9" transform="rotate(288)"/><circle cx="0" cy="0" r="3" fill="rgba(255,255,255,0.9)"/><circle cx="0" cy="0" r="1.2" fill="currentColor"/></g></svg>';
 
 var _rvStelle   = 0;   /* valutazione selezionata nel form */
 var _rvColors   = ['#ef4444','#f97316','#eab308','#22c55e','#10b981'];
@@ -1390,7 +1377,7 @@ function renderRecensioni(list) {
         var avatarBg = avatarColors[idx % avatarColors.length];
         var loti = '';
         for (var i = 1; i <= 5; i++) {
-            loti += '<span style="font-size:18px;color:' + (i <= n ? '#dc2626' : 'rgba(220,38,38,0.2)') + '">★</span>';
+            loti += '<span class="lotus-star' + (i <= n ? '' : ' lotus-star--dim') + '" style="color:' + (i <= n ? (_rvColors[n-1]||'#dc2626') : '') + '">' + _LOTUS_SVG + '</span>';
         }
         var delay = ['','reveal-d1','reveal-d2','reveal-d3','reveal-d1','reveal-d2'][idx % 6];
         return '<div class="review-card reveal ' + delay + '">'
@@ -1430,15 +1417,22 @@ function _escHtml(s) {
 /* --- Modal form recensione --- */
 function openReviewModal() {
     _rvStelle = 0;
-    var modal = document.getElementById('review-modal');
-    var nome  = document.getElementById('rv-nome');
-    var testo = document.getElementById('rv-testo');
-    var err   = document.getElementById('rv-error');
+    var modal       = document.getElementById('review-modal');
+    var formView    = document.getElementById('rv-form-view');
+    var successView = document.getElementById('rv-success-view');
+    var nome        = document.getElementById('rv-nome');
+    var testo       = document.getElementById('rv-testo');
+    var err         = document.getElementById('rv-error');
+    var btn         = document.getElementById('rv-submit-btn');
+
+    if (formView)    formView.style.display    = 'flex';
+    if (successView) successView.style.display = 'none';
     if (nome)  nome.value  = '';
     if (testo) testo.value = '';
     if (err)   { err.style.display = 'none'; err.textContent = ''; }
     var charsEl = document.getElementById('rv-chars');
     if (charsEl) charsEl.textContent = '0';
+    if (btn) { btn.disabled = false; btn.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-3px;margin-right:6px"><polyline points="20 6 9 17 4 12"/></svg>Invia Recensione'; }
     updateStarDisplay(0);
     if (modal) modal.classList.remove('hidden');
     if (nome) setTimeout(function(){ nome.focus(); }, 80);
@@ -1463,8 +1457,12 @@ function updateStarDisplay(n) {
     var label = document.getElementById('rv-star-label');
     btns.forEach(function(btn) {
         var v = parseInt(btn.dataset.v);
-        btn.style.color  = v <= n ? '#dc2626' : 'rgba(220,38,38,0.25)';
-        btn.style.transform = v <= n ? 'scale(1.2)' : 'scale(1)';
+        /* Inietta SVG se il bottone è vuoto */
+        if (!btn.querySelector('svg')) btn.innerHTML = _LOTUS_SVG;
+        var active = v <= n;
+        btn.style.color     = active ? (_rvColors[n-1] || '#dc2626') : 'rgba(220,38,38,0.25)';
+        btn.style.transform = active ? 'scale(1.25)' : 'scale(1)';
+        btn.style.opacity   = active ? '1' : '0.4';
     });
     if (label) {
         label.textContent = _rvLabels[n] || 'Seleziona una valutazione';
@@ -1507,7 +1505,7 @@ function submitRecensione() {
         return;
     }
 
-    if (btn) { btn.disabled = true; btn.textContent = 'Invio…'; }
+    if (btn) { btn.disabled = true; btn.innerHTML = 'Invio…'; }
 
     _fbMainDb.collection('recensioni').add({
         nome:      nome,
@@ -1516,17 +1514,15 @@ function submitRecensione() {
         approvata: false,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
     }).then(function() {
-        /* Mostra conferma nel body del modal */
-        var body = document.getElementById('review-modal-body');
-        if (body) body.innerHTML = '<div style="text-align:center;padding:48px 20px">'
-            + '<div style="font-size:48px;margin-bottom:16px">🌸</div>'
-            + '<div style="font-size:20px;font-weight:800;margin-bottom:10px">Grazie, ' + _escHtml(nome) + '!</div>'
-            + '<div style="font-size:14px;color:rgba(255,255,255,.5);line-height:1.6">La tua recensione è stata inviata.<br>Apparirà sul sito dopo approvazione del negozio.</div>'
-            + '<button class="btn btn-primary" onclick="closeReviewModal()" style="margin-top:28px;clip-path:none;border-radius:0">Chiudi</button>'
-            + '</div>';
+        var formView    = document.getElementById('rv-form-view');
+        var successView = document.getElementById('rv-success-view');
+        var nameEl      = document.getElementById('rv-success-name');
+        if (formView)    formView.style.display    = 'none';
+        if (successView) successView.style.display = 'flex';
+        if (nameEl)      nameEl.textContent        = nome;
     }).catch(function(e) {
         showErr('Errore: ' + e.message);
-        if (btn) { btn.disabled = false; btn.textContent = 'Invia Recensione'; }
+        if (btn) { btn.disabled = false; btn.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-3px;margin-right:6px"><polyline points="20 6 9 17 4 12"/></svg>Invia Recensione'; }
     });
 }
 

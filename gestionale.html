@@ -700,6 +700,12 @@ input, textarea, select { font-family: inherit; color: inherit; }
         <span class="nav-badge" id="nb-recensioni">0</span>
       </div>
 
+      <div class="nav-item" data-view="preordini" onclick="switchView('preordini')">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+        <span>Preordini</span>
+        <span class="nav-badge" id="nb-preordini">0</span>
+      </div>
+
       <div class="sb-section-label" style="margin-top:20px">Finanze</div>
 
       <div class="nav-item" data-view="contabilita" onclick="switchView('contabilita')">
@@ -920,6 +926,26 @@ input, textarea, select { font-family: inherit; color: inherit; }
       </div>
 
       <div id="rv-container"></div>
+    </div>
+
+    <!-- ===== VIEW: PREORDINI ===== -->
+    <div id="view-preordini" class="view" style="display:none">
+      <div class="view-header">
+        <div class="view-title-block">
+          <div class="view-label">Richieste Clienti</div>
+          <div class="view-title">Preordini</div>
+        </div>
+      </div>
+
+      <!-- Tabs per status -->
+      <div style="display:flex;gap:2px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:3px;margin-bottom:24px;width:fit-content">
+        <button class="period-tab active" id="po-tab-nuovo"      onclick="switchPoTab('nuovo')">Nuovi <span class="nav-badge" id="po-badge-nuovo" style="display:inline-flex">0</span></button>
+        <button class="period-tab"        id="po-tab-contattato" onclick="switchPoTab('contattato')">Contattati <span class="nav-badge" id="po-badge-contattato" style="display:inline-flex">0</span></button>
+        <button class="period-tab"        id="po-tab-completato" onclick="switchPoTab('completato')">Completati</button>
+        <button class="period-tab"        id="po-tab-annullato"  onclick="switchPoTab('annullato')">Annullati</button>
+      </div>
+
+      <div id="po-container"></div>
     </div>
 
     <!-- ===== VIEW: CONTABILITÀ ===== -->
@@ -1346,6 +1372,7 @@ function initFirebase() {
                 subscribeData();
                 subscribeTransazioni();
                 subscribeRecensioni();
+                subscribePreordini();
                 switchView('dashboard');
             } else {
                 /* Non autenticato — mostra login */
@@ -1355,8 +1382,9 @@ function initFirebase() {
                 if (_unsubProducts) { _unsubProducts(); _unsubProducts = null; }
                 if (_unsubEvents)   { _unsubEvents();   _unsubEvents   = null; }
                 if (_unsubTrans)    { _unsubTrans();    _unsubTrans    = null; }
-                if (_unsubRecens)   { _unsubRecens();   _unsubRecens   = null; }
-                _products = []; _events = []; _transazioni = []; _recensioni = [];
+                if (_unsubRecens)     { _unsubRecens();     _unsubRecens     = null; }
+                if (_unsubPreordini)  { _unsubPreordini();  _unsubPreordini  = null; }
+                _products = []; _events = []; _transazioni = []; _recensioni = []; _preordini = [];
             }
         });
 
@@ -1540,6 +1568,7 @@ function renderCurrentView() {
         case 'events':      renderEvents();      break;
         case 'contabilita':  renderContabilita();  break;
         case 'recensioni':   renderRecensioni();   break;
+        case 'preordini':    renderPreordini();    break;
     }
 }
 
@@ -2728,6 +2757,117 @@ function eliminaRecensione(id, nome) {
         function() {
             _db.collection('recensioni').doc(id).delete()
                 .then(function(){ showToast('Recensione eliminata', 'success'); })
+                .catch(function(e){ showToast('Errore: ' + e.message, 'error'); });
+        }
+    );
+}
+
+/* ============================================================
+   PREORDINI — richieste clienti
+   ============================================================ */
+var _preordini     = [];
+var _unsubPreordini = null;
+var _poTab         = 'nuovo';
+
+function subscribePreordini() {
+    if (!_fbReady) return;
+    _unsubPreordini = _db.collection('preordini').orderBy('createdAt', 'desc').onSnapshot(
+        function(snap) {
+            _preordini = snap.docs.map(function(doc) {
+                var d = doc.data(); d.firestoreId = doc.id; return d;
+            });
+            var nuovi = _preordini.filter(function(p){ return p.status === 'nuovo'; }).length;
+            var nb = document.getElementById('nb-preordini');
+            if (nb) nb.textContent = nuovi;
+            var bNuovi = document.getElementById('po-badge-nuovo');
+            if (bNuovi) bNuovi.textContent = nuovi;
+            var bCont = document.getElementById('po-badge-contattato');
+            if (bCont) bCont.textContent = _preordini.filter(function(p){ return p.status === 'contattato'; }).length;
+            if (_currentView === 'preordini') renderPreordini();
+        },
+        function(err) { console.error('Preordini error:', err); }
+    );
+}
+
+function switchPoTab(tab) {
+    _poTab = tab;
+    ['nuovo','contattato','completato','annullato'].forEach(function(t) {
+        var btn = document.getElementById('po-tab-' + t);
+        if (btn) btn.classList.toggle('active', t === tab);
+    });
+    renderPreordini();
+}
+
+function renderPreordini() {
+    var container = document.getElementById('po-container');
+    if (!container) return;
+    var list = _preordini.filter(function(p){ return (p.status || 'nuovo') === _poTab; });
+
+    if (list.length === 0) {
+        var labels = { nuovo:'nuovi preordini', contattato:'preordini in lavorazione', completato:'preordini completati', annullato:'preordini annullati' };
+        container.innerHTML = '<div class="empty-state"><span class="empty-state-kanji">📦</span>'
+            + '<div class="empty-state-title">Nessun ' + (labels[_poTab] || 'preordine') + '</div></div>';
+        return;
+    }
+
+    var statusColors = {
+        nuovo:      { bg:'rgba(59,130,246,.12)',  border:'rgba(59,130,246,.3)',  text:'#60a5fa',  label:'Nuovo' },
+        contattato: { bg:'rgba(245,158,11,.12)',  border:'rgba(245,158,11,.3)',  text:'#fbbf24',  label:'Contattato' },
+        completato: { bg:'rgba(16,185,129,.12)',  border:'rgba(16,185,129,.3)',  text:'#34d399',  label:'Completato' },
+        annullato:  { bg:'rgba(220,38,38,.10)',   border:'rgba(220,38,38,.25)',  text:'#f87171',  label:'Annullato' }
+    };
+
+    container.innerHTML = list.map(function(p) {
+        var data = '';
+        if (p.createdAt) {
+            try {
+                var d = p.createdAt.toDate ? p.createdAt.toDate() : new Date(p.createdAt.seconds * 1000);
+                data = d.toLocaleDateString('it-IT') + ' ' + d.toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'});
+            } catch(e) {}
+        }
+        var sc = statusColors[p.status] || statusColors.nuovo;
+        var otherStatuses = ['nuovo','contattato','completato','annullato'].filter(function(s){ return s !== (p.status||'nuovo'); });
+        var moveButtons = otherStatuses.map(function(s) {
+            var sl = statusColors[s] || statusColors.nuovo;
+            return '<button class="btn btn-ghost btn-sm" style="font-size:10px;color:' + sl.text + '" onclick="setPoStatus(\'' + p.firestoreId + '\',\'' + s + '\')">' + sl.label + '</button>';
+        }).join('');
+        return '<div class="section-card" style="margin-bottom:14px">'
+            + '<div class="section-card-head" style="gap:12px;flex-wrap:wrap">'
+            + '<div style="flex:1;min-width:0">'
+            + '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px">'
+            + '<span style="font-size:13px;font-weight:700">' + esc(p.customerName || '—') + '</span>'
+            + '<span style="font-size:11px;padding:2px 8px;border-radius:4px;background:' + sc.bg + ';border:1px solid ' + sc.border + ';color:' + sc.text + '">' + sc.label + '</span>'
+            + (data ? '<span style="font-size:11px;color:var(--muted)">' + data + '</span>' : '')
+            + '</div>'
+            + '<div style="font-size:12px;color:var(--muted)">'
+            + '<strong style="color:var(--text-primary)">' + esc(p.productTitle || '') + (p.productVolume ? ' Vol.' + esc(p.productVolume) : '') + '</strong>'
+            + (p.productBadge ? ' <span style="font-size:10px;opacity:.7">[' + esc(p.productBadge) + ']</span>' : '')
+            + '</div>'
+            + '<div style="font-size:12px;margin-top:4px">📞 ' + esc(p.customerContact || '—') + '</div>'
+            + (p.customerNotes ? '<div style="font-size:11px;color:var(--muted);margin-top:4px;font-style:italic">Note: ' + esc(p.customerNotes) + '</div>' : '')
+            + '</div>'
+            + '<div style="display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0;align-items:flex-start">'
+            + moveButtons
+            + '<button class="btn btn-danger btn-sm" onclick="eliminaPreordine(\'' + p.firestoreId + '\',\'' + esc(p.customerName || '') + '\')">Elimina</button>'
+            + '</div></div>'
+            + '</div>';
+    }).join('');
+}
+
+function setPoStatus(id, status) {
+    _db.collection('preordini').doc(id).update({ status: status })
+        .then(function(){ showToast('Stato aggiornato: ' + status, 'success'); })
+        .catch(function(e){ showToast('Errore: ' + e.message, 'error'); });
+}
+
+function eliminaPreordine(id, nome) {
+    openConfirm(
+        'Elimina Preordine',
+        'Vuoi eliminare definitivamente il preordine di',
+        nome || 'questo cliente',
+        function() {
+            _db.collection('preordini').doc(id).delete()
+                .then(function(){ showToast('Preordine eliminato', 'success'); })
                 .catch(function(e){ showToast('Errore: ' + e.message, 'error'); });
         }
     );

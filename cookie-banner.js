@@ -165,3 +165,16 @@
         setTimeout(function () { banner.remove(); }, 320);
     };
 })();
+
+/* ── Reset / gestisci cookie (chiamato dal footer) ─────────── */
+window.mbResetCookies = function () {
+    var STORAGE_KEY = 'manbaga_cookie_consent';
+    localStorage.removeItem(STORAGE_KEY);
+    /* Ricrea il banner senza ricaricare la pagina */
+    var existing = document.getElementById('mb-cookie-banner');
+    if (existing) existing.remove();
+    /* Richiama lo script inline per ricreare il banner */
+    var s = document.createElement('script');
+    s.src = 'cookie-banner.js?' + Date.now();
+    document.body.appendChild(s);
+};

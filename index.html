@@ -209,6 +209,8 @@
         <div class="section-label">カタログ &mdash; Cosa trovi da noi</div>
         <h2 class="section-title reveal">IL NOSTRO<br>CATALOGO</h2>
 
+        <p class="catalog-intro reveal">Sfoglia le categorie qui sotto o accedi direttamente al catalogo completo con ricerca e filtri.</p>
+
         <div class="catalog-grid">
 
             <div class="cat-card reveal reveal-d1">
@@ -262,6 +264,14 @@
                 </div>
             </div>
 
+        </div>
+
+        <div class="catalog-cta-row reveal">
+            <a href="catalogo.html" class="btn btn-primary catalog-cta-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                Sfoglia tutto il catalogo
+            </a>
+            <span class="catalog-cta-hint">Filtra per categoria, cerca per titolo, scopri i preordini</span>
         </div>
     </div>
 </section>
@@ -378,24 +388,25 @@
             </div>
         </div>
         <div class="modal-body" id="review-modal-body">
-            <div class="review-form-inner">
+
+            <!-- FORM VIEW -->
+            <div id="rv-form-view" class="review-form-inner">
 
                 <div class="form-row">
                     <label class="form-label" for="rv-nome">Il tuo nome <span style="color:#dc2626">*</span></label>
                     <input type="text" id="rv-nome" class="form-input contact-input" placeholder="Es. Marco R." maxlength="60">
                 </div>
 
-                <!-- Selettore stelle (fiori di loto interattivi) -->
                 <div class="form-row">
                     <label class="form-label">Valutazione <span style="color:#dc2626">*</span></label>
                     <div class="rv-stars" id="rv-stars">
-                        <button type="button" class="rv-star-btn" data-v="1" onclick="selectStar(1)" onmouseenter="hoverStar(1)" onmouseleave="hoverStar(0)">★</button>
-                        <button type="button" class="rv-star-btn" data-v="2" onclick="selectStar(2)" onmouseenter="hoverStar(2)" onmouseleave="hoverStar(0)">★</button>
-                        <button type="button" class="rv-star-btn" data-v="3" onclick="selectStar(3)" onmouseenter="hoverStar(3)" onmouseleave="hoverStar(0)">★</button>
-                        <button type="button" class="rv-star-btn" data-v="4" onclick="selectStar(4)" onmouseenter="hoverStar(4)" onmouseleave="hoverStar(0)">★</button>
-                        <button type="button" class="rv-star-btn" data-v="5" onclick="selectStar(5)" onmouseenter="hoverStar(5)" onmouseleave="hoverStar(0)">★</button>
+                        <button type="button" class="rv-star-btn" data-v="1" onclick="selectStar(1)" onmouseenter="hoverStar(1)" onmouseleave="hoverStar(0)"></button>
+                        <button type="button" class="rv-star-btn" data-v="2" onclick="selectStar(2)" onmouseenter="hoverStar(2)" onmouseleave="hoverStar(0)"></button>
+                        <button type="button" class="rv-star-btn" data-v="3" onclick="selectStar(3)" onmouseenter="hoverStar(3)" onmouseleave="hoverStar(0)"></button>
+                        <button type="button" class="rv-star-btn" data-v="4" onclick="selectStar(4)" onmouseenter="hoverStar(4)" onmouseleave="hoverStar(0)"></button>
+                        <button type="button" class="rv-star-btn" data-v="5" onclick="selectStar(5)" onmouseenter="hoverStar(5)" onmouseleave="hoverStar(0)"></button>
                     </div>
-                    <div class="rv-star-label" id="rv-star-label">Tocca una stella per votare</div>
+                    <div class="rv-star-label" id="rv-star-label">Tocca un fiore di loto per votare</div>
                 </div>
 
                 <div class="form-row">
@@ -408,15 +419,26 @@
 
                 <button class="btn btn-primary contact-submit" onclick="submitRecensione()" id="rv-submit-btn"
                         style="width:100%;clip-path:none;border-radius:0;justify-content:center;margin-top:8px">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-                        <polyline points="20 6 9 17 4 12"/>
-                    </svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
                     Invia Recensione
                 </button>
                 <p style="font-size:11px;color:rgba(255,255,255,.3);text-align:center;margin-top:10px;line-height:1.5">
                     La tua recensione sarà visibile dopo approvazione del negozio.
                 </p>
             </div>
+
+            <!-- SUCCESS VIEW (nascosta finché non si invia) -->
+            <div id="rv-success-view" style="display:none;text-align:center;padding:48px 20px">
+                <div style="font-size:52px;margin-bottom:16px">🌸</div>
+                <div id="rv-success-name" style="font-size:20px;font-weight:800;margin-bottom:10px"></div>
+                <div style="font-size:14px;color:rgba(255,255,255,.5);line-height:1.7">
+                    La tua recensione è stata inviata con successo.<br>
+                    Apparirà sul sito dopo approvazione del negozio.
+                </div>
+                <button class="btn btn-primary" onclick="closeReviewModal()"
+                        style="margin-top:28px;clip-path:none;border-radius:0">Chiudi</button>
+            </div>
+
         </div>
     </div>
 </div>
@@ -516,18 +538,6 @@
      FOOTER
      ============================================================ -->
 <footer id="footer">
-    <div class="footer-jp-bg" aria-hidden="true">漫</div>
-
-    <div class="footer-top-bar">
-        <div class="footer-top-inner">
-            <span class="footer-top-tagline">
-                <span class="footer-jp-deco" aria-hidden="true">漫画</span>
-                La tua fumetteria a Canosa di Puglia dal primo giorno
-                <span class="footer-jp-deco" aria-hidden="true">店</span>
-            </span>
-        </div>
-    </div>
-
     <div class="footer-inner">
         <div class="footer-grid">
 
@@ -543,7 +553,13 @@
                     <span class="footer-badge">Figures</span>
                     <span class="footer-badge">Gadget</span>
                 </div>
-                <div class="footer-seal" aria-hidden="true"><span>漫</span></div>
+                <nav class="footer-nav-links" aria-label="Link rapidi">
+                    <a href="#catalogo">Catalogo</a>
+                    <a href="#nuovi-arrivi">Novità</a>
+                    <a href="#eventi">Eventi</a>
+                    <a href="#recensioni">Recensioni</a>
+                    <a href="tavoli.html">Prenota un tavolo</a>
+                </nav>
             </div>
 
             <div class="footer-col">
@@ -632,12 +648,10 @@
 
         <div class="footer-bottom">
             <span>&copy; 2026 MANBAGA Comics &amp; Games &mdash; Canosa di Puglia</span>
-            <span class="footer-bottom-jp" aria-hidden="true">漫画店</span>
-            <span class="footer-bottom-right">
-                <a href="privacy.html" style="color:rgba(245,240,232,0.38);text-decoration:none;font-size:11px;font-weight:600;letter-spacing:.1em;transition:color .2s" onmouseover="this.style.color='#F472B6'" onmouseout="this.style.color='rgba(245,240,232,0.38)'">Privacy &amp; Cookie Policy</a>
-                <span style="color:rgba(255,255,255,0.15);margin:0 8px">&middot;</span>
-                Realizzato con passione per i fan
-                <span class="footer-bottom-heart" aria-hidden="true">&#10084;</span>
+            <span class="footer-bottom-links">
+                <a href="privacy.html" class="footer-bottom-link">Privacy &amp; Cookie Policy</a>
+                <span class="footer-bottom-sep">&middot;</span>
+                <button class="footer-bottom-link footer-cookie-btn" onclick="mbResetCookies()" type="button">Gestisci cookie</button>
             </span>
         </div>
     </div>

@@ -2423,27 +2423,8 @@ textarea.form-input {
     .contact-grid {
         gap: 40px;
     }
-}
 
-@media (max-width: 768px) {
-    .catalog-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .cat-card {
-        min-height: 320px;
-        padding: 36px 28px 32px;
-    }
-
-    .cat-bg-kanji {
-        font-size: 160px;
-    }
-
-    .carousel-btn {
-        width: 40px;
-        font-size: 15px;
-    }
-
+    /* Navbar: hamburger sotto 1024px */
     .nav-links {
         display: none;
         flex-direction: column;
@@ -2473,9 +2454,7 @@ textarea.form-input {
         to   { opacity: 1; transform: none; }
     }
 
-    .nav-links li {
-        width: 100%;
-    }
+    .nav-links li { width: 100%; }
 
     .nav-links a {
         display: block;
@@ -2486,13 +2465,9 @@ textarea.form-input {
         color: rgba(255,255,255,0.65);
     }
 
-    .nav-links li:last-child a {
-        border-bottom: none;
-    }
-
+    .nav-links li:last-child a { border-bottom: none; }
     .nav-links a::after { display: none; }
 
-    /* Fix CTA button in mobile menu */
     .nav-links .nav-cta {
         display: block;
         margin-top: 14px;
@@ -2510,8 +2485,26 @@ textarea.form-input {
         color: var(--black) !important;
     }
 
-    .nav-burger {
-        display: flex;
+    .nav-burger { display: flex; }
+}
+
+@media (max-width: 768px) {
+    .catalog-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cat-card {
+        min-height: 320px;
+        padding: 36px 28px 32px;
+    }
+
+    .cat-bg-kanji {
+        font-size: 160px;
+    }
+
+    .carousel-btn {
+        width: 40px;
+        font-size: 15px;
     }
 
     .admin-grid {
@@ -4139,11 +4132,16 @@ textarea.form-input {
     background: none;
     border: none;
     cursor: pointer;
-    padding: 2px;
-    font-size: 32px;
+    padding: 4px;
+    font-size: 36px;
     line-height: 1;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: rgba(220,38,38,0.25);
-    transition: color .12s, transform .12s;
+    transition: color .15s, transform .15s, opacity .15s;
 }
 .rv-star-btn:hover { transform: scale(1.2); }
 
@@ -4211,6 +4209,10 @@ textarea.form-input {
 .lotus-star {
     width: 22px;
     height: 22px;
+    font-size: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     flex-shrink: 0;
     filter: drop-shadow(0 0 4px rgba(244,114,182,0.45));
     transition: transform .2s;
@@ -4222,6 +4224,7 @@ textarea.form-input {
 .lotus-star--lg {
     width: 32px;
     height: 32px;
+    font-size: 32px;
     filter: drop-shadow(0 0 8px rgba(244,114,182,0.6));
 }
 
@@ -4595,4 +4598,92 @@ textarea.form-input {
         flex-wrap: wrap;
         font-size: 12px;
     }
+}
+
+/* ============================================================
+   CATALOG SECTION — intro + CTA row
+   ============================================================ */
+.catalog-intro {
+    font-size: 13px;
+    color: rgba(255,255,255,0.4);
+    text-align: center;
+    margin: -8px 0 36px;
+    letter-spacing: 0.04em;
+    line-height: 1.6;
+}
+
+.catalog-cta-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-top: 52px;
+}
+
+.catalog-cta-btn {
+    clip-path: none !important;
+    border-radius: 0 !important;
+    padding: 16px 44px !important;
+    font-size: 13px !important;
+    letter-spacing: 0.18em !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.catalog-cta-hint {
+    font-size: 11px;
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 0.06em;
+}
+
+/* ============================================================
+   FOOTER — nuove classi post-pulizia
+   ============================================================ */
+.footer-nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    margin-top: 20px;
+}
+.footer-nav-links a {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+.footer-nav-links a:hover { color: #F472B6; }
+
+.footer-bottom-links {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.footer-bottom-link {
+    color: rgba(245,240,232,0.35);
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    transition: color 0.2s;
+}
+.footer-bottom-link:hover { color: #F472B6; }
+.footer-cookie-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 0;
+}
+.footer-bottom-sep {
+    color: rgba(255,255,255,0.12);
+    font-size: 12px;
+}
+
+@media (max-width: 480px) {
+    .catalog-cta-btn { padding: 14px 28px !important; }
+    .footer-bottom-links { flex-direction: column; gap: 4px; }
 }
