@@ -351,21 +351,6 @@
     <!-- MAIN CONTENT -->
     <main class="cp-main" id="cp-main">
 
-        <!-- Search bar -->
-        <div class="cp-search-bar">
-            <div class="cp-search-inner">
-                <svg class="cp-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                <input type="search" id="cp-search-input" class="cp-search-input"
-                       placeholder="Cerca per titolo, volume, serie…"
-                       oninput="catPage.setSearch(this.value)"
-                       autocomplete="off" spellcheck="false">
-                <button id="cp-search-clear" class="cp-search-clear hidden" onclick="catPage.clearSearch()" aria-label="Cancella ricerca">&#10005;</button>
-            </div>
-            <div id="cp-search-scope" class="cp-search-scope hidden">
-                Ricerca in tutto il catalogo
-            </div>
-        </div>
-
         <!-- Content header -->
         <div class="cp-content-hd">
             <div>
@@ -375,7 +360,15 @@
                     <span class="cp-sub-active-label" id="cp-sub-label"></span>
                 </div>
             </div>
-            <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+            <div class="cp-hd-right">
+                <div class="cp-search-inline">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="search" id="cp-search-input" class="cp-search-input-inline"
+                           placeholder="Cerca articolo…"
+                           oninput="catPage.setSearch(this.value)"
+                           autocomplete="off" spellcheck="false">
+                    <button id="cp-search-clear" class="cp-search-clear hidden" onclick="catPage.clearSearch()" aria-label="Cancella">&#10005;</button>
+                </div>
                 <span class="cp-result-count" id="cp-result-count">0 prodotti</span>
                 <select class="cp-sort" id="cp-sort" onchange="catPage.render()">
                     <option value="recent">Pi&ugrave; recenti</option>
@@ -383,6 +376,9 @@
                     <option value="stato">Per stato</option>
                 </select>
             </div>
+        </div>
+        <div id="cp-search-scope" class="cp-search-scope hidden">
+            Ricerca in tutto il catalogo
         </div>
 
         <!-- Pills bar (subcategories) -->
