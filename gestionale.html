@@ -1973,12 +1973,19 @@ function saveProduct() {
     }
 }
 
+function _normalizePrice(raw) {
+    var p = raw.trim();
+    if (!p) return '';
+    if (p.includes('€')) return p;
+    return p + '€';
+}
+
 function _commitProduct(imageUrl, btn) {
     var data = {
         title:       document.getElementById('product-title').value.trim(),
         volume:      document.getElementById('product-volume').value.trim(),
         desc:        document.getElementById('product-desc').value.trim(),
-        price:       document.getElementById('product-price').value.trim(),
+        price:       _normalizePrice(document.getElementById('product-price').value),
         imageUrl:    imageUrl,
         badge:       document.getElementById('product-badge').value,
         cat:         document.getElementById('product-cat').value,

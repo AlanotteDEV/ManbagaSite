@@ -4687,3 +4687,58 @@ textarea.form-input {
     .catalog-cta-btn { padding: 14px 28px !important; }
     .footer-bottom-links { flex-direction: column; gap: 4px; }
 }
+
+/* ============================================================
+   CATALOG PAGE — search bar
+   ============================================================ */
+.cp-search-bar { margin-bottom: 20px; }
+
+.cp-search-inner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 4px;
+    padding: 0 14px;
+    transition: border-color 0.2s, background 0.2s;
+}
+.cp-search-inner:focus-within {
+    border-color: rgba(220,38,38,0.6);
+    background: rgba(255,255,255,0.06);
+}
+.cp-search-icon { color: rgba(255,255,255,0.3); flex-shrink: 0; }
+.cp-search-input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: rgba(245,240,232,0.9);
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    padding: 13px 0;
+}
+.cp-search-input::placeholder { color: rgba(255,255,255,0.25); }
+.cp-search-input::-webkit-search-cancel-button { display: none; }
+.cp-search-clear {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.3);
+    cursor: pointer;
+    font-size: 13px;
+    padding: 4px;
+    line-height: 1;
+    transition: color 0.2s;
+    flex-shrink: 0;
+}
+.cp-search-clear:hover { color: rgba(255,255,255,0.7); }
+.cp-search-scope {
+    margin-top: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(220,38,38,0.7);
+}
