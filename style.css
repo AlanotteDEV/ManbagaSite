@@ -2888,7 +2888,14 @@ textarea.form-input {
     flex-shrink: 0;
     position: sticky;
     top: calc(var(--nav-h) + 24px);
+    max-height: calc(100vh - var(--nav-h) - 48px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(220,38,38,0.3) transparent;
 }
+.cp-sidebar::-webkit-scrollbar { width: 4px; }
+.cp-sidebar::-webkit-scrollbar-track { background: transparent; }
+.cp-sidebar::-webkit-scrollbar-thumb { background: rgba(220,38,38,0.3); border-radius: 2px; }
 
 .cp-sidebar-hd {
     display: flex;
@@ -4756,4 +4763,83 @@ textarea.form-input {
     .cp-hd-right { width: 100%; }
     .cp-search-input-inline { width: 120px; }
     .cp-search-input-inline:focus { width: 160px; }
+}
+
+/* ============================================================
+   EVENTI — bottone link iscrizione
+   ============================================================ */
+.event-link-btn {
+    display: inline-block;
+    margin-top: 14px;
+    padding: 8px 20px;
+    background: var(--red, #DC2626);
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: background 0.2s, transform 0.15s;
+}
+.event-link-btn:hover {
+    background: #b91c1c;
+    transform: translateY(-1px);
+}
+
+/* Nasconde kanji categoria nel titolo catalogo */
+.cp-content-jp { display: none; }
+
+/* ============================================================
+   GESTIONALE — badge checkbox pills
+   ============================================================ */
+.badge-check-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+}
+.badge-check {
+    cursor: pointer;
+    user-select: none;
+}
+.badge-check input { display: none; }
+.badge-check span {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.4);
+    transition: all 0.15s;
+}
+.badge-check:hover span {
+    border-color: rgba(255,255,255,0.35);
+    color: rgba(255,255,255,0.7);
+}
+.badge-check[data-badge="NOVITÀ"] input:checked + span   { background: #16a34a; border-color: #16a34a; color: #fff; }
+.badge-check[data-badge="HOT"] input:checked + span       { background: #dc2626; border-color: #dc2626; color: #fff; }
+.badge-check[data-badge="PREORDINA"] input:checked + span { background: #7c3aed; border-color: #7c3aed; color: #fff; }
+.badge-check[data-badge="IN ARRIVO"] input:checked + span { background: #d97706; border-color: #d97706; color: #fff; }
+.badge-check[data-badge="OUT OF STOCK"] input:checked + span { background: #374151; border-color: #374151; color: #9ca3af; }
+.badge-check[data-badge="ESAURITO"] input:checked + span  { background: #1f2937; border-color: #374151; color: #6b7280; }
+
+.form-hint {
+    font-size: 10px;
+    font-weight: 400;
+    color: var(--muted);
+    margin-left: 6px;
+    font-style: italic;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.badges-cell {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
 }

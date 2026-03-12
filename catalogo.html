@@ -234,7 +234,7 @@
      ============================================================ -->
 <header class="cp-hero">
     <div class="cp-hero-rays" aria-hidden="true"></div>
-    <div class="cp-hero-bg-kanji" aria-hidden="true">カタログ</div>
+
     <div class="cp-hero-inner">
         <nav class="cp-breadcrumb" aria-label="Breadcrumb">
             <a href="index.html" class="cp-bc-link">Home</a>
@@ -254,15 +254,12 @@
      ============================================================ -->
 <div class="cp-mob-tabs" id="cp-mob-tabs" role="tablist" aria-label="Categorie">
     <button class="cp-mob-tab" role="tab" data-cat="manga" onclick="catPage.setCat('manga')">
-        <span class="cp-mob-tab-kanji">漫</span>
         <span>Manga</span>
     </button>
     <button class="cp-mob-tab" role="tab" data-cat="carte" onclick="catPage.setCat('carte')">
-        <span class="cp-mob-tab-kanji">遊</span>
         <span>Carte</span>
     </button>
     <button class="cp-mob-tab" role="tab" data-cat="gadget" onclick="catPage.setCat('gadget')">
-        <span class="cp-mob-tab-kanji">具</span>
         <span>Gadget</span>
     </button>
 </div>
@@ -285,7 +282,6 @@
         <div class="cp-nav-block" id="cpnb-manga">
             <button class="cp-nav-hd" onclick="catPage.setCat('manga')" aria-expanded="false">
                 <span class="cp-nav-num">01</span>
-                <span class="cp-nav-kanji">漫</span>
                 <span class="cp-nav-info">
                     <span class="cp-nav-name">Manga &amp; Comics</span>
                     <span class="cp-nav-jp">マンガ・コミック</span>
@@ -296,7 +292,17 @@
                 <li><button class="cp-sub-btn" data-sub="all" onclick="catPage.setSub('all')">Tutti <span class="cp-cnt" id="cnt-manga-all">0</span></button></li>
                 <li><button class="cp-sub-btn" data-sub="shonen" onclick="catPage.setSub('shonen')">Shonen <span class="cp-cnt" id="cnt-manga-shonen">0</span></button></li>
                 <li><button class="cp-sub-btn" data-sub="seinen" onclick="catPage.setSub('seinen')">Seinen <span class="cp-cnt" id="cnt-manga-seinen">0</span></button></li>
-                <li><button class="cp-sub-btn" data-sub="shojo" onclick="catPage.setSub('shojo')">Shojo / Josei <span class="cp-cnt" id="cnt-manga-shojo">0</span></button></li>
+                <li><button class="cp-sub-btn" data-sub="shojo" onclick="catPage.setSub('shojo')">Shojo <span class="cp-cnt" id="cnt-manga-shojo">0</span></button></li>
+                <li><button class="cp-sub-btn" data-sub="josei" onclick="catPage.setSub('josei')">Josei <span class="cp-cnt" id="cnt-manga-josei">0</span></button></li>
+                <li><button class="cp-sub-btn" data-sub="kodomo" onclick="catPage.setSub('kodomo')">Kodomomuke <span class="cp-cnt" id="cnt-manga-kodomo">0</span></button></li>
+                <li><button class="cp-sub-btn" data-sub="isekai" onclick="catPage.setSub('isekai')">Isekai <span class="cp-cnt" id="cnt-manga-isekai">0</span></button></li>
+                <li><button class="cp-sub-btn" data-sub="sport" onclick="catPage.setSub('sport')">Sport <span class="cp-cnt" id="cnt-manga-sport">0</span></button></li>
+                <li><button class="cp-sub-btn" data-sub="horror" onclick="catPage.setSub('horror')">Horror &amp; Thriller <span class="cp-cnt" id="cnt-manga-horror">0</span></button></li>
+                <li><button class="cp-sub-btn" data-sub="fantasy" onclick="catPage.setSub('fantasy')">Fantasy &amp; Avventura <span class="cp-cnt" id="cnt-manga-fantasy">0</span></button></li>
+                <li><button class="cp-sub-btn" data-sub="mecha" onclick="catPage.setSub('mecha')">Mecha &amp; Sci-Fi <span class="cp-cnt" id="cnt-manga-mecha">0</span></button></li>
+                <li><button class="cp-sub-btn" data-sub="slice" onclick="catPage.setSub('slice')">Slice of Life <span class="cp-cnt" id="cnt-manga-slice">0</span></button></li>
+                <li><button class="cp-sub-btn" data-sub="yaoi" onclick="catPage.setSub('yaoi')">Boys Love (BL) <span class="cp-cnt" id="cnt-manga-yaoi">0</span></button></li>
+                <li><button class="cp-sub-btn" data-sub="yuri" onclick="catPage.setSub('yuri')">Girls Love (GL) <span class="cp-cnt" id="cnt-manga-yuri">0</span></button></li>
                 <li><button class="cp-sub-btn" data-sub="comics" onclick="catPage.setSub('comics')">Comics &amp; Graphic Novel <span class="cp-cnt" id="cnt-manga-comics">0</span></button></li>
             </ul>
         </div>
@@ -305,7 +311,6 @@
         <div class="cp-nav-block" id="cpnb-carte">
             <button class="cp-nav-hd" onclick="catPage.setCat('carte')" aria-expanded="false">
                 <span class="cp-nav-num">02</span>
-                <span class="cp-nav-kanji">遊</span>
                 <span class="cp-nav-info">
                     <span class="cp-nav-name">Carte &amp; Giochi</span>
                     <span class="cp-nav-jp">カード・ゲーム</span>
@@ -319,6 +324,7 @@
                 <li><button class="cp-sub-btn" data-sub="magic" onclick="catPage.setSub('magic')">Magic: The Gathering <span class="cp-cnt" id="cnt-carte-magic">0</span></button></li>
                 <li><button class="cp-sub-btn" data-sub="onepiece" onclick="catPage.setSub('onepiece')">One Piece TCG <span class="cp-cnt" id="cnt-carte-onepiece">0</span></button></li>
                 <li><button class="cp-sub-btn" data-sub="dragonball" onclick="catPage.setSub('dragonball')">Dragon Ball Super <span class="cp-cnt" id="cnt-carte-dragonball">0</span></button></li>
+                <li><button class="cp-sub-btn" data-sub="naruto" onclick="catPage.setSub('naruto')">Naruto Card Game <span class="cp-cnt" id="cnt-carte-naruto">0</span></button></li>
                 <li><button class="cp-sub-btn" data-sub="altri" onclick="catPage.setSub('altri')">Board Games &amp; Altri <span class="cp-cnt" id="cnt-carte-altri">0</span></button></li>
             </ul>
         </div>
@@ -327,7 +333,6 @@
         <div class="cp-nav-block" id="cpnb-gadget">
             <button class="cp-nav-hd" onclick="catPage.setCat('gadget')" aria-expanded="false">
                 <span class="cp-nav-num">03</span>
-                <span class="cp-nav-kanji">具</span>
                 <span class="cp-nav-info">
                     <span class="cp-nav-name">Gadget &amp; Figures</span>
                     <span class="cp-nav-jp">フィギュア・グッズ</span>
@@ -342,6 +347,8 @@
                 <li><button class="cp-sub-btn" data-sub="poster" onclick="catPage.setSub('poster')">Poster &amp; Art <span class="cp-cnt" id="cnt-gadget-poster">0</span></button></li>
                 <li><button class="cp-sub-btn" data-sub="abbigliamento" onclick="catPage.setSub('abbigliamento')">Abbigliamento <span class="cp-cnt" id="cnt-gadget-abbigliamento">0</span></button></li>
                 <li><button class="cp-sub-btn" data-sub="accessori" onclick="catPage.setSub('accessori')">Accessori <span class="cp-cnt" id="cnt-gadget-accessori">0</span></button></li>
+                <li><button class="cp-sub-btn" data-sub="lego" onclick="catPage.setSub('lego')">Lego <span class="cp-cnt" id="cnt-gadget-lego">0</span></button></li>
+                <li><button class="cp-sub-btn" data-sub="peluche" onclick="catPage.setSub('peluche')">Peluche &amp; Plushie <span class="cp-cnt" id="cnt-gadget-peluche">0</span></button></li>
             </ul>
         </div>
 
@@ -544,7 +551,17 @@ var catPage = (function () {
             subs: [
                 { key: 'shonen',  label: 'Shonen' },
                 { key: 'seinen',  label: 'Seinen' },
-                { key: 'shojo',   label: 'Shojo / Josei' },
+                { key: 'shojo',   label: 'Shojo' },
+                { key: 'josei',   label: 'Josei' },
+                { key: 'kodomo',  label: 'Kodomomuke' },
+                { key: 'isekai',  label: 'Isekai' },
+                { key: 'sport',   label: 'Sport' },
+                { key: 'horror',  label: 'Horror & Thriller' },
+                { key: 'fantasy', label: 'Fantasy & Avventura' },
+                { key: 'mecha',   label: 'Mecha & Sci-Fi' },
+                { key: 'slice',   label: 'Slice of Life' },
+                { key: 'yaoi',    label: 'Boys Love (BL)' },
+                { key: 'yuri',    label: 'Girls Love (GL)' },
                 { key: 'comics',  label: 'Comics & Graphic Novel' }
             ]
         },
@@ -558,6 +575,7 @@ var catPage = (function () {
                 { key: 'magic',      label: 'Magic: The Gathering' },
                 { key: 'onepiece',   label: 'One Piece TCG' },
                 { key: 'dragonball', label: 'Dragon Ball Super' },
+                { key: 'naruto',     label: 'Naruto Card Game' },
                 { key: 'altri',      label: 'Board Games & Altri' }
             ]
         },
@@ -571,7 +589,9 @@ var catPage = (function () {
                 { key: 'statuette',     label: 'Statuette' },
                 { key: 'poster',        label: 'Poster & Art' },
                 { key: 'abbigliamento', label: 'Abbigliamento' },
-                { key: 'accessori',     label: 'Accessori' }
+                { key: 'accessori',     label: 'Accessori' },
+                { key: 'lego',          label: 'Lego' },
+                { key: 'peluche',       label: 'Peluche & Plushie' }
             ]
         }
     };
@@ -776,9 +796,11 @@ var catPage = (function () {
             });
         } else {
             /* Only products with a cat field appear in catalog */
-            var catProducts = allProducts.filter(function (p) { return p.cat === _cat; });
+            var catProducts = _cat
+                ? allProducts.filter(function (p) { return p.cat === _cat; })
+                : allProducts.filter(function (p) { return !!p.cat; });
             /* Apply subcategory filter */
-            filtered = (_sub && _sub !== 'all')
+            filtered = (_cat && _sub && _sub !== 'all')
                 ? catProducts.filter(function (p) { return p.subcat === _sub; })
                 : catProducts;
         }
@@ -830,7 +852,8 @@ var catPage = (function () {
     /* ---- Public: setCat ---- */
     function setCat(cat) {
         if (!CATS[cat]) return;
-        _cat = cat;
+        /* Toggle: click again on active category to collapse */
+        _cat = (_cat === cat) ? null : cat;
         _sub = 'all';
         render();
     }

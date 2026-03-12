@@ -255,6 +255,7 @@ function renderEvents() {
             + (e.time ? '<span>⏰ ' + e.time + '</span>' : '')
             + (e.price ? '<span>' + e.price + '</span>' : '')
             + '</div>'
+            + (e.link ? '<a href="' + e.link + '" target="_blank" rel="noopener noreferrer" class="event-link-btn" onclick="event.stopPropagation()">Iscriviti &#8594;</a>' : '')
             + '</div>'
             + '</div>';
     }).join('');
@@ -266,9 +267,27 @@ function renderEvents() {
 /* Lista prodotti attiva nel carosello — condivisa con carouselStep/buildCarouselDots */
 var _carouselProducts = [];
 
+var _DAY_MS = 24 * 60 * 60 * 1000;
+
+function _getProductTimestamp(p) {
+    var ca = p.createdAt;
+    if (!ca) return (p.id > 1e12) ? p.id : null;
+    if (typeof ca.toMillis === 'function') return ca.toMillis();
+    if (ca._seconds) return ca._seconds * 1000;
+    if (ca.seconds)  return ca.seconds  * 1000;
+    return null;
+}
+
 function _getNovitaProducts() {
-    var all = getProducts();
-    var novita = all.filter(function(p) { return p.showInNovita === true; });
+    var all  = getProducts();
+    var now  = Date.now();
+    var novita = all.filter(function(p) {
+        if (!p.showInNovita) return false;
+        var ts = _getProductTimestamp(p);
+        if (ts === null) return true; /* nessun timestamp → mostra comunque */
+        var days = (typeof p.novitaDays === 'number' && p.novitaDays > 0) ? p.novitaDays : 4;
+        return (now - ts) <= days * _DAY_MS;
+    });
     /* Fallback SOLO se il campo non esiste ancora su nessun prodotto (dati legacy/demo) */
     var hasField = all.some(function(p) { return typeof p.showInNovita !== 'undefined'; });
     if (novita.length === 0 && !hasField && all.length > 0) return all;

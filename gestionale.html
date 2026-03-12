@@ -843,7 +843,6 @@ input, textarea, select { font-family: inherit; color: inherit; }
           <option value="HOT">HOT</option>
           <option value="PREORDINA">PREORDINA</option>
           <option value="IN ARRIVO">IN ARRIVO</option>
-          <option value="OUT OF STOCK">OUT OF STOCK</option>
           <option value="ESAURITO">ESAURITO</option>
         </select>
       </div>
@@ -1112,7 +1111,7 @@ input, textarea, select { font-family: inherit; color: inherit; }
           <input class="form-input" type="text" id="product-title" placeholder="es. Dragon Ball" required>
         </div>
         <div class="form-group">
-          <label class="form-label">Volume / Edizione</label>
+          <label class="form-label" id="volume-label">Volume / Edizione</label>
           <input class="form-input" type="text" id="product-volume" placeholder="es. Vol. 12 · Elite Trainer Box">
         </div>
         <div class="form-group form-full">
@@ -1128,14 +1127,13 @@ input, textarea, select { font-family: inherit; color: inherit; }
           <input class="form-input" type="number" id="product-qty" placeholder="es. 5" min="0">
         </div>
         <div class="form-group">
-          <label class="form-label">Stato / Badge <span>*</span></label>
+          <label class="form-label">Stato / Badge</label>
           <select class="form-select" id="product-badge">
             <option value="">Disponibile (nessun badge)</option>
             <option value="NOVITÀ">🟢 NOVITÀ</option>
             <option value="HOT">🔴 HOT</option>
             <option value="PREORDINA">🟣 PREORDINA</option>
             <option value="IN ARRIVO">🟡 IN ARRIVO</option>
-            <option value="OUT OF STOCK">⚫ OUT OF STOCK</option>
             <option value="ESAURITO">⚫ ESAURITO</option>
           </select>
         </div>
@@ -1149,20 +1147,25 @@ input, textarea, select { font-family: inherit; color: inherit; }
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label">Sottocategoria</label>
+          <label class="form-label" id="subcat-label">Sottocategoria</label>
           <select class="form-select" id="product-subcat">
             <option value="">— Prima scegli la categoria —</option>
           </select>
         </div>
 
         <!-- Toggles -->
-        <div class="form-group form-full" style="gap:14px">
+        <div class="form-group form-full">
           <label class="form-check">
-            <input type="checkbox" id="product-novita">
+            <input type="checkbox" id="product-novita" onchange="toggleNovitaDaysField()">
             <span class="form-check-label">
               ⭐ <strong>Mostra in Novità</strong> (Homepage) — appare nel carosello «Appena Arrivati»
             </span>
           </label>
+          <div id="novita-days-row" style="display:none;margin-top:10px;display:none;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:6px">
+            <label class="form-label" style="margin:0;white-space:nowrap">Giorni visibile in Novità:</label>
+            <input type="number" id="product-novita-days" class="form-input" value="4" min="1" max="365" style="width:80px;text-align:center">
+            <span style="font-size:12px;color:var(--muted)">giorni dalla creazione (default 4)</span>
+          </div>
         </div>
       </div>
 
@@ -1228,6 +1231,10 @@ input, textarea, select { font-family: inherit; color: inherit; }
         <div class="form-group">
           <label class="form-label">Tag (opzionale)</label>
           <input class="form-input" type="text" id="event-tag" placeholder="TORNEO UFFICIALE">
+        </div>
+        <div class="form-group form-full">
+          <label class="form-label">Link iscrizione / info (opzionale)</label>
+          <input class="form-input" type="url" id="event-link" placeholder="https://... (se presente, il bottone 'Iscriviti' apparirà sull'evento)">
         </div>
       </div>
 
@@ -1322,15 +1329,20 @@ var FB_CONFIG = {
 
 /* ─── SUBCATEGORIES MAP ─── */
 var SUBCATS = {
-    manga:  [['shonen','Shonen'],['seinen','Seinen'],['shojo','Shojo / Josei'],['comics','Comics & Graphic Novel']],
-    carte:  [['pokemon','Pokémon TCG'],['yugioh','Yu-Gi-Oh!'],['magic','Magic: The Gathering'],['onepiece','One Piece TCG'],['dragonball','Dragon Ball Super'],['altri','Board Games & Altri']],
-    gadget: [['figure','Action Figures'],['funko','Funko Pop'],['statuette','Statuette'],['poster','Poster & Art'],['abbigliamento','Abbigliamento'],['accessori','Accessori']]
+    manga:  [['shonen','Shonen'],['seinen','Seinen'],['shojo','Shojo'],['josei','Josei'],['kodomo','Kodomomuke (Bambini)'],['isekai','Isekai'],['sport','Sport'],['horror','Horror & Thriller'],['fantasy','Fantasy & Avventura'],['mecha','Mecha & Sci-Fi'],['slice','Slice of Life'],['yaoi','Boys Love (BL)'],['yuri','Girls Love (GL)'],['comics','Comics & Graphic Novel']],
+    carte:  [['pokemon','Pokémon TCG'],['yugioh','Yu-Gi-Oh!'],['magic','Magic: The Gathering'],['onepiece','One Piece TCG'],['dragonball','Dragon Ball Super'],['naruto','Naruto Card Game'],['altri','Board Games & Altri']],
+    gadget: [['figure','Action Figures'],['funko','Funko Pop'],['statuette','Statuette'],['poster','Poster & Art'],['abbigliamento','Abbigliamento'],['accessori','Accessori'],['lego','Lego'],['peluche','Peluche & Plushie']]
 };
 
 /* ─── BADGE → CSS CLASS ─── */
 function badgeClass(badge) {
     var map = { 'NOVITÀ':'novita','HOT':'hot','PREORDINA':'preordina','IN ARRIVO':'inarrivo','OUT OF STOCK':'oos','ESAURITO':'esaurito' };
     return map[badge] || 'none';
+}
+
+function _getBadgesArr(p) {
+    if (Array.isArray(p.badges) && p.badges.length) return p.badges;
+    return p.badge ? [p.badge] : [];
 }
 
 /* ─── STATE ─── */
@@ -1699,7 +1711,7 @@ function renderProductRow(p) {
         + '<td><img class="p-table-img" src="' + esc(p.imageUrl || '') + '" alt="" onerror="this.src=\'https://placehold.co/40x52/141414/333?text=?\'"></td>'
         + '<td><div class="p-table-title">' + esc(p.title) + '</div><div class="p-table-vol">' + esc(p.volume || '') + '</div></td>'
         + '<td style="font-size:12px;color:var(--muted)">' + (p.cat || '—') + (p.subcat ? ' · ' + p.subcat : '') + '</td>'
-        + '<td><select class="status-select" onchange="quickStatus(\'' + p.firestoreId + '\',this.value)">' + statusOptions(p.badge) + '</select></td>'
+        + '<td><div class="badges-cell">' + (_getBadgesArr(p).map(function(b){ return '<span class="badge badge--' + badgeClass(b) + '">' + b + '</span>'; }).join('') || '<span style="color:var(--muted);font-size:11px">—</span>') + '</div></td>'
         + '<td style="font-size:12px;font-weight:700;color:var(--accent)">' + esc(p.price || '—') + '</td>'
         + '<td>' + _qtyBadge(p.quantity) + '</td>'
         + '<td>' + (p.showInNovita ? '<span class="novita-chip">⭐ Sì</span>' : '<span style="color:var(--muted);font-size:12px">No</span>') + '</td>'
@@ -1708,7 +1720,7 @@ function renderProductRow(p) {
 }
 
 function statusOptions(current) {
-    var opts = [['','Disponibile'],['NOVITÀ','NOVITÀ'],['HOT','HOT'],['PREORDINA','PREORDINA'],['IN ARRIVO','IN ARRIVO'],['OUT OF STOCK','OUT OF STOCK'],['ESAURITO','ESAURITO']];
+    var opts = [['','Disponibile'],['NOVITÀ','NOVITÀ'],['HOT','HOT'],['PREORDINA','PREORDINA'],['IN ARRIVO','IN ARRIVO'],['ESAURITO','ESAURITO']];
     return opts.map(function(o) {
         return '<option value="' + o[0] + '"' + (o[0] === (current||'') ? ' selected' : '') + '>' + o[1] + '</option>';
     }).join('');
@@ -1758,10 +1770,9 @@ function renderPreorder() {
             + '<div style="flex:1;min-width:0">'
             + '<div style="font-size:14px;font-weight:700;margin-bottom:2px">' + esc(p.title) + (p.volume ? ' <span style="font-weight:400;color:var(--muted)">— ' + esc(p.volume) + '</span>' : '') + '</div>'
             + '<div style="font-size:12px;color:var(--muted);margin-bottom:8px">' + (p.cat || '—') + (p.subcat ? ' · ' + p.subcat : '') + '</div>'
-            + '<span class="badge badge--' + badgeClass(p.badge) + '">' + p.badge + '</span>'
+            + (_getBadgesArr(p).map(function(b){ return '<span class="badge badge--' + badgeClass(b) + '">' + b + '</span>'; }).join(' ') || '<span style="color:var(--muted);font-size:11px">—</span>')
             + '</div>'
             + '<div style="display:flex;gap:8px;flex-shrink:0;flex-direction:column;align-items:flex-end">'
-            + '<select class="status-select" onchange="quickStatus(\'' + p.firestoreId + '\',this.value)" style="font-size:11px">' + statusOptions(p.badge) + '</select>'
             + '<button class="btn btn-ghost btn-sm" onclick="editProduct(\'' + p.firestoreId + '\')">Modifica</button>'
             + '</div></div>';
     }).join('');
@@ -1819,10 +1830,12 @@ function openAddProductModal() {
     document.getElementById('product-desc').value    = '';
     document.getElementById('product-price').value   = '';
     document.getElementById('product-qty').value     = '';
-    document.getElementById('product-badge').value   = '';
+    document.getElementById('product-badge').value = '';
     document.getElementById('product-cat').value     = '';
     document.getElementById('product-image-url').value = '';
     document.getElementById('product-novita').checked = false;
+    document.getElementById('product-novita-days').value = '4';
+    toggleNovitaDaysField();
     updateSubcats();
     resetImagePreview();
     document.getElementById('upload-progress-bar').style.width = '0';
@@ -1843,10 +1856,12 @@ function editProduct(firestoreId) {
     document.getElementById('product-desc').value    = p.desc   || '';
     document.getElementById('product-price').value   = p.price  || '';
     document.getElementById('product-qty').value     = p.quantity != null ? p.quantity : '';
-    document.getElementById('product-badge').value   = p.badge  || '';
+    document.getElementById('product-badge').value = p.badge || '';
     document.getElementById('product-cat').value     = p.cat    || '';
     document.getElementById('product-image-url').value = p.imageUrl || '';
     document.getElementById('product-novita').checked = !!p.showInNovita;
+    document.getElementById('product-novita-days').value = p.novitaDays || 4;
+    toggleNovitaDaysField();
     updateSubcats(p.subcat);
     if (p.imageUrl) {
         showImagePreview(p.imageUrl);
@@ -1865,14 +1880,36 @@ function closeProductModal() {
     document.getElementById('file-input').value = '';
 }
 
+function toggleNovitaDaysField() {
+    var checked = document.getElementById('product-novita').checked;
+    var row = document.getElementById('novita-days-row');
+    if (row) row.style.display = checked ? 'flex' : 'none';
+}
+
 function updateSubcats(selectedSub) {
     var cat = document.getElementById('product-cat').value;
     var sel = document.getElementById('product-subcat');
+    var subcatLabel = document.getElementById('subcat-label');
+    var volumeLabel = document.getElementById('volume-label');
+    var volumeInput = document.getElementById('product-volume');
+
+    /* Label dinamiche per categoria */
+    var labelMap = { manga: 'Genere *', carte: 'Tipo', gadget: 'Tipologia' };
+    var volPlaceholderMap = {
+        manga:  'es. 12  (verrà salvato come Vol. 12)',
+        carte:  'es. Elite Trainer Box · Booster Pack',
+        gadget: 'es. Standard · Limited Edition'
+    };
+    if (subcatLabel) subcatLabel.textContent = cat ? (labelMap[cat] || 'Sottocategoria') : 'Sottocategoria';
+    if (volumeLabel) volumeLabel.textContent = cat === 'manga' ? 'Numero Volume' : 'Volume / Edizione';
+    if (volumeInput && volPlaceholderMap[cat]) volumeInput.placeholder = volPlaceholderMap[cat];
+
     if (!cat || !SUBCATS[cat]) {
         sel.innerHTML = '<option value="">— Prima scegli la categoria —</option>';
         return;
     }
-    sel.innerHTML = '<option value="">— Sottocategoria —</option>'
+    var required = cat === 'manga';
+    sel.innerHTML = '<option value="">' + (required ? '— Seleziona genere (obbligatorio) —' : '— Sottocategoria (opzionale) —') + '</option>'
         + SUBCATS[cat].map(function(s) {
             return '<option value="' + s[0] + '"' + (s[0] === selectedSub ? ' selected' : '') + '>' + s[1] + '</option>';
         }).join('');
@@ -1927,11 +1964,17 @@ function resetImagePreview() {
 
 /* ─── SAVE PRODUCT ─── */
 function saveProduct() {
-    var title = document.getElementById('product-title').value.trim();
-    var desc  = document.getElementById('product-desc').value.trim();
-    var cat   = document.getElementById('product-cat').value;
+    var title  = document.getElementById('product-title').value.trim();
+    var desc   = document.getElementById('product-desc').value.trim();
+    var cat    = document.getElementById('product-cat').value;
+    var subcat = document.getElementById('product-subcat').value;
     if (!title || !desc) {
         showToast('Titolo e descrizione sono obbligatori', 'error');
+        return;
+    }
+    if (cat === 'manga' && !subcat) {
+        showToast('Seleziona il genere manga (obbligatorio)', 'error');
+        document.getElementById('product-subcat').focus();
         return;
     }
 
@@ -1980,18 +2023,27 @@ function _normalizePrice(raw) {
     return p + '€';
 }
 
+function _formatVolume(vol, cat) {
+    if (!vol || cat !== 'manga') return vol;
+    if (/^\d+$/.test(vol.trim())) return 'Vol. ' + vol.trim();
+    return vol;
+}
+
 function _commitProduct(imageUrl, btn) {
+    var cat    = document.getElementById('product-cat').value;
+    var volRaw = document.getElementById('product-volume').value.trim();
     var data = {
         title:       document.getElementById('product-title').value.trim(),
-        volume:      document.getElementById('product-volume').value.trim(),
+        volume:      _formatVolume(volRaw, cat),
         desc:        document.getElementById('product-desc').value.trim(),
         price:       _normalizePrice(document.getElementById('product-price').value),
         imageUrl:    imageUrl,
         badge:       document.getElementById('product-badge').value,
-        cat:         document.getElementById('product-cat').value,
+        cat:         cat,
         subcat:      document.getElementById('product-subcat').value,
         quantity:    parseInt(document.getElementById('product-qty').value) || 0,
         showInNovita: document.getElementById('product-novita').checked,
+        novitaDays:  parseInt(document.getElementById('product-novita-days').value) || 4,
         updatedAt:   firebase.firestore.FieldValue.serverTimestamp()
     };
     /* Backwards-compat numeric id for public site */
@@ -2098,6 +2150,7 @@ function editEvent(firestoreId) {
     document.getElementById('event-time').value  = e.time  || '';
     document.getElementById('event-price').value = e.price || '';
     document.getElementById('event-tag').value   = e.tag   || '';
+    document.getElementById('event-link').value  = e.link  || '';
     document.getElementById('event-modal').style.display = 'flex';
 }
 
@@ -2124,6 +2177,7 @@ function saveEvent() {
         time:  document.getElementById('event-time').value.trim(),
         price: document.getElementById('event-price').value.trim(),
         tag:   document.getElementById('event-tag').value.trim(),
+        link:  document.getElementById('event-link').value.trim(),
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     };
 
