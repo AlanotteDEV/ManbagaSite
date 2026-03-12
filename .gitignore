@@ -1,0 +1,6 @@
+# File temporanei / sistema
+*.DS_Store
+Thumbs.db
+
+# Exe compilato (non va in git)
+gestionale/GESTIONALE_MANBAGA.exe

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/png" href="WhatsApp_Image_2026-03-10_at_11.15.27-removebg-preview.png">
+<link rel="icon" type="image/png" href="../WhatsApp_Image_2026-03-10_at_11.15.27-removebg-preview.png">
 <title>Gestionale · MANBAGA</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -2731,7 +2731,14 @@ function subscribeRecensioni() {
             if (nb) nb.textContent = pending;
             if (_currentView === 'recensioni') renderRecensioni();
         },
-        function(err) { console.error('Recensioni error:', err); }
+        function(err) {
+            console.error('Recensioni error:', err);
+            var container = document.getElementById('rv-container');
+            if (container) container.innerHTML = '<div class="empty-state"><span class="empty-state-kanji">⚠️</span>'
+                + '<div class="empty-state-title">Errore caricamento recensioni</div>'
+                + '<div class="empty-state-sub" style="color:#f87171">' + err.message + '</div>'
+                + '<div class="empty-state-sub" style="margin-top:8px">Controlla le Security Rules di Firestore nella console Firebase.</div></div>';
+        }
     );
 }
 
