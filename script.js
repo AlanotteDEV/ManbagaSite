@@ -263,12 +263,21 @@ function renderEvents() {
 /* ============================================================
    RENDER PRODOTTI — CAROSELLO
    ============================================================ */
+/* Lista prodotti attiva nel carosello — condivisa con carouselStep/buildCarouselDots */
+var _carouselProducts = [];
+
+function _getNovitaProducts() {
+    var all = getProducts();
+    var novita = all.filter(function(p) { return p.showInNovita === true; });
+    /* Fallback SOLO se il campo non esiste ancora su nessun prodotto (dati legacy/demo) */
+    var hasField = all.some(function(p) { return typeof p.showInNovita !== 'undefined'; });
+    if (novita.length === 0 && !hasField && all.length > 0) return all;
+    return novita;
+}
+
 function renderProducts() {
-    var allProducts = getProducts();
-    /* Carosello homepage: solo prodotti con showInNovita === true */
-    var products = allProducts.filter(function(p) { return p.showInNovita; });
-    /* Se nessuno ha showInNovita, mostra tutti (retrocompatibilità demo data) */
-    if (products.length === 0 && allProducts.length > 0) products = allProducts;
+    var products = _getNovitaProducts();
+    _carouselProducts = products; /* aggiorna lista condivisa */
     var track = document.getElementById('products-display');
     if (!track) return;
 
@@ -366,7 +375,7 @@ function initCarousel() {
 }
 
 function carouselStep(dir) {
-    var products    = getProducts();
+    var products    = _carouselProducts.length ? _carouselProducts : _getNovitaProducts();
     var visible     = getVisibleCount();
     var maxIdx      = Math.max(0, products.length - visible);
     var next        = _carouselIdx + dir;
@@ -384,7 +393,7 @@ function buildCarouselDots() {
     var dotsBar  = document.getElementById('carousel-dots');
     if (!dotsBar) return;
 
-    var products = getProducts();
+    var products = _carouselProducts.length ? _carouselProducts : _getNovitaProducts();
     var visible  = getVisibleCount();
     var total    = Math.max(1, products.length - visible + 1);
 
