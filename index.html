@@ -194,11 +194,12 @@
                 <div class="cat-content">
                     <div class="cat-jp">マンガ・コミック</div>
                     <h3 class="cat-title">Manga &amp; Comics</h3>
-                    <p class="cat-desc">Shonen, Seinen, Shojo, Josei e le migliori graphic novel italiane e americane. Sempre aggiornati sulle ultime uscite Panini, Star Comics e J-Pop.</p>
+                    <p class="cat-desc">Shonen, Seinen, Shojo, Josei, Manwha e le migliori graphic novel italiane e americane. Sempre aggiornati sulle ultime uscite Panini, Star Comics e J-Pop.</p>
                     <div class="cat-tags">
                         <span class="cat-tag">Shonen</span>
                         <span class="cat-tag">Seinen</span>
                         <span class="cat-tag">Shojo</span>
+                        <span class="cat-tag">Manwha</span>
                         <span class="cat-tag">Comics</span>
                     </div>
                     <a href="catalogo.html?cat=manga" class="cat-explore-link">Sfoglia il catalogo &#8594;</a>
@@ -206,8 +207,22 @@
             </div>
 
             <div class="cat-card reveal reveal-d2">
-                <div class="cat-bg-kanji" aria-hidden="true">遊</div>
+                <div class="cat-bg-kanji" aria-hidden="true">本</div>
                 <div class="cat-num-badge">02</div>
+                <div class="cat-content">
+                    <div class="cat-jp">本・小説</div>
+                    <h3 class="cat-title">Libri</h3>
+                    <p class="cat-desc">Romanzi, narrativa e saggistica. Una selezione curata per chi ama leggere oltre il fumetto.</p>
+                    <div class="cat-tags">
+                        <span class="cat-tag">Romanzi</span>
+                    </div>
+                    <a href="catalogo.html?cat=libri" class="cat-explore-link">Sfoglia il catalogo &#8594;</a>
+                </div>
+            </div>
+
+            <div class="cat-card reveal reveal-d3">
+                <div class="cat-bg-kanji" aria-hidden="true">遊</div>
+                <div class="cat-num-badge">03</div>
                 <div class="cat-content">
                     <div class="cat-jp">カード・ゲーム</div>
                     <h3 class="cat-title">Carte &amp; Giochi</h3>
@@ -222,9 +237,9 @@
                 </div>
             </div>
 
-            <div class="cat-card reveal reveal-d3">
+            <div class="cat-card reveal reveal-d4">
                 <div class="cat-bg-kanji" aria-hidden="true">具</div>
-                <div class="cat-num-badge">03</div>
+                <div class="cat-num-badge">04</div>
                 <div class="cat-content">
                     <div class="cat-jp">フィギュア・グッズ</div>
                     <h3 class="cat-title">Gadget &amp; Figures</h3>
@@ -293,6 +308,20 @@
     <div class="section-inner">
         <div class="section-label">Non mancare</div>
         <h2 class="section-title reveal">PROSSIMI<br>EVENTI</h2>
+
+        <!-- Tab selector -->
+        <div class="ev-tabs" id="ev-tabs" role="tablist" aria-label="Tipo evento">
+            <button class="ev-tab is-active" data-type="competizione" role="tab" aria-selected="true"
+                    onclick="switchEvTab('competizione')">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                Competizioni
+            </button>
+            <button class="ev-tab" data-type="evento" role="tab" aria-selected="false"
+                    onclick="switchEvTab('evento')">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                Eventi
+            </button>
+        </div>
 
         <div id="events-display" class="events-wrap"></div>
     </div>

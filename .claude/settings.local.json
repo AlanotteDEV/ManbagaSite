@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm --version)",
+      "Bash(python3 -c \":*)",
+      "Read(//c/Users/alessandro.germinari/.claude/projects/c--Users-alessandro-germinari-Desktop-ManbagaSite-main-ManbagaSite/**)",
+      "Bash(ls -la *.jsonl)",
+      "Bash(grep -E \"^[0-9]{1,4}:\")",
+      "Read(//c/Users/alessandro.germinari/Desktop/ManbagaSite-main/ManbagaSite/**)"
+    ]
+  }
+}

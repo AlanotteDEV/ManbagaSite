@@ -173,6 +173,7 @@
                                 <select id="product-cat" class="form-input" onchange="updateAdminSubcats()">
                                     <option value="">-- Seleziona --</option>
                                     <option value="manga">Manga &amp; Comics</option>
+                                    <option value="libri">Libri</option>
                                     <option value="carte">Carte &amp; Giochi</option>
                                     <option value="gadget">Gadget &amp; Figures</option>
                                 </select>
@@ -256,6 +257,9 @@
     <button class="cp-mob-tab" role="tab" data-cat="manga" onclick="catPage.setCat('manga')">
         <span>Manga</span>
     </button>
+    <button class="cp-mob-tab" role="tab" data-cat="libri" onclick="catPage.setCat('libri')">
+        <span>Libri</span>
+    </button>
     <button class="cp-mob-tab" role="tab" data-cat="carte" onclick="catPage.setCat('carte')">
         <span>Carte</span>
     </button>
@@ -304,13 +308,30 @@
                 <li><button class="cp-sub-btn" data-sub="yaoi" onclick="catPage.setSub('yaoi')">Boys Love (BL) <span class="cp-cnt" id="cnt-manga-yaoi">0</span></button></li>
                 <li><button class="cp-sub-btn" data-sub="yuri" onclick="catPage.setSub('yuri')">Girls Love (GL) <span class="cp-cnt" id="cnt-manga-yuri">0</span></button></li>
                 <li><button class="cp-sub-btn" data-sub="comics" onclick="catPage.setSub('comics')">Comics &amp; Graphic Novel <span class="cp-cnt" id="cnt-manga-comics">0</span></button></li>
+                <li><button class="cp-sub-btn" data-sub="manwha" onclick="catPage.setSub('manwha')">Manwha <span class="cp-cnt" id="cnt-manga-manwha">0</span></button></li>
+            </ul>
+        </div>
+
+        <!-- Libri -->
+        <div class="cp-nav-block" id="cpnb-libri">
+            <button class="cp-nav-hd" onclick="catPage.setCat('libri')" aria-expanded="false">
+                <span class="cp-nav-num">02</span>
+                <span class="cp-nav-info">
+                    <span class="cp-nav-name">Libri</span>
+                    <span class="cp-nav-jp">本・小説</span>
+                </span>
+                <span class="cp-nav-arrow">›</span>
+            </button>
+            <ul class="cp-sub-list" id="cpsub-libri">
+                <li><button class="cp-sub-btn" data-sub="all" onclick="catPage.setSub('all')">Tutti <span class="cp-cnt" id="cnt-libri-all">0</span></button></li>
+                <li><button class="cp-sub-btn" data-sub="romanzi" onclick="catPage.setSub('romanzi')">Romanzi <span class="cp-cnt" id="cnt-libri-romanzi">0</span></button></li>
             </ul>
         </div>
 
         <!-- Carte -->
         <div class="cp-nav-block" id="cpnb-carte">
             <button class="cp-nav-hd" onclick="catPage.setCat('carte')" aria-expanded="false">
-                <span class="cp-nav-num">02</span>
+                <span class="cp-nav-num">03</span>
                 <span class="cp-nav-info">
                     <span class="cp-nav-name">Carte &amp; Giochi</span>
                     <span class="cp-nav-jp">カード・ゲーム</span>
@@ -332,7 +353,7 @@
         <!-- Gadget -->
         <div class="cp-nav-block" id="cpnb-gadget">
             <button class="cp-nav-hd" onclick="catPage.setCat('gadget')" aria-expanded="false">
-                <span class="cp-nav-num">03</span>
+                <span class="cp-nav-num">04</span>
                 <span class="cp-nav-info">
                     <span class="cp-nav-name">Gadget &amp; Figures</span>
                     <span class="cp-nav-jp">フィギュア・グッズ</span>
@@ -562,7 +583,16 @@ var catPage = (function () {
                 { key: 'slice',   label: 'Slice of Life' },
                 { key: 'yaoi',    label: 'Boys Love (BL)' },
                 { key: 'yuri',    label: 'Girls Love (GL)' },
-                { key: 'comics',  label: 'Comics & Graphic Novel' }
+                { key: 'comics',  label: 'Comics & Graphic Novel' },
+                { key: 'manwha',  label: 'Manwha' }
+            ]
+        },
+        libri: {
+            label: 'Libri',
+            jp: '本・小説',
+            kanji: '本',
+            subs: [
+                { key: 'romanzi', label: 'Romanzi' }
             ]
         },
         carte: {
@@ -749,9 +779,7 @@ var catPage = (function () {
     function _cardHtml(p) {
         var isOos = (p.badge === 'OUT OF STOCK' || p.badge === 'ESAURITO');
         var html = '<div class="cp-card' + (isOos ? ' cp-card--oos' : '') + '" onclick="openProductModal(' + p.id + ')">';
-        if (p.badge) {
-            html += '<div class="product-badge" data-badge="' + p.badge + '">' + p.badge + '</div>';
-        }
+        html += '<div class="product-badge" data-badge="' + (p.badge || 'Disponibile') + '">' + (p.badge || 'Disponibile') + '</div>';
         html += '<div class="cp-card-img-wrap">'
             + '<img class="cp-card-img" src="' + p.image + '" alt="' + _esc(p.title) + '" loading="lazy" onerror="this.src=\'https://placehold.co/300x400/0d0d0d/333?text=Cover\'">'
             + '<div class="cp-card-overlay"><span>Scopri &#8250;</span></div>'

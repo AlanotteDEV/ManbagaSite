@@ -198,6 +198,7 @@ function _subscribeFirestoreEvents() {
             _fbEvents = snap.docs.map(function(doc) {
                 var d = doc.data();
                 if (!d.id) d.id = doc.id;
+                d._fid = doc.id; /* Firestore doc ID for torneo.html links */
                 return d;
             });
             try { localStorage.setItem('manbaga-events', JSON.stringify(_fbEvents)); } catch(e){}
@@ -228,37 +229,119 @@ function setProducts(data) {
 }
 
 /* ============================================================
-   RENDER EVENTI
+   RENDER EVENTI — Tabs: competizione | evento
    ============================================================ */
+
+var _evTab = 'competizione'; /* active tab */
+
+var _TCG_LABELS = {
+    onepiece: 'One Piece', pokemon: 'Pokémon TCG', yugioh: 'Yu-Gi-Oh!',
+    magic: 'Magic: TG', dragonball: 'Dragon Ball', naruto: 'Naruto', altri: 'TCG'
+};
+var _STATUS_LABELS = {
+    'in-arrivo': 'In Arrivo', 'in-corso': 'In Corso', 'completato': 'Completato'
+};
+
+function switchEvTab(type) {
+    _evTab = type;
+    document.querySelectorAll('.ev-tab').forEach(function(btn) {
+        btn.classList.toggle('is-active', btn.dataset.type === type);
+        btn.setAttribute('aria-selected', btn.dataset.type === type ? 'true' : 'false');
+    });
+    renderEvents();
+}
+
 function renderEvents() {
-    var events = getEvents();
+    var allEvents = getEvents();
     var container = document.getElementById('events-display');
     if (!container) return;
 
-    if (events.length === 0) {
-        container.innerHTML = '<div class="events-empty">Nessun evento in programma al momento.<br>Seguici su Instagram per aggiornamenti!</div>';
+    var filtered = allEvents.filter(function(e) {
+        return (e.type || 'evento') === _evTab;
+    });
+
+    if (filtered.length === 0) {
+        var msgs = {
+            competizione: 'Nessun torneo in programma al momento.',
+            evento:       'Nessun evento in programma al momento.'
+        };
+        container.innerHTML = '<div class="events-empty">'
+            + (msgs[_evTab] || 'Nessun evento.')
+            + '<br>Seguici su <a href="https://www.instagram.com/_manbaga_/" target="_blank" rel="noopener noreferrer" style="color:#DC2626">Instagram</a> per aggiornamenti!</div>';
         return;
     }
 
-    container.innerHTML = events.map(function (e) {
-        return '<div class="event-row">'
-            + '<div class="event-date-box">'
-            + '<div class="event-day-num">' + (e.day || '—') + '</div>'
-            + '<div class="event-month-txt">' + ((e.month || '').toUpperCase()) + '</div>'
-            + (e.year ? '<div class="event-year-txt">' + e.year + '</div>' : '')
-            + '</div>'
-            + '<div class="event-body">'
-            + (e.tag ? '<div class="event-tag">' + e.tag + '</div>' : '')
-            + '<h3 class="event-title">' + e.title + '</h3>'
-            + '<p class="event-desc">' + e.desc + '</p>'
-            + '<div class="event-meta">'
-            + (e.time ? '<span>⏰ ' + e.time + '</span>' : '')
-            + (e.price ? '<span>' + e.price + '</span>' : '')
-            + '</div>'
-            + (e.link ? '<a href="' + e.link + '" target="_blank" rel="noopener noreferrer" class="event-link-btn" onclick="event.stopPropagation()">Iscriviti &#8594;</a>' : '')
-            + '</div>'
-            + '</div>';
+    container.innerHTML = filtered.map(function(e) {
+        return ((e.type || 'evento') === 'competizione') ? _renderCompCard(e) : _renderEventCard(e);
     }).join('');
+}
+
+function _renderEventCard(e) {
+    var tagCls = e.type === 'community' ? ' event-tag--community' : '';
+    return '<div class="event-row">'
+        + '<div class="event-date-box">'
+        + '<div class="event-day-num">' + (e.day || '—') + '</div>'
+        + '<div class="event-month-txt">' + ((e.month || '').toUpperCase()) + '</div>'
+        + (e.year ? '<div class="event-year-txt">' + e.year + '</div>' : '')
+        + '</div>'
+        + '<div class="event-body">'
+        + (e.tag ? '<div class="event-tag' + tagCls + '">' + e.tag + '</div>' : '')
+        + '<h3 class="event-title">' + e.title + '</h3>'
+        + '<p class="event-desc">' + e.desc + '</p>'
+        + '<div class="event-meta">'
+        + (e.time  ? '<span>⏰ ' + e.time + '</span>' : '')
+        + (e.price ? '<span>' + e.price + '</span>' : '')
+        + '</div>'
+        + (e.link ? '<a href="' + e.link + '" target="_blank" rel="noopener noreferrer" class="event-link-btn" onclick="event.stopPropagation()">Iscriviti &#8594;</a>' : '')
+        + '</div>'
+        + '</div>';
+}
+
+function _renderCompCard(e) {
+    var tcg     = e.tcg    || 'altri';
+    var status  = e.status || 'in-arrivo';
+    var players = Array.isArray(e.players) ? e.players : [];
+    var tcgLbl  = _TCG_LABELS[tcg]    || 'TCG';
+    var stLbl   = _STATUS_LABELS[status] || status;
+    var fid     = e._fid   || e.id;
+
+    var actions = '';
+    if (e.link && status === 'in-arrivo') {
+        actions += '<a href="' + e.link + '" target="_blank" rel="noopener noreferrer" class="event-link-btn" onclick="event.stopPropagation()">Iscriviti &#8594;</a>';
+    }
+    if (status === 'in-arrivo' && fid) {
+        actions += '<a href="torneo.html?id=' + fid + '" class="ev-ranking-btn">&#128197; Info torneo</a>';
+    }
+    if (status === 'in-corso') {
+        actions += '<a href="torneo.html?id=' + fid + '" class="ev-ranking-btn ev-ranking-btn--live">&#128202; Live</a>';
+    }
+    if (status === 'completato') {
+        actions += '<a href="torneo.html?id=' + fid + '" class="ev-ranking-btn">&#127942; Classifica</a>';
+    }
+
+    return '<div class="event-row event-row--comp">'
+        + '<div class="event-date-box">'
+        + '<div class="event-day-num">' + (e.day || '—') + '</div>'
+        + '<div class="event-month-txt">' + ((e.month || '').toUpperCase()) + '</div>'
+        + (e.year ? '<div class="event-year-txt">' + e.year + '</div>' : '')
+        + '<div class="ev-tcg-badge ev-tcg--' + tcg + '">' + tcgLbl + '</div>'
+        + '</div>'
+        + '<div class="event-body">'
+        + '<div class="ev-comp-hd">'
+        + '<div class="event-tag">&#127942; TORNEO</div>'
+        + '<div class="ev-status-badge ev-status--' + status + '">' + stLbl + '</div>'
+        + (players.length ? '<span style="font-size:11px;color:#888;font-weight:600">' + players.length + ' partecipanti</span>' : '')
+        + '</div>'
+        + '<h3 class="event-title">' + e.title + '</h3>'
+        + '<p class="event-desc">' + e.desc + '</p>'
+        + '<div class="event-meta">'
+        + (e.time       ? '<span>&#9200; ' + e.time + '</span>' : '')
+        + (e.price      ? '<span>' + e.price + '</span>' : '')
+        + (e.maxPlayers ? '<span>&#128101; Max ' + e.maxPlayers + '</span>' : '')
+        + '</div>'
+        + (actions ? '<div class="ev-comp-actions">' + actions + '</div>' : '')
+        + '</div>'
+        + '</div>';
 }
 
 /* ============================================================
@@ -315,7 +398,7 @@ function renderProducts() {
     track.innerHTML = products.map(function (p) {
         var isOos = (p.badge === 'OUT OF STOCK' || p.badge === 'ESAURITO');
         return '<div class="product-card' + (isOos ? ' product-card--oos' : '') + '" data-badge="' + (p.badge || '') + '" onclick="openProductModal(' + p.id + ')">'
-            + (p.badge ? '<div class="product-badge" data-badge="' + p.badge + '">' + p.badge + '</div>' : '')
+            + '<div class="product-badge" data-badge="' + (p.badge || 'Disponibile') + '">' + (p.badge || 'Disponibile') + '</div>'
             + '<div class="product-img-wrap">'
             + '<img class="product-img" src="' + p.image + '" alt="' + p.title + '" loading="lazy" onerror="this.src=\'https://placehold.co/400x500/0a0a0a/333?text=Cover\'">'
             + '<div class="product-img-overlay"><span>Scopri di più</span></div>'
@@ -528,7 +611,7 @@ function openProductModal(productId) {
         + '<div class="pd-zoom-hint"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg> Clicca per ingrandire</div>'
         + '</div>'
         + '<div>'
-        + (product.badge ? '<div class="pd-badge" data-badge="' + product.badge + '">' + product.badge + '</div>' : '')
+        + '<div class="pd-badge" data-badge="' + (product.badge || 'Disponibile') + '">' + (product.badge || 'Disponibile') + '</div>'
         + '<h2 class="pd-title">' + product.title + '</h2>'
         + '<div class="pd-vol">' + (product.volume || '') + '</div>'
         + (product.price ? '<div class="pd-price">' + product.price + '</div>' : '')
@@ -538,10 +621,6 @@ function openProductModal(productId) {
         + '</div>'
         + '<div style="display:flex;gap:10px;flex-wrap:wrap">'
         + actionBtn
-        + '<button class="btn btn-ghost" style="flex:1;border-radius:0;min-width:140px" onclick="window.open(\'https://www.instagram.com/_manbaga_/\',\'_blank\')">'
-        + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>'
-        + ' Instagram'
-        + '</button>'
         + '</div>'
         /* Form preordine (nascosto) */
         + '<div id="preorder-form-' + _pid + '" class="preorder-panel hidden" data-product-id="' + _pid + '">'
@@ -825,9 +904,10 @@ function updateAdminSubcats() {
     if (!catSel || !subcatSel) return;
     var cat = catSel.value;
     var SUBCATS = {
-        manga:  [ ['shonen','Shonen'],['seinen','Seinen'],['shojo','Shojo / Josei'],['comics','Comics & Graphic Novel'] ],
-        carte:  [ ['pokemon','Pokémon TCG'],['yugioh','Yu-Gi-Oh!'],['magic','Magic: The Gathering'],['onepiece','One Piece TCG'],['dragonball','Dragon Ball Super'],['altri','Board Games & Altri'] ],
-        gadget: [ ['figure','Action Figures'],['funko','Funko Pop'],['statuette','Statuette'],['poster','Poster & Art'],['abbigliamento','Abbigliamento'],['accessori','Accessori'] ]
+        manga:  [ ['shonen','Shonen'],['seinen','Seinen'],['shojo','Shojo'],['josei','Josei'],['kodomo','Kodomomuke'],['isekai','Isekai'],['sport','Sport'],['horror','Horror & Thriller'],['fantasy','Fantasy & Avventura'],['mecha','Mecha & Sci-Fi'],['slice','Slice of Life'],['yaoi','Boys Love (BL)'],['yuri','Girls Love (GL)'],['comics','Comics & Graphic Novel'],['manwha','Manwha'] ],
+        libri:  [ ['romanzi','Romanzi'] ],
+        carte:  [ ['pokemon','Pokémon TCG'],['yugioh','Yu-Gi-Oh!'],['magic','Magic: The Gathering'],['onepiece','One Piece TCG'],['dragonball','Dragon Ball Super'],['naruto','Naruto Card Game'],['altri','Board Games & Altri'] ],
+        gadget: [ ['figure','Action Figures'],['funko','Funko Pop'],['statuette','Statuette'],['poster','Poster & Art'],['abbigliamento','Abbigliamento'],['accessori','Accessori'],['lego','Lego'],['peluche','Peluche & Plushie'] ]
     };
     if (!cat || !SUBCATS[cat]) {
         subcatSel.innerHTML = '<option value="">-- Prima scegli la categoria --</option>';

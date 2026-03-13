@@ -105,6 +105,7 @@ input, textarea, select { font-family: inherit; color: inherit; }
   border-radius: 20px; background: rgba(255,255,255,.08); color: var(--muted);
 }
 .nav-item.active .nav-badge { background: rgba(220,38,38,.2); color: #f87171; }
+.nav-badge--alert { background: rgba(220,38,38,.25) !important; color: #f87171 !important; }
 .sb-bottom {
   border-top: 1px solid var(--border);
   padding: 16px 12px;
@@ -171,6 +172,39 @@ input, textarea, select { font-family: inherit; color: inherit; }
   transition: border-color .2s;
 }
 .stat-card:hover { border-color: rgba(255,255,255,.14); }
+.stat-card--alert { border-color: rgba(220,38,38,.3) !important; background: rgba(220,38,38,.06) !important; }
+.stat-card--alert .stat-card-value { color: #f87171; }
+
+/* ===================== OOS ALERT PANEL ===================== */
+.oos-panel {
+  background: rgba(220,38,38,.06); border: 1px solid rgba(220,38,38,.25);
+  border-radius: 8px; padding: 16px 20px; margin-bottom: 24px;
+  animation: fadeUp .25s ease-out;
+}
+.oos-panel-hd {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.oos-panel-title {
+  font-size: 12px; font-weight: 800; letter-spacing: .08em;
+  text-transform: uppercase; color: #f87171;
+  display: flex; align-items: center; gap: 8px;
+}
+.oos-panel-list { display: flex; flex-direction: column; gap: 6px; }
+.oos-panel-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 10px; background: rgba(0,0,0,.2);
+  border-radius: 6px; border: 1px solid rgba(220,38,38,.12);
+}
+.oos-panel-img {
+  width: 28px; height: 36px; object-fit: cover;
+  border-radius: 3px; background: #1a1a1a; flex-shrink: 0;
+}
+.oos-panel-name { flex: 1; font-size: 12px; font-weight: 600; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.oos-panel-sub { font-size: 10px; color: var(--muted); margin-top: 1px; }
+.oos-panel-badge { font-size: 9px; font-weight: 800; padding: 3px 8px; border-radius: 3px; background: rgba(55,65,81,.5); color: #9ca3af; letter-spacing: .06em; flex-shrink: 0; }
+.oos-panel-btn { font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 5px; background: rgba(220,38,38,.1); color: #f87171; border: 1px solid rgba(220,38,38,.2); cursor: pointer; transition: all .15s; flex-shrink: 0; }
+.oos-panel-btn:hover { background: rgba(220,38,38,.18); }
 .stat-card-label {
   font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
   color: var(--muted); margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
@@ -572,6 +606,102 @@ input, textarea, select { font-family: inherit; color: inherit; }
   line-height: 1.5; text-align: center;
 }
 
+/* ===================== EVENT TYPE SELECTOR ===================== */
+.ev-type-selector {
+  display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap;
+}
+.ev-type-btn {
+  flex: 1; min-width: 100px;
+  padding: 9px 14px; border-radius: 7px;
+  font-size: 12px; font-weight: 700; letter-spacing: .03em;
+  color: var(--muted); background: var(--elevated);
+  border: 1px solid var(--border); cursor: pointer;
+  transition: all .18s; text-align: center;
+}
+.ev-type-btn:hover { color: var(--text); border-color: rgba(255,255,255,.18); }
+.ev-type-btn.is-active {
+  background: rgba(220,38,38,.12); color: #f87171;
+  border-color: rgba(220,38,38,.3);
+}
+
+/* ===================== COMP PLAYERS ===================== */
+.comp-players-section {
+  background: rgba(255,255,255,.025);
+  border: 1px solid var(--border);
+  border-radius: 8px; padding: 16px 18px;
+  margin-top: 4px;
+}
+.comp-players-hd {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.comp-players-title { font-size: 12px; font-weight: 800; letter-spacing: .05em; }
+.comp-sort-btn {
+  font-size: 11px; font-weight: 700; color: var(--muted);
+  padding: 4px 10px; border-radius: 5px;
+  background: var(--elevated); border: 1px solid var(--border);
+  cursor: pointer; transition: all .15s;
+}
+.comp-sort-btn:hover { color: var(--text); border-color: rgba(255,255,255,.18); }
+.comp-player-header {
+  display: grid;
+  grid-template-columns: 1fr 52px 52px 52px 52px 32px;
+  gap: 6px; padding: 0 8px 8px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 6px;
+}
+.comp-col-lbl {
+  font-size: 10px; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--muted); text-align: center;
+}
+.comp-col-lbl:first-child { text-align: left; }
+.comp-player-row {
+  display: grid;
+  grid-template-columns: 1fr 52px 52px 52px 52px 32px;
+  gap: 6px; align-items: center;
+  padding: 5px 8px; border-radius: 6px;
+  transition: background .15s;
+}
+.comp-player-row:hover { background: rgba(255,255,255,.03); }
+.comp-player-row input[type="text"] {
+  width: 100%; padding: 7px 10px;
+  background: var(--elevated); border: 1px solid rgba(255,255,255,.1);
+  border-radius: 5px; font-size: 12px; color: var(--text);
+  font-family: inherit;
+}
+.comp-player-row input[type="number"] {
+  width: 100%; padding: 7px 6px; text-align: center;
+  background: var(--elevated); border: 1px solid rgba(255,255,255,.1);
+  border-radius: 5px; font-size: 12px; color: var(--text);
+  font-family: inherit;
+}
+.comp-player-row input:focus {
+  outline: none; border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(220,38,38,.1);
+}
+.comp-player-pts {
+  text-align: center; font-size: 13px; font-weight: 800;
+  color: #fbbf24;
+}
+.comp-del-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 26px; height: 26px; border-radius: 5px;
+  font-size: 16px; color: var(--muted); cursor: pointer;
+  background: transparent; border: none;
+  transition: all .15s; justify-self: center;
+}
+.comp-del-btn:hover { color: #f87171; background: rgba(220,38,38,.1); }
+.comp-add-btn {
+  width: 100%; margin-top: 10px; padding: 8px;
+  border: 1px dashed rgba(255,255,255,.12); border-radius: 6px;
+  font-size: 12px; font-weight: 700; color: var(--muted);
+  background: transparent; cursor: pointer; transition: all .18s;
+}
+.comp-add-btn:hover {
+  color: var(--text); border-color: rgba(255,255,255,.25);
+  background: rgba(255,255,255,.03);
+}
+
 /* ===================== RESPONSIVE ===================== */
 @media (max-width: 900px) {
   #sidebar { width: 60px; min-width: 60px; }
@@ -672,6 +802,7 @@ input, textarea, select { font-family: inherit; color: inherit; }
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
         <span>Tutti i Prodotti</span>
         <span class="nav-badge" id="nb-products">0</span>
+        <span class="nav-badge" id="nb-oos" style="display:none">0</span>
       </div>
 
       <div class="nav-item" data-view="novita" onclick="switchView('novita')">
@@ -782,6 +913,9 @@ input, textarea, select { font-family: inherit; color: inherit; }
         </div>
       </div>
 
+      <!-- OOS ALERT PANEL -->
+      <div id="dash-oos-panel" style="display:none"></div>
+
       <!-- RECENT + EVENTS -->
       <div style="display:grid;grid-template-columns:1fr 380px;gap:20px;" id="dash-bottom">
         <div class="section-card">
@@ -833,6 +967,7 @@ input, textarea, select { font-family: inherit; color: inherit; }
         <select class="filter-select" id="filter-cat" onchange="renderProducts()">
           <option value="">Tutte le categorie</option>
           <option value="manga">Manga &amp; Comics</option>
+          <option value="libri">Libri</option>
           <option value="carte">Carte &amp; Giochi</option>
           <option value="gadget">Gadget &amp; Figures</option>
         </select>
@@ -1025,6 +1160,7 @@ input, textarea, select { font-family: inherit; color: inherit; }
               <option value="">Tutte le categorie</option>
               <optgroup label="— Entrate —">
                 <option value="vendite_manga">Vendite Manga &amp; Comics</option>
+                <option value="vendite_libri">Vendite Libri</option>
                 <option value="vendite_carte">Vendite Carte &amp; Giochi</option>
                 <option value="vendite_gadget">Vendite Gadget &amp; Figure</option>
                 <option value="preordini">Preordini incassati</option>
@@ -1142,6 +1278,7 @@ input, textarea, select { font-family: inherit; color: inherit; }
           <select class="form-select" id="product-cat" onchange="updateSubcats()">
             <option value="">— Seleziona —</option>
             <option value="manga">Manga &amp; Comics</option>
+            <option value="libri">Libri</option>
             <option value="carte">Carte &amp; Giochi</option>
             <option value="gadget">Gadget &amp; Figures</option>
           </select>
@@ -1183,7 +1320,7 @@ input, textarea, select { font-family: inherit; color: inherit; }
 
 <!-- ===================== EVENT MODAL ===================== -->
 <div id="event-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeEventModal()">
-  <div class="modal-box" style="max-width:580px">
+  <div class="modal-box" style="max-width:700px">
     <div class="modal-head">
       <div style="display:flex;align-items:center;gap:10px">
         <div style="width:34px;height:34px;background:rgba(220,38,38,.12);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
@@ -1196,6 +1333,14 @@ input, textarea, select { font-family: inherit; color: inherit; }
       </div>
     </div>
     <div class="modal-body">
+
+      <!-- Tipo evento -->
+      <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Tipo</div>
+      <div class="ev-type-selector" id="ev-type-selector">
+        <button class="ev-type-btn is-active" data-type="evento"       onclick="setEventType('evento',this)">📅 Evento</button>
+        <button class="ev-type-btn"           data-type="competizione" onclick="setEventType('competizione',this)">🏆 Torneo / Competizione</button>
+      </div>
+
       <!-- Data e Orario -->
       <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:6px;padding:16px 18px;margin-bottom:16px">
         <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px">Data &amp; Orario</div>
@@ -1217,7 +1362,7 @@ input, textarea, select { font-family: inherit; color: inherit; }
       <!-- Info evento -->
       <div class="form-grid">
         <div class="form-group form-full">
-          <label class="form-label">Titolo Evento <span>*</span></label>
+          <label class="form-label">Titolo <span>*</span></label>
           <input class="form-input" type="text" id="event-title" placeholder="es. Torneo One Piece TCG">
         </div>
         <div class="form-group form-full">
@@ -1228,13 +1373,65 @@ input, textarea, select { font-family: inherit; color: inherit; }
           <label class="form-label">Info / Prezzo</label>
           <input class="form-input" type="text" id="event-price" placeholder="Ingresso 6€ · Gratuito">
         </div>
-        <div class="form-group">
+        <!-- Tag field — hidden for competizioni (auto-set) -->
+        <div class="form-group" id="tag-field-row">
           <label class="form-label">Tag (opzionale)</label>
-          <input class="form-input" type="text" id="event-tag" placeholder="TORNEO UFFICIALE">
+          <input class="form-input" type="text" id="event-tag" placeholder="EVENTO SPECIALE">
         </div>
         <div class="form-group form-full">
           <label class="form-label">Link iscrizione / info (opzionale)</label>
-          <input class="form-input" type="url" id="event-link" placeholder="https://... (se presente, il bottone 'Iscriviti' apparirà sull'evento)">
+          <input class="form-input" type="url" id="event-link" placeholder="https://...">
+        </div>
+      </div>
+
+      <!-- ═══ CAMPI COMPETIZIONE (mostrati solo per tipo=competizione) ═══ -->
+      <div id="comp-extra-fields" style="display:none">
+        <div style="height:1px;background:var(--border);margin:16px 0"></div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px">⚔️ Dettagli Torneo</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Gioco di Carte <span>*</span></label>
+            <select class="form-input" id="event-tcg">
+              <option value="">-- Seleziona TCG --</option>
+              <option value="onepiece">One Piece Card Game</option>
+              <option value="pokemon">Pokémon TCG</option>
+              <option value="yugioh">Yu-Gi-Oh!</option>
+              <option value="magic">Magic: The Gathering</option>
+              <option value="dragonball">Dragon Ball Super</option>
+              <option value="naruto">Naruto Card Game</option>
+              <option value="altri">Altro / Board Game</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Stato Torneo</label>
+            <select class="form-input" id="event-status">
+              <option value="in-arrivo">📅 In Arrivo</option>
+              <option value="in-corso">🟢 In Corso</option>
+              <option value="completato">✅ Completato</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Max Giocatori</label>
+            <input class="form-input" type="number" id="event-max-players" min="4" max="512" placeholder="es. 16">
+          </div>
+        </div>
+
+        <!-- Player / Ranking management -->
+        <div class="comp-players-section">
+          <div class="comp-players-hd">
+            <div class="comp-players-title">🏅 Classifica Partecipanti</div>
+            <button class="comp-sort-btn" onclick="sortCompPlayers()">↓ Ordina per Punti</button>
+          </div>
+          <div class="comp-player-header">
+            <div class="comp-col-lbl">Giocatore</div>
+            <div class="comp-col-lbl" title="Vittorie">V</div>
+            <div class="comp-col-lbl" title="Sconfitte">S</div>
+            <div class="comp-col-lbl" title="Pareggi">P</div>
+            <div class="comp-col-lbl">Pts</div>
+            <div></div>
+          </div>
+          <div id="comp-players-list"></div>
+          <button class="comp-add-btn" onclick="addCompPlayer()">+ Aggiungi Giocatore</button>
         </div>
       </div>
 
@@ -1329,7 +1526,8 @@ var FB_CONFIG = {
 
 /* ─── SUBCATEGORIES MAP ─── */
 var SUBCATS = {
-    manga:  [['shonen','Shonen'],['seinen','Seinen'],['shojo','Shojo'],['josei','Josei'],['kodomo','Kodomomuke (Bambini)'],['isekai','Isekai'],['sport','Sport'],['horror','Horror & Thriller'],['fantasy','Fantasy & Avventura'],['mecha','Mecha & Sci-Fi'],['slice','Slice of Life'],['yaoi','Boys Love (BL)'],['yuri','Girls Love (GL)'],['comics','Comics & Graphic Novel']],
+    manga:  [['shonen','Shonen'],['seinen','Seinen'],['shojo','Shojo'],['josei','Josei'],['kodomo','Kodomomuke (Bambini)'],['isekai','Isekai'],['sport','Sport'],['horror','Horror & Thriller'],['fantasy','Fantasy & Avventura'],['mecha','Mecha & Sci-Fi'],['slice','Slice of Life'],['yaoi','Boys Love (BL)'],['yuri','Girls Love (GL)'],['comics','Comics & Graphic Novel'],['manwha','Manwha']],
+    libri:  [['romanzi','Romanzi']],
     carte:  [['pokemon','Pokémon TCG'],['yugioh','Yu-Gi-Oh!'],['magic','Magic: The Gathering'],['onepiece','One Piece TCG'],['dragonball','Dragon Ball Super'],['naruto','Naruto Card Game'],['altri','Board Games & Altri']],
     gadget: [['figure','Action Figures'],['funko','Funko Pop'],['statuette','Statuette'],['poster','Poster & Art'],['abbigliamento','Abbigliamento'],['accessori','Accessori'],['lego','Lego'],['peluche','Peluche & Plushie']]
 };
@@ -1351,6 +1549,7 @@ var _events        = [];
 var _currentView   = 'dashboard';
 var _editProductId = null; /* Firestore doc ID */
 var _editEventId   = null;
+var _compPlayers   = [];   /* Players array while editing a competition */
 var _viewMode      = 'grid';
 var _uploadFile    = null;
 var _unsubProducts = null;
@@ -1542,6 +1741,7 @@ function subscribeData() {
                 return d;
             });
             updateNavBadges();
+            checkAutoEventStatus();
             if (_currentView === 'events' || _currentView === 'dashboard') renderCurrentView();
         },
         function(err) { console.error('Firestore events error:', err); }
@@ -1552,11 +1752,24 @@ function subscribeData() {
 function updateNavBadges() {
     var novitaCount   = _products.filter(function(p){ return p.showInNovita; }).length;
     var preorderCount = _products.filter(function(p){ return p.badge === 'PREORDINA' || p.badge === 'IN ARRIVO'; }).length;
+    var oosCount      = _products.filter(function(p){ return p.badge === 'OUT OF STOCK' || p.badge === 'ESAURITO'; }).length;
     var el;
     el = document.getElementById('nb-products'); if(el) el.textContent = _products.length;
     el = document.getElementById('nb-novita');   if(el) el.textContent = novitaCount;
     el = document.getElementById('nb-preorder'); if(el) el.textContent = preorderCount;
     el = document.getElementById('nb-events');   if(el) el.textContent = _events.length;
+    /* Badge OOS rosso — visibile solo se ci sono esauriti */
+    el = document.getElementById('nb-oos');
+    if (el) {
+        if (oosCount > 0) {
+            el.textContent = oosCount + ' esauriti';
+            el.style.display = '';
+            el.classList.add('nav-badge--alert');
+        } else {
+            el.style.display = 'none';
+            el.classList.remove('nav-badge--alert');
+        }
+    }
 }
 
 /* ─── NAVIGATION ─── */
@@ -1603,9 +1816,47 @@ function renderDashboard() {
     set('stat-preorder', preorder);
     set('stat-oos', oos);
     set('stat-novita', novita);
+    /* Stat-card OOS: evidenzia in rosso se ci sono esauriti */
+    var oosCard = document.querySelector('.stat-card:has(#stat-oos)') ||
+        (function(){ var cards = document.querySelectorAll('.stat-card'); for(var i=0;i<cards.length;i++){ if(cards[i].querySelector('#stat-oos')) return cards[i]; } return null; })();
+    if (oosCard) oosCard.classList.toggle('stat-card--alert', oos > 0);
     set('stat-pezzi', pezzi);
     var subEl = document.getElementById('stat-pezzi-sub');
     if (subEl) subEl.textContent = pezziZero > 0 ? '⚠ ' + pezziZero + ' prodott' + (pezziZero === 1 ? 'o a' : 'i a') + ' zero pezzi' : 'unità totali';
+
+    /* OOS Alert Panel */
+    var oosPanel = document.getElementById('dash-oos-panel');
+    if (oosPanel) {
+        var oosProducts = _products.filter(function(p){ return p.badge === 'OUT OF STOCK' || p.badge === 'ESAURITO'; });
+        if (oosProducts.length === 0) {
+            oosPanel.style.display = 'none';
+            oosPanel.innerHTML = '';
+        } else {
+            oosPanel.style.display = 'block';
+            oosPanel.innerHTML = '<div class="oos-panel">'
+                + '<div class="oos-panel-hd">'
+                + '<div class="oos-panel-title">'
+                + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
+                + oosProducts.length + ' prodott' + (oosProducts.length === 1 ? 'o esaurito' : 'i esauriti') + ' — da riordinare'
+                + '</div>'
+                + '<button class="btn btn-ghost btn-sm" onclick="switchView(\'products\')" style="font-size:11px;color:var(--muted)">Vai ai prodotti →</button>'
+                + '</div>'
+                + '<div class="oos-panel-list">'
+                + oosProducts.map(function(p) {
+                    return '<div class="oos-panel-row">'
+                        + '<img class="oos-panel-img" src="' + esc(p.imageUrl || '') + '" alt="" onerror="this.src=\'https://placehold.co/28x36/141414/333?text=?\'">'
+                        + '<div style="flex:1;min-width:0">'
+                        + '<div class="oos-panel-name">' + esc(p.title) + (p.volume ? ' <span style="font-weight:400;color:var(--muted)">— ' + esc(p.volume) + '</span>' : '') + '</div>'
+                        + '<div class="oos-panel-sub">' + (p.cat || '') + (p.subcat ? ' · ' + p.subcat : '') + (p.price ? ' · ' + p.price : '') + '</div>'
+                        + '</div>'
+                        + '<span class="oos-panel-badge">' + esc(p.badge) + '</span>'
+                        + '<button class="oos-panel-btn" onclick="editProduct(\'' + p.firestoreId + '\')">Modifica</button>'
+                        + '</div>';
+                }).join('')
+                + '</div>'
+                + '</div>';
+        }
+    }
 
     /* Recent products */
     var rec = document.getElementById('dash-recent');
@@ -1711,7 +1962,7 @@ function renderProductRow(p) {
         + '<td><img class="p-table-img" src="' + esc(p.imageUrl || '') + '" alt="" onerror="this.src=\'https://placehold.co/40x52/141414/333?text=?\'"></td>'
         + '<td><div class="p-table-title">' + esc(p.title) + '</div><div class="p-table-vol">' + esc(p.volume || '') + '</div></td>'
         + '<td style="font-size:12px;color:var(--muted)">' + (p.cat || '—') + (p.subcat ? ' · ' + p.subcat : '') + '</td>'
-        + '<td><div class="badges-cell">' + (_getBadgesArr(p).map(function(b){ return '<span class="badge badge--' + badgeClass(b) + '">' + b + '</span>'; }).join('') || '<span style="color:var(--muted);font-size:11px">—</span>') + '</div></td>'
+        + '<td><div class="badges-cell">' + (_getBadgesArr(p).map(function(b){ return '<span class="badge badge--' + badgeClass(b) + '">' + b + '</span>'; }).join('') || '<span class="badge badge--none">Disponibile</span>') + '</div></td>'
         + '<td style="font-size:12px;font-weight:700;color:var(--accent)">' + esc(p.price || '—') + '</td>'
         + '<td>' + _qtyBadge(p.quantity) + '</td>'
         + '<td>' + (p.showInNovita ? '<span class="novita-chip">⭐ Sì</span>' : '<span style="color:var(--muted);font-size:12px">No</span>') + '</td>'
@@ -1779,6 +2030,11 @@ function renderPreorder() {
 }
 
 /* ─── EVENTS RENDER ─── */
+var _EV_TYPE_ICONS = { evento: '📅', competizione: '🏆' };
+var _EV_TYPE_COLORS = { evento: 'var(--accent)', competizione: '#D97706' };
+var _STATUS_CHIP = { 'in-arrivo': '📅 In Arrivo', 'in-corso': '🟢 In Corso', 'completato': '✅ Completato' };
+var _TCG_NAMES_G = { onepiece:'One Piece', pokemon:'Pokémon', yugioh:'Yu-Gi-Oh!', magic:'Magic: TG', dragonball:'Dragon Ball', naruto:'Naruto', altri:'TCG' };
+
 function renderEvents() {
     var container = document.getElementById('events-container');
     if (!container) return;
@@ -1789,6 +2045,15 @@ function renderEvents() {
     }
 
     container.innerHTML = _events.map(function(e) {
+        var type  = e.type || 'evento';
+        var icon  = _EV_TYPE_ICONS[type]  || '📅';
+        var color = _EV_TYPE_COLORS[type] || 'var(--accent)';
+        var extraChips = '';
+        if (type === 'competizione') {
+            if (e.tcg)    extraChips += '<span class="event-meta-chip">' + (_TCG_NAMES_G[e.tcg] || e.tcg) + '</span>';
+            if (e.status) extraChips += '<span class="event-meta-chip">' + (_STATUS_CHIP[e.status] || e.status) + '</span>';
+            if (Array.isArray(e.players) && e.players.length) extraChips += '<span class="event-meta-chip">👥 ' + e.players.length + ' gioc.</span>';
+        }
         return '<div class="event-row">'
             + '<div class="event-date">'
             + '<div class="event-day">' + esc(e.day || '—') + '</div>'
@@ -1796,15 +2061,20 @@ function renderEvents() {
             + (e.year ? '<div class="event-year">' + esc(e.year) + '</div>' : '')
             + '</div>'
             + '<div class="event-body">'
-            + (e.tag ? '<div style="font-size:9px;font-weight:800;letter-spacing:.1em;color:var(--accent);margin-bottom:4px;text-transform:uppercase">' + esc(e.tag) + '</div>' : '')
+            + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">'
+            + '<span style="font-size:10px;font-weight:800;letter-spacing:.12em;color:' + color + ';text-transform:uppercase">' + icon + ' ' + type.charAt(0).toUpperCase() + type.slice(1) + '</span>'
+            + (e.tag ? '<span style="font-size:9px;color:var(--muted)">· ' + esc(e.tag) + '</span>' : '')
+            + '</div>'
             + '<div class="event-title">' + esc(e.title) + '</div>'
             + '<div class="event-desc">' + esc(e.desc || '') + '</div>'
             + '<div class="event-meta">'
             + (e.time  ? '<span class="event-meta-chip">⏰ ' + esc(e.time)  + '</span>' : '')
             + (e.price ? '<span class="event-meta-chip">💰 ' + esc(e.price) + '</span>' : '')
+            + extraChips
             + '</div>'
             + '</div>'
             + '<div class="event-actions">'
+            + (type === 'competizione' ? '<a class="btn-icon" href="../torneo.html?id=' + e.firestoreId + '" target="_blank" title="Vedi pagina torneo" style="text-decoration:none;font-size:14px">🔗</a>' : '')
             + '<button class="btn-icon" onclick="editEvent(\'' + e.firestoreId + '\')" title="Modifica">✏️</button>'
             + '<button class="btn-icon" onclick="confirmDeleteEvent(\'' + e.firestoreId + '\',\'' + esc(e.title) + '\')" title="Elimina" style="color:#f87171">🗑️</button>'
             + '</div>'
@@ -1894,9 +2164,10 @@ function updateSubcats(selectedSub) {
     var volumeInput = document.getElementById('product-volume');
 
     /* Label dinamiche per categoria */
-    var labelMap = { manga: 'Genere *', carte: 'Tipo', gadget: 'Tipologia' };
+    var labelMap = { manga: 'Genere *', libri: 'Tipo', carte: 'Tipo', gadget: 'Tipologia' };
     var volPlaceholderMap = {
         manga:  'es. 12  (verrà salvato come Vol. 12)',
+        libri:  'es. Prima edizione · Tascabile',
         carte:  'es. Elite Trainer Box · Booster Pack',
         gadget: 'es. Standard · Limited Edition'
     };
@@ -2119,10 +2390,13 @@ function parseEventDate(val) {
 
 function openAddEventModal() {
     _editEventId = null;
+    _compPlayers = [];
     document.getElementById('em-title').textContent = 'Aggiungi Evento';
-    ['event-date','event-day','event-month','event-year','event-title','event-desc','event-time','event-price','event-tag'].forEach(function(id) {
-        document.getElementById(id).value = '';
+    ['event-date','event-day','event-month','event-year','event-title','event-desc','event-time','event-price','event-tag','event-link'].forEach(function(id) {
+        var el = document.getElementById(id); if (el) el.value = '';
     });
+    /* Reset type to 'evento' */
+    _setEventTypeUI('evento');
     document.getElementById('event-modal').style.display = 'flex';
     setTimeout(function(){ document.getElementById('event-title').focus(); }, 150);
 }
@@ -2151,12 +2425,107 @@ function editEvent(firestoreId) {
     document.getElementById('event-price').value = e.price || '';
     document.getElementById('event-tag').value   = e.tag   || '';
     document.getElementById('event-link').value  = e.link  || '';
+
+    /* Restore type + competition fields */
+    _setEventTypeUI(e.type || 'evento');
+    if ((e.type || 'evento') === 'competizione') {
+        var tcgEl = document.getElementById('event-tcg');
+        var stEl  = document.getElementById('event-status');
+        var mpEl  = document.getElementById('event-max-players');
+        if (tcgEl) tcgEl.value = e.tcg    || '';
+        if (stEl)  stEl.value  = e.status || 'in-arrivo';
+        if (mpEl)  mpEl.value  = e.maxPlayers || '';
+        _compPlayers = Array.isArray(e.players) ? e.players.map(function(p) {
+            return { name: p.name || '', wins: p.wins || 0, losses: p.losses || 0, draws: p.draws || 0 };
+        }) : [];
+        renderCompPlayers();
+    }
+
     document.getElementById('event-modal').style.display = 'flex';
 }
 
 function closeEventModal() {
     document.getElementById('event-modal').style.display = 'none';
-    _editEventId = null;
+    _editEventId   = null;
+    _compPlayers   = [];
+}
+
+/* ─── EVENT TYPE UI ─── */
+function _setEventTypeUI(type) {
+    document.querySelectorAll('.ev-type-btn').forEach(function(btn) {
+        btn.classList.toggle('is-active', btn.dataset.type === type);
+    });
+    var isComp = type === 'competizione';
+    document.getElementById('comp-extra-fields').style.display = isComp ? 'block' : 'none';
+    document.getElementById('tag-field-row').style.display     = isComp ? 'none'  : '';
+    if (isComp) {
+        var tcgEl = document.getElementById('event-tcg');
+        var stEl  = document.getElementById('event-status');
+        var mpEl  = document.getElementById('event-max-players');
+        if (tcgEl && !tcgEl.value) tcgEl.value = '';
+        if (stEl  && !stEl.value)  stEl.value  = 'in-arrivo';
+        if (mpEl  && !mpEl.value)  mpEl.value  = '';
+        renderCompPlayers();
+    }
+}
+
+function setEventType(type, btn) {
+    _setEventTypeUI(type);
+}
+
+function _getEventType() {
+    var active = document.querySelector('.ev-type-btn.is-active');
+    return active ? active.dataset.type : 'evento';
+}
+
+/* ─── COMPETITION PLAYERS ─── */
+function addCompPlayer() {
+    _compPlayers.push({ name: '', wins: 0, losses: 0, draws: 0 });
+    renderCompPlayers();
+}
+
+function removeCompPlayer(idx) {
+    _compPlayers.splice(idx, 1);
+    renderCompPlayers();
+}
+
+function updateCompPlayer(idx, field, value) {
+    if (!_compPlayers[idx]) return;
+    _compPlayers[idx][field] = (field === 'name') ? value : (parseInt(value, 10) || 0);
+    /* Re-render only pts column (lightweight) */
+    var ptsEls = document.querySelectorAll('.comp-player-pts');
+    if (ptsEls[idx]) {
+        ptsEls[idx].textContent = (_compPlayers[idx].wins || 0) * 3 + (_compPlayers[idx].draws || 0);
+    }
+}
+
+function sortCompPlayers() {
+    _compPlayers.sort(function(a, b) {
+        var pa = (a.wins || 0) * 3 + (a.draws || 0);
+        var pb = (b.wins || 0) * 3 + (b.draws || 0);
+        return pb - pa || (b.wins || 0) - (a.wins || 0);
+    });
+    renderCompPlayers();
+}
+
+function renderCompPlayers() {
+    var container = document.getElementById('comp-players-list');
+    if (!container) return;
+    if (_compPlayers.length === 0) {
+        container.innerHTML = '<div style="text-align:center;padding:18px;color:var(--muted);font-size:12px">Nessun partecipante ancora — aggiungili con il tasto sotto.</div>';
+        return;
+    }
+    container.innerHTML = _compPlayers.map(function(p, idx) {
+        var pts = (p.wins || 0) * 3 + (p.draws || 0);
+        return '<div class="comp-player-row">'
+            + '<input type="text" placeholder="Nome giocatore" value="' + esc(p.name || '') + '" oninput="updateCompPlayer(' + idx + ',\'name\',this.value)">'
+            + '<input type="number" min="0" value="' + (p.wins || 0) + '" oninput="updateCompPlayer(' + idx + ',\'wins\',this.value)">'
+            + '<input type="number" min="0" value="' + (p.losses || 0) + '" oninput="updateCompPlayer(' + idx + ',\'losses\',this.value)">'
+            + '<input type="number" min="0" value="' + (p.draws || 0) + '" oninput="updateCompPlayer(' + idx + ',\'draws\',this.value)">'
+            + '<div class="comp-player-pts">' + pts + '</div>'
+            + '<button class="comp-del-btn" onclick="removeCompPlayer(' + idx + ')" title="Rimuovi">×</button>'
+            + '</div>';
+    }).join('');
 }
 
 function saveEvent() {
@@ -2164,11 +2533,20 @@ function saveEvent() {
     var desc  = document.getElementById('event-desc').value.trim();
     if (!title || !desc) { showToast('Titolo e descrizione sono obbligatori', 'error'); return; }
 
+    var type = _getEventType();
+
+    /* Competizione: TCG obbligatorio */
+    if (type === 'competizione') {
+        var tcgVal = document.getElementById('event-tcg').value;
+        if (!tcgVal) { showToast('Seleziona il gioco di carte per il torneo', 'error'); return; }
+    }
+
     var btn = document.getElementById('save-event-btn');
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner"></span> Salvataggio…';
 
     var data = {
+        type:  type,
         day:   document.getElementById('event-day').value.trim(),
         month: document.getElementById('event-month').value.trim().toUpperCase(),
         year:  document.getElementById('event-year').value.trim(),
@@ -2176,10 +2554,29 @@ function saveEvent() {
         desc:  desc,
         time:  document.getElementById('event-time').value.trim(),
         price: document.getElementById('event-price').value.trim(),
-        tag:   document.getElementById('event-tag').value.trim(),
         link:  document.getElementById('event-link').value.trim(),
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     };
+
+    /* Tag: free text for events/community; auto-set for competitions */
+    if (type === 'competizione') {
+        var TCG_NAMES = { onepiece:'One Piece', pokemon:'Pokémon TCG', yugioh:'Yu-Gi-Oh!', magic:'Magic: TG', dragonball:'Dragon Ball', naruto:'Naruto', altri:'TCG' };
+        data.tcg     = document.getElementById('event-tcg').value;
+        data.status  = document.getElementById('event-status').value || 'in-arrivo';
+        data.tag     = TCG_NAMES[data.tcg] || 'Torneo';
+        var mp = parseInt(document.getElementById('event-max-players').value, 10);
+        if (mp > 0) data.maxPlayers = mp;
+        /* Build ranked players array */
+        var valid = _compPlayers.filter(function(p){ return (p.name||'').trim(); });
+        valid = valid.map(function(p) {
+            return { name: p.name.trim(), wins: p.wins||0, losses: p.losses||0, draws: p.draws||0,
+                     points: (p.wins||0)*3 + (p.draws||0) };
+        }).sort(function(a,b){ return b.points - a.points || b.wins - a.wins; });
+        valid.forEach(function(p, i){ p.placement = i + 1; });
+        data.players = valid;
+    } else {
+        data.tag = document.getElementById('event-tag').value.trim();
+    }
 
     if (!_editEventId) {
         data.id = Date.now();
@@ -2969,15 +3366,18 @@ function sellProduct(firestoreId) {
 
     var price   = _parsePrice(p.price);
     var today   = new Date().toISOString().slice(0, 10);
-    var catMap  = { manga: 'vendite_manga', carte: 'vendite_carte', gadget: 'vendite_gadget' };
+    var catMap  = { manga: 'vendite_manga', libri: 'vendite_libri', carte: 'vendite_carte', gadget: 'vendite_gadget' };
     var transCat = catMap[p.cat] || 'altro_e';
 
     var batch = _db.batch();
 
-    batch.update(_db.collection('products').doc(firestoreId), {
-        quantity:  qty - 1,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
+    var newQty = qty - 1;
+    var prodUpdate = { quantity: newQty, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
+    /* Se arriva a zero e non è già un preordine/in-arrivo → segna ESAURITO */
+    if (newQty === 0 && p.badge !== 'PREORDINA' && p.badge !== 'IN ARRIVO') {
+        prodUpdate.badge = 'ESAURITO';
+    }
+    batch.update(_db.collection('products').doc(firestoreId), prodUpdate);
 
     batch.set(_db.collection('transazioni').doc(), {
         tipo:      'entrata',
@@ -2993,12 +3393,52 @@ function sellProduct(firestoreId) {
 
     batch.commit()
         .then(function() {
-            showToast('Vendita registrata — ' + p.title + ' (' + (qty - 1) + ' rimasti)', 'success');
+            var rimasti = qty - 1;
+            var msg = 'Vendita registrata — ' + p.title + ' (' + rimasti + ' rimasti)';
+            if (rimasti === 0) msg = p.title + ' esaurito — badge aggiornato a ESAURITO';
+            showToast(msg, rimasti === 0 ? 'warn' : 'success');
         })
         .catch(function(e) {
             showToast('Errore: ' + e.message, 'error');
         });
 }
+
+/* ─── AUTO-TRANSIZIONE TORNEI ─── */
+function _parseEventDateTime(e) {
+    /* Restituisce un oggetto Date dal giorno/mese/anno/orario dell'evento, o null */
+    if (!e.day || !e.month || !e.year) return null;
+    var mIdx = MONTHS_IT.indexOf((e.month || '').toUpperCase().substring(0, 3));
+    if (mIdx === -1) return null;
+    var hh = 0, mm = 0;
+    if (e.time) {
+        var parts = e.time.split(':');
+        hh = parseInt(parts[0], 10) || 0;
+        mm = parseInt(parts[1], 10) || 0;
+    }
+    return new Date(parseInt(e.year, 10), mIdx, parseInt(e.day, 10), hh, mm, 0);
+}
+
+function checkAutoEventStatus() {
+    if (!_fbReady || !_events.length) return;
+    var now = Date.now();
+    _events.forEach(function(e) {
+        if (e.type !== 'competizione') return;
+        if (e.status !== 'in-arrivo') return;
+        var dt = _parseEventDateTime(e);
+        if (!dt) return;
+        if (dt.getTime() <= now) {
+            _db.collection('events').doc(e.firestoreId).update({
+                status: 'in-corso',
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(function() {
+                showToast('🟢 «' + e.title + '» è iniziato — stato aggiornato a In Corso', 'info');
+            }).catch(function() {});
+        }
+    });
+}
+
+/* Controlla ogni minuto */
+setInterval(checkAutoEventStatus, 60000);
 
 /* ─── AVVIO AUTOMATICO ─── */
 /* subscribeData, subscribeTransazioni, switchView vengono chiamati
