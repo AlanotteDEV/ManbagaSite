@@ -1520,6 +1520,213 @@ section[id], footer[id] {
 /* ============================================================
    SEZIONE CONTATTI
    ============================================================ */
+/* ============================================================
+   CHI SIAMO
+   ============================================================ */
+#chi-siamo {
+    background: var(--black);
+    color: var(--white);
+    position: relative;
+    overflow: hidden;
+}
+.chisiamo-jp-bg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Noto Serif JP', serif;
+    font-size: clamp(60px, 14vw, 160px);
+    font-weight: 900;
+    color: rgba(255,255,255,0.02);
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+    z-index: 0;
+}
+#chi-siamo .section-inner { position: relative; z-index: 1; }
+#chi-siamo .section-title  { color: var(--white); }
+#chi-siamo .section-label  { color: rgba(220,38,38,0.8); }
+
+/* Intro testo */
+.chisiamo-intro {
+    max-width: 680px;
+    margin: 0 auto 56px;
+    text-align: center;
+    font-size: 16px;
+    line-height: 1.85;
+    color: rgba(245,240,232,0.75);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Timeline */
+.chisiamo-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    max-width: 640px;
+    margin: 0 auto 64px;
+    border-left: 2px solid #2a2a2a;
+    padding-left: 0;
+}
+.chisiamo-step {
+    display: flex;
+    gap: 24px;
+    padding: 0 0 36px 32px;
+    position: relative;
+}
+.chisiamo-step::before {
+    content: '';
+    position: absolute;
+    left: -6px;
+    top: 4px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #DC2626;
+    border: 2px solid var(--black);
+}
+.chisiamo-step-year {
+    font-family: 'Bangers', cursive;
+    font-size: 22px;
+    color: #DC2626;
+    min-width: 52px;
+    flex-shrink: 0;
+    line-height: 1.2;
+}
+.chisiamo-step-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+}
+.chisiamo-step-body p {
+    font-size: 14px;
+    color: rgba(245,240,232,0.6);
+    line-height: 1.7;
+    margin: 0;
+}
+
+/* Galleria foto */
+.chisiamo-gallery {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 12px;
+    margin-bottom: 64px;
+}
+.chisiamo-photo {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #141414;
+    aspect-ratio: 4/3;
+}
+.chisiamo-photo--wide {
+    grid-row: span 2;
+    aspect-ratio: unset;
+}
+.chisiamo-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform .4s ease;
+}
+.chisiamo-photo:hover img { transform: scale(1.04); }
+.chisiamo-photo-label {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 8px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(245,240,232,0.8);
+    background: linear-gradient(transparent, rgba(0,0,0,0.6));
+    text-transform: uppercase;
+    letter-spacing: .08em;
+}
+/* Placeholder quando l'immagine non è ancora impostata */
+.chisiamo-photo--placeholder {
+    border: 2px dashed #2a2a2a;
+}
+.chisiamo-photo--placeholder img { display: none; }
+.chisiamo-photo--placeholder::after {
+    content: '📷 Foto non ancora caricata';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: #444;
+    text-align: center;
+    padding: 16px;
+}
+
+/* Valori / pillole */
+.chisiamo-values {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+.chisiamo-value {
+    background: #0f0f0f;
+    border: 1px solid #1e1e1e;
+    border-radius: 12px;
+    padding: 28px 24px;
+    text-align: center;
+    transition: border-color .2s, transform .2s;
+}
+.chisiamo-value:hover {
+    border-color: #333;
+    transform: translateY(-3px);
+}
+.chisiamo-value-icon {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 40px;
+    color: #DC2626;
+    margin-bottom: 12px;
+    line-height: 1;
+}
+.chisiamo-value-title {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--white);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin-bottom: 10px;
+}
+.chisiamo-value p {
+    font-size: 13px;
+    color: rgba(245,240,232,0.55);
+    line-height: 1.7;
+    margin: 0;
+}
+
+/* Responsive chi siamo */
+@media (max-width: 900px) {
+    .chisiamo-gallery {
+        grid-template-columns: 1fr 1fr;
+    }
+    .chisiamo-photo--wide { grid-column: span 2; grid-row: span 1; aspect-ratio: 16/7; }
+    .chisiamo-values { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 560px) {
+    .chisiamo-gallery { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .chisiamo-values  { grid-template-columns: 1fr; }
+    .chisiamo-intro   { font-size: 15px; }
+}
+@media (max-width: 400px) {
+    .chisiamo-gallery { grid-template-columns: 1fr; }
+    .chisiamo-photo--wide { grid-column: span 1; }
+}
+
+/* ============================================================
+   CONTATTI
+   ============================================================ */
 #contatti {
     background: var(--black);
     color: var(--white);
@@ -3284,6 +3491,64 @@ textarea.form-input {
     font-size: 14px;
     color: #666;
     line-height: 1.7;
+}
+
+/* ---- Pagination ---- */
+.cp-pagination {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 32px 0 8px;
+}
+.cp-pag-info {
+    font-size: 12px;
+    color: #666;
+    font-family: 'Inter', sans-serif;
+}
+.cp-pag-btns {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.cp-pag-btn {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 7px 14px;
+    border-radius: 6px;
+    border: 1px solid #2a2a2a;
+    background: #141414;
+    color: #aaa;
+    cursor: pointer;
+    transition: background .15s, color .15s, border-color .15s;
+}
+.cp-pag-btn:hover:not(:disabled) {
+    background: #1e1e1e;
+    border-color: #444;
+    color: #f5f0e8;
+}
+.cp-pag-btn.is-active {
+    background: #DC2626;
+    border-color: #DC2626;
+    color: #fff;
+    font-weight: 700;
+}
+.cp-pag-btn:disabled {
+    opacity: .3;
+    cursor: default;
+}
+.cp-pag-num {
+    min-width: 36px;
+    padding: 7px 8px;
+    text-align: center;
+}
+.cp-pag-ellipsis {
+    color: #555;
+    font-size: 13px;
+    padding: 0 4px;
 }
 
 /* ---- Stagger fade-in animation ---- */

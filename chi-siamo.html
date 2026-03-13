@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#080808">
+    <link rel="icon" type="image/png" href="WhatsApp_Image_2026-03-10_at_11.15.27-removebg-preview.png">
+    <title>Chi siamo — MANBAGA Comics &amp; Games</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;500;600;700;900&family=Noto+Serif+JP:wght@900&display=swap" rel="stylesheet">
+
+    <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+        --bg:    #080808;
+        --bg2:   #0f0f0f;
+        --bg3:   #141414;
+        --red:   #DC2626;
+        --white: #f5f0e8;
+        --gray:  rgba(245,240,232,0.55);
+        --muted: rgba(245,240,232,0.32);
+        --border: rgba(255,255,255,0.07);
+        --font:  'Inter', sans-serif;
+        --comic: 'Bangers', cursive;
+        --jp:    'Noto Serif JP', serif;
+        --nav-h: 64px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+        font-family: var(--font);
+        background: var(--bg);
+        color: var(--white);
+        min-height: 100vh;
+        -webkit-font-smoothing: antialiased;
+        line-height: 1.7;
+    }
+
+    /* ── HEADER ── */
+    #header {
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        height: var(--nav-h);
+        background: rgba(8,8,8,.97);
+        backdrop-filter: blur(14px);
+        border-bottom: 1px solid rgba(220,38,38,.2);
+        z-index: 800;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 24px;
+    }
+    .header-logo {
+        font-family: var(--comic);
+        font-size: 26px;
+        letter-spacing: .06em;
+        text-decoration: none;
+        color: var(--white);
+    }
+    .header-logo .dot { color: var(--red); }
+    .header-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        color: var(--gray);
+        text-decoration: none;
+        padding: 6px 14px;
+        border: 1px solid rgba(255,255,255,.08);
+        border-radius: 20px;
+        transition: color .2s, border-color .2s;
+    }
+    .header-back:hover { color: var(--red); border-color: rgba(220,38,38,.4); }
+
+    /* ── MAIN ── */
+    main { padding-top: var(--nav-h); }
+
+    /* ── HERO ── */
+    .hero {
+        position: relative;
+        overflow: hidden;
+        padding: 72px 24px 64px;
+        text-align: center;
+    }
+    .hero-jp-bg {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--jp);
+        font-size: clamp(80px, 20vw, 220px);
+        font-weight: 900;
+        color: rgba(255,255,255,.02);
+        pointer-events: none;
+        user-select: none;
+        white-space: nowrap;
+    }
+    .hero-inner { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; }
+    .hero-label {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: .4em;
+        text-transform: uppercase;
+        color: rgba(220,38,38,.8);
+        margin-bottom: 16px;
+    }
+    .hero-title {
+        font-family: var(--comic);
+        font-size: clamp(56px, 10vw, 110px);
+        line-height: .9;
+        letter-spacing: .03em;
+        color: var(--white);
+        margin-bottom: 24px;
+    }
+    .hero-title span { color: var(--red); }
+    .hero-desc {
+        font-size: 17px;
+        line-height: 1.85;
+        color: var(--gray);
+        max-width: 560px;
+        margin: 0 auto;
+    }
+
+    /* ── SEZIONI ── */
+    .page-inner {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 24px 100px;
+    }
+
+    .cs-section {
+        margin-bottom: 72px;
+    }
+    .cs-section-label {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: .4em;
+        text-transform: uppercase;
+        color: rgba(220,38,38,.7);
+        margin-bottom: 10px;
+    }
+    .cs-section-title {
+        font-family: var(--comic);
+        font-size: clamp(28px, 5vw, 44px);
+        letter-spacing: .03em;
+        color: var(--white);
+        margin-bottom: 24px;
+        line-height: 1;
+    }
+
+    /* ── INTRO ── */
+    .cs-intro {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        font-size: 16px;
+        line-height: 1.9;
+        color: var(--gray);
+        max-width: 700px;
+    }
+    .cs-intro p strong { color: var(--white); }
+
+    /* ── TIMELINE ── */
+    .cs-timeline {
+        border-left: 2px solid #1e1e1e;
+        padding-left: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+    }
+    .cs-step {
+        display: flex;
+        gap: 28px;
+        padding: 0 0 40px 36px;
+        position: relative;
+    }
+    .cs-step:last-child { padding-bottom: 0; }
+    .cs-step::before {
+        content: '';
+        position: absolute;
+        left: -7px;
+        top: 5px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--red);
+        border: 3px solid var(--bg);
+        box-shadow: 0 0 0 1px var(--red);
+    }
+    .cs-step-year {
+        font-family: var(--comic);
+        font-size: 24px;
+        color: var(--red);
+        min-width: 60px;
+        flex-shrink: 0;
+        line-height: 1.1;
+    }
+    .cs-step-title {
+        font-size: 13px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .07em;
+        color: var(--white);
+        margin-bottom: 8px;
+    }
+    .cs-step p {
+        font-size: 14px;
+        color: var(--gray);
+        line-height: 1.75;
+        margin: 0;
+    }
+
+    /* ── GALLERIA ── */
+    .cs-gallery {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr;
+        grid-template-rows: 220px 180px;
+        gap: 12px;
+    }
+    .cs-photo {
+        position: relative;
+        border-radius: 12px;
+        overflow: hidden;
+        background: var(--bg3);
+    }
+    .cs-photo--wide { grid-row: span 2; }
+    .cs-photo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform .4s ease;
+    }
+    .cs-photo:hover img { transform: scale(1.04); }
+    .cs-photo-label {
+        position: absolute;
+        bottom: 0; left: 0; right: 0;
+        padding: 10px 14px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        color: rgba(245,240,232,.8);
+        background: linear-gradient(transparent, rgba(0,0,0,.65));
+    }
+    /* Placeholder foto non ancora caricata */
+    .cs-photo--empty {
+        border: 2px dashed #222;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        color: #333;
+        font-size: 12px;
+        text-align: center;
+        padding: 16px;
+    }
+    .cs-photo--empty img { display: none; }
+    .cs-photo--empty::before {
+        content: '📷';
+        font-size: 28px;
+        display: block;
+    }
+    .cs-photo--empty .cs-photo-label { display: none; }
+
+    /* ── VALORI ── */
+    .cs-values {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+    .cs-value {
+        background: var(--bg2);
+        border: 1px solid #1a1a1a;
+        border-radius: 14px;
+        padding: 32px 24px;
+        text-align: center;
+        transition: border-color .2s, transform .25s;
+    }
+    .cs-value:hover { border-color: #2a2a2a; transform: translateY(-4px); }
+    .cs-value-icon {
+        font-family: var(--jp);
+        font-size: 44px;
+        color: var(--red);
+        line-height: 1;
+        margin-bottom: 14px;
+    }
+    .cs-value-title {
+        font-size: 13px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .07em;
+        color: var(--white);
+        margin-bottom: 10px;
+    }
+    .cs-value p {
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1.75;
+        margin: 0;
+    }
+
+    /* ── FOOTER MINI ── */
+    .page-footer {
+        border-top: 1px solid #1a1a1a;
+        padding: 32px 24px;
+        text-align: center;
+        color: var(--muted);
+        font-size: 12px;
+    }
+    .page-footer a { color: var(--red); text-decoration: none; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+        .cs-gallery {
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 200px 160px 160px;
+        }
+        .cs-photo--wide { grid-column: span 2; grid-row: span 1; }
+        .cs-values { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 520px) {
+        .cs-gallery { grid-template-columns: 1fr; grid-template-rows: none; }
+        .cs-photo { height: 200px; }
+        .cs-photo--wide { grid-column: span 1; }
+        .cs-values { grid-template-columns: 1fr; }
+        .hero-desc { font-size: 15px; }
+        .cs-step { gap: 16px; padding-left: 24px; }
+        .cs-step-year { min-width: 48px; font-size: 20px; }
+    }
+    </style>
+</head>
+<body>
+
+<header id="header">
+    <a href="index.html" class="header-logo">MAN<span class="dot">B</span>AGA<span class="dot">.</span></a>
+    <a href="index.html" class="header-back">&#8592; Torna al sito</a>
+</header>
+
+<main>
+
+    <!-- HERO -->
+    <div class="hero">
+        <div class="hero-jp-bg" aria-hidden="true">私たちについて</div>
+        <div class="hero-inner">
+            <div class="hero-label">ストーリー &mdash; La nostra storia</div>
+            <h1 class="hero-title">CHI<br><span>SIAMO</span></h1>
+            <p class="hero-desc">
+                <!-- ✏️ MODIFICA: frase d'apertura della fumetteria -->
+                MANBAGA Comics &amp; Games nasce dalla passione per il mondo dei manga, dei fumetti
+                e della cultura pop giapponese. Da un piccolo sogno, è diventata la fumetteria
+                di riferimento per tutti gli appassionati della zona.
+            </p>
+        </div>
+    </div>
+
+    <div class="page-inner">
+
+        <!-- STORIA -->
+        <div class="cs-section">
+            <div class="cs-section-label">La nostra storia</div>
+            <h2 class="cs-section-title">LE NOSTRE RADICI</h2>
+            <div class="cs-intro">
+                <p>
+                    <!-- ✏️ MODIFICA: paragrafo 1 — com'è nata la fumetteria -->
+                    Inserisci qui il racconto delle origini di MANBAGA. Quando è nata, chi l'ha fondata,
+                    da quale passione è partita l'idea.
+                </p>
+                <p>
+                    <!-- ✏️ MODIFICA: paragrafo 2 — la crescita -->
+                    Racconta come il negozio è cresciuto nel tempo: i primi clienti affezionati,
+                    i tornei, le collaborazioni, i momenti chiave.
+                </p>
+                <p>
+                    <!-- ✏️ MODIFICA: paragrafo 3 — oggi -->
+                    Oggi MANBAGA è <strong>molto più di una fumetteria</strong>: è uno spazio di incontro,
+                    una community viva dove ogni settimana succede qualcosa.
+                </p>
+            </div>
+        </div>
+
+        <!-- TIMELINE -->
+        <div class="cs-section">
+            <div class="cs-section-label">Le tappe</div>
+            <h2 class="cs-section-title">LA NOSTRA TIMELINE</h2>
+            <div class="cs-timeline">
+                <!-- ✏️ Modifica anni e testi; aggiungi o rimuovi .cs-step a piacere -->
+                <div class="cs-step">
+                    <div class="cs-step-year">20XX</div>
+                    <div class="cs-step-body">
+                        <div class="cs-step-title">L'inizio</div>
+                        <p><!-- ✏️ Descrivi come è nata la fumetteria, dove, perché --></p>
+                    </div>
+                </div>
+                <div class="cs-step">
+                    <div class="cs-step-year">20XX</div>
+                    <div class="cs-step-body">
+                        <div class="cs-step-title">Il primo grande evento</div>
+                        <p><!-- ✏️ Primo torneo, prima fiera, prima collaborazione importante --></p>
+                    </div>
+                </div>
+                <div class="cs-step">
+                    <div class="cs-step-year">20XX</div>
+                    <div class="cs-step-body">
+                        <div class="cs-step-title">La crescita</div>
+                        <p><!-- ✏️ Espansione del catalogo, nuovi spazi, nuovi collaboratori --></p>
+                    </div>
+                </div>
+                <div class="cs-step">
+                    <div class="cs-step-year">Oggi</div>
+                    <div class="cs-step-body">
+                        <div class="cs-step-title">La community</div>
+                        <p><!-- ✏️ Com'è diventato oggi il negozio, quante persone, quanti eventi --></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GALLERIA FOTO -->
+        <div class="cs-section">
+            <div class="cs-section-label">I nostri momenti</div>
+            <h2 class="cs-section-title">FOTO &amp; EVENTI</h2>
+            <div class="cs-gallery">
+                <!-- ✏️ Sostituisci src="" con il percorso delle tue foto reali -->
+                <!-- Foto grande (occupa 2 righe) -->
+                <div class="cs-photo cs-photo--wide cs-photo--empty">
+                    <img src="" alt="Il negozio">
+                    <div class="cs-photo-label">Il negozio</div>
+                </div>
+                <!-- Foto piccole -->
+                <div class="cs-photo cs-photo--empty">
+                    <img src="" alt="Un evento">
+                    <div class="cs-photo-label">Un evento</div>
+                </div>
+                <div class="cs-photo cs-photo--empty">
+                    <img src="" alt="Torneo">
+                    <div class="cs-photo-label">Torneo</div>
+                </div>
+                <div class="cs-photo cs-photo--empty">
+                    <img src="" alt="La community">
+                    <div class="cs-photo-label">La community</div>
+                </div>
+                <div class="cs-photo cs-photo--empty">
+                    <img src="" alt="I prodotti">
+                    <div class="cs-photo-label">I prodotti</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VALORI -->
+        <div class="cs-section">
+            <div class="cs-section-label">Cosa ci muove</div>
+            <h2 class="cs-section-title">I NOSTRI VALORI</h2>
+            <div class="cs-values">
+                <div class="cs-value">
+                    <div class="cs-value-icon">漫</div>
+                    <div class="cs-value-title">Manga &amp; Comics</div>
+                    <p>Una selezione curata di titoli italiani e importati, per ogni gusto e ogni età.</p>
+                </div>
+                <div class="cs-value">
+                    <div class="cs-value-icon">遊</div>
+                    <div class="cs-value-title">Giochi &amp; Tornei</div>
+                    <p>Carte collezionabili, board games e tornei regolari: ci si sfida, ci si diverte.</p>
+                </div>
+                <div class="cs-value">
+                    <div class="cs-value-icon">絆</div>
+                    <div class="cs-value-title">Community</div>
+                    <p>Più di un negozio: uno spazio dove gli appassionati si incontrano e crescono insieme.</p>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /page-inner -->
+
+</main>
+
+<footer class="page-footer">
+    &copy; 2025 MANBAGA Comics &amp; Games &nbsp;·&nbsp;
+    <a href="index.html">Torna al sito</a> &nbsp;·&nbsp;
+    <a href="privacy.html">Privacy &amp; Cookie</a>
+</footer>
+
+</body>
+</html>

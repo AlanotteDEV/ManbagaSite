@@ -703,6 +703,10 @@ function submitPreorder(productId) {
     }).catch(function(err) {
         console.error('Preorder save error:', err);
         var msg = (err && err.message) ? err.message : String(err);
+        /* Messaggio user-friendly per errore permessi Firestore */
+        if (msg.toLowerCase().includes('permission') || msg.toLowerCase().includes('insufficient')) {
+            msg = 'Servizio temporaneamente non disponibile. Contattaci su Instagram o WhatsApp per il preordine.';
+        }
         alert('Errore durante l\'invio:\n' + msg);
         if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Invia Richiesta'; }
     });

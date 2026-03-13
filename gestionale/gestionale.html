@@ -1526,7 +1526,7 @@ var FB_CONFIG = {
 
 /* ─── SUBCATEGORIES MAP ─── */
 var SUBCATS = {
-    manga:  [['shonen','Shonen'],['seinen','Seinen'],['shojo','Shojo'],['josei','Josei'],['kodomo','Kodomomuke (Bambini)'],['isekai','Isekai'],['sport','Sport'],['horror','Horror & Thriller'],['fantasy','Fantasy & Avventura'],['mecha','Mecha & Sci-Fi'],['slice','Slice of Life'],['yaoi','Boys Love (BL)'],['yuri','Girls Love (GL)'],['comics','Comics & Graphic Novel'],['manwha','Manwha']],
+    manga:  [['shonen','Shonen'],['seinen','Seinen'],['shojo','Shojo'],['josei','Josei'],['kodomo','Kodomomuke (Bambini)'],['isekai','Isekai'],['sport','Sport'],['horror','Horror & Thriller'],['fantasy','Fantasy & Avventura'],['mecha','Mecha & Sci-Fi'],['slice','Slice of Life'],['yaoi','Boys Love (BL)'],['yuri','Girls Love (GL)'],['comics','Comics & Graphic Novel'],['manwha','Manwha'],['romance','Romance']],
     libri:  [['romanzi','Romanzi']],
     carte:  [['pokemon','Pokémon TCG'],['yugioh','Yu-Gi-Oh!'],['magic','Magic: The Gathering'],['onepiece','One Piece TCG'],['dragonball','Dragon Ball Super'],['naruto','Naruto Card Game'],['altri','Board Games & Altri']],
     gadget: [['figure','Action Figures'],['funko','Funko Pop'],['statuette','Statuette'],['poster','Poster & Art'],['abbigliamento','Abbigliamento'],['accessori','Accessori'],['lego','Lego'],['peluche','Peluche & Plushie']]
@@ -2321,6 +2321,14 @@ function _commitProduct(imageUrl, btn) {
     if (!_editProductId) {
         data.id = Date.now();
         data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+    }
+
+    /* Auto-restore: se la quantità è > 0 e il badge era ESAURITO/OUT OF STOCK → ripristina a Disponibile */
+    var wasOos = (data.badge === 'ESAURITO' || data.badge === 'OUT OF STOCK');
+    if (wasOos && data.quantity > 0) {
+        data.badge = '';
+        document.getElementById('product-badge').value = '';
+        showToast('Badge ripristinato a Disponibile (quantità > 0)', 'info');
     }
 
     var promise = _editProductId
@@ -3250,7 +3258,14 @@ function subscribePreordini() {
             if (bCont) bCont.textContent = _preordini.filter(function(p){ return p.status === 'contattato'; }).length;
             if (_currentView === 'preordini') renderPreordini();
         },
-        function(err) { console.error('Preordini error:', err); }
+        function(err) {
+            console.error('Preordini error:', err);
+            var container = document.getElementById('po-container');
+            if (container) container.innerHTML = '<div class="empty-state"><span class="empty-state-kanji">⚠️</span>'
+                + '<div class="empty-state-title">Errore caricamento preordini</div>'
+                + '<div class="empty-state-sub" style="color:#f87171">' + err.message + '</div>'
+                + '<div class="empty-state-sub" style="margin-top:8px">Controlla le Security Rules di Firestore nella console Firebase.</div></div>';
+        }
     );
 }
 

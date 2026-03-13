@@ -309,6 +309,7 @@
                 <li><button class="cp-sub-btn" data-sub="yuri" onclick="catPage.setSub('yuri')">Girls Love (GL) <span class="cp-cnt" id="cnt-manga-yuri">0</span></button></li>
                 <li><button class="cp-sub-btn" data-sub="comics" onclick="catPage.setSub('comics')">Comics &amp; Graphic Novel <span class="cp-cnt" id="cnt-manga-comics">0</span></button></li>
                 <li><button class="cp-sub-btn" data-sub="manwha" onclick="catPage.setSub('manwha')">Manwha <span class="cp-cnt" id="cnt-manga-manwha">0</span></button></li>
+                <li><button class="cp-sub-btn" data-sub="romance" onclick="catPage.setSub('romance')">Romance <span class="cp-cnt" id="cnt-manga-romance">0</span></button></li>
             </ul>
         </div>
 
@@ -418,6 +419,9 @@
         <div class="cp-grid" id="cp-grid">
             <!-- populated by JS -->
         </div>
+
+        <!-- Pagination -->
+        <div class="cp-pagination" id="cp-pagination"></div>
 
     </main>
 
@@ -584,7 +588,8 @@ var catPage = (function () {
                 { key: 'yaoi',    label: 'Boys Love (BL)' },
                 { key: 'yuri',    label: 'Girls Love (GL)' },
                 { key: 'comics',  label: 'Comics & Graphic Novel' },
-                { key: 'manwha',  label: 'Manwha' }
+                { key: 'manwha',  label: 'Manwha' },
+                { key: 'romance', label: 'Romance' }
             ]
         },
         libri: {
@@ -630,6 +635,8 @@ var catPage = (function () {
     var _cat = 'carte';
     var _sub = 'all';
     var _query = '';
+    var _page  = 0;
+    var PAGE_SIZE = 25;
 
     /* ---- Parse URL params ---- */
     function _parseUrl() {
@@ -859,10 +866,18 @@ var catPage = (function () {
                 + '<p class="cp-empty-msg">Non ci sono ancora prodotti qui.<br>'
                 + 'Seguici su <a href="https://www.instagram.com/_manbaga_/" target="_blank" rel="noopener noreferrer" style="color:#DC2626">Instagram</a> per scoprire le novità!</p>'
                 + '</div>';
+            _renderPagination(0, 0);
             return;
         }
 
-        grid.innerHTML = filtered.map(function (p, i) {
+        /* Clamp page */
+        var totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+        if (_page >= totalPages) _page = totalPages - 1;
+        if (_page < 0) _page = 0;
+
+        var paginated = filtered.slice(_page * PAGE_SIZE, (_page + 1) * PAGE_SIZE);
+
+        grid.innerHTML = paginated.map(function (p, i) {
             return '<div style="animation-delay:' + (i * 0.05) + 's">' + _cardHtml(p) + '</div>';
         }).join('');
 
@@ -875,6 +890,46 @@ var catPage = (function () {
                 wrapper.replaceWith(card);
             }
         });
+
+        _renderPagination(totalPages, filtered.length);
+    }
+
+    function _renderPagination(totalPages, totalItems) {
+        var el = document.getElementById('cp-pagination');
+        if (!el) return;
+        if (totalPages <= 1) { el.innerHTML = ''; return; }
+
+        var html = '<div class="cp-pag-info">Pagina ' + (_page + 1) + ' di ' + totalPages
+            + ' &nbsp;·&nbsp; ' + totalItems + ' prodotti</div>'
+            + '<div class="cp-pag-btns">';
+
+        html += '<button class="cp-pag-btn" onclick="catPage.goPage(' + (_page - 1) + ')"'
+            + (_page === 0 ? ' disabled' : '') + '>&#8592; Precedente</button>';
+
+        /* Page number buttons — show max 5 around current */
+        var start = Math.max(0, _page - 2);
+        var end   = Math.min(totalPages - 1, _page + 2);
+        if (start > 0) html += '<button class="cp-pag-btn cp-pag-num" onclick="catPage.goPage(0)">1</button>'
+            + (start > 1 ? '<span class="cp-pag-ellipsis">…</span>' : '');
+        for (var i = start; i <= end; i++) {
+            html += '<button class="cp-pag-btn cp-pag-num' + (i === _page ? ' is-active' : '') + '" onclick="catPage.goPage(' + i + ')">' + (i + 1) + '</button>';
+        }
+        if (end < totalPages - 1) html += (end < totalPages - 2 ? '<span class="cp-pag-ellipsis">…</span>' : '')
+            + '<button class="cp-pag-btn cp-pag-num" onclick="catPage.goPage(' + (totalPages - 1) + ')">' + totalPages + '</button>';
+
+        html += '<button class="cp-pag-btn" onclick="catPage.goPage(' + (_page + 1) + ')"'
+            + (_page >= totalPages - 1 ? ' disabled' : '') + '>Successiva &#8594;</button>';
+
+        html += '</div>';
+        el.innerHTML = html;
+    }
+
+    function goPage(n) {
+        _page = n;
+        render();
+        /* Scroll to top of grid */
+        var main = document.getElementById('cp-main');
+        if (main) main.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     /* ---- Public: setCat ---- */
@@ -883,12 +938,14 @@ var catPage = (function () {
         /* Toggle: click again on active category to collapse */
         _cat = (_cat === cat) ? null : cat;
         _sub = 'all';
+        _page = 0;
         render();
     }
 
     /* ---- Public: setSub ---- */
     function setSub(sub) {
         _sub = sub || 'all';
+        _page = 0;
         render();
     }
 
@@ -900,11 +957,13 @@ var catPage = (function () {
 
     function setSearch(q) {
         _query = q || '';
+        _page = 0;
         render();
     }
 
     function clearSearch() {
         _query = '';
+        _page = 0;
         var input = document.getElementById('cp-search-input');
         if (input) input.value = '';
         render();
@@ -916,7 +975,8 @@ var catPage = (function () {
         render:      render,
         init:        init,
         setSearch:   setSearch,
-        clearSearch: clearSearch
+        clearSearch: clearSearch,
+        goPage:      goPage
     };
 
 })();
