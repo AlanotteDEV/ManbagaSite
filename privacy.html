@@ -8,9 +8,8 @@
     <link rel="icon" type="image/png" href="WhatsApp_Image_2026-03-10_at_11.15.27-removebg-preview.png">
     <title>Privacy &amp; Cookie Policy — MANBAGA Comics &amp; Games</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <!-- Fonts self-hosted (GDPR compliant — nessuna richiesta a Google) -->
+    <link rel="stylesheet" href="fonts/fonts.css">
 
     <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -315,15 +314,17 @@
         <h1 class="hero-title">PRIVACY &amp;<br><span>COOKIE POLICY</span></h1>
         <p class="hero-meta">
             Titolare: MANBAGA Comics &amp; Games &mdash; Via Padre Reginaldo Giuliani, 21, Canosa di Puglia (BT)<br>
+            P.IVA: <!-- ✏️ INSERIRE P.IVA --> &nbsp;&middot;&nbsp;
             Ultimo aggiornamento: <strong id="last-update"></strong>
         </p>
 
         <div class="update-box">
             <span style="font-size:20px;flex-shrink:0">📋</span>
             <div>
-                <strong>Informativa sintetica</strong> — Questo sito raccoglie solo i dati strettamente necessari al suo funzionamento:
-                prenotazione tavoli (Firebase Auth + Realtime Database), pubblicazione di recensioni, catalogo prodotti ed eventi (Firebase Firestore), modulo di contatto (EmailJS).
-                Non vendiamo né cediamo i tuoi dati a terzi per scopi commerciali.
+                <strong>Informativa sintetica</strong> — Questo sito usa esclusivamente cookie tecnici necessari al funzionamento:
+                prenotazione tavoli (Firebase Auth + Realtime Database), catalogo prodotti, recensioni e preordini (Firebase Firestore), modulo di contatto (EmailJS).
+                I font tipografici sono ospitati direttamente sul nostro server — nessuna richiesta a Google Fonts.
+                Non usiamo cookie analitici, pubblicitari o di profilazione. Non vendiamo né cediamo i tuoi dati a terzi per scopi commerciali.
             </div>
         </div>
 
@@ -332,7 +333,8 @@
             <h2 class="section-title"><span class="s-icon">🏪</span> 1. Titolare del Trattamento</h2>
             <p>
                 Il Titolare del trattamento dei dati personali è <strong>MANBAGA Comics &amp; Games</strong>,
-                con sede in Via Padre Reginaldo Giuliani, 21 — 76012 Canosa di Puglia (BT), Italia.
+                con sede in Via Padre Reginaldo Giuliani, 21 — 76012 Canosa di Puglia (BT), Italia.<br>
+                <strong>P.IVA:</strong> <!-- ✏️ INSERIRE P.IVA -->
             </p>
             <p>
                 Per qualsiasi richiesta relativa alla privacy puoi contattarci all'indirizzo email:
@@ -361,6 +363,11 @@
                 <li><strong>Dati del messaggio:</strong> nome, indirizzo email, testo del messaggio inviato tramite il form nella homepage. Questi dati vengono trasmessi via EmailJS direttamente alla nostra casella di posta.</li>
             </ul>
 
+            <p style="margin-top:12px"><strong style="color:var(--white)">Preordini</strong></p>
+            <ul>
+                <li><strong>Dati del preordine:</strong> nome, numero di telefono o indirizzo email di contatto, titolo/prodotto richiesto. I dati vengono memorizzati su Firebase Firestore e sono accessibili esclusivamente al titolare tramite il gestionale interno. Non è richiesta registrazione.</li>
+            </ul>
+
             <p style="margin-top:12px"><strong style="color:var(--white)">Dati Tecnici (raccolti automaticamente)</strong></p>
             <ul>
                 <li>Indirizzo IP, tipo di browser e sistema operativo, raccolti automaticamente dall'infrastruttura Google/Firebase per sicurezza e funzionamento del servizio. Non vengono utilizzati per profilare l'utente.</li>
@@ -377,6 +384,7 @@
                 <li>Ricevere, moderare e pubblicare le recensioni degli utenti sul sito.</li>
                 <li>Visualizzare il catalogo prodotti ed eventi del negozio (dati gestiti internamente, non personali).</li>
                 <li>Rispondere alle richieste di contatto inviate tramite il modulo nella homepage.</li>
+                <li>Ricevere e gestire le richieste di preordine di prodotti, contattare il cliente quando il prodotto è disponibile.</li>
                 <li>Garantire la sicurezza del servizio e prevenire usi fraudolenti.</li>
             </ul>
             <p>
@@ -391,6 +399,7 @@
                 <li><strong>Prenotazione tavoli:</strong> esecuzione di un contratto / misure precontrattuali (art. 6.1.b GDPR) — i dati sono necessari per fornire il servizio richiesto.</li>
                 <li><strong>Recensioni:</strong> consenso espresso dell'utente (art. 6.1.a GDPR) — l'invio è volontario. L'utente può richiedere la cancellazione in qualsiasi momento.</li>
                 <li><strong>Modulo di contatto:</strong> legittimo interesse a rispondere alle richieste (art. 6.1.f GDPR).</li>
+                <li><strong>Preordini:</strong> esecuzione di misure precontrattuali su richiesta dell'interessato (art. 6.1.b GDPR) — i dati sono necessari per poter contattare il cliente al momento della disponibilità del prodotto richiesto.</li>
                 <li><strong>Dati tecnici:</strong> legittimo interesse alla sicurezza e al corretto funzionamento del servizio (art. 6.1.f GDPR).</li>
             </ul>
         </div>
@@ -399,8 +408,13 @@
         <div class="section">
             <h2 class="section-title"><span class="s-icon">🍪</span> 5. Cookie &amp; Storage Policy</h2>
             <p>
-                Un cookie è un piccolo file di testo salvato nel tuo browser. Il nostro sito utilizza cookie tecnici necessari
-                al funzionamento e cookie di terze parti legati ai servizi esterni che utilizziamo. Non utilizziamo cookie di profilazione o pubblicitari.
+                Un cookie è un piccolo file di testo salvato nel tuo browser. Il nostro sito utilizza <strong>esclusivamente cookie tecnici strettamente necessari</strong> al funzionamento.
+                Non utilizziamo cookie di profilazione, analitici o pubblicitari.
+            </p>
+            <p>
+                In base all'art. 122 del Codice Privacy (D.Lgs. 196/2003) e alle Linee Guida del Garante Privacy (10 giugno 2021),
+                i cookie strettamente tecnici <strong>non richiedono consenso</strong> e non è previsto un meccanismo di opt-out,
+                in quanto necessari per l'erogazione del servizio richiesto dall'utente. Puoi comunque cancellarli manualmente dal tuo browser in qualsiasi momento.
             </p>
 
             <table class="cookie-table">
@@ -444,39 +458,22 @@
                         <td>Archiviazione delle immagini dei prodotti del catalogo.</td>
                     </tr>
                     <tr>
-                        <td>Google Fonts<br><small>(fonts.googleapis.com)</small></td>
-                        <td><span class="badge-analytics">Tecnico</span></td>
-                        <td>1 anno</td>
-                        <td>Caricamento dei font tipografici del sito. Google potrebbe registrare l'indirizzo IP della richiesta come dato di accesso ai propri server.</td>
-                    </tr>
-                    <tr>
                         <td>EmailJS<br><small>(emailjs.com)</small></td>
                         <td><span class="badge-analytics">Tecnico</span></td>
                         <td>Sessione</td>
                         <td>Servizio di invio email per il modulo di contatto nella homepage. I dati del form (nome, email, messaggio) vengono trasmessi ai server EmailJS per l'inoltro.</td>
                     </tr>
-                    <tr>
-                        <td>Chart.js CDN<br><small>(cdn.jsdelivr.net)</small></td>
-                        <td><span class="badge-analytics">Tecnico</span></td>
-                        <td>Sessione</td>
-                        <td>Libreria JavaScript per la visualizzazione di grafici nel gestionale interno. Nessun dato personale trasmesso, solo richiesta del file JS.</td>
-                    </tr>
-                    <tr>
-                        <td>SheetJS CDN<br><small>(cdn.sheetjs.com)</small></td>
-                        <td><span class="badge-analytics">Tecnico</span></td>
-                        <td>Sessione</td>
-                        <td>Libreria JavaScript per l'export Excel nel gestionale interno. Nessun dato personale trasmesso, solo richiesta del file JS.</td>
-                    </tr>
                 </tbody>
             </table>
 
             <p style="margin-top:14px">
-                Puoi gestire o cancellare i cookie in qualsiasi momento dalle impostazioni del tuo browser.
+                Puoi eliminare i cookie in qualsiasi momento dalle impostazioni del tuo browser.
                 Disabilitare i cookie tecnici legati a Firebase potrebbe impedire il funzionamento del sistema di prenotazione tavoli.
             </p>
             <p>
-                Per revocare il consenso al banner cookie, puoi eliminare la voce <code>manbaga_cookie_consent</code>
-                dallo storage del browser (DevTools &rarr; Application &rarr; LocalStorage).
+                Per visualizzare nuovamente l'avviso cookie, clicca su "<strong>Gestisci cookie</strong>" nel footer del sito,
+                oppure elimina la chiave <code>manbaga_cookie_v2</code> dallo storage del browser
+                (DevTools &rarr; Application &rarr; LocalStorage).
             </p>
         </div>
 
@@ -506,17 +503,6 @@
                     <a href="https://www.emailjs.com/legal/privacy-policy/" target="_blank" rel="noopener">Privacy Policy EmailJS ↗</a>
                 </li>
                 <li>
-                    <strong>Google Fonts:</strong> font tipografici caricati da server Google.
-                    <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Privacy Policy Google ↗</a>
-                </li>
-                <li>
-                    <strong>jsDelivr CDN (Fondazione jsdelivr.net):</strong> distribuzione della libreria Chart.js. Nessun dato personale trasmesso.
-                    <a href="https://www.jsdelivr.com/privacy-policy-jsdelivr-net" target="_blank" rel="noopener">Privacy Policy jsDelivr ↗</a>
-                </li>
-                <li>
-                    <strong>SheetJS / xlsx (cdn.sheetjs.com):</strong> libreria per export Excel usata solo nel gestionale interno. Nessun dato personale trasmesso.
-                </li>
-                <li>
                     <strong>Instagram (Meta Platforms):</strong> link al profilo Instagram del negozio. Il click reindirizza alla piattaforma Instagram; eventuali dati raccolti da Meta sono soggetti alle loro policy.
                     <a href="https://privacycenter.instagram.com/policy/" target="_blank" rel="noopener">Privacy Policy Instagram ↗</a>
                 </li>
@@ -536,6 +522,7 @@
                 <li><strong>Dati di prenotazione tavoli:</strong> le prenotazioni vengono eliminate automaticamente dal sistema quando l'orario di uscita previsto è scaduto. L'account Firebase Auth viene conservato finché l'utente non richiede la cancellazione.</li>
                 <li><strong>Recensioni:</strong> conservate fino a revoca del consenso o richiesta di cancellazione da parte dell'utente o del titolare.</li>
                 <li><strong>Messaggi di contatto:</strong> conservati nella casella email del titolare per il tempo necessario a gestire la richiesta, comunque non oltre 12 mesi.</li>
+                <li><strong>Dati di preordine:</strong> conservati su Firebase Firestore fino all'evasione del preordine o alla richiesta di cancellazione da parte dell'interessato, comunque non oltre 24 mesi dalla richiesta.</li>
                 <li><strong>Dati tecnici:</strong> conservati dall'infrastruttura Firebase/Google secondo le proprie policy (generalmente 90–180 giorni per i log di accesso).</li>
             </ul>
         </div>
@@ -608,6 +595,7 @@
         <div class="privacy-footer">
             <p>
                 &copy; 2026 MANBAGA Comics &amp; Games &mdash; Via Padre Reginaldo Giuliani, 21, Canosa di Puglia (BT)<br>
+                P.IVA: <!-- ✏️ INSERIRE P.IVA --> &nbsp;&middot;&nbsp;
                 <a href="mailto:manbagacomics@gmail.com">manbagacomics@gmail.com</a>
                 &nbsp;&middot;&nbsp;
                 <a href="index.html">Torna alla homepage</a>
@@ -620,7 +608,7 @@
 <script>
 document.getElementById('last-update').textContent = new Intl.DateTimeFormat('it-IT', {
     day: '2-digit', month: 'long', year: 'numeric'
-}).format(new Date('2026-03-11'));
+}).format(new Date('2026-03-14'));
 </script>
 </body>
 </html>

@@ -106,6 +106,21 @@ input, textarea, select { font-family: inherit; color: inherit; }
 }
 .nav-item.active .nav-badge { background: rgba(220,38,38,.2); color: #f87171; }
 .nav-badge--alert { background: rgba(220,38,38,.25) !important; color: #f87171 !important; }
+@keyframes navPulse {
+  0%,100% { background: transparent; }
+  50%      { background: rgba(220,38,38,.18); }
+}
+.nav-item--alert {
+  animation: navPulse 1s ease-in-out infinite;
+  color: #f87171 !important;
+}
+.nav-item--alert svg { opacity: 1 !important; color: #f87171; }
+.nav-item--alert .nav-badge {
+  background: #dc2626 !important;
+  color: #fff !important;
+  box-shadow: 0 0 0 3px rgba(220,38,38,.25);
+  animation: navPulse 1s ease-in-out infinite;
+}
 .sb-bottom {
   border-top: 1px solid var(--border);
   padding: 16px 12px;
@@ -1781,6 +1796,8 @@ function switchView(view) {
     document.querySelectorAll('.nav-item').forEach(function(i){ i.classList.remove('active'); });
     var nav = document.querySelector('[data-view="' + view + '"]');
     if (nav) nav.classList.add('active');
+    /* Spegne il lampeggio preordini quando l'utente apre la sezione */
+    if (view === 'preordini') _setPreordiniAlert(false);
     renderCurrentView();
 }
 
@@ -2655,7 +2672,7 @@ function showToast(msg, type) {
 /* ─── HELPERS ─── */
 function esc(str) {
     return String(str || '')
-        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
 /* ─── KEYBOARD ─── */
@@ -3238,9 +3255,66 @@ function eliminaRecensione(id, nome) {
 /* ============================================================
    PREORDINI — richieste clienti
    ============================================================ */
-var _preordini     = [];
-var _unsubPreordini = null;
-var _poTab         = 'nuovo';
+var _preordini          = [];
+var _unsubPreordini     = null;
+var _poTab              = 'nuovo';
+var _prevPreordiniCount = null; /* null = primo caricamento, non suonare */
+var _audioCtx           = null;
+
+function _playPreorderChime() {
+    try {
+        if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        var ctx = _audioCtx;
+        if (ctx.state === 'suspended') ctx.resume();
+
+        /* Riverbero leggero */
+        var convolver = ctx.createConvolver();
+        var revLen    = ctx.sampleRate * 1.2;
+        var revBuf    = ctx.createBuffer(2, revLen, ctx.sampleRate);
+        for (var ch = 0; ch < 2; ch++) {
+            var d = revBuf.getChannelData(ch);
+            for (var i = 0; i < revLen; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / revLen, 2);
+        }
+        convolver.buffer = revBuf;
+        var revGain = ctx.createGain();
+        revGain.gain.value = 0.22;
+        convolver.connect(revGain);
+        revGain.connect(ctx.destination);
+
+        function note(freq, t, dur, vol) {
+            var osc  = ctx.createOscillator();
+            var gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);  /* dry */
+            gain.connect(convolver);        /* wet */
+            osc.type = 'sine';
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(vol, t);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+            osc.start(t);
+            osc.stop(t + dur + 0.1);
+        }
+
+        var now = ctx.currentTime;
+        /* Chime ascendente Do5–Mi5–Sol5 con coda lunga */
+        note(523.25, now,        1.4, 0.30);
+        note(659.25, now + 0.22, 1.3, 0.26);
+        note(783.99, now + 0.44, 1.6, 0.22);
+        /* Ripetizione attenuata dopo 2s */
+        note(523.25, now + 2.0,  1.0, 0.14);
+        note(659.25, now + 2.2,  1.0, 0.12);
+        note(783.99, now + 2.4,  1.2, 0.10);
+    } catch(e) {
+        console.warn('Audio chime non disponibile:', e);
+    }
+}
+
+function _setPreordiniAlert(on) {
+    var navEl = document.querySelector('[data-view="preordini"]');
+    if (!navEl) return;
+    if (on) navEl.classList.add('nav-item--alert');
+    else     navEl.classList.remove('nav-item--alert');
+}
 
 function subscribePreordini() {
     if (!_fbReady) return;
@@ -3250,6 +3324,18 @@ function subscribePreordini() {
                 var d = doc.data(); d.firestoreId = doc.id; return d;
             });
             var nuovi = _preordini.filter(function(p){ return p.status === 'nuovo'; }).length;
+
+            /* Suona e lampeggia solo se arriva un nuovo preorder DOPO il caricamento iniziale */
+            if (_prevPreordiniCount !== null && nuovi > _prevPreordiniCount) {
+                _playPreorderChime();
+                showToast('🛒 Nuovo preorder ricevuto!', 'success');
+            }
+            _prevPreordiniCount = nuovi;
+
+            /* Lampeggio nav: attivo se ci sono preordini non visti e non siamo già nella sezione */
+            if (nuovi > 0 && _currentView !== 'preordini') _setPreordiniAlert(true);
+            else _setPreordiniAlert(false);
+
             var nb = document.getElementById('nb-preordini');
             if (nb) nb.textContent = nuovi;
             var bNuovi = document.getElementById('po-badge-nuovo');
