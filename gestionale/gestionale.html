@@ -719,6 +719,29 @@ input, textarea, select { font-family: inherit; color: inherit; }
   color: var(--text); border-color: rgba(255,255,255,.25);
   background: rgba(255,255,255,.03);
 }
+.comp-player-wrap { margin-bottom: 4px; }
+.comp-deck-toggle {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 10px; font-weight: 700; letter-spacing: .05em;
+  color: var(--muted); background: transparent; border: none;
+  cursor: pointer; padding: 2px 4px; border-radius: 4px;
+  transition: color .15s;
+}
+.comp-deck-toggle:hover { color: var(--text); }
+.comp-deck-area { display: none; padding: 8px 8px 4px; }
+.comp-deck-area.is-open { display: block; }
+.comp-deck-area textarea {
+  width: 100%; padding: 8px 10px;
+  background: var(--elevated); border: 1px solid rgba(255,255,255,.1);
+  border-radius: 5px; font-size: 11px; color: var(--text);
+  font-family: monospace; resize: vertical; min-height: 80px;
+  line-height: 1.7; box-sizing: border-box;
+}
+.comp-deck-area textarea:focus {
+  outline: none; border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(220,38,38,.1);
+}
+.comp-deck-area textarea::placeholder { color: rgba(255,255,255,.2); }
 
 /* ===================== RESPONSIVE ===================== */
 @media (max-width: 900px) {
@@ -2514,7 +2537,7 @@ function editEvent(firestoreId) {
         if (stEl)  stEl.value  = e.status || 'in-arrivo';
         if (mpEl)  mpEl.value  = e.maxPlayers || '';
         _compPlayers = Array.isArray(e.players) ? e.players.map(function(p) {
-            return { name: p.name || '', wins: p.wins || 0, losses: p.losses || 0, draws: p.draws || 0 };
+            return { name: p.name || '', wins: p.wins || 0, losses: p.losses || 0, draws: p.draws || 0, deckList: p.deckList || '' };
         }) : [];
         renderCompPlayers();
     }
@@ -2558,7 +2581,7 @@ function _getEventType() {
 
 /* ─── COMPETITION PLAYERS ─── */
 function addCompPlayer() {
-    _compPlayers.push({ name: '', wins: 0, losses: 0, draws: 0 });
+    _compPlayers.push({ name: '', wins: 0, losses: 0, draws: 0, deckList: '' });
     renderCompPlayers();
 }
 
@@ -2569,12 +2592,21 @@ function removeCompPlayer(idx) {
 
 function updateCompPlayer(idx, field, value) {
     if (!_compPlayers[idx]) return;
-    _compPlayers[idx][field] = (field === 'name') ? value : (parseInt(value, 10) || 0);
+    if (field === 'name' || field === 'deckList') {
+        _compPlayers[idx][field] = value;
+    } else {
+        _compPlayers[idx][field] = parseInt(value, 10) || 0;
+    }
     /* Re-render only pts column (lightweight) */
     var ptsEls = document.querySelectorAll('.comp-player-pts');
     if (ptsEls[idx]) {
         ptsEls[idx].textContent = (_compPlayers[idx].wins || 0) * 3 + (_compPlayers[idx].draws || 0);
     }
+}
+
+function toggleDeckArea(idx) {
+    var area = document.getElementById('comp-deck-area-' + idx);
+    if (area) area.classList.toggle('is-open');
 }
 
 function sortCompPlayers() {
@@ -2595,13 +2627,22 @@ function renderCompPlayers() {
     }
     container.innerHTML = _compPlayers.map(function(p, idx) {
         var pts = (p.wins || 0) * 3 + (p.draws || 0);
-        return '<div class="comp-player-row">'
+        var hasDeck = (p.deckList || '').trim().length > 0;
+        return '<div class="comp-player-wrap">'
+            + '<div class="comp-player-row">'
             + '<input type="text" placeholder="Nome giocatore" value="' + esc(p.name || '') + '" oninput="updateCompPlayer(' + idx + ',\'name\',this.value)">'
             + '<input type="number" min="0" value="' + (p.wins || 0) + '" oninput="updateCompPlayer(' + idx + ',\'wins\',this.value)">'
             + '<input type="number" min="0" value="' + (p.losses || 0) + '" oninput="updateCompPlayer(' + idx + ',\'losses\',this.value)">'
             + '<input type="number" min="0" value="' + (p.draws || 0) + '" oninput="updateCompPlayer(' + idx + ',\'draws\',this.value)">'
             + '<div class="comp-player-pts">' + pts + '</div>'
             + '<button class="comp-del-btn" onclick="removeCompPlayer(' + idx + ')" title="Rimuovi">×</button>'
+            + '</div>'
+            + '<button class="comp-deck-toggle" onclick="toggleDeckArea(' + idx + ')">'
+            + '&#127183; ' + (hasDeck ? 'Deck list inserita ✓' : 'Aggiungi deck list')
+            + '</button>'
+            + '<div class="comp-deck-area' + (hasDeck ? ' is-open' : '') + '" id="comp-deck-area-' + idx + '">'
+            + '<textarea placeholder="Es:&#10;4x Luffy [OP01-001]&#10;3x Nami [OP01-016]&#10;oppure: 4 OP01-001&#10;(una carta per riga)" oninput="updateCompPlayer(' + idx + ',\'deckList\',this.value)">' + esc(p.deckList || '') + '</textarea>'
+            + '</div>'
             + '</div>';
     }).join('');
 }
@@ -2647,8 +2688,10 @@ function saveEvent() {
         /* Build ranked players array */
         var valid = _compPlayers.filter(function(p){ return (p.name||'').trim(); });
         valid = valid.map(function(p) {
-            return { name: p.name.trim(), wins: p.wins||0, losses: p.losses||0, draws: p.draws||0,
-                     points: (p.wins||0)*3 + (p.draws||0) };
+            var obj = { name: p.name.trim(), wins: p.wins||0, losses: p.losses||0, draws: p.draws||0,
+                        points: (p.wins||0)*3 + (p.draws||0) };
+            if ((p.deckList || '').trim()) obj.deckList = p.deckList.trim();
+            return obj;
         }).sort(function(a,b){ return b.points - a.points || b.wins - a.wins; });
         valid.forEach(function(p, i){ p.placement = i + 1; });
         data.players = valid;
@@ -2879,7 +2922,7 @@ function _renderTransTable(filtered) {
             + '<td style="font-size:11px;color:var(--muted);max-width:160px">' + esc(t.nota || '') + '</td>'
             + '<td style="white-space:nowrap">'
             + '<button class="btn-icon" onclick="editTransazione(\'' + t.firestoreId + '\')" title="Modifica">✏️</button> '
-            + '<button class="btn-icon" onclick="confirmDeleteTrans(\'' + t.firestoreId + '\',\'' + esc(t.desc || '') + '\')" title="Elimina" style="color:#f87171">🗑️</button>'
+            + '<button class="btn-icon" onclick="confirmDeleteTrans(\'' + t.firestoreId + '\')" title="Elimina" style="color:#f87171">🗑️</button>'
             + '</td>'
             + '</tr>';
     }).join('');
@@ -3066,7 +3109,9 @@ function saveTransazione() {
     });
 }
 
-function confirmDeleteTrans(firestoreId, desc) {
+function confirmDeleteTrans(firestoreId) {
+    var t = _transazioni.find(function(x){ return x.firestoreId === firestoreId; });
+    var desc = t ? (t.desc || '') : '';
     openConfirm(
         'Elimina Transazione',
         'Sei sicuro di voler eliminare questa transazione?',
