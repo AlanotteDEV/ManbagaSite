@@ -17,6 +17,9 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <!-- SheetJS (CDN ufficiale — Excel export) -->
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<!-- jsPDF + AutoTable (export catalogo PDF) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 
 <style>
 /* ===================== RESET ===================== */
@@ -966,6 +969,10 @@ input, textarea, select { font-family: inherit; color: inherit; }
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
             </button>
           </div>
+          <button class="btn btn-secondary btn-sm" onclick="exportCatalogoPDF()" title="Esporta catalogo come PDF stampabile">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+            Export PDF
+          </button>
           <button class="btn btn-primary" onclick="openAddProductModal()">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Aggiungi Prodotto
@@ -1083,6 +1090,19 @@ input, textarea, select { font-family: inherit; color: inherit; }
         <div class="view-title-block">
           <div class="view-label">Richieste Clienti</div>
           <div class="view-title">Preordini</div>
+        </div>
+      </div>
+
+      <!-- Stats preordini -->
+      <div class="stats-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:20px" id="po-stats-grid"></div>
+      <div style="display:grid;grid-template-columns:1fr 260px;gap:16px;margin-bottom:24px" id="po-charts-row">
+        <div class="section-card">
+          <div class="section-card-head"><span class="section-card-title">Preordini per mese (ultimi 6)</span></div>
+          <div style="padding:12px 16px;height:160px"><canvas id="po-chart-mesi"></canvas></div>
+        </div>
+        <div class="section-card">
+          <div class="section-card-head"><span class="section-card-title">Prodotti più richiesti</span></div>
+          <div id="po-top-list" style="padding:12px 16px"></div>
         </div>
       </div>
 
@@ -3027,6 +3047,180 @@ function confirmDeleteTrans(firestoreId, desc) {
 }
 
 /* ─── EXCEL EXPORT ─── */
+/* ─── EXPORT CATALOGO PDF ─── */
+function exportCatalogoPDF() {
+    if (!_products || _products.length === 0) { showToast('Nessun prodotto da esportare', 'warn'); return; }
+    if (typeof window.jspdf === 'undefined') { showToast('Libreria PDF non ancora caricata, riprova', 'warn'); return; }
+
+    var jsPDF = window.jspdf.jsPDF;
+    var doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+    var today = new Date().toLocaleDateString('it-IT');
+    var todayFile = new Date().toISOString().slice(0, 10);
+
+    doc.setFontSize(20);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(220, 38, 38);
+    doc.text('MANBAGA Comics & Games', 14, 16);
+    doc.setTextColor(30, 30, 30);
+    doc.setFontSize(12);
+    doc.text('Listino Prodotti', 14, 23);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(120, 120, 120);
+    doc.text('Generato il ' + today + '   ·   ' + _products.length + ' prodotti totali', 14, 29);
+
+    var catConfig = [
+        { key: 'manga',  label: 'Manga & Comics' },
+        { key: 'libri',  label: 'Libri & Romanzi' },
+        { key: 'carte',  label: 'Carte & Giochi' },
+        { key: 'gadget', label: 'Gadget & Figures' }
+    ];
+
+    var startY = 34;
+    catConfig.forEach(function(cat) {
+        var prods = _products.filter(function(p) { return p.cat === cat.key; });
+        if (prods.length === 0) return;
+
+        var rows = prods.map(function(p) {
+            var qty = parseInt(p.quantity) || 0;
+            return [
+                (p.title || '—') + (p.volume ? '  —  ' + p.volume : ''),
+                p.subcat || '—',
+                p.price || '—',
+                qty === 0 ? '—' : qty.toString(),
+                p.badge || 'Disponibile'
+            ];
+        });
+
+        doc.autoTable({
+            head: [[cat.label + ' (' + prods.length + ')', 'Sottocategoria', 'Prezzo', 'Qnt.', 'Stato']],
+            body: rows,
+            startY: startY,
+            theme: 'striped',
+            styles: { fontSize: 8, cellPadding: 2.5, textColor: [30, 30, 30] },
+            headStyles: { fillColor: [220, 38, 38], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8.5 },
+            alternateRowStyles: { fillColor: [250, 250, 250] },
+            columnStyles: {
+                0: { cellWidth: 110 },
+                1: { cellWidth: 55 },
+                2: { cellWidth: 22, halign: 'right' },
+                3: { cellWidth: 14, halign: 'center' },
+                4: { cellWidth: 35 }
+            },
+            margin: { left: 14, right: 14 }
+        });
+
+        startY = doc.lastAutoTable.finalY + 10;
+        if (startY > 175) { doc.addPage(); startY = 14; }
+    });
+
+    /* Footer su ogni pagina */
+    var pageCount = doc.internal.getNumberOfPages();
+    for (var i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(7);
+        doc.setTextColor(180, 180, 180);
+        doc.text('MANBAGA Comics & Games · Via Padre Reginaldo Giuliani, 21 · Canosa di Puglia (BT)', 14, 205);
+        doc.text('Pag. ' + i + ' / ' + pageCount, 280, 205, { align: 'right' });
+    }
+
+    doc.save('MANBAGA_Catalogo_' + todayFile + '.pdf');
+    showToast('PDF generato — ' + _products.length + ' prodotti', 'success');
+}
+
+/* ─── STATISTICHE PREORDINI ─── */
+var _poChartInst = null;
+
+function renderPoStats() {
+    var total      = _preordini.length;
+    var nuovi      = _preordini.filter(function(p){ return (p.status || 'nuovo') === 'nuovo'; }).length;
+    var contattati = _preordini.filter(function(p){ return p.status === 'contattato'; }).length;
+    var completati = _preordini.filter(function(p){ return p.status === 'completato'; }).length;
+    var tasso      = total > 0 ? Math.round(completati / total * 100) : 0;
+
+    /* Stat cards */
+    var grid = document.getElementById('po-stats-grid');
+    if (grid) {
+        grid.innerHTML = [
+            { label: 'Totale Preordini', value: total,      color: 'var(--blue)',  sub: 'ricevuti' },
+            { label: 'Da Gestire',       value: nuovi,      color: 'var(--amber)', sub: 'in attesa' },
+            { label: 'Completati',       value: completati, color: 'var(--green)', sub: 'consegnati' },
+            { label: 'Completamento',    value: tasso + '%',color: tasso >= 60 ? 'var(--green)' : 'var(--amber)', sub: 'tasso storico' }
+        ].map(function(s) {
+            return '<div class="stat-card">'
+                + '<div class="stat-card-label"><span class="stat-dot" style="background:' + s.color + '"></span>' + s.label + '</div>'
+                + '<div class="stat-card-value" style="font-size:26px">' + s.value + '</div>'
+                + '<div class="stat-card-sub">' + s.sub + '</div>'
+                + '</div>';
+        }).join('');
+    }
+
+    /* Grafico preordini per mese (ultimi 6) */
+    var now = new Date();
+    var mesiLabel = [], mesiData = [];
+    for (var i = 5; i >= 0; i--) {
+        var d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        var y = d.getFullYear(), m = d.getMonth();
+        mesiLabel.push(d.toLocaleDateString('it-IT', { month: 'short', year: '2-digit' }));
+        mesiData.push(_preordini.filter(function(p) {
+            if (!p.createdAt) return false;
+            try {
+                var pd = p.createdAt.toDate ? p.createdAt.toDate() : new Date(p.createdAt.seconds * 1000);
+                return pd.getFullYear() === y && pd.getMonth() === m;
+            } catch(e) { return false; }
+        }).length);
+    }
+
+    var canvas = document.getElementById('po-chart-mesi');
+    if (canvas) {
+        if (_poChartInst) { _poChartInst.destroy(); _poChartInst = null; }
+        _poChartInst = new Chart(canvas, {
+            type: 'bar',
+            data: {
+                labels: mesiLabel,
+                datasets: [{ label: 'Preordini', data: mesiData,
+                    backgroundColor: 'rgba(59,130,246,.25)', borderColor: '#3b82f6',
+                    borderWidth: 1.5, borderRadius: 4 }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { grid: { color: 'rgba(255,255,255,.04)' }, ticks: { color: 'rgba(240,237,232,.45)', font: { size: 10 } } },
+                    y: { grid: { color: 'rgba(255,255,255,.04)' }, ticks: { color: 'rgba(240,237,232,.45)', font: { size: 10 }, stepSize: 1 }, beginAtZero: true }
+                }
+            }
+        });
+    }
+
+    /* Top prodotti richiesti */
+    var topList = document.getElementById('po-top-list');
+    if (topList) {
+        var counts = {};
+        _preordini.forEach(function(p) {
+            var key = (p.productTitle || 'Sconosciuto').trim();
+            counts[key] = (counts[key] || 0) + 1;
+        });
+        var sorted = Object.keys(counts).sort(function(a, b) { return counts[b] - counts[a]; }).slice(0, 6);
+        if (sorted.length === 0) {
+            topList.innerHTML = '<div style="color:var(--muted);font-size:12px;text-align:center;padding:16px 0">Nessun dato</div>';
+        } else {
+            var maxCount = counts[sorted[0]];
+            topList.innerHTML = sorted.map(function(k) {
+                var pct = Math.round(counts[k] / maxCount * 100);
+                return '<div style="margin-bottom:9px">'
+                    + '<div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">'
+                    + '<span style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px" title="' + esc(k) + '">' + esc(k) + '</span>'
+                    + '<span style="color:var(--muted);flex-shrink:0;margin-left:8px">' + counts[k] + 'x</span>'
+                    + '</div>'
+                    + '<div style="height:4px;background:rgba(255,255,255,.06);border-radius:2px">'
+                    + '<div style="height:4px;width:' + pct + '%;background:#3b82f6;border-radius:2px"></div>'
+                    + '</div></div>';
+            }).join('');
+        }
+    }
+}
+
 function exportContabilitaExcel() {
     if (typeof XLSX === 'undefined') {
         showToast('Caricamento libreria Excel…', 'info');
@@ -3365,6 +3559,7 @@ function switchPoTab(tab) {
 }
 
 function renderPreordini() {
+    renderPoStats();
     var container = document.getElementById('po-container');
     if (!container) return;
     var list = _preordini.filter(function(p){ return (p.status || 'nuovo') === _poTab; });

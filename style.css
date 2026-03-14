@@ -3496,18 +3496,21 @@ textarea.form-input {
 /* ---- Price disclaimer ---- */
 .cp-disclaimer {
     display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    padding: 10px 16px;
-    margin: 0 0 16px;
-    background: rgba(220,38,38,.06);
-    border: 1px solid rgba(220,38,38,.18);
+    align-items: center;
+    gap: 10px;
+    padding: 13px 18px;
+    margin: 0 0 20px;
+    background: rgba(220,38,38,.10);
+    border: 1px solid rgba(220,38,38,.35);
+    border-left: 3px solid #DC2626;
     border-radius: 10px;
-    font-size: 12px;
-    color: rgba(245,240,232,.55);
-    line-height: 1.55;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(245,240,232,.8);
+    line-height: 1.5;
 }
-.cp-disclaimer strong { color: rgba(245,240,232,.8); }
+.cp-disclaimer svg { color: #DC2626; flex-shrink: 0; }
+.cp-disclaimer strong { color: #f5f0e8; font-weight: 700; }
 
 /* ---- Pagination ---- */
 .cp-pagination {
