@@ -102,13 +102,15 @@ document.addEventListener('DOMContentLoaded', function () {
     var burger  = document.getElementById('nav-burger');
     var navLinks = document.getElementById('nav-links');
 
+    var _scrollRaf = false;
     window.addEventListener('scroll', function () {
-        if (window.scrollY > 40) {
-            nav.classList.add('scrolled');
-        } else {
-            nav.classList.remove('scrolled');
-        }
-    });
+        if (_scrollRaf) return;
+        _scrollRaf = true;
+        requestAnimationFrame(function () {
+            nav.classList.toggle('scrolled', window.scrollY > 40);
+            _scrollRaf = false;
+        });
+    }, { passive: true });
 
     if (burger) {
         burger.addEventListener('click', function () {

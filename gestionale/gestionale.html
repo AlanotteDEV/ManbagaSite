@@ -1989,6 +1989,7 @@ function renderProductCard(p) {
         + '<div class="p-card-actions">'
         + '<button class="btn-icon" onclick="sellProduct(\'' + p.firestoreId + '\')" title="Vendi 1 unità" style="color:var(--green)">🛒</button>'
         + '<button class="btn-icon" onclick="editProduct(\'' + p.firestoreId + '\')" title="Modifica"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>'
+        + '<button class="btn-icon" onclick="duplicateProduct(\'' + p.firestoreId + '\')" title="Duplica (volume +1)" style="color:#a78bfa"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>'
         + '<button class="btn-icon" onclick="confirmDeleteProduct(\'' + p.firestoreId + '\',\'' + esc(p.title) + '\')" title="Elimina" style="color:#f87171"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>'
         + '</div>'
         + '</div></div>';
@@ -2003,7 +2004,7 @@ function renderProductRow(p) {
         + '<td style="font-size:12px;font-weight:700;color:var(--accent)">' + esc(p.price || '—') + '</td>'
         + '<td>' + _qtyBadge(p.quantity) + '</td>'
         + '<td>' + (p.showInNovita ? '<span class="novita-chip">⭐ Sì</span>' : '<span style="color:var(--muted);font-size:12px">No</span>') + '</td>'
-        + '<td style="white-space:nowrap"><button class="btn btn-sm" style="background:rgba(16,185,129,.12);color:var(--green);border:1px solid rgba(16,185,129,.2);margin-right:4px" onclick="sellProduct(\'' + p.firestoreId + '\')">🛒 Vendi</button><button class="btn btn-ghost btn-sm" onclick="editProduct(\'' + p.firestoreId + '\')" style="margin-right:4px">Modifica</button><button class="btn btn-danger btn-sm" onclick="confirmDeleteProduct(\'' + p.firestoreId + '\',\'' + esc(p.title) + '\')">Elimina</button></td>'
+        + '<td style="white-space:nowrap"><button class="btn btn-sm" style="background:rgba(16,185,129,.12);color:var(--green);border:1px solid rgba(16,185,129,.2);margin-right:4px" onclick="sellProduct(\'' + p.firestoreId + '\')">🛒 Vendi</button><button class="btn btn-ghost btn-sm" onclick="editProduct(\'' + p.firestoreId + '\')" style="margin-right:4px">Modifica</button><button class="btn btn-ghost btn-sm" onclick="duplicateProduct(\'' + p.firestoreId + '\')" style="margin-right:4px;color:#a78bfa;border-color:rgba(167,139,250,.3)">Clona</button><button class="btn btn-danger btn-sm" onclick="confirmDeleteProduct(\'' + p.firestoreId + '\',\'' + esc(p.title) + '\')">Elimina</button></td>'
         + '</tr>';
 }
 
@@ -2149,6 +2150,38 @@ function openAddProductModal() {
     document.getElementById('upload-status').textContent = '';
     document.getElementById('product-modal').style.display = 'flex';
     setTimeout(function(){ document.getElementById('product-title').focus(); }, 150);
+}
+
+function duplicateProduct(firestoreId) {
+    var p = _products.find(function(x){ return x.firestoreId === firestoreId; });
+    if (!p) return;
+    _editProductId = null;   /* salva come NUOVO prodotto */
+    _uploadFile    = null;
+
+    /* Incrementa l'ultimo numero nel campo volume ("Vol.3" → "Vol.4", "12" → "13") */
+    var newVol = (p.volume || '').replace(/(\d+)(?=\D*$)/, function(m) {
+        return String(parseInt(m, 10) + 1);
+    });
+
+    document.getElementById('pm-title').textContent         = 'Duplica Prodotto';
+    document.getElementById('product-title').value          = p.title    || '';
+    document.getElementById('product-volume').value         = newVol;
+    document.getElementById('product-desc').value           = '';          /* da riscrivere */
+    document.getElementById('product-price').value          = p.price    || '';
+    document.getElementById('product-qty').value            = p.quantity != null ? p.quantity : '';
+    document.getElementById('product-badge').value          = p.badge    || '';
+    document.getElementById('product-cat').value            = p.cat      || '';
+    document.getElementById('product-image-url').value      = '';          /* da aggiornare */
+    document.getElementById('product-novita').checked       = !!p.showInNovita;
+    document.getElementById('product-novita-days').value    = p.novitaDays || 4;
+    toggleNovitaDaysField();
+    updateSubcats(p.subcat);
+    resetImagePreview();
+    document.getElementById('upload-progress-bar').style.width = '0';
+    document.getElementById('upload-status').textContent        = '';
+    document.getElementById('product-modal').style.display      = 'flex';
+    /* Focus sul volume così l'utente può subito correggere se serve */
+    setTimeout(function(){ document.getElementById('product-volume').focus(); }, 150);
 }
 
 function editProduct(firestoreId) {

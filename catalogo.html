@@ -865,6 +865,22 @@ var catPage = (function () {
         if (!grid) return;
 
         if (filtered.length === 0) {
+            /* Show skeleton only on first load (Firebase not yet arrived, no cache) */
+            if (typeof _fbProducts !== 'undefined' && _fbProducts === null && allProducts.length === 0) {
+                var skCards = '';
+                for (var sk = 0; sk < 12; sk++) {
+                    skCards += '<div class="cp-skeleton-card">'
+                        + '<div class="cp-skeleton-img"></div>'
+                        + '<div class="cp-skeleton-body">'
+                        + '<div class="cp-skeleton-line"></div>'
+                        + '<div class="cp-skeleton-line short"></div>'
+                        + '<div class="cp-skeleton-line xshort"></div>'
+                        + '</div></div>';
+                }
+                grid.innerHTML = '<div class="cp-skeleton-grid">' + skCards + '</div>';
+                _renderPagination(0, 0);
+                return;
+            }
             grid.innerHTML = '<div class="cp-empty">'
                 + '<div class="cp-empty-kanji">空</div>'
                 + '<div class="cp-empty-title">Nessun prodotto in questa sezione</div>'
