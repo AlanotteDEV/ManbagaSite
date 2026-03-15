@@ -259,7 +259,9 @@ function renderEvents() {
     if (!container) return;
 
     var filtered = allEvents.filter(function(e) {
-        return (e.type || 'evento') === _evTab;
+        if ((e.type || 'evento') !== _evTab) return false;
+        if (e.type === 'competizione' && e.status === 'completato') return false;
+        return true;
     });
 
     if (filtered.length === 0) {
