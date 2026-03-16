@@ -67,6 +67,7 @@ input, textarea, select { font-family: inherit; color: inherit; }
 @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
 @keyframes slideUp { from { opacity:0; transform:translateY(20px) scale(.98); } to { opacity:1; transform:translateY(0) scale(1); } }
 @keyframes spin { to { transform: rotate(360deg); } }
+@keyframes qtyWarn { 0%,100% { opacity:1; box-shadow:0 0 0 0 rgba(245,158,11,0); } 50% { opacity:.7; box-shadow:0 0 0 4px rgba(245,158,11,0.25); } }
 
 /* ===================== SIDEBAR ===================== */
 #sidebar {
@@ -3718,7 +3719,8 @@ function _qtyBadge(qty) {
     var color = n >= 5 ? 'rgba(16,185,129,.15)' : (n >= 1 ? 'rgba(245,158,11,.15)' : 'rgba(220,38,38,.12)');
     var border = n >= 5 ? 'rgba(16,185,129,.3)' : (n >= 1 ? 'rgba(245,158,11,.3)' : 'rgba(220,38,38,.3)');
     var text  = n >= 5 ? '#34d399' : (n >= 1 ? '#fbbf24' : '#f87171');
-    return '<span style="display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;background:' + color + ';border:1px solid ' + border + ';color:' + text + ';margin-bottom:6px">📦 ' + n + ' pz</span>';
+    var anim  = n === 1 ? ';animation:qtyWarn 1.2s ease-in-out infinite' : '';
+    return '<span style="display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;background:' + color + ';border:1px solid ' + border + ';color:' + text + ';margin-bottom:6px' + anim + '">📦 ' + n + ' pz</span>';
 }
 
 /* ─── SELL PRODUCT ─── */

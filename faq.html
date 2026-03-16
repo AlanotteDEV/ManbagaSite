@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Domande frequenti su MANBAGA Comics & Games — Canosa di Puglia. Orari, preordini, tornei, spedizioni e molto altro.">
+    <meta name="theme-color" content="#0d0d0d">
+    <link rel="icon" type="image/png" href="WhatsApp_Image_2026-03-10_at_11.15.27-removebg-preview.png">
+    <title>FAQ — MANBAGA Comics &amp; Games</title>
+
+    <link rel="stylesheet" href="fonts/fonts.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --black:      #0d0d0d;
+            --white:      #f5f0e8;
+            --red:        #DC2626;
+            --red-dark:   #991b1b;
+            --muted:      rgba(245,240,232,0.38);
+            --font-comic: 'Bangers', cursive;
+            --font-jp:    'Noto Serif JP', serif;
+            --font-body:  'Inter', sans-serif;
+            --ease:       cubic-bezier(0.19, 1, 0.22, 1);
+            --max:        1100px;
+            --nav-h:      64px;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--black);
+            color: var(--white);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── NAV ── */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: var(--nav-h);
+            background: rgba(13,13,13,0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(220,38,38,0.15);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+        }
+        .nav-inner {
+            max-width: var(--max);
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .nav-logo {
+            font-family: var(--font-comic);
+            font-size: 26px;
+            letter-spacing: 0.06em;
+            color: var(--white);
+            text-decoration: none;
+        }
+        .nav-logo .dot { color: var(--red); }
+        .nav-back {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .nav-back:hover { color: var(--white); }
+        .nav-back svg { transition: transform 0.2s; }
+        .nav-back:hover svg { transform: translateX(-3px); }
+
+        /* ── HERO ── */
+        .faq-hero {
+            padding: calc(var(--nav-h) + 72px) 24px 64px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .faq-hero-kanji {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: var(--font-jp);
+            font-size: clamp(180px, 30vw, 320px);
+            font-weight: 900;
+            color: rgba(255,255,255,0.018);
+            pointer-events: none;
+            user-select: none;
+            line-height: 1;
+            white-space: nowrap;
+        }
+        .faq-hero-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--red);
+            border: 1px solid rgba(220,38,38,0.3);
+            padding: 6px 16px;
+            margin-bottom: 24px;
+            position: relative;
+        }
+        .faq-hero-tag::before {
+            content: '';
+            display: inline-block;
+            width: 6px; height: 6px;
+            background: var(--red);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.8); }
+        }
+        .faq-hero h1 {
+            font-family: var(--font-comic);
+            font-size: clamp(52px, 10vw, 100px);
+            letter-spacing: 0.04em;
+            color: var(--white);
+            line-height: 1;
+            position: relative;
+        }
+        .faq-hero h1 span { color: var(--red); }
+        .faq-hero-sub {
+            font-size: 15px;
+            color: var(--muted);
+            margin-top: 16px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.7;
+            position: relative;
+        }
+        .faq-hero-divider {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            max-width: 200px;
+            margin: 32px auto 0;
+            position: relative;
+        }
+        .faq-hero-divider::before,
+        .faq-hero-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(220,38,38,0.25);
+        }
+        .faq-hero-divider span {
+            font-family: var(--font-jp);
+            font-size: 16px;
+            color: rgba(220,38,38,0.5);
+        }
+
+        /* ── SEARCH ── */
+        .faq-search-wrap {
+            max-width: 560px;
+            margin: 48px auto 0;
+            padding: 0 24px;
+            position: relative;
+        }
+        .faq-search {
+            width: 100%;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--white);
+            font-family: var(--font-body);
+            font-size: 14px;
+            padding: 14px 48px 14px 18px;
+            outline: none;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .faq-search::placeholder { color: var(--muted); }
+        .faq-search:focus {
+            border-color: rgba(220,38,38,0.45);
+            background: rgba(255,255,255,0.07);
+        }
+        .faq-search-icon {
+            position: absolute;
+            right: 38px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted);
+            pointer-events: none;
+        }
+        .faq-no-results {
+            text-align: center;
+            padding: 48px 0;
+            color: var(--muted);
+            font-size: 14px;
+            display: none;
+        }
+        .faq-no-results .faq-no-kanji {
+            font-family: var(--font-jp);
+            font-size: 64px;
+            display: block;
+            color: rgba(255,255,255,0.05);
+            margin-bottom: 12px;
+        }
+
+        /* ── CATEGORIES NAV ── */
+        .faq-cats {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: var(--max);
+            margin: 32px auto 0;
+            padding: 0 24px;
+        }
+        .faq-cat-btn {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--muted);
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 7px 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: var(--font-body);
+        }
+        .faq-cat-btn:hover,
+        .faq-cat-btn.active {
+            color: var(--white);
+            border-color: var(--red);
+            background: rgba(220,38,38,0.08);
+        }
+
+        /* ── MAIN CONTENT ── */
+        .faq-main {
+            max-width: var(--max);
+            margin: 0 auto;
+            padding: 64px 24px 120px;
+        }
+
+        /* ── SECTION ── */
+        .faq-section {
+            margin-bottom: 64px;
+        }
+        .faq-section[data-hidden="true"] { display: none; }
+
+        .faq-section-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .faq-section-icon {
+            width: 40px; height: 40px;
+            background: rgba(220,38,38,0.1);
+            border: 1px solid rgba(220,38,38,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .faq-section-title {
+            font-family: var(--font-comic);
+            font-size: 22px;
+            letter-spacing: 0.05em;
+            color: var(--white);
+        }
+        .faq-section-count {
+            margin-left: auto;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+
+        /* ── ACCORDION ── */
+        .faq-item {
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            overflow: hidden;
+        }
+        .faq-item[data-hidden="true"] { display: none; }
+
+        .faq-question {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: var(--white);
+            font-family: var(--font-body);
+            font-size: 14px;
+            font-weight: 600;
+            text-align: left;
+            padding: 20px 48px 20px 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            position: relative;
+            transition: color 0.2s;
+            line-height: 1.4;
+        }
+        .faq-question:hover { color: rgba(245,240,232,0.7); }
+        .faq-question.open { color: var(--white); }
+
+        .faq-q-num {
+            font-family: var(--font-comic);
+            font-size: 13px;
+            letter-spacing: 0.1em;
+            color: var(--red);
+            min-width: 28px;
+            flex-shrink: 0;
+        }
+        .faq-q-text { flex: 1; }
+
+        .faq-q-arrow {
+            position: absolute;
+            right: 0;
+            top: 50%; transform: translateY(-50%);
+            width: 28px; height: 28px;
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted);
+            transition: all 0.3s var(--ease);
+            flex-shrink: 0;
+        }
+        .faq-question.open .faq-q-arrow {
+            background: rgba(220,38,38,0.12);
+            border-color: rgba(220,38,38,0.3);
+            color: var(--red);
+            transform: translateY(-50%) rotate(45deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s var(--ease), padding 0.3s ease;
+            padding: 0 0 0 42px;
+        }
+        .faq-answer.open {
+            max-height: 400px;
+            padding: 0 48px 24px 42px;
+        }
+        .faq-answer-inner {
+            font-size: 14px;
+            line-height: 1.8;
+            color: rgba(245,240,232,0.55);
+        }
+        .faq-answer-inner a {
+            color: var(--red);
+            text-decoration: none;
+            border-bottom: 1px solid rgba(220,38,38,0.3);
+            transition: border-color 0.2s;
+        }
+        .faq-answer-inner a:hover { border-color: var(--red); }
+        .faq-answer-inner strong { color: rgba(245,240,232,0.8); }
+        .faq-answer-inner .highlight {
+            display: inline-block;
+            background: rgba(220,38,38,0.1);
+            border-left: 2px solid var(--red);
+            padding: 10px 14px;
+            margin-top: 10px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: rgba(245,240,232,0.65);
+            width: 100%;
+        }
+
+        /* ── STILL NEED HELP CTA ── */
+        .faq-cta {
+            background: rgba(220,38,38,0.06);
+            border: 1px solid rgba(220,38,38,0.15);
+            padding: 48px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            margin-top: 80px;
+        }
+        .faq-cta-kanji {
+            position: absolute;
+            right: -20px; bottom: -30px;
+            font-family: var(--font-jp);
+            font-size: 140px;
+            font-weight: 900;
+            color: rgba(220,38,38,0.04);
+            pointer-events: none;
+            user-select: none;
+            line-height: 1;
+        }
+        .faq-cta h2 {
+            font-family: var(--font-comic);
+            font-size: 36px;
+            letter-spacing: 0.04em;
+            margin-bottom: 8px;
+            position: relative;
+        }
+        .faq-cta p {
+            font-size: 14px;
+            color: var(--muted);
+            margin-bottom: 28px;
+            line-height: 1.6;
+            position: relative;
+        }
+        .faq-cta-btns {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            position: relative;
+        }
+        .faq-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-body);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            text-decoration: none;
+            padding: 12px 24px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .faq-btn--red {
+            background: var(--red);
+            color: var(--white);
+            border-color: var(--red);
+        }
+        .faq-btn--red:hover { background: var(--red-dark); border-color: var(--red-dark); }
+        .faq-btn--ghost {
+            background: transparent;
+            color: var(--white);
+            border-color: rgba(255,255,255,0.18);
+        }
+        .faq-btn--ghost:hover {
+            background: rgba(255,255,255,0.05);
+            border-color: rgba(255,255,255,0.35);
+        }
+
+        /* ── FOOTER ── */
+        .faq-footer {
+            border-top: 1px solid rgba(255,255,255,0.06);
+            padding: 24px;
+            text-align: center;
+            font-size: 12px;
+            color: rgba(245,240,232,0.2);
+        }
+        .faq-footer a { color: rgba(245,240,232,0.35); text-decoration: none; }
+        .faq-footer a:hover { color: var(--white); }
+
+        /* ── SEARCH HIGHLIGHT ── */
+        mark {
+            background: rgba(220,38,38,0.25);
+            color: var(--white);
+            border-radius: 2px;
+            padding: 0 2px;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 640px) {
+            .faq-hero h1 { font-size: clamp(42px, 14vw, 64px); }
+            .faq-cta { padding: 32px 24px; }
+            .faq-answer.open { padding-right: 24px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+    <div class="nav-inner">
+        <a class="nav-logo" href="index.html">MAN<span class="dot">B</span>AGA<span class="dot">.</span></a>
+        <a class="nav-back" href="index.html">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+            Torna al sito
+        </a>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="faq-hero">
+    <div class="faq-hero-kanji" aria-hidden="true">問</div>
+    <div class="faq-hero-tag">Domande &amp; Risposte</div>
+    <h1>FAQ<span>.</span></h1>
+    <p class="faq-hero-sub">Hai una domanda? Probabilmente l'abbiamo già risposta qui sotto. Se non trovi quello che cerchi, scrivici!</p>
+    <div class="faq-hero-divider"><span>答</span></div>
+</section>
+
+<!-- SEARCH -->
+<div class="faq-search-wrap">
+    <input class="faq-search" type="text" id="faq-search" placeholder="Cerca tra le domande…" oninput="faqSearch(this.value)" autocomplete="off">
+    <svg class="faq-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+</div>
+
+<!-- CATEGORIES -->
+<div class="faq-cats">
+    <button class="faq-cat-btn active" onclick="faqFilter('all', this)">Tutte</button>
+    <button class="faq-cat-btn" onclick="faqFilter('negozio', this)">Negozio</button>
+    <button class="faq-cat-btn" onclick="faqFilter('preordini', this)">Preordini</button>
+    <button class="faq-cat-btn" onclick="faqFilter('tornei', this)">Tornei</button>
+    <button class="faq-cat-btn" onclick="faqFilter('tavoli', this)">Tavoli</button>
+    <button class="faq-cat-btn" onclick="faqFilter('prodotti', this)">Prodotti</button>
+</div>
+
+<!-- MAIN -->
+<main class="faq-main">
+
+    <!-- ── SEZIONE: NEGOZIO ── -->
+    <section class="faq-section" data-cat="negozio">
+        <div class="faq-section-header">
+            <div class="faq-section-icon">🏪</div>
+            <span class="faq-section-title">Negozio &amp; Orari</span>
+            <span class="faq-section-count">6 domande</span>
+        </div>
+
+        <div class="faq-item" data-cat="negozio">
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+                <span class="faq-q-num">01</span>
+                <span class="faq-q-text">Dove si trova MANBAGA e quali sono gli orari?</span>
+                <span class="faq-q-arrow" aria-hidden="true">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    Siamo in <strong>Via Padre Reginaldo Giuliani 21, 76012 Canosa di Puglia (BT)</strong>.<br><br>
+                    Gli orari di apertura sono:<br>
+                    — Lunedì–Sabato: <strong>10:00–13:00</strong> e <strong>17:00–20:30</strong><br>
+                    — Domenica: <strong>10:00–13:00</strong> (pomeriggio chiuso)<br><br>
+                    <span class="highlight">💡 Ti consigliamo di seguirci su Instagram per eventuali chiusure straordinarie o modifiche agli orari.</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-item" data-cat="negozio">
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+                <span class="faq-q-num">02</span>
+                <span class="faq-q-text">Come posso contattarvi?</span>
+                <span class="faq-q-arrow" aria-hidden="true">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    Puoi raggiungerci in diversi modi:<br><br>
+                    — Tramite il <a href="index.html#contatti">form di contatto</a> sul sito<br>
+                    — Via email a <a href="mailto:manbagacomics@gmail.com">manbagacomics@gmail.com</a><br>
+                    — Su Instagram <a href="https://www.instagram.com/_manbaga_/" target="_blank" rel="noopener">@_manbaga_</a> con DM<br>
+                    — Passando direttamente in negozio durante gli orari di apertura
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-item" data-cat="negozio">
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+                <span class="faq-q-num">03</span>
+                <span class="faq-q-text">Fate spedizioni a domicilio?</span>
+                <span class="faq-q-arrow" aria-hidden="true">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    Al momento siamo un negozio fisico e la vendita avviene principalmente in sede.<br><br>
+                    Per accordi su spedizioni particolari o acquisti a distanza, <a href="index.html#contatti">contattaci direttamente</a> e valutiamo insieme la soluzione migliore.
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-item" data-cat="negozio">
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+                <span class="faq-q-num">04</span>
+                <span class="faq-q-text">Accettate pagamenti con carta o bancomat?</span>
+                <span class="faq-q-arrow" aria-hidden="true">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    Sì, accettiamo <strong>carte di credito/debito, bancomat e contanti</strong>. Per importi elevati (es. acquisto di mazzetti o set rari) è preferibile avvisarci in anticipo.
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-item" data-cat="negozio">
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+                <span class="faq-q-num">05</span>
+                <span class="faq-q-text">Dove vedo le novità e gli arrivi recenti?</span>
+                <span class="faq-q-arrow" aria-hidden="true">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    Nella sezione <a href="index.html#nuovi-arrivi">Nuovi Arrivi</a> della homepage trovi sempre i prodotti aggiunti più di recente.<br><br>
+                    Seguici anche su <a href="https://www.instagram.com/_manbaga_/" target="_blank" rel="noopener">Instagram @_manbaga_</a> dove pubblichiamo foto e unboxing dei nuovi arrivi.
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-item" data-cat="negozio">
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+                <span class="faq-q-num">06</span>
+                <span class="faq-q-text">Fate usato o compravendita di carte singole?</span>
+                <span class="faq-q-arrow" aria-hidden="true">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    Per quanto riguarda singole e usato, <a href="index.html#contatti">contattaci</a> per sapere la situazione aggiornata. Le disponibilità cambiano spesso e preferiamo valutare caso per caso.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── SEZIONE: PREORDINI ── -->
+    <section class="faq-section" data-cat="preordini">
+        <div class="faq-section-header">
+            <div class="faq-section-icon">📦</div>
+            <span class="faq-section-title">Preordini</span>
+            <span class="faq-section-count">4 domande</span>
+        </div>
+
+        <div class="faq-item" data-cat="preordini">
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+                <span class="faq-q-num">01</span>
+                <span class="faq-q-text">Come funziona il sistema di preordine?</span>
+                <span class="faq-q-arrow" aria-hidden="true">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    Clicca su qualsiasi prodotto con il badge <strong>PREORDINA</strong> o <strong>IN ARRIVO</strong> nel catalogo e troverai il pulsante <em>"Richiedi Preordine"</em>.<br><br>
+                    Compila il form con nome e contatto: riceverai una conferma via email e ti contatteremo non appena il prodotto è disponibile per il ritiro in negozio.<br><br>
+                    <span class="highlight">📌 Il preordine non implica alcun pagamento anticipato salvo diversi accordi con il negozio.</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-item" data-cat="preordini">
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+                <span class="faq-q-num">02</span>
+                <span class="faq-q-text">Quanto tempo ci vuole per ricevere un preordine?</span>
+                <span class="faq-q-arrow" aria-hidden="true">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    Dipende dal prodotto e dalla data di uscita ufficiale. Per manga e fumetti seguiamo le uscite dei distributori (Panini, Star Comics, J-Pop). Per le TCG dipende dalle date di rilascio del produttore.<br><br>
+                    Ti contatteremo appena l'articolo è in negozio — di solito entro 1–3 giorni dall'uscita ufficiale.
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-item" data-cat="preordini">
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+                <span class="faq-q-num">03</span>
+                <span class="faq-q-text">Posso preordinare un prodotto non presente nel catalogo?</span>
+                <span class="faq-q-arrow" aria-hidden="true">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    Assolutamente sì! Scrivici tramite il <a href="index.html#contatti">form di contatto</a> o su Instagram specificando il titolo e l'editore: verificheremo la disponibilità dal distributore e ti faremo sapere.
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-item" data-cat="preordini">
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+                <span class="faq-q-num">04</span>
+                <span class="faq-q-text">Cosa succede se non ritiro il preordine?</span>
+                <span class="faq-q-arrow" aria-hidden="true">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    Ti contatteremo per avvisarti dell'arrivo. Se non dovessimo ricevere risposta entro un tempo ragionevole, ci riserviamo di rimettere il prodotto in vendita. Ti invitiamo a comunicarci per tempo eventuali imprevisti.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── SEZIONE: TORNEI ── -->
+    <section class="faq-section" data-cat="tornei">
+        <div class="faq-section-header">
+            <div class="faq-section-icon">🏆</div>
+            <span class="faq-section-title">Tornei &amp; Competizioni</span>
+            <span class="faq-section-count">4 domande</span>
+        </div>
+
+        <div class="faq-item" data-cat="tornei">
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+                <span class="faq-q-num">01</span>
+                <span class="faq-q-text">Che tornei organizzate?</span>
+                <span class="faq-q-arrow" aria-hidden="true">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    Organizziamo tornei per i principali giochi di carte collezionabili:<br><br>
+                    — <strong>Pokémon TCG</strong><br>
+                    — <strong>Yu-Gi-Oh!</strong><br>
+                    — <strong>Magic: The Gathering</strong><br>
+                    — <strong>One Piece Card Game</strong><br>
+                    — <strong>Dragon Ball Super Card Game</strong><br><br>
+                    Controlla la sezione <a href="index.html#eventi">Eventi</a> per i prossimi appuntamenti.
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-item" data-cat="tornei">
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+                <span class="faq-q-num">02</span>
+                <span class="faq-q-text">Come mi iscrivo a un torneo?</span>
+                <span class="faq-q-arrow" aria-hidden="true">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    Nella sezione <a href="index.html#eventi">Eventi</a> trovi tutti i tornei in programma. Per quelli con iscrizione aperta trovi un pulsante diretto.<br><br>
+                    In alternativa puoi passare in negozio o scriverci su Instagram per confermare la tua partecipazione.
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-item" data-cat="tornei">
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+                <span class="faq-q-num">03</span>
+                <span class="faq-q-text">I tornei sono a pagamento?</span>
+                <span class="faq-q-arrow" aria-hidden="true">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    Dipende dall'evento. Alcuni tornei sono gratuiti, altri hanno una quota d'iscrizione che contribuisce al montepremi. Trovi sempre il prezzo (o la dicitura "Gratuito") sulla card dell'evento nella pagina <a href="index.html#eventi">Eventi</a>.
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-item" data-cat="tornei">
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+                <span class="faq-q-num">04</span>
+                <span class="faq-q-text">Dove vedo la classifica del torneo?</span>
+                <span class="faq-q-arrow" aria-hidden="true">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    Ogni torneo ha una pagina dedicata con la classifica live e le deck list. Trovi il pulsante <strong>"Classifica"</strong> o <strong>"Live"</strong> direttamente sulla card dell'evento quando il torneo è in corso o completato.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── SEZIONE: TAVOLI ── -->
+    <section class="faq-section" data-cat="tavoli">
+        <div class="faq-section-header">
+            <div class="faq-section-icon">🎮</div>
+            <span class="faq-section-title">Prenotazione Tavoli</span>
+            <span class="faq-section-count">3 domande</span>
+        </div>
+
+        <div class="faq-item" data-cat="tavoli">
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+                <span class="faq-q-num">01</span>
+                <span class="faq-q-text">Come prenoto un tavolo per giocare?</span>
+                <span class="faq-q-arrow" aria-hidden="true">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    Vai alla pagina <a href="tavoli.html">Prenota un Tavolo</a> e scegli giorno, orario e fascia disponibile. La prenotazione è in tempo reale e vedi subito i tavoli liberi e occupati.
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-item" data-cat="tavoli">
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+                <span class="faq-q-num">02</span>
+                <span class="faq-q-text">La prenotazione del tavolo è gratuita?</span>
+                <span class="faq-q-arrow" aria-hidden="true">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    Sì, la prenotazione è gratuita. I tavoli sono a disposizione dei clienti durante gli orari di apertura.
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-item" data-cat="tavoli">
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+                <span class="faq-q-num">03</span>
+                <span class="faq-q-text">Posso portare il mio gioco da casa?</span>
+                <span class="faq-q-arrow" aria-hidden="true">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    Assolutamente sì! Puoi portare il tuo mazzo, boardgame o qualsiasi altro gioco. I tavoli sono a disposizione per partite libere.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── SEZIONE: PRODOTTI ── -->
+    <section class="faq-section" data-cat="prodotti">
+        <div class="faq-section-header">
+            <div class="faq-section-icon">📚</div>
+            <span class="faq-section-title">Prodotti &amp; Catalogo</span>
+            <span class="faq-section-count">4 domande</span>
+        </div>
+
+        <div class="faq-item" data-cat="prodotti">
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+                <span class="faq-q-num">01</span>
+                <span class="faq-q-text">Come faccio a sapere se un prodotto è disponibile?</span>
+                <span class="faq-q-arrow" aria-hidden="true">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    Nel <a href="catalogo.html">Catalogo</a> ogni prodotto mostra il suo stato con un badge colorato:<br><br>
+                    — <strong>Disponibile</strong> → presente in negozio<br>
+                    — <strong>NOVITÀ / HOT</strong> → appena arrivato o molto richiesto<br>
+                    — <strong>PREORDINA</strong> → non ancora arrivato, preordinabile<br>
+                    — <strong>IN ARRIVO</strong> → in ordinazione, a breve disponibile<br>
+                    — <strong>OUT OF STOCK / ESAURITO</strong> → terminato
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-item" data-cat="prodotti">
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+                <span class="faq-q-num">02</span>
+                <span class="faq-q-text">Avete manga in italiano?</span>
+                <span class="faq-q-arrow" aria-hidden="true">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    Sì, tutti i manga nel nostro catalogo sono edizioni italiane dei principali distributori: <strong>Panini Comics, Star Comics, J-Pop, Dynit</strong> e altri. Se cerchi un'edizione specifica, <a href="index.html#contatti">contattaci</a>.
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-item" data-cat="prodotti">
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+                <span class="faq-q-num">03</span>
+                <span class="faq-q-text">I prezzi sul sito sono quelli definitivi?</span>
+                <span class="faq-q-arrow" aria-hidden="true">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    I prezzi indicati sono quelli di vendita in negozio e vengono aggiornati regolarmente. Per prodotti particolari o quantità elevate, passa in negozio o scrivici per un preventivo personalizzato.
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-item" data-cat="prodotti">
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+                <span class="faq-q-num">04</span>
+                <span class="faq-q-text">Vendete anche libri e romanzi?</span>
+                <span class="faq-q-arrow" aria-hidden="true">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    Sì! Abbiamo aggiunto una sezione dedicata ai <strong>Libri</strong>, con romanzi e light novel legati al mondo manga e anime. Puoi trovarli nella sezione <a href="catalogo.html?cat=libri">Libri del Catalogo</a>.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NO RESULTS -->
+    <div class="faq-no-results" id="faq-no-results">
+        <span class="faq-no-kanji">無</span>
+        Nessuna domanda trovata per "<span id="faq-no-q"></span>".<br>
+        <a href="index.html#contatti" style="color:var(--red);text-decoration:none;font-weight:600;margin-top:8px;display:inline-block">Scrivici la tua domanda →</a>
+    </div>
+
+    <!-- CTA -->
+    <div class="faq-cta">
+        <div class="faq-cta-kanji" aria-hidden="true">聞</div>
+        <h2>Non hai trovato risposta?</h2>
+        <p>Scrivici direttamente, rispondiamo entro poche ore durante gli orari di negozio.</p>
+        <div class="faq-cta-btns">
+            <a href="index.html#contatti" class="faq-btn faq-btn--red">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                Scrivici
+            </a>
+            <a href="https://www.instagram.com/_manbaga_/" target="_blank" rel="noopener" class="faq-btn faq-btn--ghost">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>
+                Instagram DM
+            </a>
+            <a href="index.html" class="faq-btn faq-btn--ghost">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                Torna alla Home
+            </a>
+        </div>
+    </div>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="faq-footer">
+    <span>&copy; 2026 MANBAGA Comics &amp; Games &mdash; Canosa di Puglia &nbsp;&middot;&nbsp;</span>
+    <a href="privacy.html">Privacy &amp; Cookie</a>
+    &nbsp;&middot;&nbsp;
+    <a href="index.html">Home</a>
+</footer>
+
+<script>
+    /* ── ACCORDION ── */
+    function toggleFaq(btn) {
+        var isOpen = btn.classList.contains('open');
+        /* Chiudi tutti nella stessa sezione */
+        var section = btn.closest('.faq-section');
+        section.querySelectorAll('.faq-question.open').forEach(function(q) {
+            q.classList.remove('open');
+            q.setAttribute('aria-expanded', 'false');
+            q.nextElementSibling.classList.remove('open');
+        });
+        if (!isOpen) {
+            btn.classList.add('open');
+            btn.setAttribute('aria-expanded', 'true');
+            btn.nextElementSibling.classList.add('open');
+        }
+    }
+
+    /* ── CATEGORY FILTER ── */
+    function faqFilter(cat, btn) {
+        document.querySelectorAll('.faq-cat-btn').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        document.getElementById('faq-search').value = '';
+        clearSearch();
+        document.querySelectorAll('.faq-section').forEach(function(s) {
+            s.dataset.hidden = (cat !== 'all' && s.dataset.cat !== cat) ? 'true' : 'false';
+        });
+    }
+
+    /* ── SEARCH ── */
+    function faqSearch(query) {
+        var q = query.trim().toLowerCase();
+        var totalVisible = 0;
+
+        document.querySelectorAll('.faq-section').forEach(function(s) { s.dataset.hidden = 'false'; });
+
+        document.querySelectorAll('.faq-item').forEach(function(item) {
+            var text = item.querySelector('.faq-q-text').textContent.toLowerCase()
+                + ' ' + item.querySelector('.faq-answer-inner').textContent.toLowerCase();
+            var match = !q || text.includes(q);
+            item.dataset.hidden = match ? 'false' : 'true';
+            if (match) totalVisible++;
+        });
+
+        /* Nascondi sezioni completamente vuote */
+        document.querySelectorAll('.faq-section').forEach(function(s) {
+            var visible = Array.from(s.querySelectorAll('.faq-item')).some(function(i) { return i.dataset.hidden !== 'true'; });
+            s.dataset.hidden = visible ? 'false' : 'true';
+        });
+
+        var noRes = document.getElementById('faq-no-results');
+        if (q && totalVisible === 0) {
+            noRes.style.display = 'block';
+            document.getElementById('faq-no-q').textContent = query;
+        } else {
+            noRes.style.display = 'none';
+        }
+
+        /* Reset category buttons */
+        document.querySelectorAll('.faq-cat-btn').forEach(function(b) { b.classList.remove('active'); });
+        document.querySelector('.faq-cat-btn').classList.add('active');
+    }
+
+    function clearSearch() {
+        document.getElementById('faq-no-results').style.display = 'none';
+        document.querySelectorAll('.faq-item').forEach(function(i) { i.dataset.hidden = 'false'; });
+    }
+</script>
+</body>
+</html>

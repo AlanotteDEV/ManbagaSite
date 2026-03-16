@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0d0d0d">
+    <title>404 — Pagina non trovata · MANBAGA</title>
+    <link rel="icon" type="image/png" href="WhatsApp_Image_2026-03-10_at_11.15.27-removebg-preview.png">
+    <link rel="stylesheet" href="fonts/fonts.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --black:      #0d0d0d;
+            --white:      #f5f0e8;
+            --red:        #DC2626;
+            --red-dark:   #991b1b;
+            --font-comic: 'Bangers', cursive;
+            --font-jp:    'Noto Serif JP', serif;
+            --font-body:  'Inter', sans-serif;
+            --ease:       cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        html, body {
+            height: 100%;
+            font-family: var(--font-body);
+            background: var(--black);
+            color: var(--white);
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── MANGA PANEL LAYOUT ── */
+        .page {
+            min-height: 100vh;
+            display: flex;
+            align-items: stretch;
+            position: relative;
+        }
+
+        /* Panel lines decorative (manga style) */
+        .panel-lines {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .panel-lines::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(135deg, rgba(220,38,38,0.03) 0%, transparent 50%),
+                repeating-linear-gradient(
+                    -45deg,
+                    transparent,
+                    transparent 60px,
+                    rgba(255,255,255,0.012) 60px,
+                    rgba(255,255,255,0.012) 61px
+                );
+        }
+        /* Speed lines radiating from center */
+        .speed-lines {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background: radial-gradient(ellipse at 50% 45%,
+                transparent 8%,
+                rgba(220,38,38,0.025) 8.5%,
+                transparent 9%,
+                transparent 15%,
+                rgba(220,38,38,0.018) 15.5%,
+                transparent 16%
+            );
+        }
+
+        /* ── LEFT PANEL — Number ── */
+        .left-panel {
+            width: 45%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-right: 3px solid rgba(220,38,38,0.25);
+            flex-direction: column;
+            padding: 48px;
+            z-index: 1;
+        }
+
+        .panel-num-label {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--red);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .panel-num-label::before,
+        .panel-num-label::after {
+            content: '';
+            width: 20px; height: 1px;
+            background: rgba(220,38,38,0.4);
+        }
+
+        .error-num {
+            font-family: var(--font-comic);
+            font-size: clamp(140px, 22vw, 260px);
+            line-height: 0.85;
+            color: var(--white);
+            letter-spacing: 0.02em;
+            position: relative;
+            animation: glitch 4s ease-in-out infinite;
+        }
+        .error-num::before {
+            content: attr(data-text);
+            position: absolute;
+            inset: 0;
+            color: var(--red);
+            clip-path: polygon(0 30%, 100% 25%, 100% 45%, 0 50%);
+            transform: translateX(-4px);
+            animation: glitch-red 4s ease-in-out infinite;
+            opacity: 0;
+        }
+        .error-num::after {
+            content: attr(data-text);
+            position: absolute;
+            inset: 0;
+            color: #22d3ee;
+            clip-path: polygon(0 55%, 100% 60%, 100% 70%, 0 65%);
+            transform: translateX(4px);
+            animation: glitch-cyan 4s ease-in-out infinite;
+            opacity: 0;
+        }
+
+        @keyframes glitch {
+            0%, 88%, 100% { transform: none; }
+            90% { transform: skewX(-2deg) translateX(2px); }
+            92% { transform: skewX(1deg) translateX(-2px); }
+            94% { transform: none; }
+        }
+        @keyframes glitch-red {
+            0%, 88%, 100% { opacity: 0; transform: translateX(-4px); }
+            90%, 92% { opacity: 1; }
+            94% { opacity: 0; transform: translateX(-6px); }
+        }
+        @keyframes glitch-cyan {
+            0%, 88%, 100% { opacity: 0; transform: translateX(4px); }
+            91%, 93% { opacity: 1; }
+            94% { opacity: 0; transform: translateX(6px); }
+        }
+
+        .error-jp {
+            font-family: var(--font-jp);
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.4em;
+            color: rgba(255,255,255,0.2);
+            margin-top: 8px;
+            text-align: center;
+        }
+
+        /* Torn paper edge effect */
+        .torn-edge {
+            position: absolute;
+            top: 0; right: -2px;
+            width: 28px;
+            height: 100%;
+            background: var(--black);
+            clip-path: polygon(
+                100% 0%,
+                100% 3%, 60% 4%, 100% 5.5%,
+                100% 8%, 40% 9%, 100% 11%,
+                100% 14%, 70% 15%, 100% 16.5%,
+                100% 20%, 50% 21%, 100% 23%,
+                100% 26%, 65% 27.5%, 100% 29%,
+                100% 32%, 45% 33%, 100% 35%,
+                100% 38%, 75% 39.5%, 100% 41%,
+                100% 44%, 55% 45.5%, 100% 47%,
+                100% 50%, 40% 51%, 100% 53%,
+                100% 56%, 70% 57.5%, 100% 59%,
+                100% 62%, 50% 63%, 100% 65%,
+                100% 68%, 65% 69.5%, 100% 71%,
+                100% 74%, 45% 75%, 100% 77%,
+                100% 80%, 75% 81.5%, 100% 83%,
+                100% 86%, 55% 87%, 100% 89%,
+                100% 92%, 40% 93%, 100% 95%,
+                100% 98%, 60% 99%, 100% 100%,
+                0% 100%, 0% 0%
+            );
+            z-index: 2;
+        }
+
+        /* ── RIGHT PANEL — Content ── */
+        .right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 48px 52px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Speech bubble */
+        .speech-bubble {
+            background: var(--white);
+            color: var(--black);
+            padding: 18px 22px;
+            position: relative;
+            margin-bottom: 32px;
+            max-width: 380px;
+            border-radius: 0 16px 16px 16px;
+            box-shadow: 4px 4px 0 rgba(220,38,38,0.3);
+        }
+        .speech-bubble::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -12px;
+            border: 12px solid transparent;
+            border-right-color: var(--white);
+            border-top-width: 0;
+        }
+        .speech-bubble p {
+            font-family: var(--font-comic);
+            font-size: 15px;
+            letter-spacing: 0.04em;
+            line-height: 1.5;
+            color: var(--black);
+        }
+        .speech-bubble .bubble-sub {
+            font-family: var(--font-body);
+            font-size: 11px;
+            color: rgba(0,0,0,0.45);
+            margin-top: 6px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+        }
+
+        .error-title {
+            font-family: var(--font-comic);
+            font-size: clamp(28px, 5vw, 52px);
+            letter-spacing: 0.04em;
+            line-height: 1;
+            margin-bottom: 12px;
+        }
+        .error-title span { color: var(--red); }
+
+        .error-desc {
+            font-size: 13px;
+            color: rgba(245,240,232,0.45);
+            line-height: 1.8;
+            margin-bottom: 36px;
+            max-width: 360px;
+        }
+        .error-desc strong { color: rgba(245,240,232,0.75); }
+
+        /* Action buttons */
+        .error-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 280px;
+        }
+        .err-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            border: 1px solid transparent;
+            transition: all 0.2s var(--ease);
+            position: relative;
+            overflow: hidden;
+        }
+        .err-btn::before {
+            content: '';
+            position: absolute;
+            left: -100%;
+            top: 0; bottom: 0;
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            transition: left 0.3s var(--ease);
+        }
+        .err-btn:hover::before { left: 0; }
+
+        .err-btn--primary {
+            background: var(--red);
+            color: var(--white);
+            border-color: var(--red);
+        }
+        .err-btn--primary:hover { background: var(--red-dark); border-color: var(--red-dark); }
+
+        .err-btn--ghost {
+            color: rgba(245,240,232,0.6);
+            border-color: rgba(255,255,255,0.12);
+        }
+        .err-btn--ghost:hover {
+            color: var(--white);
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        .err-btn-icon {
+            width: 32px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.08);
+            flex-shrink: 0;
+        }
+        .err-btn--primary .err-btn-icon { background: rgba(255,255,255,0.15); }
+
+        /* ── BIG KANJI BACKGROUND ── */
+        .bg-kanji {
+            position: fixed;
+            bottom: -80px; left: -40px;
+            font-family: var(--font-jp);
+            font-size: clamp(280px, 40vw, 500px);
+            font-weight: 900;
+            color: rgba(255,255,255,0.012);
+            pointer-events: none;
+            user-select: none;
+            line-height: 1;
+            z-index: 0;
+            animation: kanji-float 8s ease-in-out infinite;
+        }
+        @keyframes kanji-float {
+            0%, 100% { transform: translateY(0) rotate(-3deg); }
+            50% { transform: translateY(-20px) rotate(-3deg); }
+        }
+
+        /* ── PANEL CORNER MARKS (manga style) ── */
+        .corner-mark {
+            position: fixed;
+            font-family: var(--font-jp);
+            font-size: 11px;
+            color: rgba(255,255,255,0.08);
+            font-weight: 700;
+            letter-spacing: 0.1em;
+        }
+        .corner-mark--tl { top: 16px; left: 16px; }
+        .corner-mark--tr { top: 16px; right: 16px; text-align: right; }
+        .corner-mark--bl { bottom: 16px; left: 16px; }
+        .corner-mark--br { bottom: 16px; right: 16px; text-align: right; }
+
+        /* ── SFX STICKERS ── */
+        .sfx {
+            position: absolute;
+            font-family: var(--font-comic);
+            font-weight: 900;
+            color: transparent;
+            -webkit-text-stroke: 1px;
+            pointer-events: none;
+            user-select: none;
+            opacity: 0.07;
+            letter-spacing: 0.05em;
+        }
+        .sfx--1 {
+            font-size: clamp(40px, 7vw, 80px);
+            -webkit-text-stroke-color: var(--red);
+            top: 12%; right: 8%;
+            transform: rotate(12deg);
+        }
+        .sfx--2 {
+            font-size: clamp(28px, 4vw, 52px);
+            -webkit-text-stroke-color: rgba(245,240,232,0.8);
+            bottom: 22%; right: 5%;
+            transform: rotate(-8deg);
+        }
+        .sfx--3 {
+            font-size: clamp(22px, 3vw, 40px);
+            -webkit-text-stroke-color: var(--red);
+            top: 55%; left: 42%;
+            transform: rotate(5deg);
+        }
+
+        /* ── MOBILE ── */
+        @media (max-width: 640px) {
+            html, body { overflow: auto; }
+            .page { flex-direction: column; align-items: center; min-height: 100vh; }
+            .left-panel { width: 100%; padding: 64px 32px 32px; border-right: none; border-bottom: 2px solid rgba(220,38,38,0.2); }
+            .torn-edge { display: none; }
+            .right-panel { padding: 32px 24px 64px; }
+            .error-num { font-size: clamp(100px, 28vw, 180px); }
+            .speech-bubble { max-width: 100%; }
+            .error-actions { max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="panel-lines"></div>
+<div class="speed-lines"></div>
+<div class="bg-kanji" aria-hidden="true">迷</div>
+
+<!-- Corner manga marks -->
+<span class="corner-mark corner-mark--tl">MANBAGA</span>
+<span class="corner-mark corner-mark--tr">p. 404</span>
+<span class="corner-mark corner-mark--bl">© 2026</span>
+<span class="corner-mark corner-mark--br">FINE PANNELLO</span>
+
+<div class="page">
+
+    <!-- LEFT PANEL -->
+    <div class="left-panel">
+        <div class="panel-num-label">ERRORE</div>
+        <div class="error-num" data-text="404">404</div>
+        <div class="error-jp">ページが見つかりません</div>
+        <div class="torn-edge" aria-hidden="true"></div>
+    </div>
+
+    <!-- SFX overlays -->
+    <span class="sfx sfx--1">CRASH!!</span>
+    <span class="sfx sfx--2">NOPE!</span>
+    <span class="sfx sfx--3">??!</span>
+
+    <!-- RIGHT PANEL -->
+    <div class="right-panel">
+
+        <div class="speech-bubble">
+            <p>EHI! Questa pagina... non esiste!</p>
+            <div class="bubble-sub">— Un personaggio molto confuso</div>
+        </div>
+
+        <h1 class="error-title">Pagina<br><span>Non Trovata.</span></h1>
+
+        <p class="error-desc">
+            Il pannello che stai cercando è stato strappato.<br>
+            Forse l'URL è sbagliato, o la pagina è stata spostata.<br>
+            <strong>Ma non preoccuparti — il negozio è ancora lì.</strong>
+        </p>
+
+        <nav class="error-actions" aria-label="Torna al sito">
+            <a href="index.html" class="err-btn err-btn--primary">
+                <span class="err-btn-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                </span>
+                Torna alla Homepage
+            </a>
+            <a href="catalogo.html" class="err-btn err-btn--ghost">
+                <span class="err-btn-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+                </span>
+                Sfoglia il Catalogo
+            </a>
+            <a href="index.html#eventi" class="err-btn err-btn--ghost">
+                <span class="err-btn-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+                </span>
+                Prossimi Tornei
+            </a>
+            <a href="javascript:history.back()" class="err-btn err-btn--ghost">
+                <span class="err-btn-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+                </span>
+                Pagina Precedente
+            </a>
+        </nav>
+
+    </div>
+</div>
+
+<script>
+    /* Auto-redirect after 30s */
+    var _countdown = 30;
+    var _t = setInterval(function() {
+        _countdown--;
+        if (_countdown <= 0) { clearInterval(_t); window.location.href = 'index.html'; }
+    }, 1000);
+</script>
+</body>
+</html>

@@ -594,6 +594,15 @@ function openProductModal(productId) {
     var product = getProducts().find(function (p) { return p.id === productId; });
     if (!product) return;
 
+    /* Track recently viewed */
+    try {
+        var recent = JSON.parse(localStorage.getItem('mb_recent') || '[]');
+        recent = recent.filter(function(id) { return id !== productId; });
+        recent.unshift(productId);
+        localStorage.setItem('mb_recent', JSON.stringify(recent.slice(0, 8)));
+        if (typeof renderRecentlyViewed === 'function') renderRecentlyViewed();
+    } catch(e) {}
+
     var isPreorder = (product.badge === 'PREORDINA' || product.badge === 'IN ARRIVO');
 
     /* Bottone azione principale */
