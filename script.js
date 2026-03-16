@@ -167,6 +167,7 @@ function _initMainFirebase() {
         _fbMainDb = _fbMainApp.firestore();
         _subscribeFirestoreProducts();
         _subscribeFirestoreEvents();
+        _subscribeFirestoreCategories();
         _startEventAutoCheck();
     } catch(e) {
         console.warn('Firebase main init error:', e);
@@ -210,6 +211,19 @@ function _subscribeFirestoreEvents() {
         },
         function(err) { console.warn('Firestore events error:', err); }
     );
+}
+
+function _subscribeFirestoreCategories() {
+    if (!_fbMainDb) return;
+    _fbMainDb.collection('settings').doc('categories').get().then(function(doc) {
+        if (!doc.exists) return;
+        var d = doc.data();
+        if (!Array.isArray(d.cats) || !d.cats.length) return;
+        /* Aggiorna localStorage così catPage.refreshCats() lo legge */
+        try { localStorage.setItem('manbaga_categories', JSON.stringify({ cats: d.cats, subcats: d.subcats || {} })); } catch(e) {}
+        /* Ricostruisce nav + render se catPage è presente (catalogo.html) */
+        if (typeof catPage !== 'undefined' && typeof catPage.refreshCats === 'function') catPage.refreshCats();
+    }).catch(function(e) { console.warn('Firestore categories fetch:', e); });
 }
 
 /* ─── AUTO STATUS EVENTI ───────────────────────────────────────

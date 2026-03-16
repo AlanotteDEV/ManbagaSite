@@ -18,7 +18,8 @@
       "WebFetch(domain:dontcg.netlify.app)",
       "WebSearch",
       "WebFetch(domain:optcgapi.com)",
-      "WebFetch(domain:onepiecedb.io)"
+      "WebFetch(domain:onepiecedb.io)",
+      "Bash(grep:*)"
     ]
   }
 }

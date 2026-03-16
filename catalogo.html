@@ -252,20 +252,7 @@
 <!-- ============================================================
      MOBILE CATEGORY TABS
      ============================================================ -->
-<div class="cp-mob-tabs" id="cp-mob-tabs" role="tablist" aria-label="Categorie">
-    <button class="cp-mob-tab" role="tab" data-cat="manga" onclick="catPage.setCat('manga')">
-        <span>Manga</span>
-    </button>
-    <button class="cp-mob-tab" role="tab" data-cat="libri" onclick="catPage.setCat('libri')">
-        <span>Libri</span>
-    </button>
-    <button class="cp-mob-tab" role="tab" data-cat="carte" onclick="catPage.setCat('carte')">
-        <span>Carte</span>
-    </button>
-    <button class="cp-mob-tab" role="tab" data-cat="gadget" onclick="catPage.setCat('gadget')">
-        <span>Gadget</span>
-    </button>
-</div>
+<div class="cp-mob-tabs" id="cp-mob-tabs" role="tablist" aria-label="Categorie"></div>
 
 
 <!-- ============================================================
@@ -281,97 +268,7 @@
             <span class="cp-sidebar-label">Categorie</span>
         </div>
 
-        <!-- Manga -->
-        <div class="cp-nav-block" id="cpnb-manga">
-            <button class="cp-nav-hd" onclick="catPage.setCat('manga')" aria-expanded="false">
-                <span class="cp-nav-num">01</span>
-                <span class="cp-nav-info">
-                    <span class="cp-nav-name">Manga &amp; Comics</span>
-                    <span class="cp-nav-jp">マンガ・コミック</span>
-                </span>
-                <span class="cp-nav-arrow">›</span>
-            </button>
-            <ul class="cp-sub-list" id="cpsub-manga">
-                <li><button class="cp-sub-btn" data-sub="all" onclick="catPage.setSub('all')">Tutti <span class="cp-cnt" id="cnt-manga-all">0</span></button></li>
-                <li><button class="cp-sub-btn" data-sub="shonen" onclick="catPage.setSub('shonen')">Shonen <span class="cp-cnt" id="cnt-manga-shonen">0</span></button></li>
-                <li><button class="cp-sub-btn" data-sub="seinen" onclick="catPage.setSub('seinen')">Seinen <span class="cp-cnt" id="cnt-manga-seinen">0</span></button></li>
-                <li><button class="cp-sub-btn" data-sub="shojo" onclick="catPage.setSub('shojo')">Shojo <span class="cp-cnt" id="cnt-manga-shojo">0</span></button></li>
-                <li><button class="cp-sub-btn" data-sub="josei" onclick="catPage.setSub('josei')">Josei <span class="cp-cnt" id="cnt-manga-josei">0</span></button></li>
-                <li><button class="cp-sub-btn" data-sub="kodomo" onclick="catPage.setSub('kodomo')">Kodomomuke <span class="cp-cnt" id="cnt-manga-kodomo">0</span></button></li>
-                <li><button class="cp-sub-btn" data-sub="isekai" onclick="catPage.setSub('isekai')">Isekai <span class="cp-cnt" id="cnt-manga-isekai">0</span></button></li>
-                <li><button class="cp-sub-btn" data-sub="sport" onclick="catPage.setSub('sport')">Sport <span class="cp-cnt" id="cnt-manga-sport">0</span></button></li>
-                <li><button class="cp-sub-btn" data-sub="horror" onclick="catPage.setSub('horror')">Horror &amp; Thriller <span class="cp-cnt" id="cnt-manga-horror">0</span></button></li>
-                <li><button class="cp-sub-btn" data-sub="fantasy" onclick="catPage.setSub('fantasy')">Fantasy &amp; Avventura <span class="cp-cnt" id="cnt-manga-fantasy">0</span></button></li>
-                <li><button class="cp-sub-btn" data-sub="mecha" onclick="catPage.setSub('mecha')">Mecha &amp; Sci-Fi <span class="cp-cnt" id="cnt-manga-mecha">0</span></button></li>
-                <li><button class="cp-sub-btn" data-sub="slice" onclick="catPage.setSub('slice')">Slice of Life <span class="cp-cnt" id="cnt-manga-slice">0</span></button></li>
-                <li><button class="cp-sub-btn" data-sub="yaoi" onclick="catPage.setSub('yaoi')">Boys Love (BL) <span class="cp-cnt" id="cnt-manga-yaoi">0</span></button></li>
-                <li><button class="cp-sub-btn" data-sub="yuri" onclick="catPage.setSub('yuri')">Girls Love (GL) <span class="cp-cnt" id="cnt-manga-yuri">0</span></button></li>
-                <li><button class="cp-sub-btn" data-sub="comics" onclick="catPage.setSub('comics')">Comics &amp; Graphic Novel <span class="cp-cnt" id="cnt-manga-comics">0</span></button></li>
-                <li><button class="cp-sub-btn" data-sub="manwha" onclick="catPage.setSub('manwha')">Manwha <span class="cp-cnt" id="cnt-manga-manwha">0</span></button></li>
-                <li><button class="cp-sub-btn" data-sub="romance" onclick="catPage.setSub('romance')">Romance <span class="cp-cnt" id="cnt-manga-romance">0</span></button></li>
-            </ul>
-        </div>
-
-        <!-- Libri -->
-        <div class="cp-nav-block" id="cpnb-libri">
-            <button class="cp-nav-hd" onclick="catPage.setCat('libri')" aria-expanded="false">
-                <span class="cp-nav-num">02</span>
-                <span class="cp-nav-info">
-                    <span class="cp-nav-name">Libri</span>
-                    <span class="cp-nav-jp">本・小説</span>
-                </span>
-                <span class="cp-nav-arrow">›</span>
-            </button>
-            <ul class="cp-sub-list" id="cpsub-libri">
-                <li><button class="cp-sub-btn" data-sub="all" onclick="catPage.setSub('all')">Tutti <span class="cp-cnt" id="cnt-libri-all">0</span></button></li>
-                <li><button class="cp-sub-btn" data-sub="romanzi" onclick="catPage.setSub('romanzi')">Romanzi <span class="cp-cnt" id="cnt-libri-romanzi">0</span></button></li>
-            </ul>
-        </div>
-
-        <!-- Carte -->
-        <div class="cp-nav-block" id="cpnb-carte">
-            <button class="cp-nav-hd" onclick="catPage.setCat('carte')" aria-expanded="false">
-                <span class="cp-nav-num">03</span>
-                <span class="cp-nav-info">
-                    <span class="cp-nav-name">Carte &amp; Giochi</span>
-                    <span class="cp-nav-jp">カード・ゲーム</span>
-                </span>
-                <span class="cp-nav-arrow">›</span>
-            </button>
-            <ul class="cp-sub-list" id="cpsub-carte">
-                <li><button class="cp-sub-btn" data-sub="all" onclick="catPage.setSub('all')">Tutti <span class="cp-cnt" id="cnt-carte-all">0</span></button></li>
-                <li><button class="cp-sub-btn" data-sub="pokemon" onclick="catPage.setSub('pokemon')">Pok&eacute;mon TCG <span class="cp-cnt" id="cnt-carte-pokemon">0</span></button></li>
-                <li><button class="cp-sub-btn" data-sub="yugioh" onclick="catPage.setSub('yugioh')">Yu-Gi-Oh! <span class="cp-cnt" id="cnt-carte-yugioh">0</span></button></li>
-                <li><button class="cp-sub-btn" data-sub="magic" onclick="catPage.setSub('magic')">Magic: The Gathering <span class="cp-cnt" id="cnt-carte-magic">0</span></button></li>
-                <li><button class="cp-sub-btn" data-sub="onepiece" onclick="catPage.setSub('onepiece')">One Piece TCG <span class="cp-cnt" id="cnt-carte-onepiece">0</span></button></li>
-                <li><button class="cp-sub-btn" data-sub="dragonball" onclick="catPage.setSub('dragonball')">Dragon Ball Super <span class="cp-cnt" id="cnt-carte-dragonball">0</span></button></li>
-                <li><button class="cp-sub-btn" data-sub="naruto" onclick="catPage.setSub('naruto')">Naruto Card Game <span class="cp-cnt" id="cnt-carte-naruto">0</span></button></li>
-                <li><button class="cp-sub-btn" data-sub="altri" onclick="catPage.setSub('altri')">Board Games &amp; Altri <span class="cp-cnt" id="cnt-carte-altri">0</span></button></li>
-            </ul>
-        </div>
-
-        <!-- Gadget -->
-        <div class="cp-nav-block" id="cpnb-gadget">
-            <button class="cp-nav-hd" onclick="catPage.setCat('gadget')" aria-expanded="false">
-                <span class="cp-nav-num">04</span>
-                <span class="cp-nav-info">
-                    <span class="cp-nav-name">Gadget &amp; Figures</span>
-                    <span class="cp-nav-jp">フィギュア・グッズ</span>
-                </span>
-                <span class="cp-nav-arrow">›</span>
-            </button>
-            <ul class="cp-sub-list" id="cpsub-gadget">
-                <li><button class="cp-sub-btn" data-sub="all" onclick="catPage.setSub('all')">Tutti <span class="cp-cnt" id="cnt-gadget-all">0</span></button></li>
-                <li><button class="cp-sub-btn" data-sub="figure" onclick="catPage.setSub('figure')">Action Figures <span class="cp-cnt" id="cnt-gadget-figure">0</span></button></li>
-                <li><button class="cp-sub-btn" data-sub="funko" onclick="catPage.setSub('funko')">Funko Pop <span class="cp-cnt" id="cnt-gadget-funko">0</span></button></li>
-                <li><button class="cp-sub-btn" data-sub="statuette" onclick="catPage.setSub('statuette')">Statuette <span class="cp-cnt" id="cnt-gadget-statuette">0</span></button></li>
-                <li><button class="cp-sub-btn" data-sub="poster" onclick="catPage.setSub('poster')">Poster &amp; Art <span class="cp-cnt" id="cnt-gadget-poster">0</span></button></li>
-                <li><button class="cp-sub-btn" data-sub="abbigliamento" onclick="catPage.setSub('abbigliamento')">Abbigliamento <span class="cp-cnt" id="cnt-gadget-abbigliamento">0</span></button></li>
-                <li><button class="cp-sub-btn" data-sub="accessori" onclick="catPage.setSub('accessori')">Accessori <span class="cp-cnt" id="cnt-gadget-accessori">0</span></button></li>
-                <li><button class="cp-sub-btn" data-sub="lego" onclick="catPage.setSub('lego')">Lego <span class="cp-cnt" id="cnt-gadget-lego">0</span></button></li>
-                <li><button class="cp-sub-btn" data-sub="peluche" onclick="catPage.setSub('peluche')">Peluche &amp; Plushie <span class="cp-cnt" id="cnt-gadget-peluche">0</span></button></li>
-            </ul>
-        </div>
+        <div id="cp-nav-blocks"></div>
 
     </aside>
 
@@ -591,68 +488,73 @@
 var catPage = (function () {
 
     /* ---- Category definitions ---- */
-    var CATS = {
+
+    /* JP/kanji hints for known categories; unknown ones get generic fallback */
+    var _JP_MAP = {
+        manga:  { jp: 'マンガ・コミック', kanji: '漫' },
+        libri:  { jp: '本・小説',         kanji: '本' },
+        carte:  { jp: 'カード・ゲーム',   kanji: '遊' },
+        gadget: { jp: 'フィギュア・グッズ', kanji: '具' }
+    };
+
+    /* Default cats used when localStorage is empty or corrupt */
+    var _DEFAULT_CATS = {
         manga: {
-            label: 'Manga & Comics',
-            jp: 'マンガ・コミック',
-            kanji: '漫',
+            label: 'Manga & Comics', jp: 'マンガ・コミック', kanji: '漫',
             subs: [
-                { key: 'shonen',  label: 'Shonen' },
-                { key: 'seinen',  label: 'Seinen' },
-                { key: 'shojo',   label: 'Shojo' },
-                { key: 'josei',   label: 'Josei' },
-                { key: 'kodomo',  label: 'Kodomomuke' },
-                { key: 'isekai',  label: 'Isekai' },
-                { key: 'sport',   label: 'Sport' },
-                { key: 'horror',  label: 'Horror & Thriller' },
-                { key: 'fantasy', label: 'Fantasy & Avventura' },
-                { key: 'mecha',   label: 'Mecha & Sci-Fi' },
-                { key: 'slice',   label: 'Slice of Life' },
-                { key: 'yaoi',    label: 'Boys Love (BL)' },
-                { key: 'yuri',    label: 'Girls Love (GL)' },
-                { key: 'comics',  label: 'Comics & Graphic Novel' },
-                { key: 'manwha',  label: 'Manwha' },
-                { key: 'romance', label: 'Romance' }
+                { key: 'shonen',  label: 'Shonen' }, { key: 'seinen',  label: 'Seinen' },
+                { key: 'shojo',   label: 'Shojo' },  { key: 'josei',   label: 'Josei' },
+                { key: 'kodomo',  label: 'Kodomomuke' }, { key: 'isekai', label: 'Isekai' },
+                { key: 'sport',   label: 'Sport' },  { key: 'horror',  label: 'Horror & Thriller' },
+                { key: 'fantasy', label: 'Fantasy & Avventura' }, { key: 'mecha', label: 'Mecha & Sci-Fi' },
+                { key: 'slice',   label: 'Slice of Life' }, { key: 'yaoi', label: 'Boys Love (BL)' },
+                { key: 'yuri',    label: 'Girls Love (GL)' }, { key: 'comics', label: 'Comics & Graphic Novel' },
+                { key: 'manwha',  label: 'Manwha' }, { key: 'romance', label: 'Romance' }
             ]
         },
-        libri: {
-            label: 'Libri',
-            jp: '本・小説',
-            kanji: '本',
+        libri:  { label: 'Libri',           jp: '本・小説',         kanji: '本', subs: [{ key: 'romanzi', label: 'Romanzi' }] },
+        carte:  {
+            label: 'Carte & Giochi', jp: 'カード・ゲーム', kanji: '遊',
             subs: [
-                { key: 'romanzi', label: 'Romanzi' }
-            ]
-        },
-        carte: {
-            label: 'Carte & Giochi',
-            jp: 'カード・ゲーム',
-            kanji: '遊',
-            subs: [
-                { key: 'pokemon',    label: 'Pokémon TCG' },
-                { key: 'yugioh',     label: 'Yu-Gi-Oh!' },
-                { key: 'magic',      label: 'Magic: The Gathering' },
-                { key: 'onepiece',   label: 'One Piece TCG' },
-                { key: 'dragonball', label: 'Dragon Ball Super' },
-                { key: 'naruto',     label: 'Naruto Card Game' },
+                { key: 'pokemon',    label: 'Pokémon TCG' }, { key: 'yugioh',     label: 'Yu-Gi-Oh!' },
+                { key: 'magic',      label: 'Magic: The Gathering' }, { key: 'onepiece', label: 'One Piece TCG' },
+                { key: 'dragonball', label: 'Dragon Ball Super' }, { key: 'naruto', label: 'Naruto Card Game' },
                 { key: 'altri',      label: 'Board Games & Altri' }
             ]
         },
         gadget: {
-            label: 'Gadget & Figures',
-            jp: 'フィギュア・グッズ',
-            kanji: '具',
+            label: 'Gadget & Figures', jp: 'フィギュア・グッズ', kanji: '具',
             subs: [
-                { key: 'figure',        label: 'Action Figures' },
-                { key: 'funko',         label: 'Funko Pop' },
-                { key: 'statuette',     label: 'Statuette' },
-                { key: 'poster',        label: 'Poster & Art' },
-                { key: 'abbigliamento', label: 'Abbigliamento' },
-                { key: 'accessori',     label: 'Accessori' },
-                { key: 'lego',          label: 'Lego' },
-                { key: 'peluche',       label: 'Peluche & Plushie' }
+                { key: 'figure', label: 'Action Figures' }, { key: 'funko', label: 'Funko Pop' },
+                { key: 'statuette', label: 'Statuette' }, { key: 'poster', label: 'Poster & Art' },
+                { key: 'abbigliamento', label: 'Abbigliamento' }, { key: 'accessori', label: 'Accessori' },
+                { key: 'lego', label: 'Lego' }, { key: 'peluche', label: 'Peluche & Plushie' }
             ]
         }
     };
+
+    function _buildCatsFromStorage() {
+        try {
+            var raw = localStorage.getItem('manbaga_categories');
+            if (!raw) return _DEFAULT_CATS;
+            var data = JSON.parse(raw);
+            if (!data || !data.cats || !data.cats.length) return _DEFAULT_CATS;
+            var result = {};
+            data.cats.forEach(function (c) {
+                var jpFallback = _JP_MAP[c.key] || { jp: c.label, kanji: (c.label || '?').charAt(0) };
+                var rawSubs = (data.subcats && data.subcats[c.key]) || [];
+                result[c.key] = {
+                    label: c.label,
+                    jp:    c.jp    || jpFallback.jp,
+                    kanji: c.kanji || jpFallback.kanji,
+                    subs:  rawSubs.map(function (s) { return { key: s[0], label: s[1] }; })
+                };
+            });
+            return result;
+        } catch (e) { return _DEFAULT_CATS; }
+    }
+
+    var CATS = _buildCatsFromStorage();
 
     /* ---- State ---- */
     var _cat = 'carte';
@@ -988,8 +890,46 @@ var catPage = (function () {
         render();
     }
 
+    /* ---- Generate sidebar nav + mobile tabs from CATS ---- */
+    function _generateNav() {
+        var mobTabsEl  = document.getElementById('cp-mob-tabs');
+        var sidebarEl  = document.getElementById('cp-nav-blocks');
+        var tabsHtml   = '';
+        var sidebarHtml = '';
+        var keys = Object.keys(CATS);
+        keys.forEach(function (catKey, idx) {
+            var cat = CATS[catKey];
+            var num = (idx + 1 < 10 ? '0' : '') + (idx + 1);
+            tabsHtml += '<button class="cp-mob-tab" role="tab" data-cat="' + catKey + '" onclick="catPage.setCat(\'' + catKey + '\')">'
+                + '<span>' + _esc(cat.label) + '</span>'
+                + '</button>';
+            sidebarHtml += '<div class="cp-nav-block" id="cpnb-' + catKey + '">'
+                + '<button class="cp-nav-hd" onclick="catPage.setCat(\'' + catKey + '\')" aria-expanded="false">'
+                + '<span class="cp-nav-num">' + num + '</span>'
+                + '<span class="cp-nav-info">'
+                + '<span class="cp-nav-name">' + _esc(cat.label) + '</span>'
+                + '<span class="cp-nav-jp">' + cat.jp + '</span>'
+                + '</span>'
+                + '<span class="cp-nav-arrow">›</span>'
+                + '</button>'
+                + '<ul class="cp-sub-list" id="cpsub-' + catKey + '">'
+                + '<li><button class="cp-sub-btn" data-sub="all" onclick="catPage.setSub(\'all\')">Tutti <span class="cp-cnt" id="cnt-' + catKey + '-all">0</span></button></li>';
+            cat.subs.forEach(function (s) {
+                sidebarHtml += '<li><button class="cp-sub-btn" data-sub="' + s.key + '" onclick="catPage.setSub(\'' + s.key + '\')">'
+                    + _esc(s.label)
+                    + ' <span class="cp-cnt" id="cnt-' + catKey + '-' + s.key + '">0</span>'
+                    + '</button></li>';
+            });
+            sidebarHtml += '</ul></div>';
+        });
+        if (mobTabsEl) mobTabsEl.innerHTML = tabsHtml;
+        if (sidebarEl) sidebarEl.innerHTML = sidebarHtml;
+    }
+
     /* ---- Init ---- */
     function init() {
+        CATS = _buildCatsFromStorage();
+        _generateNav();
         _parseUrl();
         render();
     }
@@ -1008,14 +948,22 @@ var catPage = (function () {
         render();
     }
 
+    /* ---- Public: refreshCats (chiamato da script.js dopo fetch Firestore) ---- */
+    function refreshCats() {
+        CATS = _buildCatsFromStorage();
+        _generateNav();
+        render();
+    }
+
     return {
-        setCat:      setCat,
-        setSub:      setSub,
-        render:      render,
-        init:        init,
-        setSearch:   setSearch,
-        clearSearch: clearSearch,
-        goPage:      goPage
+        setCat:       setCat,
+        setSub:       setSub,
+        render:       render,
+        init:         init,
+        setSearch:    setSearch,
+        clearSearch:  clearSearch,
+        goPage:       goPage,
+        refreshCats:  refreshCats
     };
 
 })();

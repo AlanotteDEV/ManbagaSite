@@ -753,6 +753,67 @@ input, textarea, select { font-family: inherit; color: inherit; }
 }
 .comp-deck-area textarea::placeholder { color: rgba(255,255,255,.2); }
 
+/* ===================== CATEGORIE MGMT ===================== */
+.cat-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; margin-bottom: 12px; overflow: hidden;
+}
+.cat-card-hd {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 16px; cursor: pointer;
+  transition: background .15s;
+}
+.cat-card-hd:hover { background: rgba(255,255,255,.03); }
+.cat-card-name {
+  font-size: 13px; font-weight: 800; flex: 1;
+  letter-spacing: .03em;
+}
+.cat-card-key {
+  font-size: 10px; color: var(--muted); font-weight: 600;
+  background: rgba(255,255,255,.06); border-radius: 4px; padding: 2px 7px;
+  letter-spacing: .06em; font-family: monospace;
+}
+.cat-card-toggle {
+  font-size: 12px; color: var(--muted); transition: transform .2s;
+}
+.cat-card-toggle.open { transform: rotate(180deg); }
+.cat-card-body {
+  display: none; border-top: 1px solid var(--border);
+  padding: 14px 16px;
+}
+.cat-card-body.open { display: block; }
+.cat-subcat-list {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px;
+}
+.cat-subcat-chip {
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1);
+  border-radius: 20px; padding: 4px 12px;
+  font-size: 11px; font-weight: 700;
+}
+.cat-subcat-chip button {
+  background: none; border: none; cursor: pointer;
+  color: var(--muted); font-size: 14px; line-height: 1;
+  padding: 0; transition: color .15s;
+}
+.cat-subcat-chip button:hover { color: #f87171; }
+.cat-add-subcat-row {
+  display: flex; gap: 8px; align-items: center;
+}
+.cat-add-subcat-row input {
+  flex: 1; padding: 7px 10px; font-size: 12px;
+  background: var(--elevated); border: 1px solid rgba(255,255,255,.1);
+  border-radius: 5px; color: var(--text); font-family: inherit;
+}
+.cat-add-subcat-row input:focus {
+  outline: none; border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(220,38,38,.1);
+}
+.cat-actions {
+  display: flex; gap: 8px; padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,.06); margin-top: 14px;
+}
+
 /* ===================== RESPONSIVE ===================== */
 @media (max-width: 900px) {
   #sidebar { width: 60px; min-width: 60px; }
@@ -825,7 +886,37 @@ input, textarea, select { font-family: inherit; color: inherit; }
       <p class="confirm-item" id="confirm-item"></p>
       <div class="form-footer">
         <button class="btn btn-ghost" onclick="closeConfirm()">Annulla</button>
-        <button class="btn btn-danger" id="confirm-ok-btn">Elimina</button>
+        <button class="btn btn-danger" id="confirm-ok-btn" onclick="if(_confirmCallback){var _cb=_confirmCallback;closeConfirm();_cb();}else{closeConfirm();}">Elimina</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== ADD CATEGORY MODAL ===================== -->
+<div id="add-cat-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeAddCatModal()">
+  <div class="modal-box modal-box-sm" style="margin:auto">
+    <div class="modal-head">
+      <span class="modal-head-title">Nuova Sezione</span>
+      <div class="modal-head-actions">
+        <button class="btn-close" onclick="closeAddCatModal()">✕</button>
+      </div>
+    </div>
+    <div class="modal-body-sm">
+      <div class="form-group">
+        <label class="form-label">Nome sezione *</label>
+        <input type="text" id="new-cat-name" class="form-input" placeholder="es. Videogiochi" onkeydown="if(event.key==='Enter')saveNewCategory()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Testo giapponese <span style="color:var(--muted);font-weight:400">(opzionale)</span></label>
+        <input type="text" id="new-cat-jp" class="form-input" placeholder="es. ビデオゲーム">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Kanji <span style="color:var(--muted);font-weight:400">(opzionale, 1 carattere)</span></label>
+        <input type="text" id="new-cat-kanji" class="form-input" placeholder="es. 遊" maxlength="2">
+      </div>
+      <div class="form-footer">
+        <button class="btn btn-ghost" onclick="closeAddCatModal()">Annulla</button>
+        <button class="btn" onclick="saveNewCategory()">Aggiungi</button>
       </div>
     </div>
   </div>
@@ -894,6 +985,13 @@ input, textarea, select { font-family: inherit; color: inherit; }
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
         <span>Contabilità</span>
         <span class="nav-badge" id="nb-trans">0</span>
+      </div>
+
+      <div class="sb-section-label" style="margin-top:20px">Impostazioni</div>
+
+      <div class="nav-item" data-view="categorie" onclick="switchView('categorie')">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        <span>Categorie</span>
       </div>
 
     </div>
@@ -1021,10 +1119,6 @@ input, textarea, select { font-family: inherit; color: inherit; }
         </div>
         <select class="filter-select" id="filter-cat" onchange="renderProducts()">
           <option value="">Tutte le categorie</option>
-          <option value="manga">Manga &amp; Comics</option>
-          <option value="libri">Libri</option>
-          <option value="carte">Carte &amp; Giochi</option>
-          <option value="gadget">Gadget &amp; Figures</option>
         </select>
         <select class="filter-select" id="filter-badge" onchange="renderProducts()">
           <option value="">Tutti gli stati</option>
@@ -1253,6 +1347,21 @@ input, textarea, select { font-family: inherit; color: inherit; }
       </div>
     </div><!-- /view-contabilita -->
 
+    <!-- ===================== VIEW: CATEGORIE ===================== -->
+    <div id="view-categorie" class="view" style="display:none">
+      <div class="view-header">
+        <div class="view-title">Categorie Catalogo</div>
+        <button class="btn btn-primary" onclick="openAddCatModal()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Nuova Sezione
+        </button>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:24px;line-height:1.6">
+        Gestisci le sezioni (categorie) e le sottosezioni del catalogo prodotti. Le modifiche si riflettono subito nel form di aggiunta prodotti.
+      </div>
+      <div id="cat-mgmt-list"></div>
+    </div><!-- /view-categorie -->
+
   </div><!-- /content-area -->
 </div><!-- /app -->
 
@@ -1345,10 +1454,6 @@ input, textarea, select { font-family: inherit; color: inherit; }
           <label class="form-label">Categoria <span>*</span></label>
           <select class="form-select" id="product-cat" onchange="updateSubcats()">
             <option value="">— Seleziona —</option>
-            <option value="manga">Manga &amp; Comics</option>
-            <option value="libri">Libri</option>
-            <option value="carte">Carte &amp; Giochi</option>
-            <option value="gadget">Gadget &amp; Figures</option>
           </select>
         </div>
         <div class="form-group">
@@ -1592,13 +1697,226 @@ var FB_CONFIG = {
     appId:             '1:466874129336:web:fd07925523c35921fe8d4d'
 };
 
-/* ─── SUBCATEGORIES MAP ─── */
-var SUBCATS = {
+/* ─── CATEGORIE DINAMICHE ─── */
+var _DEF_CATS = [
+    { key:'manga',  label:'Manga & Comics',   subcatRequired:true },
+    { key:'libri',  label:'Libri',             subcatRequired:false },
+    { key:'carte',  label:'Carte & Giochi',    subcatRequired:false },
+    { key:'gadget', label:'Gadget & Figures',  subcatRequired:false }
+];
+var _DEF_SUBCATS = {
     manga:  [['shonen','Shonen'],['seinen','Seinen'],['shojo','Shojo'],['josei','Josei'],['kodomo','Kodomomuke (Bambini)'],['isekai','Isekai'],['sport','Sport'],['horror','Horror & Thriller'],['fantasy','Fantasy & Avventura'],['mecha','Mecha & Sci-Fi'],['slice','Slice of Life'],['yaoi','Boys Love (BL)'],['yuri','Girls Love (GL)'],['comics','Comics & Graphic Novel'],['manwha','Manwha'],['romance','Romance']],
     libri:  [['romanzi','Romanzi']],
     carte:  [['pokemon','Pokémon TCG'],['yugioh','Yu-Gi-Oh!'],['magic','Magic: The Gathering'],['onepiece','One Piece TCG'],['dragonball','Dragon Ball Super'],['naruto','Naruto Card Game'],['altri','Board Games & Altri']],
     gadget: [['figure','Action Figures'],['funko','Funko Pop'],['statuette','Statuette'],['poster','Poster & Art'],['abbigliamento','Abbigliamento'],['accessori','Accessori'],['lego','Lego'],['peluche','Peluche & Plushie']]
 };
+
+/* Stato corrente (caricato da Firestore o default) */
+var _cats    = _DEF_CATS.slice();
+var _subcats = JSON.parse(JSON.stringify(_DEF_SUBCATS));
+
+/* Carica da Firestore settings/categories */
+var _LS_CATS = 'manbaga_categories';
+
+function loadCategories() {
+    /* 1 — localStorage (sempre disponibile, immediato) */
+    try {
+        var saved = JSON.parse(localStorage.getItem(_LS_CATS) || 'null');
+        if (saved && Array.isArray(saved.cats) && saved.cats.length) {
+            _cats    = saved.cats;
+            _subcats = saved.subcats || {};
+        }
+    } catch(e) {}
+    buildCatDropdowns();
+    if (_currentView === 'categorie') renderCategoriesView();
+
+    /* 2 — Firestore (sync cloud, può sovrascrivere se più recente) */
+    if (!_db) return;
+    _db.collection('settings').doc('categories').get().then(function(doc) {
+        if (doc.exists) {
+            var d = doc.data();
+            if (Array.isArray(d.cats) && d.cats.length) {
+                _cats    = d.cats;
+                _subcats = d.subcats || {};
+                /* Aggiorna anche localStorage con i dati cloud */
+                try { localStorage.setItem(_LS_CATS, JSON.stringify({ cats: _cats, subcats: _subcats })); } catch(e) {}
+                buildCatDropdowns();
+                if (_currentView === 'categorie') renderCategoriesView();
+            }
+        } else {
+            /* Prima volta: sincronizza quello che abbiamo su Firestore */
+            _syncCatsToFirestore();
+        }
+    }).catch(function() { /* Firestore non disponibile — usiamo localStorage */ });
+}
+
+function saveCategories(cb) {
+    /* Salva subito su localStorage */
+    try { localStorage.setItem(_LS_CATS, JSON.stringify({ cats: _cats, subcats: _subcats })); } catch(e) {}
+    /* Aggiorna UI subito */
+    buildCatDropdowns();
+    if (_currentView === 'categorie') renderCategoriesView();
+    if (cb) cb();
+    /* Poi sincronizza Firestore in background */
+    _syncCatsToFirestore();
+}
+
+function _syncCatsToFirestore() {
+    if (!_db) return;
+    _db.collection('settings').doc('categories')
+        .set({ cats: _cats, subcats: _subcats })
+        .catch(function(e) { console.warn('Cats Firestore sync:', e.message); });
+}
+
+/* Popola tutti i <select> categoria */
+function buildCatDropdowns() {
+    var ids = ['product-cat', 'filter-cat'];
+    ids.forEach(function(id) {
+        var sel = document.getElementById(id);
+        if (!sel) return;
+        var cur = sel.value;
+        var isFilter = (id === 'filter-cat');
+        sel.innerHTML = '<option value="">' + (isFilter ? 'Tutte le categorie' : '— Seleziona —') + '</option>'
+            + _cats.map(function(c) {
+                return '<option value="' + esc(c.key) + '"' + (c.key === cur ? ' selected' : '') + '>' + esc(c.label) + '</option>';
+            }).join('');
+    });
+    updateSubcats();
+}
+
+/* ─── GESTIONE CATEGORIE UI ─── */
+function _slugify(str) {
+    return str.toLowerCase()
+        .replace(/[àáâã]/g,'a').replace(/[èéêë]/g,'e').replace(/[ìíîï]/g,'i')
+        .replace(/[òóôõ]/g,'o').replace(/[ùúûü]/g,'u')
+        .replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'').slice(0,20) || ('cat_'+Date.now());
+}
+
+function renderCategoriesView() {
+    var el = document.getElementById('cat-mgmt-list');
+    if (!el) return;
+    if (_cats.length === 0) {
+        el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted);font-size:13px">Nessuna categoria. Aggiungine una con il tasto in alto.</div>';
+        return;
+    }
+    el.innerHTML = _cats.map(function(c, ci) {
+        var subs = _subcats[c.key] || [];
+        var chipsHtml = subs.map(function(s, si) {
+            return '<span class="cat-subcat-chip">'
+                + esc(s[1])
+                + '<button onclick="deleteSubcat(' + ci + ',' + si + ')" title="Rimuovi">×</button>'
+                + '</span>';
+        }).join('');
+        return '<div class="cat-card" id="cat-card-' + ci + '">'
+            + '<div class="cat-card-hd" onclick="toggleCatCard(' + ci + ')">'
+            + '<span class="cat-card-name">' + esc(c.label) + '</span>'
+            + '<span class="cat-card-key">' + esc(c.key) + '</span>'
+            + (c.subcatRequired ? '<span style="font-size:10px;color:#fbbf24;font-weight:700">obbligatoria</span>' : '')
+            + '<span class="cat-card-toggle" id="cat-toggle-' + ci + '">▼</span>'
+            + '</div>'
+            + '<div class="cat-card-body" id="cat-body-' + ci + '">'
+            + '<div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--muted);margin-bottom:10px">SOTTOSEZIONI</div>'
+            + '<div class="cat-subcat-list">' + (chipsHtml || '<span style="font-size:12px;color:var(--muted)">Nessuna sottosezione</span>') + '</div>'
+            + '<div class="cat-add-subcat-row">'
+            + '<input type="text" id="new-subcat-' + ci + '" placeholder="Nome nuova sottosezione…" onkeydown="if(event.key===\'Enter\')addSubcat(' + ci + ')">'
+            + '<button class="btn btn-secondary btn-sm" onclick="addSubcat(' + ci + ')">+ Aggiungi</button>'
+            + '</div>'
+            + '<div class="cat-actions">'
+            + '<button class="btn btn-secondary btn-sm" onclick="toggleSubcatRequired(' + ci + ')">'
+            + (c.subcatRequired ? '✓ Sottosezione obbligatoria' : 'Rendi obbligatoria') + '</button>'
+            + '<button class="btn btn-sm" style="background:rgba(220,38,38,.12);color:#f87171;border:1px solid rgba(220,38,38,.2)" onclick="deleteCategory(' + ci + ')">🗑 Elimina sezione</button>'
+            + '</div>'
+            + '</div>'
+            + '</div>';
+    }).join('');
+}
+
+function toggleCatCard(ci) {
+    var body    = document.getElementById('cat-body-' + ci);
+    var toggle  = document.getElementById('cat-toggle-' + ci);
+    if (!body) return;
+    var isOpen = body.classList.toggle('open');
+    if (toggle) toggle.classList.toggle('open', isOpen);
+}
+
+function openAddCatModal() {
+    var m = document.getElementById('add-cat-modal');
+    if (!m) return;
+    document.getElementById('new-cat-name').value  = '';
+    document.getElementById('new-cat-jp').value    = '';
+    document.getElementById('new-cat-kanji').value = '';
+    m.style.display = 'flex';
+    setTimeout(function(){ document.getElementById('new-cat-name').focus(); }, 50);
+}
+
+function closeAddCatModal() {
+    var m = document.getElementById('add-cat-modal');
+    if (m) m.style.display = 'none';
+}
+
+function saveNewCategory() {
+    var name  = (document.getElementById('new-cat-name').value  || '').trim();
+    var jp    = (document.getElementById('new-cat-jp').value    || '').trim();
+    var kanji = (document.getElementById('new-cat-kanji').value || '').trim();
+    if (!name) { showToast('Inserisci il nome della sezione', 'error'); return; }
+    var key = _slugify(name);
+    if (_cats.find(function(c){ return c.key === key; })) {
+        showToast('Esiste già una sezione con questo nome', 'error'); return;
+    }
+    var entry = { key: key, label: name, subcatRequired: false };
+    if (jp)    entry.jp    = jp;
+    if (kanji) entry.kanji = kanji;
+    _cats.push(entry);
+    _subcats[key] = [];
+    closeAddCatModal();
+    saveCategories(function(){ showToast('Sezione "' + name + '" aggiunta ✓', 'success'); });
+}
+
+function deleteCategory(ci) {
+    var c = _cats[ci];
+    if (!c) return;
+    var used = (_products || []).some(function(p){ return p.cat === c.key; });
+    if (used) { showToast('Impossibile: ci sono prodotti in questa sezione', 'error'); return; }
+    openConfirm('Elimina Sezione', 'Vuoi eliminare la sezione e tutte le sue sottosezioni?', c.label, function() {
+        _cats.splice(ci, 1);
+        delete _subcats[c.key];
+        saveCategories(function(){ showToast('Sezione eliminata', 'success'); });
+    });
+}
+
+function addSubcat(ci) {
+    var c = _cats[ci];
+    if (!c) return;
+    var inp = document.getElementById('new-subcat-' + ci);
+    if (!inp) return;
+    var name = (inp.value || '').trim();
+    if (!name) { showToast('Inserisci il nome della sottosezione', 'error'); return; }
+    var key = _slugify(name);
+    if (!_subcats[c.key]) _subcats[c.key] = [];
+    if (_subcats[c.key].find(function(s){ return s[0] === key; })) {
+        showToast('Sottosezione già esistente', 'error'); return;
+    }
+    _subcats[c.key].push([key, name]);
+    inp.value = '';
+    saveCategories(function(){ showToast('"' + name + '" aggiunta ✓', 'success'); });
+}
+
+function deleteSubcat(ci, si) {
+    var c = _cats[ci];
+    if (!c || !_subcats[c.key]) return;
+    var sub = _subcats[c.key][si];
+    openConfirm('Elimina Sottosezione', 'Vuoi rimuovere questa sottosezione?', sub[1], function() {
+        _subcats[c.key].splice(si, 1);
+        saveCategories(function(){ showToast('Sottosezione eliminata', 'success'); });
+    });
+}
+
+function toggleSubcatRequired(ci) {
+    var c = _cats[ci];
+    if (!c) return;
+    c.subcatRequired = !c.subcatRequired;
+    saveCategories();
+}
 
 /* ─── BADGE → CSS CLASS ─── */
 function badgeClass(badge) {
@@ -1640,6 +1958,7 @@ function initFirebase() {
         _db = _fbApp.firestore();
         _fbReady = true;
         updateFirebaseStatus(true);
+        loadCategories();
 
         /* Auth */
         _auth = _fbApp.auth();
@@ -1864,6 +2183,7 @@ function renderCurrentView() {
         case 'contabilita':  renderContabilita();  break;
         case 'recensioni':   renderRecensioni();   break;
         case 'preordini':    renderPreordini();    break;
+        case 'categorie':    renderCategoriesView(); break;
     }
 }
 
@@ -2260,32 +2580,28 @@ function toggleNovitaDaysField() {
 }
 
 function updateSubcats(selectedSub) {
-    var cat = document.getElementById('product-cat').value;
+    var cat = document.getElementById('product-cat') ? document.getElementById('product-cat').value : '';
     var sel = document.getElementById('product-subcat');
     var subcatLabel = document.getElementById('subcat-label');
     var volumeLabel = document.getElementById('volume-label');
     var volumeInput = document.getElementById('product-volume');
 
-    /* Label dinamiche per categoria */
-    var labelMap = { manga: 'Genere *', libri: 'Tipo', carte: 'Tipo', gadget: 'Tipologia' };
-    var volPlaceholderMap = {
-        manga:  'es. 12  (verrà salvato come Vol. 12)',
-        libri:  'es. Prima edizione · Tascabile',
-        carte:  'es. Elite Trainer Box · Booster Pack',
-        gadget: 'es. Standard · Limited Edition'
-    };
-    if (subcatLabel) subcatLabel.textContent = cat ? (labelMap[cat] || 'Sottocategoria') : 'Sottocategoria';
-    if (volumeLabel) volumeLabel.textContent = cat === 'manga' ? 'Numero Volume' : 'Volume / Edizione';
-    if (volumeInput && volPlaceholderMap[cat]) volumeInput.placeholder = volPlaceholderMap[cat];
+    var catObj = _cats.find(function(c){ return c.key === cat; });
+    var required = catObj ? catObj.subcatRequired : false;
 
-    if (!cat || !SUBCATS[cat]) {
-        sel.innerHTML = '<option value="">— Prima scegli la categoria —</option>';
+    if (subcatLabel) subcatLabel.textContent = cat ? ('Sottocategoria' + (required ? ' *' : '')) : 'Sottocategoria';
+    if (volumeLabel) volumeLabel.textContent = cat === 'manga' ? 'Numero Volume' : 'Volume / Edizione';
+    if (volumeInput && cat === 'manga') volumeInput.placeholder = 'es. 12  (verrà salvato come Vol. 12)';
+
+    if (!sel) return;
+    var subs = cat ? (_subcats[cat] || []) : [];
+    if (!cat || subs.length === 0) {
+        sel.innerHTML = '<option value="">' + (cat ? '— Nessuna sottosezione —' : '— Prima scegli la categoria —') + '</option>';
         return;
     }
-    var required = cat === 'manga';
-    sel.innerHTML = '<option value="">' + (required ? '— Seleziona genere (obbligatorio) —' : '— Sottocategoria (opzionale) —') + '</option>'
-        + SUBCATS[cat].map(function(s) {
-            return '<option value="' + s[0] + '"' + (s[0] === selectedSub ? ' selected' : '') + '>' + s[1] + '</option>';
+    sel.innerHTML = '<option value="">' + (required ? '— Seleziona (obbligatorio) —' : '— Sottocategoria (opzionale) —') + '</option>'
+        + subs.map(function(s) {
+            return '<option value="' + esc(s[0]) + '"' + (s[0] === selectedSub ? ' selected' : '') + '>' + esc(s[1]) + '</option>';
         }).join('');
 }
 
@@ -2346,8 +2662,9 @@ function saveProduct() {
         showToast('Titolo e descrizione sono obbligatori', 'error');
         return;
     }
-    if (cat === 'manga' && !subcat) {
-        showToast('Seleziona il genere manga (obbligatorio)', 'error');
+    var _catObj = _cats.find(function(c){ return c.key === cat; });
+    if (_catObj && _catObj.subcatRequired && !subcat) {
+        showToast('Seleziona la sottosezione (obbligatoria per "' + _catObj.label + '")', 'error');
         document.getElementById('product-subcat').focus();
         return;
     }
@@ -2769,10 +3086,6 @@ function closeConfirm() {
     document.getElementById('confirm-modal').style.display = 'none';
     _confirmCallback = null;
 }
-document.getElementById('confirm-ok-btn').addEventListener('click', function() {
-    if (_confirmCallback) _confirmCallback();
-    closeConfirm();
-});
 
 /* ─── TOAST ─── */
 function showToast(msg, type) {
