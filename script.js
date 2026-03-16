@@ -1699,6 +1699,7 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
+
 /* Avvia subscribe recensioni assieme agli altri dati */
 (function() {
     var _origInit = _initMainFirebase;
