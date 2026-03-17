@@ -220,7 +220,18 @@ function _subscribeFirestoreCategories() {
         var d = doc.data();
         if (!Array.isArray(d.cats) || !d.cats.length) return;
         /* Aggiorna localStorage così catPage.refreshCats() lo legge */
-        try { localStorage.setItem('manbaga_categories', JSON.stringify({ cats: d.cats, subcats: d.subcats || {} })); } catch(e) {}
+        /* Riconverte subcats da formato Firestore {k,v} → [[k,v]] */
+        var subcats = {};
+        var raw = d.subcats || {};
+        Object.keys(raw).forEach(function(k) {
+            var converted = (raw[k] || []).map(function(s) {
+                if (Array.isArray(s)) return s;
+                if (s && s.k != null && s.v != null) return [s.k, s.v];
+                return null;
+            }).filter(function(s) { return s !== null; });
+            if (converted.length) subcats[k] = converted;
+        });
+        try { localStorage.setItem('manbaga_categories', JSON.stringify({ cats: d.cats, subcats: subcats })); } catch(e) {}
         /* Ricostruisce nav + render se catPage è presente (catalogo.html) */
         if (typeof catPage !== 'undefined' && typeof catPage.refreshCats === 'function') catPage.refreshCats();
     }).catch(function(e) { console.warn('Firestore categories fetch:', e); });

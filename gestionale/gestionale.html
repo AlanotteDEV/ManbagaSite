@@ -320,7 +320,7 @@ input, textarea, select { font-family: inherit; color: inherit; }
 
 /* ===================== MODAL ===================== */
 .modal-overlay {
-  position: fixed; inset: 0; z-index: 500;
+  position: fixed; inset: 0; z-index: 700;
   background: rgba(0,0,0,.75); backdrop-filter: blur(6px);
   display: flex; align-items: flex-start; justify-content: center;
   padding: 32px 20px; overflow-y: auto;
@@ -902,6 +902,7 @@ input, textarea, select { font-family: inherit; color: inherit; }
   .view-title { font-size: 20px; }
   .view-actions { width: 100%; flex-wrap: wrap; }
   .view-actions .btn { flex: 1; justify-content: center; }
+  .view-header > .btn { width: 100%; justify-content: center; }
   .stats-grid { grid-template-columns: 1fr 1fr !important; }
   /* Modals → bottom sheet */
   .modal-overlay { align-items: flex-end !important; padding: 0 !important; }
@@ -1874,9 +1875,8 @@ function loadCategories() {
         if (doc.exists) {
             var d = doc.data();
             if (Array.isArray(d.cats) && d.cats.length) {
-                _cats    = d.cats;
-                _subcats = d.subcats || {};
-                /* Aggiorna anche localStorage con i dati cloud */
+                _cats = d.cats;
+                /* _subcats rimane da localStorage — formato cloud può variare */
                 try { localStorage.setItem(_LS_CATS, JSON.stringify({ cats: _cats, subcats: _subcats })); } catch(e) {}
                 buildCatDropdowns();
                 if (_currentView === 'categorie') renderCategoriesView();
@@ -1888,22 +1888,40 @@ function loadCategories() {
     }).catch(function() { /* Firestore non disponibile — usiamo localStorage */ });
 }
 
-function saveCategories(cb) {
-    /* Salva subito su localStorage */
-    try { localStorage.setItem(_LS_CATS, JSON.stringify({ cats: _cats, subcats: _subcats })); } catch(e) {}
-    /* Aggiorna UI subito */
-    buildCatDropdowns();
-    if (_currentView === 'categorie') renderCategoriesView();
-    if (cb) cb();
-    /* Poi sincronizza Firestore in background */
-    _syncCatsToFirestore();
+/* Firestore non supporta array annidati — converti [[k,v],...] → [{k,v},...] */
+function _subcatsToFs(subcats) {
+    var out = {};
+    Object.keys(subcats || {}).forEach(function(k) {
+        out[k] = (subcats[k] || []).map(function(s) { return { k: s[0], v: s[1] }; });
+    });
+    return out;
+}
+function _subcatsFromFs(subcats) {
+    var out = {};
+    Object.keys(subcats || {}).forEach(function(k) {
+        out[k] = (subcats[k] || []).map(function(s) {
+            if (Array.isArray(s)) return s;          /* vecchio formato [[k,v]] */
+            return [s.k, s.v];                       /* nuovo formato {k,v} */
+        });
+    });
+    return out;
 }
 
-function _syncCatsToFirestore() {
-    if (!_db) return;
+function saveCategories(cb) {
+    /* Salva su localStorage */
+    try { localStorage.setItem(_LS_CATS, JSON.stringify({ cats: _cats, subcats: _subcats })); } catch(e) {}
+    /* Aggiorna UI */
+    buildCatDropdowns();
+    if (_currentView === 'categorie') renderCategoriesView();
+    /* Sincronizza Firestore — cb chiamato SOLO dopo conferma cloud */
+    if (!_db) { if (cb) cb(); return; }
     _db.collection('settings').doc('categories')
-        .set({ cats: _cats, subcats: _subcats })
-        .catch(function(e) { console.warn('Cats Firestore sync:', e.message); });
+        .set({ cats: _cats, subcats: _subcatsToFs(_subcats) })
+        .then(function() { if (cb) cb(); })
+        .catch(function(e) {
+            console.warn('Cats Firestore sync:', e.message);
+            showToast('⚠️ Errore salvataggio cloud: ' + e.message, 'error');
+        });
 }
 
 /* Popola tutti i <select> categoria */
