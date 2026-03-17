@@ -226,38 +226,8 @@ function _subscribeFirestoreCategories() {
     }).catch(function(e) { console.warn('Firestore categories fetch:', e); });
 }
 
-/* ─── AUTO STATUS EVENTI ───────────────────────────────────────
-   Ogni minuto controlla gli eventi "in-arrivo":
-   se data+ora è già passata → aggiorna Firestore a "in-corso"
-─────────────────────────────────────────────────────────────── */
-function _autoCheckEventStatus() {
-    if (!_fbMainDb || !_fbEvents) return;
-    var now = new Date();
-    _fbEvents.forEach(function(e) {
-        if ((e.status || 'in-arrivo') !== 'in-arrivo') return;
-        if (!e._fid) return;
-        /* Costruisce la data dall'evento */
-        var day   = parseInt(e.day)   || 1;
-        var month = parseInt(e.month) || 1;
-        var year  = parseInt(e.year)  || now.getFullYear();
-        /* time può essere "15:00" oppure "15.00" */
-        var timeStr = (e.time || '00:00').replace('.', ':');
-        var parts   = timeStr.split(':');
-        var hh = parseInt(parts[0]) || 0;
-        var mm = parseInt(parts[1]) || 0;
-        var evDate = new Date(year, month - 1, day, hh, mm, 0);
-        if (now >= evDate) {
-            _fbMainDb.collection('events').doc(e._fid).update({ status: 'in-corso' })
-                .catch(function(err) { console.warn('Auto status update error:', err); });
-        }
-    });
-}
-
-/* Avvia il controllo periodico ogni 60 secondi */
-function _startEventAutoCheck() {
-    _autoCheckEventStatus();
-    setInterval(_autoCheckEventStatus, 60000);
-}
+/* Auto status rimosso dal sito pubblico — gestito solo dal gestionale */
+function _startEventAutoCheck() { /* no-op */ }
 
 function getEvents() {
     if (_fbEvents !== null) return _fbEvents;

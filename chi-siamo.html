@@ -6,8 +6,6 @@
     <meta name="theme-color" content="#080808">
     <link rel="icon" type="image/png" href="WhatsApp_Image_2026-03-10_at_11.15.27-removebg-preview.png">
     <title>Chi siamo — MANBAGA Comics &amp; Games</title>
-
-    <!-- Fonts self-hosted (GDPR compliant — nessuna richiesta a Google) -->
     <link rel="stylesheet" href="fonts/fonts.css">
 
     <style>
@@ -17,11 +15,13 @@
         --bg:    #080808;
         --bg2:   #0f0f0f;
         --bg3:   #141414;
+        --bg4:   #1a1a1a;
         --red:   #DC2626;
+        --red2:  #ef4444;
         --white: #f5f0e8;
         --gray:  rgba(245,240,232,0.55);
         --muted: rgba(245,240,232,0.32);
-        --border: rgba(255,255,255,0.07);
+        --border: rgba(255,255,255,0.06);
         --font:  'Inter', sans-serif;
         --comic: 'Bangers', cursive;
         --jp:    'Noto Serif JP', serif;
@@ -36,6 +36,7 @@
         min-height: 100vh;
         -webkit-font-smoothing: antialiased;
         line-height: 1.7;
+        overflow-x: hidden;
     }
 
     /* ── HEADER ── */
@@ -44,13 +45,14 @@
         top: 0; left: 0; right: 0;
         height: var(--nav-h);
         background: rgba(8,8,8,.97);
-        backdrop-filter: blur(14px);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
         border-bottom: 1px solid rgba(220,38,38,.2);
         z-index: 800;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0 24px;
+        padding: 0 28px;
     }
     .header-logo {
         font-family: var(--comic);
@@ -70,22 +72,28 @@
         text-transform: uppercase;
         color: var(--gray);
         text-decoration: none;
-        padding: 6px 14px;
+        padding: 7px 16px;
         border: 1px solid rgba(255,255,255,.08);
-        border-radius: 20px;
-        transition: color .2s, border-color .2s;
+        border-radius: 24px;
+        transition: color .2s, border-color .2s, background .2s;
     }
-    .header-back:hover { color: var(--red); border-color: rgba(220,38,38,.4); }
+    .header-back:hover { color: var(--white); border-color: rgba(220,38,38,.5); background: rgba(220,38,38,.08); }
 
-    /* ── MAIN ── */
     main { padding-top: var(--nav-h); }
 
     /* ── HERO ── */
     .hero {
         position: relative;
         overflow: hidden;
-        padding: 72px 24px 64px;
+        padding: 80px 24px 72px;
         text-align: center;
+    }
+    .hero::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(220,38,38,.12) 0%, transparent 70%);
+        pointer-events: none;
     }
     .hero-jp-bg {
         position: absolute;
@@ -94,181 +102,430 @@
         align-items: center;
         justify-content: center;
         font-family: var(--jp);
-        font-size: clamp(80px, 20vw, 220px);
+        font-size: clamp(80px, 20vw, 240px);
         font-weight: 900;
-        color: rgba(255,255,255,.02);
+        color: rgba(255,255,255,.018);
         pointer-events: none;
         user-select: none;
         white-space: nowrap;
     }
-    .hero-inner { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; }
+    .hero-inner { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; }
     .hero-label {
         font-size: 10px;
         font-weight: 700;
-        letter-spacing: .4em;
+        letter-spacing: .45em;
         text-transform: uppercase;
-        color: rgba(220,38,38,.8);
-        margin-bottom: 16px;
+        color: var(--red);
+        margin-bottom: 18px;
+        opacity: .85;
     }
     .hero-title {
         font-family: var(--comic);
-        font-size: clamp(56px, 10vw, 110px);
-        line-height: .9;
+        font-size: clamp(64px, 12vw, 130px);
+        line-height: .88;
         letter-spacing: .03em;
         color: var(--white);
-        margin-bottom: 24px;
+        margin-bottom: 28px;
     }
     .hero-title span { color: var(--red); }
     .hero-desc {
         font-size: 17px;
-        line-height: 1.85;
+        line-height: 1.9;
         color: var(--gray);
-        max-width: 560px;
-        margin: 0 auto;
+        max-width: 580px;
+        margin: 0 auto 32px;
+    }
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 20px;
+        border: 1px solid rgba(220,38,38,.3);
+        border-radius: 24px;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: .08em;
+        color: rgba(220,38,38,.9);
+        background: rgba(220,38,38,.06);
     }
 
     /* ── SEZIONI ── */
     .page-inner {
-        max-width: 900px;
+        max-width: 980px;
         margin: 0 auto;
-        padding: 0 24px 100px;
+        padding: 0 24px 120px;
     }
-
-    .cs-section {
-        margin-bottom: 72px;
+    .section-divider {
+        width: 48px;
+        height: 3px;
+        background: var(--red);
+        margin-bottom: 32px;
+        border-radius: 2px;
     }
+    .cs-section { margin-bottom: 96px; }
     .cs-section-label {
         font-size: 10px;
         font-weight: 700;
-        letter-spacing: .4em;
+        letter-spacing: .45em;
         text-transform: uppercase;
-        color: rgba(220,38,38,.7);
+        color: rgba(220,38,38,.75);
         margin-bottom: 10px;
     }
     .cs-section-title {
         font-family: var(--comic);
-        font-size: clamp(28px, 5vw, 44px);
+        font-size: clamp(32px, 5vw, 52px);
         letter-spacing: .03em;
         color: var(--white);
-        margin-bottom: 24px;
+        margin-bottom: 8px;
         line-height: 1;
     }
 
-    /* ── INTRO ── */
-    .cs-intro {
+    /* ── INTRO STORY ── */
+    .cs-story {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        align-items: start;
+    }
+    .cs-story-text {
         display: flex;
         flex-direction: column;
-        gap: 18px;
-        font-size: 16px;
-        line-height: 1.9;
+        gap: 20px;
+        font-size: 15.5px;
+        line-height: 1.95;
         color: var(--gray);
-        max-width: 700px;
     }
-    .cs-intro p strong { color: var(--white); }
+    .cs-story-text p strong { color: var(--white); font-weight: 700; }
+    .cs-story-highlight {
+        background: var(--bg2);
+        border-left: 3px solid var(--red);
+        border-radius: 0 10px 10px 0;
+        padding: 20px 24px;
+        font-size: 15px;
+        line-height: 1.85;
+        color: var(--gray);
+        font-style: italic;
+    }
+    .cs-story-stats {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+    .cs-stat {
+        background: var(--bg2);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 24px 28px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        transition: border-color .2s, transform .25s;
+    }
+    .cs-stat:hover { border-color: rgba(220,38,38,.25); transform: translateX(4px); }
+    .cs-stat-num {
+        font-family: var(--comic);
+        font-size: 42px;
+        color: var(--red);
+        line-height: 1;
+        min-width: 80px;
+    }
+    .cs-stat-label {
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        color: var(--white);
+        margin-bottom: 4px;
+    }
+    .cs-stat-sub {
+        font-size: 12px;
+        color: var(--muted);
+    }
 
     /* ── TIMELINE ── */
     .cs-timeline {
-        border-left: 2px solid #1e1e1e;
+        position: relative;
         padding-left: 0;
-        display: flex;
-        flex-direction: column;
-        gap: 0;
+    }
+    .cs-timeline::before {
+        content: '';
+        position: absolute;
+        left: 28px;
+        top: 8px;
+        bottom: 0;
+        width: 1px;
+        background: linear-gradient(to bottom, var(--red), transparent);
+        opacity: .3;
     }
     .cs-step {
         display: flex;
-        gap: 28px;
-        padding: 0 0 40px 36px;
+        gap: 32px;
+        padding: 0 0 48px 64px;
         position: relative;
     }
     .cs-step:last-child { padding-bottom: 0; }
-    .cs-step::before {
-        content: '';
+    .cs-step-dot {
         position: absolute;
-        left: -7px;
-        top: 5px;
-        width: 12px;
-        height: 12px;
+        left: 20px;
+        top: 4px;
+        width: 18px;
+        height: 18px;
         border-radius: 50%;
         background: var(--red);
         border: 3px solid var(--bg);
-        box-shadow: 0 0 0 1px var(--red);
+        box-shadow: 0 0 0 1px rgba(220,38,38,.4), 0 0 12px rgba(220,38,38,.25);
+        flex-shrink: 0;
     }
     .cs-step-year {
         font-family: var(--comic);
-        font-size: 24px;
+        font-size: 28px;
         color: var(--red);
-        min-width: 60px;
+        min-width: 68px;
         flex-shrink: 0;
-        line-height: 1.1;
+        line-height: 1;
+        padding-top: 2px;
     }
+    .cs-step-body { flex: 1; }
     .cs-step-title {
         font-size: 13px;
         font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: .07em;
+        letter-spacing: .09em;
         color: var(--white);
-        margin-bottom: 8px;
+        margin-bottom: 10px;
     }
     .cs-step p {
         font-size: 14px;
         color: var(--gray);
-        line-height: 1.75;
+        line-height: 1.8;
         margin: 0;
     }
 
-    /* ── GALLERIA ── */
-    .cs-gallery {
-        display: grid;
-        grid-template-columns: 2fr 1fr 1fr;
-        grid-template-rows: 220px 180px;
-        gap: 12px;
+    /* ══════════════════════════════════════
+       GALLERIA FOTO — CORNICI SPECIALI
+    ══════════════════════════════════════ */
+    .gallery-intro {
+        font-size: 15px;
+        color: var(--gray);
+        max-width: 600px;
+        margin-bottom: 48px;
+        line-height: 1.85;
     }
-    .cs-photo {
+
+    /* Grid a 3 colonne, altezze variabili */
+    .cs-gallery-grid {
+        columns: 3;
+        column-gap: 24px;
+    }
+    .cs-gallery-grid .frame-wrap {
+        break-inside: avoid;
+        margin-bottom: 20px;
+    }
+
+    /* ─ Stile base di tutte le cornici ─ */
+    .photo-frame {
         position: relative;
-        border-radius: 12px;
+        display: block;
         overflow: hidden;
-        background: var(--bg3);
+        cursor: zoom-in;
     }
-    .cs-photo--wide { grid-row: span 2; }
-    .cs-photo img {
+    .photo-frame img {
         width: 100%;
         height: 100%;
         object-fit: cover;
         display: block;
-        transition: transform .4s ease;
+        transition: transform .5s cubic-bezier(.25,.46,.45,.94);
     }
-    .cs-photo:hover img { transform: scale(1.04); }
-    .cs-photo-label {
+    .photo-frame:hover img { transform: scale(1.06); }
+
+    .photo-caption {
         position: absolute;
         bottom: 0; left: 0; right: 0;
-        padding: 10px 14px;
-        font-size: 11px;
+        padding: 28px 14px 12px;
+        background: linear-gradient(transparent, rgba(0,0,0,.85));
+        font-size: 10.5px;
         font-weight: 700;
-        letter-spacing: .08em;
+        letter-spacing: .09em;
         text-transform: uppercase;
-        color: rgba(245,240,232,.8);
-        background: linear-gradient(transparent, rgba(0,0,0,.65));
+        color: rgba(245,240,232,.9);
+        pointer-events: none;
     }
-    /* Placeholder foto non ancora caricata */
-    .cs-photo--empty {
+    .photo-num {
+        position: absolute;
+        top: 10px;
+        right: 12px;
+        font-family: var(--comic);
+        font-size: 18px;
+        color: rgba(255,255,255,.5);
+        pointer-events: none;
+        line-height: 1;
+    }
+
+    /* ─ Cornice 1: Polaroid ─ */
+    .frame-polaroid {
+        background: #f5f0e8;
+        padding: 8px 8px 32px;
+        border-radius: 3px;
+        box-shadow: 0 8px 32px rgba(0,0,0,.6), 0 2px 6px rgba(0,0,0,.4);
+        transform: rotate(-1.5deg);
+        transition: transform .3s ease, box-shadow .3s ease;
+    }
+    .frame-polaroid:hover {
+        transform: rotate(0deg) scale(1.04);
+        box-shadow: 0 16px 48px rgba(0,0,0,.7);
+    }
+    .frame-polaroid .photo-frame {
+        border-radius: 2px;
+        height: 220px;
+    }
+    .frame-polaroid .photo-caption {
+        position: static;
+        background: none;
+        color: #333;
+        text-align: center;
+        padding: 10px 4px 0;
+        font-size: 10px;
+        letter-spacing: .04em;
+        font-family: var(--comic);
+        font-size: 14px;
+        text-transform: none;
+        color: #555;
+    }
+    .frame-polaroid .photo-num { color: rgba(0,0,0,.2); }
+
+    /* ─ Cornice 2: Comic Panel ─ */
+    .frame-comic {
+        border: 4px solid var(--white);
+        border-radius: 4px;
+        box-shadow: 6px 6px 0 var(--red), 0 0 0 1px rgba(0,0,0,.3);
+        transition: transform .25s ease, box-shadow .25s ease;
+    }
+    .frame-comic:hover {
+        transform: translate(-4px, -4px);
+        box-shadow: 10px 10px 0 var(--red);
+    }
+    .frame-comic .photo-frame { border-radius: 0; height: 240px; }
+
+    /* ─ Cornice 3: Red Glow ─ */
+    .frame-glow {
+        border: 2px solid var(--red);
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(220,38,38,.35), 0 0 60px rgba(220,38,38,.12), inset 0 0 20px rgba(220,38,38,.05);
+        transition: box-shadow .3s ease;
+    }
+    .frame-glow:hover { box-shadow: 0 0 30px rgba(220,38,38,.6), 0 0 80px rgba(220,38,38,.2); }
+    .frame-glow .photo-frame { border-radius: 8px; height: 260px; }
+
+    /* ─ Cornice 4: Vintage Film Strip ─ */
+    .frame-film {
+        background: #111;
+        padding: 14px 6px;
+        border-radius: 4px;
+        position: relative;
+    }
+    .frame-film::before,
+    .frame-film::after {
+        content: '▐ ▐ ▐ ▐ ▐ ▐';
+        position: absolute;
+        left: 0; right: 0;
+        text-align: center;
+        font-size: 9px;
+        color: #333;
+        letter-spacing: 4px;
+        pointer-events: none;
+    }
+    .frame-film::before { top: 3px; }
+    .frame-film::after  { bottom: 3px; }
+    .frame-film .photo-frame { border-radius: 2px; height: 230px; }
+
+    /* ─ Cornice 5: Double Border ─ */
+    .frame-double {
+        border: 3px solid rgba(220,38,38,.6);
+        border-radius: 12px;
+        padding: 4px;
+        background: rgba(220,38,38,.06);
+        transition: border-color .3s;
+    }
+    .frame-double:hover { border-color: var(--red); }
+    .frame-double .photo-frame {
+        border: 1px solid rgba(220,38,38,.2);
+        border-radius: 8px;
+        height: 250px;
+    }
+
+    /* ─ Cornice 6: Dark Metal ─ */
+    .frame-metal {
+        background: linear-gradient(135deg, #2a2a2a 0%, #111 50%, #222 100%);
+        padding: 6px;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,255,255,.05);
+        border: 1px solid rgba(255,255,255,.08);
+        transition: transform .25s;
+    }
+    .frame-metal:hover { transform: translateY(-4px); }
+    .frame-metal .photo-frame { border-radius: 4px; height: 175px; }
+
+    /* ─ Placeholder (foto non ancora caricata) ─ */
+    .frame-empty {
+        background: var(--bg3);
         border: 2px dashed #222;
+        border-radius: 12px;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         gap: 8px;
-        color: #333;
-        font-size: 12px;
+        height: 160px;
+        color: #2a2a2a;
+        font-size: 11px;
         text-align: center;
         padding: 16px;
     }
-    .cs-photo--empty img { display: none; }
-    .cs-photo--empty::before {
-        content: '📷';
-        font-size: 28px;
-        display: block;
+    .frame-empty::before { content: '📷'; font-size: 24px; display: block; }
+
+    /* Lightbox overlay */
+    .lb-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,.93);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+        cursor: zoom-out;
     }
-    .cs-photo--empty .cs-photo-label { display: none; }
+    .lb-overlay.active { display: flex; }
+    .lb-overlay img {
+        max-width: 90vw;
+        max-height: 90vh;
+        object-fit: contain;
+        border-radius: 4px;
+        box-shadow: 0 0 80px rgba(0,0,0,.9);
+    }
+    .lb-close {
+        position: absolute;
+        top: 20px; right: 24px;
+        font-size: 28px;
+        color: rgba(255,255,255,.6);
+        cursor: pointer;
+        line-height: 1;
+        background: none;
+        border: none;
+        transition: color .2s;
+    }
+    .lb-close:hover { color: var(--white); }
+    .lb-caption {
+        position: absolute;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: .15em;
+        text-transform: uppercase;
+        color: var(--gray);
+        white-space: nowrap;
+    }
 
     /* ── VALORI ── */
     .cs-values {
@@ -278,66 +535,122 @@
     }
     .cs-value {
         background: var(--bg2);
-        border: 1px solid #1a1a1a;
-        border-radius: 14px;
-        padding: 32px 24px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 36px 28px;
         text-align: center;
-        transition: border-color .2s, transform .25s;
+        transition: border-color .25s, transform .3s;
+        position: relative;
+        overflow: hidden;
     }
-    .cs-value:hover { border-color: #2a2a2a; transform: translateY(-4px); }
+    .cs-value::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 50% 0%, rgba(220,38,38,.06) 0%, transparent 60%);
+        pointer-events: none;
+    }
+    .cs-value:hover { border-color: rgba(220,38,38,.3); transform: translateY(-6px); }
     .cs-value-icon {
         font-family: var(--jp);
-        font-size: 44px;
+        font-size: 52px;
         color: var(--red);
         line-height: 1;
-        margin-bottom: 14px;
+        margin-bottom: 18px;
     }
     .cs-value-title {
-        font-size: 13px;
+        font-size: 12px;
         font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: .07em;
+        letter-spacing: .1em;
         color: var(--white);
-        margin-bottom: 10px;
+        margin-bottom: 12px;
     }
     .cs-value p {
-        font-size: 13px;
+        font-size: 13.5px;
         color: var(--muted);
-        line-height: 1.75;
+        line-height: 1.8;
         margin: 0;
     }
 
-    /* ── FOOTER MINI ── */
+    /* ── TEAM / PERSONE ── */
+    .cs-team {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 20px;
+    }
+    .cs-member {
+        background: var(--bg2);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 28px 24px;
+        text-align: center;
+        transition: border-color .2s, transform .25s;
+    }
+    .cs-member:hover { border-color: rgba(220,38,38,.25); transform: translateY(-4px); }
+    .cs-member-avatar {
+        width: 64px; height: 64px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--red), #7f1d1d);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--comic);
+        font-size: 28px;
+        color: var(--white);
+        margin: 0 auto 16px;
+    }
+    .cs-member-name {
+        font-weight: 800;
+        font-size: 14px;
+        color: var(--white);
+        margin-bottom: 4px;
+    }
+    .cs-member-role {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+        color: var(--red);
+        opacity: .8;
+    }
+
+    /* ── FOOTER ── */
     .page-footer {
-        border-top: 1px solid #1a1a1a;
-        padding: 32px 24px;
+        border-top: 1px solid #161616;
+        padding: 36px 24px;
         text-align: center;
         color: var(--muted);
         font-size: 12px;
+        background: var(--bg2);
     }
     .page-footer a { color: var(--red); text-decoration: none; }
+    .page-footer a:hover { text-decoration: underline; }
 
     /* ── RESPONSIVE ── */
-    @media (max-width: 768px) {
-        .cs-gallery {
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: 200px 160px 160px;
-        }
-        .cs-photo--wide { grid-column: span 2; grid-row: span 1; }
-        .cs-values { grid-template-columns: 1fr 1fr; }
+    @media (max-width: 900px) {
+        .cs-story { grid-template-columns: 1fr; }
+        .cs-gallery-grid { columns: 2; }
     }
-    @media (max-width: 520px) {
-        .cs-gallery { grid-template-columns: 1fr; grid-template-rows: none; }
-        .cs-photo { height: 200px; }
-        .cs-photo--wide { grid-column: span 1; }
+    @media (max-width: 768px) {
+        .cs-values { grid-template-columns: 1fr 1fr; }
+        .hero { padding: 60px 20px 52px; }
+    }
+    @media (max-width: 560px) {
+        .cs-gallery-grid { columns: 1; }
         .cs-values { grid-template-columns: 1fr; }
         .hero-desc { font-size: 15px; }
-        .cs-step { gap: 16px; padding-left: 24px; }
-        .cs-step-year { min-width: 48px; font-size: 20px; }
     }
     </style>
 </head>
 <body>
+
+<!-- Lightbox -->
+<div class="lb-overlay" id="lb" onclick="closeLb()">
+    <button class="lb-close" onclick="closeLb()">&#x2715;</button>
+    <img id="lb-img" src="" alt="">
+    <div class="lb-caption" id="lb-cap"></div>
+</div>
 
 <header id="header">
     <a href="index.html" class="header-logo">MAN<span class="dot">B</span>AGA<span class="dot">.</span></a>
@@ -353,71 +666,67 @@
             <div class="hero-label">ストーリー &mdash; La nostra storia</div>
             <h1 class="hero-title">CHI<br><span>SIAMO</span></h1>
             <p class="hero-desc">
-                <!-- ✏️ MODIFICA: frase d'apertura della fumetteria -->
                 MANBAGA Comics &amp; Games nasce dalla passione per il mondo dei manga, dei fumetti
                 e della cultura pop giapponese. Da un piccolo sogno, è diventata la fumetteria
                 di riferimento per tutti gli appassionati della zona.
             </p>
+            <div class="hero-badge">
+                <span>&#10022;</span> Canosa di Puglia
+            </div>
         </div>
     </div>
 
     <div class="page-inner">
 
-        <!-- STORIA -->
+        <!-- STORIA & NUMERI -->
         <div class="cs-section">
             <div class="cs-section-label">La nostra storia</div>
             <h2 class="cs-section-title">LE NOSTRE RADICI</h2>
-            <div class="cs-intro">
-                <p>
-                    <!-- ✏️ MODIFICA: paragrafo 1 — com'è nata la fumetteria -->
-                    Inserisci qui il racconto delle origini di MANBAGA. Quando è nata, chi l'ha fondata,
-                    da quale passione è partita l'idea.
-                </p>
-                <p>
-                    <!-- ✏️ MODIFICA: paragrafo 2 — la crescita -->
-                    Racconta come il negozio è cresciuto nel tempo: i primi clienti affezionati,
-                    i tornei, le collaborazioni, i momenti chiave.
-                </p>
-                <p>
-                    <!-- ✏️ MODIFICA: paragrafo 3 — oggi -->
-                    Oggi MANBAGA è <strong>molto più di una fumetteria</strong>: è uno spazio di incontro,
-                    una community viva dove ogni settimana succede qualcosa.
-                </p>
-            </div>
-        </div>
+            <div class="section-divider"></div>
 
-        <!-- TIMELINE -->
-        <div class="cs-section">
-            <div class="cs-section-label">Le tappe</div>
-            <h2 class="cs-section-title">LA NOSTRA TIMELINE</h2>
-            <div class="cs-timeline">
-                <!-- ✏️ Modifica anni e testi; aggiungi o rimuovi .cs-step a piacere -->
-                <div class="cs-step">
-                    <div class="cs-step-year">20XX</div>
-                    <div class="cs-step-body">
-                        <div class="cs-step-title">L'inizio</div>
-                        <p><!-- ✏️ Descrivi come è nata la fumetteria, dove, perché --></p>
+            <div class="cs-story">
+                <div class="cs-story-text">
+                    <p>
+                        MANBAGA nasce a <strong>Canosa di Puglia</strong> da meno di un anno — eppure sembra
+                        già parte del quartiere. Tutto è cominciato in una sera, tra <strong>due amici</strong>
+                        e un'idea che sembrava solo un sogno: aprire uno spazio dedicato ai manga,
+                        ai fumetti e alla cultura pop giapponese.
+                    </p>
+                    <p>
+                        Quella sera ha <strong>cambiato tutto</strong>. Nel giro di pochi mesi quell'idea
+                        è diventata realtà: un negozio, una community, un posto dove centinaia di appassionati
+                        si incontrano ogni settimana per condividere la stessa passione.
+                    </p>
+                    <div class="cs-story-highlight">
+                        "Da due amici e un'idea, a una community intera. In meno di un anno."
                     </div>
+                    <p>
+                        Oggi MANBAGA è <strong>molto più di una fumetteria</strong>: è uno spazio di incontro,
+                        una community viva dove tornei, eventi e novità si susseguono ogni settimana.
+                        E siamo solo all'inizio.
+                    </p>
                 </div>
-                <div class="cs-step">
-                    <div class="cs-step-year">20XX</div>
-                    <div class="cs-step-body">
-                        <div class="cs-step-title">Il primo grande evento</div>
-                        <p><!-- ✏️ Primo torneo, prima fiera, prima collaborazione importante --></p>
+                <div class="cs-story-stats">
+                    <div class="cs-stat">
+                        <div class="cs-stat-num">100+</div>
+                        <div>
+                            <div class="cs-stat-label">Appassionati</div>
+                            <div class="cs-stat-sub">che fanno parte della nostra community</div>
+                        </div>
                     </div>
-                </div>
-                <div class="cs-step">
-                    <div class="cs-step-year">20XX</div>
-                    <div class="cs-step-body">
-                        <div class="cs-step-title">La crescita</div>
-                        <p><!-- ✏️ Espansione del catalogo, nuovi spazi, nuovi collaboratori --></p>
+                    <div class="cs-stat">
+                        <div class="cs-stat-num">50+</div>
+                        <div>
+                            <div class="cs-stat-label">Tornei organizzati</div>
+                            <div class="cs-stat-sub">tra TCG, board games e molto altro</div>
+                        </div>
                     </div>
-                </div>
-                <div class="cs-step">
-                    <div class="cs-step-year">Oggi</div>
-                    <div class="cs-step-body">
-                        <div class="cs-step-title">La community</div>
-                        <p><!-- ✏️ Com'è diventato oggi il negozio, quante persone, quanti eventi --></p>
+                    <div class="cs-stat">
+                        <div class="cs-stat-num">∞</div>
+                        <div>
+                            <div class="cs-stat-label">Passione</div>
+                            <div class="cs-stat-sub">per manga, fumetti e cultura pop</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -426,31 +735,70 @@
         <!-- GALLERIA FOTO -->
         <div class="cs-section">
             <div class="cs-section-label">I nostri momenti</div>
-            <h2 class="cs-section-title">FOTO &amp; EVENTI</h2>
-            <div class="cs-gallery">
-                <!-- ✏️ Sostituisci src="" con il percorso delle tue foto reali -->
-                <!-- Foto grande (occupa 2 righe) -->
-                <div class="cs-photo cs-photo--wide cs-photo--empty">
-                    <img src="" alt="Il negozio">
-                    <div class="cs-photo-label">Il negozio</div>
+            <h2 class="cs-section-title">FOTO &amp; RICORDI</h2>
+            <div class="section-divider"></div>
+            <p class="gallery-intro">
+                Ogni foto racconta un pezzo della storia di MANBAGA — i tornei, le serate, le facce
+                che fanno parte di questa community. Una storia ancora in corso.
+            </p>
+
+            <div class="cs-gallery-grid">
+
+                <!-- Foto 1 — Polaroid (dritta) -->
+                <div class="frame-wrap">
+                    <div class="frame-polaroid" style="transform:none" onclick="openLb('foto/1.jpeg','#01 — La notte in cui è nata MANBAGA')">
+                        <div class="photo-frame" style="overflow:hidden">
+                            <img src="foto/1.jpeg" alt="La nascita di MANBAGA" loading="lazy" style="transform:rotate(225deg) scale(1.5); transform-origin:center center;">
+                            <span class="photo-num">#01</span>
+                        </div>
+                        <div class="photo-caption">La notte in cui è nata</div>
+                    </div>
                 </div>
-                <!-- Foto piccole -->
-                <div class="cs-photo cs-photo--empty">
-                    <img src="" alt="Un evento">
-                    <div class="cs-photo-label">Un evento</div>
+
+                <!-- Foto 2 — Comic Panel -->
+                <div class="frame-wrap">
+                    <div class="frame-comic" onclick="openLb('foto/2.jpeg','#02 — Rinascita')">
+                        <div class="photo-frame">
+                            <img src="foto/2.jpeg" alt="Rinascita" loading="lazy">
+                            <div class="photo-caption">Rinascita</div>
+                            <span class="photo-num">#02</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="cs-photo cs-photo--empty">
-                    <img src="" alt="Torneo">
-                    <div class="cs-photo-label">Torneo</div>
+
+                <!-- Foto 3 — Red Glow -->
+                <div class="frame-wrap">
+                    <div class="frame-glow" onclick="openLb('foto/3.jpeg','#03 — Il lavoro')">
+                        <div class="photo-frame">
+                            <img src="foto/3.jpeg" alt="Il lavoro" loading="lazy">
+                            <div class="photo-caption">Il lavoro</div>
+                            <span class="photo-num">#03</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="cs-photo cs-photo--empty">
-                    <img src="" alt="La community">
-                    <div class="cs-photo-label">La community</div>
+
+                <!-- Foto 4 — Film Strip -->
+                <div class="frame-wrap">
+                    <div class="frame-film" onclick="openLb('foto/4.jpeg','#04 — La nascita di un sogno')">
+                        <div class="photo-frame">
+                            <img src="foto/4.jpeg" alt="La nascita di un sogno" loading="lazy">
+                            <div class="photo-caption">La nascita di un sogno</div>
+                            <span class="photo-num">#04</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="cs-photo cs-photo--empty">
-                    <img src="" alt="I prodotti">
-                    <div class="cs-photo-label">I prodotti</div>
+
+                <!-- Foto 5 — Double Border -->
+                <div class="frame-wrap">
+                    <div class="frame-double" onclick="openLb('foto/5.jpeg','#05 — Passione')">
+                        <div class="photo-frame">
+                            <img src="foto/5.jpeg" alt="Passione" loading="lazy">
+                            <div class="photo-caption">Passione</div>
+                            <span class="photo-num">#05</span>
+                        </div>
+                    </div>
                 </div>
+
             </div>
         </div>
 
@@ -458,21 +806,22 @@
         <div class="cs-section">
             <div class="cs-section-label">Cosa ci muove</div>
             <h2 class="cs-section-title">I NOSTRI VALORI</h2>
+            <div class="section-divider"></div>
             <div class="cs-values">
                 <div class="cs-value">
                     <div class="cs-value-icon">漫</div>
                     <div class="cs-value-title">Manga &amp; Comics</div>
-                    <p>Una selezione curata di titoli italiani e importati, per ogni gusto e ogni età.</p>
+                    <p>Una selezione curata di titoli italiani e importati, per ogni gusto e ogni età. Dal classico all'underground.</p>
                 </div>
                 <div class="cs-value">
                     <div class="cs-value-icon">遊</div>
                     <div class="cs-value-title">Giochi &amp; Tornei</div>
-                    <p>Carte collezionabili, board games e tornei regolari: ci si sfida, ci si diverte.</p>
+                    <p>Carte collezionabili, board games e tornei regolari. Ci si sfida, ci si diverte, si diventa amici.</p>
                 </div>
                 <div class="cs-value">
                     <div class="cs-value-icon">絆</div>
                     <div class="cs-value-title">Community</div>
-                    <p>Più di un negozio: uno spazio dove gli appassionati si incontrano e crescono insieme.</p>
+                    <p>Più di un negozio: uno spazio dove gli appassionati si incontrano, crescono e creano ricordi insieme.</p>
                 </div>
             </div>
         </div>
@@ -482,9 +831,28 @@
 </main>
 
 <footer class="page-footer">
-    &copy; 2025 MANBAGA Comics &amp; Games &nbsp;·&nbsp;
-    <a href="index.html">Torna al sito</a> &nbsp;·&nbsp;
+    &copy; 2026 MANBAGA Comics &amp; Games &nbsp;&middot;&nbsp; P.IVA 09055430723 &nbsp;&middot;&nbsp;
+    <a href="index.html">Torna al sito</a> &nbsp;&middot;&nbsp;
     <a href="privacy.html">Privacy &amp; Cookie</a>
 </footer>
+
+<script>
+function openLb(src, cap) {
+    document.getElementById('lb-img').src = src;
+    document.getElementById('lb-cap').textContent = cap;
+    document.getElementById('lb').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+function closeLb() {
+    document.getElementById('lb').classList.remove('active');
+    document.getElementById('lb-img').src = '';
+    document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeLb();
+});
+</script>
+
+<script src="manga-mode.js"></script>
 </body>
 </html>
