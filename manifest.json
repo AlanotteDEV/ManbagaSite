@@ -1,0 +1,25 @@
+{
+  "name": "MANBAGA Comics & Games",
+  "short_name": "MANBAGA",
+  "description": "La tua fumetteria a Canosa di Puglia. Manga, Comics, Giochi di Carte e Gadget Anime.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d0d0d",
+  "theme_color": "#0d0d0d",
+  "lang": "it",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "WhatsApp_Image_2026-03-10_at_11.15.27-removebg-preview.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "WhatsApp_Image_2026-03-10_at_11.15.27-removebg-preview.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -15,6 +15,14 @@
     <meta name="theme-color" content="#0d0d0d">
     <link rel="icon" type="image/png" href="WhatsApp_Image_2026-03-10_at_11.15.27-removebg-preview.png">
 
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="MANBAGA">
+    <link rel="apple-touch-icon" href="WhatsApp_Image_2026-03-10_at_11.15.27-removebg-preview.png">
+
     <title>MANBAGA Comics & Games · Manga · Games · Canosa di Puglia</title>
 
     <!-- Fonts self-hosted (GDPR compliant — nessuna richiesta a Google) -->
@@ -699,6 +707,13 @@
 <script src="script.js"></script>
 <script src="cookie-banner.js"></script>
 <script src="manga-mode.js"></script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/sw.js').catch(function(){});
+  });
+}
+</script>
 </body>
 
 </html>
