@@ -470,6 +470,30 @@
                         <td>Sessione</td>
                         <td>Servizio di invio email per il modulo di contatto nella homepage. I dati del form (nome, email, messaggio) vengono trasmessi ai server EmailJS per l'inoltro.</td>
                     </tr>
+                    <tr>
+                        <td><code>manbaga-products</code>, <code>manbaga-events</code>, <code>manbaga_categories</code><br><small>(localStorage)</small></td>
+                        <td><span class="badge-necessary">Necessario</span></td>
+                        <td>Persistente (aggiornata a ogni visita)</td>
+                        <td>Cache locale del catalogo prodotti, degli eventi e delle categorie caricati da Firebase, per ridurre i tempi di caricamento nelle visite successive. Contiene esclusivamente dati pubblici del negozio (titoli, prezzi, immagini), nessun dato personale.</td>
+                    </tr>
+                    <tr>
+                        <td><code>mb_recent</code><br><small>(localStorage)</small></td>
+                        <td><span class="badge-necessary">Necessario</span></td>
+                        <td>Persistente</td>
+                        <td>Memorizza localmente gli ID degli ultimi 8 prodotti visualizzati per mostrare la sezione "Visti di recente". Nessun dato viene trasmesso a server esterni; rimane esclusivamente sul tuo dispositivo.</td>
+                    </tr>
+                    <tr>
+                        <td>Service Worker Cache<br><small>(Cache API — locale)</small></td>
+                        <td><span class="badge-necessary">Necessario</span></td>
+                        <td>Persistente (fino ad aggiornamento)</td>
+                        <td>Memorizza localmente sul tuo dispositivo i file statici del sito (HTML, CSS, JS, immagini) per consentire il funzionamento dell'app installata e migliorare i tempi di caricamento. Nessun dato personale è incluso nella cache. Può essere eliminata dalle impostazioni del browser (DevTools &rarr; Application &rarr; Cache Storage &rarr; manbaga-v1).</td>
+                    </tr>
+                    <tr>
+                        <td><code>pwa-dismissed</code><br><small>(sessionStorage)</small></td>
+                        <td><span class="badge-necessary">Necessario</span></td>
+                        <td>Sessione (eliminata alla chiusura del browser)</td>
+                        <td>Registra se hai chiuso il banner di installazione dell'app durante la sessione corrente, per non mostrarlo nuovamente. Non contiene dati personali. Viene eliminata automaticamente alla chiusura del browser.</td>
+                    </tr>
                 </tbody>
             </table>
 
@@ -506,14 +530,14 @@
                     <a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener">Privacy Policy Firebase ↗</a>
                 </li>
                 <li>
-                    <strong>EmailJS:</strong> servizio di invio email per il modulo di contatto. I dati del form transitano sui loro server per il solo scopo dell'inoltro.
+                    <strong>EmailJS (EmailJS Ltd.):</strong> servizio di invio email per il modulo di contatto e preordini. I dati del form (nome, email, messaggio) transitano sui server di EmailJS con infrastruttura negli USA. EmailJS aderisce alle misure di protezione adeguate ai sensi dell'art. 46 GDPR.
                     <a href="https://www.emailjs.com/legal/privacy-policy/" target="_blank" rel="noopener">Privacy Policy EmailJS ↗</a>
                 </li>
                 <li>
-                    <strong>optcgapi.com:</strong> servizio di terze parti non ufficiale utilizzato per il caricamento delle immagini delle carte One Piece TCG nelle sezioni Tornei e Giocatori. Quando il browser carica un'immagine, l'indirizzo IP dell'utente viene registrato nei log del server di optcgapi.com. Non vengono trasmessi dati personali aggiuntivi. Il servizio non imposta cookie. Le immagini delle carte sono di proprietà di <strong>Bandai Co., Ltd.</strong>; il loro utilizzo avviene a scopo informativo e di riferimento per la community TCG.
+                    <strong>optcgapi.com:</strong> servizio di terze parti non ufficiale utilizzato per il caricamento delle immagini delle carte One Piece TCG nelle sezioni Tornei e Giocatori. Endpoint utilizzato: <code>https://optcgapi.com/media/static/Card_Images/</code>. Quando il browser carica un'immagine, l'indirizzo IP dell'utente viene registrato automaticamente nei log del server di optcgapi.com come residuo tecnico della connessione HTTP, senza alcuna finalità di profilazione. Non vengono trasmessi dati personali aggiuntivi. Il servizio non imposta cookie. Le immagini delle carte sono di proprietà di <strong>Bandai Co., Ltd.</strong>; il loro utilizzo avviene a scopo informativo e di riferimento per la community TCG.
                 </li>
                 <li>
-                    <strong>Scryfall (Scryfall LLC):</strong> API pubblica utilizzata per il caricamento delle immagini delle carte Magic: The Gathering nelle sezioni Tornei e Giocatori. Quando il browser effettua richieste API, l'indirizzo IP dell'utente viene registrato nei log di Scryfall. Non vengono trasmessi dati personali aggiuntivi.
+                    <strong>Scryfall (Scryfall LLC):</strong> API pubblica utilizzata per il caricamento delle immagini delle carte Magic: The Gathering nelle sezioni Tornei e Giocatori. Endpoint utilizzato: <code>https://api.scryfall.com/cards/collection</code> (richiesta POST con nomi di carte, nessun dato personale). Quando il browser effettua richieste API, l'indirizzo IP dell'utente viene registrato nei log di Scryfall come residuo tecnico della connessione HTTP. Non vengono trasmessi dati personali.
                     <a href="https://scryfall.com/docs/privacy" target="_blank" rel="noopener">Privacy Policy Scryfall ↗</a>
                 </li>
                 <li>
