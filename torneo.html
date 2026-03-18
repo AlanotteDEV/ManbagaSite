@@ -13,8 +13,69 @@
 
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
 
     <link rel="stylesheet" href="style.css">
+    <style>
+    /* ── REGISTRATION MODAL ── */
+    .trn-reg-overlay {
+        position: fixed; inset: 0; background: rgba(0,0,0,.8); z-index: 1000;
+        display: none; align-items: center; justify-content: center; padding: 20px;
+    }
+    .trn-reg-overlay.open { display: flex; }
+    .trn-reg-box-modal {
+        background: #141414; border: 1px solid rgba(255,255,255,.08); border-radius: 16px;
+        width: 100%; max-width: 460px; max-height: 88vh; overflow-y: auto;
+        padding: 28px 24px; position: relative;
+    }
+    .trn-reg-modal-title { font-family: 'Bangers', cursive; font-size: 24px; letter-spacing: .06em; color: #f5f0e8; margin-bottom: 4px; }
+    .trn-reg-modal-sub { font-size: 12px; color: rgba(245,240,232,.4); margin-bottom: 18px; line-height: 1.5; }
+    .trn-reg-input {
+        width: 100%; padding: 10px 12px; background: #1a1a1a; border: 1px solid rgba(255,255,255,.08);
+        border-radius: 8px; color: #f5f0e8; font-size: 13px; outline: none; margin-bottom: 12px;
+        transition: border-color .2s;
+    }
+    .trn-reg-input:focus { border-color: rgba(220,38,38,.5); }
+    .trn-reg-input::placeholder { color: rgba(245,240,232,.25); }
+    .trn-reg-player-list { display: flex; flex-direction: column; gap: 8px; max-height: 280px; overflow-y: auto; }
+    .trn-reg-player-item {
+        display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+        background: #1a1a1a; border: 1px solid rgba(255,255,255,.06); border-radius: 10px;
+        cursor: pointer; transition: border-color .15s, background .15s;
+    }
+    .trn-reg-player-item:hover { border-color: rgba(220,38,38,.4); background: rgba(220,38,38,.06); }
+    .trn-reg-avatar {
+        width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center;
+        font-family: 'Bangers', cursive; font-size: 14px; color: #fff;
+    }
+    .trn-reg-pname { font-family: 'Bangers', cursive; font-size: 17px; letter-spacing: .04em; color: #f5f0e8; line-height: 1; }
+    .trn-reg-pnome { font-size: 11px; color: rgba(245,240,232,.38); margin-top: 2px; }
+    .trn-reg-pdeck { font-size: 11px; color: rgba(220,38,38,.8); margin-top: 2px; }
+    .trn-reg-loading { text-align: center; padding: 24px; color: rgba(245,240,232,.38); font-size: 13px; }
+    .trn-reg-selected {
+        background: #1a1a1a; border: 2px solid rgba(220,38,38,.4); border-radius: 12px; padding: 16px;
+    }
+    .trn-reg-selected-nick { font-family: 'Bangers', cursive; font-size: 22px; letter-spacing: .06em; color: #f5f0e8; }
+    .trn-reg-selected-deck { margin-top: 10px; background: rgba(220,38,38,.08); border-radius: 8px; padding: 10px 12px; border-left: 3px solid #DC2626; }
+    .trn-reg-selected-deck-title { font-size: 10px; text-transform: uppercase; letter-spacing: .1em; color: rgba(245,240,232,.38); margin-bottom: 3px; }
+    .trn-reg-selected-deck-name { font-size: 13px; font-weight: 700; color: #f5f0e8; }
+    .trn-reg-selected-deck-fmt  { font-size: 11px; color: rgba(245,240,232,.4); margin-top: 2px; }
+    .trn-reg-selected-nodeck { font-size: 12px; color: rgba(245,240,232,.35); font-style: italic; }
+    .trn-reg-error { background: rgba(220,38,38,.12); border: 1px solid rgba(220,38,38,.3); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #f87171; margin-top: 10px; }
+    .trn-reg-btn {
+        flex: 1; padding: 11px 16px; border-radius: 8px; font-size: 13px;
+        font-weight: 700; letter-spacing: .05em; cursor: pointer; border: none; transition: background .15s;
+    }
+    .trn-reg-btn--primary { background: #DC2626; color: #fff; }
+    .trn-reg-btn--primary:hover { background: #991b1b; }
+    .trn-reg-btn--ghost { background: #1a1a1a; color: rgba(245,240,232,.5); border: 1px solid rgba(255,255,255,.08); }
+    .trn-reg-btn--ghost:hover { color: #f5f0e8; }
+    @media (max-width: 600px) {
+        .trn-reg-overlay { align-items: flex-end; padding: 0; }
+        .trn-reg-box-modal { border-radius: 20px 20px 0 0; max-height: 85vh; }
+    }
+    </style>
 </head>
 <body>
 
@@ -45,6 +106,49 @@
         <div style="color:rgba(245,240,232,0.4);font-size:13px;font-weight:600">Caricamento…</div>
     </div>
 </header>
+
+<!-- REGISTRAZIONE MODAL -->
+<div id="trn-reg-modal" class="trn-reg-overlay" onclick="if(event.target===this)closeRegModal()">
+    <div class="trn-reg-box-modal">
+        <button class="trn-deck-modal-close" onclick="closeRegModal()" aria-label="Chiudi">&#10005;</button>
+        <div class="trn-reg-modal-title">🃏 ISCRIVITI AL TORNEO</div>
+
+        <!-- Step 0: non loggato -->
+        <div id="reg-step0" style="display:none;text-align:center;padding:16px 0">
+            <div style="font-size:40px;margin-bottom:12px">🔑</div>
+            <div style="font-size:14px;color:rgba(245,240,232,.7);margin-bottom:6px">Devi accedere al tuo profilo giocatore.</div>
+            <div style="font-size:12px;color:rgba(245,240,232,.35);margin-bottom:20px">Usa le stesse credenziali di tavoli.html</div>
+            <a href="giocatori.html" class="trn-reg-btn trn-reg-btn--primary" style="display:block;text-align:center;text-decoration:none;padding:12px">Vai a Giocatori → Accedi</a>
+        </div>
+
+        <!-- Step 1: nessun profilo -->
+        <div id="reg-step-noprofile" style="display:none;text-align:center;padding:16px 0">
+            <div style="font-size:40px;margin-bottom:12px">👤</div>
+            <div style="font-size:14px;color:rgba(245,240,232,.7);margin-bottom:6px">Non hai ancora un profilo giocatore.</div>
+            <div style="font-size:12px;color:rgba(245,240,232,.35);margin-bottom:20px">Crealo su giocatori.html per iscriverti ai tornei.</div>
+            <a href="giocatori.html" class="trn-reg-btn trn-reg-btn--primary" style="display:block;text-align:center;text-decoration:none;padding:12px">Crea il tuo profilo →</a>
+        </div>
+
+        <!-- Step 2: conferma con main deck -->
+        <div id="reg-step2" style="display:none">
+            <div class="trn-reg-modal-sub" id="reg-modal-sub">Il tuo mazzo Main verrà registrato automaticamente.</div>
+            <div id="reg-selected-card" class="trn-reg-selected"></div>
+            <div id="reg-error" class="trn-reg-error" style="display:none"></div>
+            <div style="display:flex;gap:10px;margin-top:16px">
+                <button class="trn-reg-btn trn-reg-btn--ghost" onclick="closeRegModal()">Annulla</button>
+                <button class="trn-reg-btn trn-reg-btn--primary" id="reg-confirm-btn" onclick="confirmRegistration()">✓ Conferma Iscrizione</button>
+            </div>
+        </div>
+
+        <!-- Step 3: successo -->
+        <div id="reg-step3" style="display:none;text-align:center;padding:20px 0">
+            <div style="font-size:48px;margin-bottom:12px">🎉</div>
+            <div style="font-family:'Bangers',cursive;font-size:28px;letter-spacing:.06em;color:#DC2626">ISCRITTO!</div>
+            <div id="reg-success-msg" style="font-size:13px;color:rgba(245,240,232,.6);margin-top:8px;line-height:1.5"></div>
+            <button class="trn-reg-btn trn-reg-btn--primary" style="margin-top:20px" onclick="closeRegModal()">Chiudi</button>
+        </div>
+    </div>
+</div>
 
 <!-- DECK LIST MODAL -->
 <div id="trn-deck-modal" role="dialog" aria-modal="true" aria-label="Deck list">
@@ -110,6 +214,123 @@
 /* ============================================================
    TORNEO PAGE — Load competition data from Firestore
    ============================================================ */
+
+/* ── Globals ── */
+var _db, _auth, _eventId, _eventData;
+var _COLORS = ['#DC2626','#2563EB','#16A34A','#D97706','#7C3AED','#DB2777','#0891B2','#EA580C'];
+function _col(s){ var n=0; for(var i=0;i<s.length;i++) n+=s.charCodeAt(i); return _COLORS[n%_COLORS.length]; }
+function _ini(s){ var p=s.trim().split(/\s+/); return p.length>=2?(p[0][0]+p[1][0]).toUpperCase():s.slice(0,2).toUpperCase(); }
+
+function _getMainDeck(p) {
+    if (p.mazzi && p.mazzi.length) {
+        return p.mazzi.find(function(m){ return m.isMain; }) || p.mazzi[0];
+    }
+    return p.mazzoAttuale && p.mazzoAttuale.nome ? p.mazzoAttuale : null;
+}
+
+/* ── Registration modal ── */
+function openRegModal() {
+    document.getElementById('trn-reg-modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+
+    var user = _auth ? _auth.currentUser : null;
+    if (!user) { _showRegStep('reg-step0'); return; }
+
+    /* Find their giocatori profile */
+    _db.collection('giocatori').where('uid','==',user.uid).limit(1).get().then(function(snap){
+        if (snap.empty) { _showRegStep('reg-step-noprofile'); return; }
+        var profile = snap.docs[0].data(); profile.id = snap.docs[0].id;
+        _buildConfirmCard(profile);
+        _showRegStep('reg-step2');
+    }).catch(function(){ _showRegStep('reg-step0'); });
+}
+
+function _showRegStep(id) {
+    ['reg-step0','reg-step-noprofile','reg-step2','reg-step3'].forEach(function(s){
+        document.getElementById(s).style.display = s===id?'block':'none';
+    });
+}
+
+function _buildConfirmCard(profile) {
+    var deck = _getMainDeck(profile);
+    var col  = _col(profile.nickname||'x');
+    var deckHtml = deck && deck.nome
+        ? '<div class="trn-reg-selected-deck">'
+          +'<div class="trn-reg-selected-deck-title">👑 Mazzo Main — verrà registrato</div>'
+          +'<div class="trn-reg-selected-deck-name">'+_esc(deck.nome)+'</div>'
+          +(deck.formato?'<div class="trn-reg-selected-deck-fmt">'+_esc(deck.formato)+'</div>':'')
+          +'</div>'
+        : '<div style="margin-top:10px"><div class="trn-reg-selected-nodeck">⚠️ Nessun mazzo Main — verrai aggiunto senza decklist. <a href="giocatori.html" style="color:#DC2626">Aggiungi un mazzo →</a></div></div>';
+    document.getElementById('reg-selected-card').innerHTML =
+        '<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">'
+        +'<div class="trn-reg-avatar" style="background:'+col+';font-size:18px">'+_esc(_ini(profile.nickname||'?'))+'</div>'
+        +'<div><div class="trn-reg-selected-nick">'+_esc(profile.nickname||'')+'</div>'
+        +'<div style="font-size:12px;color:rgba(245,240,232,.4)">'+_esc(profile.nome||'')+'</div></div></div>'
+        +deckHtml;
+    document.getElementById('reg-error').style.display='none';
+    /* Store for confirmRegistration */
+    document.getElementById('reg-confirm-btn').dataset.profileId = profile.id;
+    document.getElementById('reg-confirm-btn').dataset.nick       = profile.nickname||'';
+    document.getElementById('reg-confirm-btn').dataset.deckName   = (deck&&deck.nome)||'';
+    document.getElementById('reg-confirm-btn').dataset.deckFmt    = (deck&&deck.formato)||'';
+    document.getElementById('reg-confirm-btn').dataset.decklist   = (deck&&deck.decklist)||'';
+}
+
+function closeRegModal() {
+    document.getElementById('trn-reg-modal').classList.remove('open');
+    document.body.style.overflow = '';
+}
+
+function confirmRegistration() {
+    if (!_db || !_eventId || !_eventData) return;
+    var btn = document.getElementById('reg-confirm-btn');
+    var profileId = btn.dataset.profileId;
+    var nick      = btn.dataset.nick;
+    if (!profileId || !nick) return;
+
+    /* Duplicate check */
+    var players = Array.isArray(_eventData.players) ? _eventData.players : [];
+    var dup = players.some(function(p){
+        return (p.playerRef && p.playerRef===profileId)
+            || (p.name||'').toLowerCase()===nick.toLowerCase();
+    });
+    if (dup) {
+        var errEl = document.getElementById('reg-error');
+        errEl.textContent = '⚠️ Sei già iscritto a questo torneo!';
+        errEl.style.display = 'block';
+        return;
+    }
+
+    /* Max players check */
+    if (_eventData.maxPlayers && players.length >= parseInt(_eventData.maxPlayers)) {
+        var errEl2 = document.getElementById('reg-error');
+        errEl2.textContent = '⚠️ Il torneo ha raggiunto il numero massimo di partecipanti.';
+        errEl2.style.display = 'block';
+        return;
+    }
+
+    btn.disabled = true; btn.textContent = 'Iscrizione…';
+
+    var newPlayer = {
+        name:      nick,
+        playerRef: profileId,
+        deckList:  btn.dataset.decklist || '',
+        points: 0, wins: 0, losses: 0, draws: 0
+    };
+
+    _db.collection('events').doc(_eventId).update({
+        players: firebase.firestore.FieldValue.arrayUnion(newPlayer)
+    }).then(function(){
+        document.getElementById('reg-success-msg').innerHTML =
+            '<strong>'+_esc(nick)+'</strong> è iscritto al torneo!<br>'
+            +(btn.dataset.deckName ? 'Mazzo: <em>'+_esc(btn.dataset.deckName)+'</em>' : '');
+        _showRegStep('reg-step3');
+    }).catch(function(e){
+        var errEl3 = document.getElementById('reg-error');
+        errEl3.textContent = 'Errore: '+(e.message||e);
+        errEl3.style.display = 'block';
+    }).finally(function(){ btn.disabled=false; btn.textContent='✓ Conferma Iscrizione'; });
+}
 
 var TCG_LABELS = {
     onepiece: 'One Piece TCG', pokemon: 'Pokémon TCG', yugioh: 'Yu-Gi-Oh!',
@@ -212,11 +433,16 @@ function renderTorneo(data) {
     document.getElementById('torneo-ranking-content').innerHTML = rankHtml;
 
     /* ---- Registration CTA ---- */
-    if (status === 'in-arrivo' && data.link) {
-        var regBox  = document.getElementById('torneo-reg-box');
-        var regLink = document.getElementById('torneo-reg-link');
-        regBox.style.display  = 'block';
-        regLink.href = data.link;
+    var regBox = document.getElementById('torneo-reg-box');
+    if (status === 'in-arrivo') {
+        regBox.style.display = 'block';
+        var regInner = '<div class="torneo-reg-title">Partecipa al Torneo</div>'
+            + '<div class="torneo-reg-sub">Hai un profilo giocatore? Iscriviti subito con il tuo mazzo attuale.</div>'
+            + '<button class="btn btn-primary" style="clip-path:none;margin-top:8px" onclick="openRegModal()">🃏 Registrati al Torneo</button>';
+        if (data.link) {
+            regInner += '<div style="margin-top:10px;font-size:12px;color:rgba(0,0,0,.45)">oppure <a href="' + data.link + '" target="_blank" rel="noopener" style="color:#DC2626;font-weight:700">iscriviti esternamente →</a></div>';
+        }
+        regBox.innerHTML = regInner;
     }
 
     /* Show page */
@@ -305,6 +531,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var params = new URLSearchParams(window.location.search);
     var id = params.get('id');
     if (!id) { renderError('ID torneo mancante.'); return; }
+    _eventId = id;
 
     /* Navbar scrolled effect */
     var nav = document.getElementById('nav');
@@ -341,6 +568,12 @@ document.addEventListener('DOMContentLoaded', function() {
         try { app = firebase.app('torneo'); }
         catch(e) { app = firebase.initializeApp(fbConfig, 'torneo'); }
         db = app.firestore();
+        _db = db;
+        /* Auth usa l'app default (stessa istanza di giocatori.html → stato login condiviso) */
+        var defaultApp;
+        try { defaultApp = firebase.app(); }
+        catch(e2) { defaultApp = firebase.initializeApp(fbConfig); }
+        _auth = defaultApp.auth();
     } catch(e) { renderError('Errore connessione Firebase.'); return; }
 
     /* Live subscription so ranking updates in real-time */
@@ -349,6 +582,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!doc.exists) { renderError('Torneo non trovato.'); return; }
             var data = doc.data();
             data._fid = doc.id;
+            _eventData = data;
             renderTorneo(data);
         },
         function(err) { renderError('Errore caricamento: ' + err.message); }

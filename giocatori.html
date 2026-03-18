@@ -20,190 +20,158 @@
 
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
 
     <style>
-    /* ── Dark theme override (style.css imposta body su --white/black) ── */
-    body {
-        background: #0d0d0d !important;
-        color: #f5f0e8 !important;
-    }
-    /* Resetta colori che style.css potrebbe ereditare */
-    .gp-hero, .gp-toolbar, .gp-grid,
-    .gp-overlay, .gp-modal, .gp-card,
-    .gp-deck, .gp-dscroll, .gp-dpanel {
-        color: #f5f0e8;
-    }
-    /* Input/select: sfondo scuro + testo chiaro */
-    .gp-input, .gp-search, .gp-filter {
-        background: #161616 !important;
-        color: #f5f0e8 !important;
-        border: 1px solid rgba(255,255,255,.07) !important;
-    }
+    /* ── Dark theme override ── */
+    body { background: #0d0d0d !important; color: #f5f0e8 !important; }
+    .gp-hero, .gp-toolbar, .gp-grid, .gp-overlay, .gp-modal, .gp-card, .gp-deck, .gp-dscroll, .gp-dpanel { color: #f5f0e8; }
+    .gp-input, .gp-search, .gp-filter { background: #161616 !important; color: #f5f0e8 !important; border: 1px solid rgba(255,255,255,.07) !important; }
     .gp-input option, .gp-filter option { background: #161616; color: #f5f0e8; }
+    :root { --bg2:#111111; --bg3:#161616; }
 
-    :root {
-        --bg2:  #111111;
-        --bg3:  #161616;
+    /* ── NAV AUTH BTN ── */
+    .gp-nav-auth {
+        display: flex; align-items: center; gap: 8px; padding: 6px 14px;
+        border-radius: 8px; border: 1px solid rgba(255,255,255,.1);
+        background: transparent; color: rgba(245,240,232,.65);
+        font-family: var(--font-body,'Inter',sans-serif); font-size: 12px; font-weight: 700;
+        letter-spacing: .05em; cursor: pointer; transition: all .15s; white-space: nowrap;
+        margin-right: 8px;
     }
+    .gp-nav-auth:hover { border-color: rgba(220,38,38,.5); color: #f5f0e8; }
+    .gp-nav-auth.logged { border-color: rgba(220,38,38,.35); color: #DC2626; }
+    .gp-nav-auth-dot { width: 7px; height: 7px; border-radius: 50%; background: #16a34a; flex-shrink: 0; }
 
     /* ── HERO ── */
-    .gp-hero {
-        padding-top: calc(var(--nav-h, 64px) + 64px);
-        padding-bottom: 48px;
-        text-align: center;
-        position: relative;
-        overflow: hidden;
-    }
-    .gp-hero-kanji {
-        position: absolute; font-family: var(--font-comic, 'Bangers', cursive);
-        font-size: clamp(120px,22vw,260px); opacity: .03;
-        top: 50%; left: 50%; transform: translate(-50%,-50%);
-        pointer-events: none; user-select: none; white-space: nowrap; color: var(--white,#f5f0e8);
-    }
-    .gp-hero-title {
-        font-family: var(--font-comic, 'Bangers', cursive);
-        font-size: clamp(52px,10vw,100px);
-        letter-spacing: .04em; line-height: 1; color: var(--white,#f5f0e8); position: relative;
-    }
-    .gp-hero-title span { color: var(--red,#DC2626); }
-    .gp-hero-sub { font-size: 13px; color: rgba(245,240,232,.38); margin-top: 10px; letter-spacing: .06em; position: relative; }
-    .gp-stats {
-        display: flex; justify-content: center; gap: 32px; margin-top: 28px;
-        flex-wrap: wrap; position: relative;
-    }
-    .gp-stat { text-align: center; }
-    .gp-stat-val { font-family: var(--font-comic,'Bangers',cursive); font-size: 36px; color: var(--red,#DC2626); letter-spacing: .04em; line-height: 1; }
-    .gp-stat-label { font-size: 11px; color: rgba(245,240,232,.38); text-transform: uppercase; letter-spacing: .1em; margin-top: 2px; }
+    .gp-hero { padding-top: calc(var(--nav-h,64px) + 64px); padding-bottom: 48px; text-align: center; position: relative; overflow: hidden; }
+    .gp-hero-kanji { position:absolute; font-family:var(--font-comic,'Bangers',cursive); font-size:clamp(120px,22vw,260px); opacity:.03; top:50%; left:50%; transform:translate(-50%,-50%); pointer-events:none; user-select:none; white-space:nowrap; color:var(--white,#f5f0e8); }
+    .gp-hero-title { font-family:var(--font-comic,'Bangers',cursive); font-size:clamp(52px,10vw,100px); letter-spacing:.04em; line-height:1; color:var(--white,#f5f0e8); position:relative; }
+    .gp-hero-title span { color:var(--red,#DC2626); }
+    .gp-hero-sub { font-size:13px; color:rgba(245,240,232,.38); margin-top:10px; letter-spacing:.06em; position:relative; }
+    .gp-stats { display:flex; justify-content:center; gap:32px; margin-top:28px; flex-wrap:wrap; position:relative; }
+    .gp-stat { text-align:center; }
+    .gp-stat-val { font-family:var(--font-comic,'Bangers',cursive); font-size:36px; color:var(--red,#DC2626); letter-spacing:.04em; line-height:1; }
+    .gp-stat-label { font-size:11px; color:rgba(245,240,232,.38); text-transform:uppercase; letter-spacing:.1em; margin-top:2px; }
 
     /* ── TOOLBAR ── */
-    .gp-toolbar {
-        max-width: 920px; margin: 0 auto 24px; padding: 0 20px;
-        display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
-    }
-    .gp-search-wrap { position: relative; flex: 1; min-width: 200px; }
-    .gp-search-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); opacity: .4; pointer-events: none; }
-    .gp-search { width: 100%; padding: 10px 12px 10px 36px; background: var(--bg3,#161616); border: 1px solid rgba(255,255,255,.07); border-radius: 8px; color: var(--white,#f5f0e8); font-family: var(--font-body,'Inter',sans-serif); font-size: 13px; outline: none; transition: border-color .2s; }
-    .gp-search:focus { border-color: rgba(220,38,38,.5); }
-    .gp-search::placeholder { color: rgba(245,240,232,.25); }
-    .gp-filter { padding: 10px 12px; background: var(--bg3,#161616); border: 1px solid rgba(255,255,255,.07); border-radius: 8px; color: var(--white,#f5f0e8); font-family: var(--font-body,'Inter',sans-serif); font-size: 13px; outline: none; cursor: pointer; }
+    .gp-toolbar { max-width:920px; margin:0 auto 24px; padding:0 20px; display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .gp-search-wrap { position:relative; flex:1; min-width:200px; }
+    .gp-search-wrap svg { position:absolute; left:12px; top:50%; transform:translateY(-50%); opacity:.4; pointer-events:none; }
+    .gp-search { width:100%; padding:10px 12px 10px 36px; background:var(--bg3,#161616); border:1px solid rgba(255,255,255,.07); border-radius:8px; color:var(--white,#f5f0e8); font-family:var(--font-body,'Inter',sans-serif); font-size:13px; outline:none; transition:border-color .2s; }
+    .gp-search:focus { border-color:rgba(220,38,38,.5); }
+    .gp-search::placeholder { color:rgba(245,240,232,.25); }
+    .gp-filter { padding:10px 12px; background:var(--bg3,#161616); border:1px solid rgba(255,255,255,.07); border-radius:8px; color:var(--white,#f5f0e8); font-family:var(--font-body,'Inter',sans-serif); font-size:13px; outline:none; cursor:pointer; }
 
     /* ── GRID ── */
-    .gp-grid {
-        max-width: 920px; margin: 0 auto; padding: 0 20px 100px;
-        display: grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap: 16px;
-    }
-    .gp-card {
-        background: var(--bg2,#111); border: 1px solid rgba(255,255,255,.07);
-        border-radius: 14px; padding: 20px 18px; transition: border-color .2s, transform .15s;
-        display: flex; flex-direction: column; gap: 12px;
-    }
-    .gp-card:hover { border-color: rgba(220,38,38,.35); transform: translateY(-2px); }
-    .gp-card-head { display: flex; align-items: center; gap: 12px; }
-    .gp-avatar {
-        width: 46px; height: 46px; border-radius: 50%; flex-shrink: 0;
-        display: flex; align-items: center; justify-content: center;
-        font-family: var(--font-comic,'Bangers',cursive); font-size: 18px; color: #fff; letter-spacing: .04em;
-    }
-    .gp-nickname { font-family: var(--font-comic,'Bangers',cursive); font-size: 19px; letter-spacing: .04em; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .gp-nome { font-size: 11px; color: rgba(245,240,232,.38); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .gp-deck {
-        background: var(--bg3,#161616); border-radius: 8px; padding: 10px 12px;
-        font-size: 12px; border-left: 3px solid var(--red,#DC2626);
-    }
-    .gp-deck-lbl { font-size: 10px; text-transform: uppercase; letter-spacing: .1em; color: rgba(245,240,232,.38); margin-bottom: 3px; }
-    .gp-deck-name { font-weight: 600; }
-    .gp-deck-fmt { font-size: 11px; color: rgba(245,240,232,.38); margin-top: 1px; }
-    .gp-deck-empty { font-size: 12px; color: rgba(245,240,232,.2); font-style: italic; }
-    .gp-actions { display: flex; gap: 8px; }
-    .gp-btn {
-        flex: 1; padding: 7px 10px; border-radius: 7px; border: 1px solid rgba(255,255,255,.07);
-        background: transparent; color: rgba(245,240,232,.38); font-family: var(--font-body,'Inter',sans-serif);
-        font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
-        cursor: pointer; transition: all .15s; display: flex; align-items: center; justify-content: center; gap: 5px;
-    }
-    .gp-btn:hover { background: rgba(220,38,38,.12); border-color: rgba(220,38,38,.4); color: var(--white,#f5f0e8); }
-    .gp-btn--red { background: var(--red,#DC2626); border-color: var(--red,#DC2626); color: #fff; }
-    .gp-btn--red:hover { background: #991b1b; }
+    .gp-grid { max-width:920px; margin:0 auto; padding:0 20px 100px; display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px; }
+    .gp-card { background:var(--bg2,#111); border:1px solid rgba(255,255,255,.07); border-radius:14px; padding:20px 18px; transition:border-color .2s,transform .15s; display:flex; flex-direction:column; gap:12px; }
+    .gp-card:hover { border-color:rgba(220,38,38,.35); transform:translateY(-2px); }
+    .gp-card.gp-card--mine { border-color:rgba(220,38,38,.3); }
+    .gp-card-head { display:flex; align-items:center; gap:12px; }
+    .gp-avatar { width:46px; height:46px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-family:var(--font-comic,'Bangers',cursive); font-size:18px; color:#fff; letter-spacing:.04em; }
+    .gp-nickname { font-family:var(--font-comic,'Bangers',cursive); font-size:19px; letter-spacing:.04em; line-height:1.1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .gp-nome { font-size:11px; color:rgba(245,240,232,.38); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .gp-mine-badge { font-size:10px; background:rgba(220,38,38,.18); color:#DC2626; border-radius:4px; padding:1px 6px; font-weight:700; letter-spacing:.06em; display:inline-block; margin-top:2px; }
+
+    /* Main deck display */
+    .gp-main-deck { background:var(--bg3,#161616); border-radius:8px; padding:10px 12px; font-size:12px; border-left:3px solid var(--red,#DC2626); }
+    .gp-main-deck-lbl { font-size:10px; text-transform:uppercase; letter-spacing:.1em; color:rgba(245,240,232,.38); margin-bottom:3px; display:flex; align-items:center; gap:5px; }
+    .gp-main-deck-name { font-weight:600; }
+    .gp-main-deck-fmt { font-size:11px; color:rgba(245,240,232,.38); margin-top:1px; }
+    .gp-deck-empty { font-size:12px; color:rgba(245,240,232,.2); font-style:italic; }
+    .gp-deck-count { font-size:11px; color:rgba(245,240,232,.35); margin-top:4px; }
+
+    .gp-actions { display:flex; gap:8px; flex-wrap:wrap; }
+    .gp-btn { flex:1; min-width:80px; padding:7px 10px; border-radius:7px; border:1px solid rgba(255,255,255,.07); background:transparent; color:rgba(245,240,232,.38); font-family:var(--font-body,'Inter',sans-serif); font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; cursor:pointer; transition:all .15s; display:flex; align-items:center; justify-content:center; gap:5px; }
+    .gp-btn:hover { background:rgba(220,38,38,.12); border-color:rgba(220,38,38,.4); color:var(--white,#f5f0e8); }
+    .gp-btn--red { background:var(--red,#DC2626); border-color:var(--red,#DC2626); color:#fff; }
+    .gp-btn--red:hover { background:#991b1b; }
 
     /* ── EMPTY ── */
-    .gp-empty { text-align: center; padding: 80px 20px; color: rgba(245,240,232,.38); grid-column: 1/-1; }
-    .gp-empty-kanji { font-family: var(--font-comic,'Bangers',cursive); font-size: 80px; opacity: .08; display: block; margin-bottom: 12px; }
+    .gp-empty { text-align:center; padding:80px 20px; color:rgba(245,240,232,.38); grid-column:1/-1; }
+    .gp-empty-kanji { font-family:var(--font-comic,'Bangers',cursive); font-size:80px; opacity:.08; display:block; margin-bottom:12px; }
 
     /* ── FAB ── */
-    .gp-fab {
-        position: fixed; bottom: 28px; right: 24px; z-index: 700;
-        background: var(--red,#DC2626); color: #fff; border: none; border-radius: 50px;
-        padding: 14px 22px; font-family: var(--font-comic,'Bangers',cursive); font-size: 16px; letter-spacing: .08em;
-        cursor: pointer; display: flex; align-items: center; gap: 8px;
-        box-shadow: 0 4px 20px rgba(220,38,38,.4); transition: background .15s, transform .15s;
-    }
-    .gp-fab:hover { background: #991b1b; transform: translateY(-2px); }
+    .gp-fab { position:fixed; bottom:28px; right:24px; z-index:700; background:var(--red,#DC2626); color:#fff; border:none; border-radius:50px; padding:14px 22px; font-family:var(--font-comic,'Bangers',cursive); font-size:16px; letter-spacing:.08em; cursor:pointer; display:flex; align-items:center; gap:8px; box-shadow:0 4px 20px rgba(220,38,38,.4); transition:background .15s,transform .15s; }
+    .gp-fab:hover { background:#991b1b; transform:translateY(-2px); }
+    .gp-fab[hidden] { display:none; }
 
     /* ── MODALS ── */
-    .gp-overlay {
-        position: fixed; inset: 0; background: rgba(0,0,0,.75); z-index: 900;
-        display: flex; align-items: center; justify-content: center; padding: 20px;
-        opacity: 0; pointer-events: none; transition: opacity .2s;
-    }
-    .gp-overlay.open { opacity: 1; pointer-events: all; }
-    .gp-modal {
-        background: #141414; border: 1px solid rgba(255,255,255,.07); border-radius: 16px;
-        width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto;
-        padding: 28px 24px; transform: translateY(20px); transition: transform .2s;
-    }
-    .gp-overlay.open .gp-modal { transform: translateY(0); }
-    .gp-modal-title { font-family: var(--font-comic,'Bangers',cursive); font-size: 26px; letter-spacing: .06em; margin-bottom: 6px; }
-    .gp-modal-title span { color: var(--red,#DC2626); }
-    .gp-modal-sub { font-size: 12px; color: rgba(245,240,232,.38); margin-bottom: 20px; line-height: 1.5; }
-    .gp-form-row { margin-bottom: 14px; }
-    .gp-label { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: rgba(245,240,232,.38); display: block; margin-bottom: 5px; }
-    .gp-input {
-        width: 100%; padding: 10px 12px; background: var(--bg3,#161616);
-        border: 1px solid rgba(255,255,255,.07); border-radius: 8px;
-        color: var(--white,#f5f0e8); font-family: var(--font-body,'Inter',sans-serif); font-size: 13px;
-        outline: none; transition: border-color .2s;
-    }
-    .gp-input:focus { border-color: rgba(220,38,38,.5); }
-    .gp-input::placeholder { color: rgba(245,240,232,.25); }
-    textarea.gp-input { resize: vertical; min-height: 90px; line-height: 1.5; }
-    .gp-divider { border: none; border-top: 1px solid rgba(255,255,255,.07); margin: 18px 0; }
-    .gp-section-title { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(245,240,232,.38); margin-bottom: 12px; }
-    .gp-modal-actions { display: flex; gap: 10px; margin-top: 20px; }
-    .gp-mbtn { flex: 1; padding: 11px; border-radius: 8px; font-family: var(--font-body,'Inter',sans-serif); font-size: 13px; font-weight: 700; letter-spacing: .05em; cursor: pointer; border: none; transition: background .15s; }
-    .gp-mbtn--primary { background: var(--red,#DC2626); color: #fff; }
-    .gp-mbtn--primary:hover { background: #991b1b; }
-    .gp-mbtn--ghost { background: var(--bg3,#161616); color: rgba(245,240,232,.38); border: 1px solid rgba(255,255,255,.07); }
-    .gp-mbtn--ghost:hover { color: var(--white,#f5f0e8); }
-    .gp-err { font-size: 12px; color: #f87171; margin-top: 6px; display: none; }
-    .gp-err.on { display: block; }
+    .gp-overlay { position:fixed; inset:0; background:rgba(0,0,0,.75); z-index:900; display:flex; align-items:center; justify-content:center; padding:20px; opacity:0; pointer-events:none; transition:opacity .2s; }
+    .gp-overlay.open { opacity:1; pointer-events:all; }
+    .gp-modal { background:#141414; border:1px solid rgba(255,255,255,.07); border-radius:16px; width:100%; max-width:480px; max-height:90vh; overflow-y:auto; padding:28px 24px; transform:translateY(20px); transition:transform .2s; }
+    .gp-overlay.open .gp-modal { transform:translateY(0); }
+    .gp-modal-title { font-family:var(--font-comic,'Bangers',cursive); font-size:26px; letter-spacing:.06em; margin-bottom:6px; }
+    .gp-modal-title span { color:var(--red,#DC2626); }
+    .gp-modal-sub { font-size:12px; color:rgba(245,240,232,.38); margin-bottom:20px; line-height:1.5; }
+    .gp-form-row { margin-bottom:14px; }
+    .gp-label { font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:rgba(245,240,232,.38); display:block; margin-bottom:5px; }
+    .gp-input { width:100%; padding:10px 12px; background:var(--bg3,#161616); border:1px solid rgba(255,255,255,.07); border-radius:8px; color:var(--white,#f5f0e8); font-family:var(--font-body,'Inter',sans-serif); font-size:13px; outline:none; transition:border-color .2s; }
+    .gp-input:focus { border-color:rgba(220,38,38,.5); }
+    .gp-input::placeholder { color:rgba(245,240,232,.25); }
+    textarea.gp-input { resize:vertical; min-height:90px; line-height:1.5; }
+    .gp-divider { border:none; border-top:1px solid rgba(255,255,255,.07); margin:18px 0; }
+    .gp-section-title { font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:rgba(245,240,232,.38); margin-bottom:12px; }
+    .gp-modal-actions { display:flex; gap:10px; margin-top:20px; }
+    .gp-mbtn { flex:1; padding:11px; border-radius:8px; font-family:var(--font-body,'Inter',sans-serif); font-size:13px; font-weight:700; letter-spacing:.05em; cursor:pointer; border:none; transition:background .15s; }
+    .gp-mbtn--primary { background:var(--red,#DC2626); color:#fff; }
+    .gp-mbtn--primary:hover { background:#991b1b; }
+    .gp-mbtn--ghost { background:var(--bg3,#161616); color:rgba(245,240,232,.38); border:1px solid rgba(255,255,255,.07); }
+    .gp-mbtn--ghost:hover { color:var(--white,#f5f0e8); }
+    .gp-err { font-size:12px; color:#f87171; margin-top:6px; display:none; }
+    .gp-err.on { display:block; }
 
-    /* ── DECK MODAL ── */
-    .gp-deck-tabs { display: flex; gap: 6px; margin-bottom: 12px; align-items: center; }
-    .gp-dtab { padding: 5px 14px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; cursor: pointer; border: 1px solid rgba(255,255,255,.07); background: transparent; color: rgba(245,240,232,.38); transition: all .15s; }
-    .gp-dtab.active { background: var(--red,#DC2626); border-color: var(--red,#DC2626); color: #fff; }
-    .gp-copy-btn { padding: 5px 14px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; cursor: pointer; border: 1px solid rgba(255,255,255,.07); background: transparent; color: rgba(245,240,232,.38); transition: all .15s; margin-left: auto; }
-    .gp-copy-btn:hover { border-color: rgba(220,38,38,.4); color: var(--white,#f5f0e8); }
-    .gp-copy-btn.copied { border-color: #16a34a; color: #4ade80; }
-    .gp-dpanel { display: none; }
-    .gp-dpanel.active { display: block; }
-    .gp-dscroll { background: var(--bg3,#161616); border-radius: 10px; padding: 14px; max-height: 380px; overflow-y: auto; }
-    .gp-dscroll pre { font-size: 12px; color: rgba(245,240,232,.38); white-space: pre-wrap; word-break: break-word; line-height: 1.6; font-family: var(--font-body,'Inter',sans-serif); }
-    /* Griglia carte */
-    .gp-card-grid { display: flex; flex-wrap: wrap; gap: 8px; }
-    .gp-card-item { position: relative; width: 100px; flex-shrink: 0; }
-    .gp-card-item img { width: 100%; border-radius: 7px; display: block; min-height: 140px; object-fit: cover; background: var(--bg3,#161616); }
-    .gp-card-item .gp-card-qty { position: absolute; bottom: 22px; left: 4px; background: rgba(0,0,0,.85); color: #fff; border: 1px solid rgba(255,255,255,.3); border-radius: 4px; padding: 1px 6px; font-size: 11px; font-weight: 800; }
-    .gp-card-item .gp-card-id { font-size: 10px; color: rgba(245,240,232,.38); margin-top: 3px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .gp-sep { width: 100%; font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--red,#DC2626); padding: 8px 0 4px; }
-    .gp-loading { text-align: center; padding: 30px; color: rgba(245,240,232,.38); font-size: 13px; }
-    .gp-no-img { background: var(--bg3,#161616); border-radius: 7px; min-height: 140px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: rgba(245,240,232,.38); text-align: center; padding: 6px; }
+    /* ── AUTH TABS ── */
+    .gp-auth-tabs { display:flex; gap:4px; background:var(--bg3,#161616); border-radius:10px; padding:4px; margin-bottom:20px; }
+    .gp-auth-tab { flex:1; padding:8px; border-radius:7px; border:none; background:transparent; color:rgba(245,240,232,.38); font-size:12px; font-weight:700; letter-spacing:.06em; cursor:pointer; transition:all .15s; }
+    .gp-auth-tab.active { background:#DC2626; color:#fff; }
+
+    /* ── DECK MANAGER ── */
+    .gp-deck-list { display:flex; flex-direction:column; gap:8px; }
+    .gp-deck-item { display:flex; align-items:center; gap:10px; padding:12px 14px; background:var(--bg3,#161616); border:1px solid rgba(255,255,255,.06); border-radius:10px; }
+    .gp-deck-item.is-main { border-color:rgba(220,38,38,.35); background:rgba(220,38,38,.06); }
+    .gp-deck-item-info { flex:1; min-width:0; }
+    .gp-deck-item-name { font-weight:700; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:flex; align-items:center; gap:6px; }
+    .gp-deck-item-fmt { font-size:11px; color:rgba(245,240,232,.38); margin-top:2px; }
+    .gp-deck-item-btns { display:flex; gap:4px; flex-shrink:0; }
+    .gp-icon-btn { width:30px; height:30px; border-radius:6px; border:1px solid rgba(255,255,255,.07); background:transparent; color:rgba(245,240,232,.38); cursor:pointer; font-size:13px; display:flex; align-items:center; justify-content:center; transition:all .15s; }
+    .gp-icon-btn:hover { background:rgba(220,38,38,.12); border-color:rgba(220,38,38,.4); color:#f5f0e8; }
+    .gp-icon-btn.active { background:rgba(220,38,38,.2); border-color:rgba(220,38,38,.5); color:#DC2626; }
+    .gp-icon-btn--del:hover { background:rgba(220,38,38,.2); color:#f87171; }
+    .gp-crown { font-size:12px; }
+    .gp-main-tag { font-size:9px; background:#DC2626; color:#fff; border-radius:3px; padding:1px 5px; font-weight:700; letter-spacing:.05em; }
+    .gp-add-deck-btn { width:100%; margin-top:10px; padding:10px; border-radius:8px; border:1px dashed rgba(255,255,255,.12); background:transparent; color:rgba(245,240,232,.35); font-size:12px; font-weight:600; cursor:pointer; transition:all .15s; }
+    .gp-add-deck-btn:hover { border-color:rgba(220,38,38,.4); color:#f5f0e8; background:rgba(220,38,38,.06); }
+    .gp-deck-empty-list { text-align:center; padding:28px 0; color:rgba(245,240,232,.25); font-size:13px; }
+
+    /* ── DECK VIEWER ── */
+    .gp-deck-tabs { display:flex; gap:6px; margin-bottom:12px; align-items:center; }
+    .gp-dtab { padding:5px 14px; border-radius:20px; font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; cursor:pointer; border:1px solid rgba(255,255,255,.07); background:transparent; color:rgba(245,240,232,.38); transition:all .15s; }
+    .gp-dtab.active { background:var(--red,#DC2626); border-color:var(--red,#DC2626); color:#fff; }
+    .gp-copy-btn { padding:5px 14px; border-radius:20px; font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; cursor:pointer; border:1px solid rgba(255,255,255,.07); background:transparent; color:rgba(245,240,232,.38); transition:all .15s; margin-left:auto; }
+    .gp-copy-btn:hover { border-color:rgba(220,38,38,.4); color:var(--white,#f5f0e8); }
+    .gp-copy-btn.copied { border-color:#16a34a; color:#4ade80; }
+    .gp-dpanel { display:none; }
+    .gp-dpanel.active { display:block; }
+    .gp-dscroll { background:var(--bg3,#161616); border-radius:10px; padding:14px; max-height:360px; overflow-y:auto; }
+    .gp-dscroll pre { font-size:12px; color:rgba(245,240,232,.38); white-space:pre-wrap; word-break:break-word; line-height:1.6; font-family:var(--font-body,'Inter',sans-serif); }
+    .gp-card-grid { display:flex; flex-wrap:wrap; gap:8px; }
+    .gp-card-item { position:relative; width:100px; flex-shrink:0; }
+    .gp-card-item img { width:100%; border-radius:7px; display:block; min-height:140px; object-fit:cover; background:var(--bg3,#161616); }
+    .gp-card-item .gp-card-qty { position:absolute; bottom:22px; left:4px; background:rgba(0,0,0,.85); color:#fff; border:1px solid rgba(255,255,255,.3); border-radius:4px; padding:1px 6px; font-size:11px; font-weight:800; }
+    .gp-card-item .gp-card-id { font-size:10px; color:rgba(245,240,232,.38); margin-top:3px; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .gp-sep { width:100%; font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--red,#DC2626); padding:8px 0 4px; }
+    .gp-loading { text-align:center; padding:30px; color:rgba(245,240,232,.38); font-size:13px; }
+    .gp-no-img { background:var(--bg3,#161616); border-radius:7px; min-height:140px; display:flex; align-items:center; justify-content:center; font-size:10px; color:rgba(245,240,232,.38); text-align:center; padding:6px; }
 
     /* ── RESPONSIVE ── */
-    @media (max-width: 600px) {
-        .gp-grid { grid-template-columns: 1fr; }
-        .gp-overlay { align-items: flex-end; padding: 0; }
-        .gp-modal { border-radius: 20px 20px 0 0; max-height: 88vh; }
-        .gp-fab { bottom: 20px; right: 16px; }
+    @media (max-width:600px) {
+        .gp-grid { grid-template-columns:1fr; }
+        .gp-overlay { align-items:flex-end; padding:0; }
+        .gp-modal { border-radius:20px 20px 0 0; max-height:88vh; }
+        .gp-fab { bottom:20px; right:16px; }
+        .gp-nav-auth span { display:none; }
     }
     </style>
 </head>
@@ -223,6 +191,10 @@
             <li><a href="giocatori.html" class="nav-cta">Giocatori</a></li>
             <li><a href="index.html#contatti">Contatti</a></li>
         </ul>
+        <button class="gp-nav-auth" id="gp-auth-btn" onclick="onAuthBtnClick()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            <span id="gp-auth-label">Accedi</span>
+        </button>
         <button class="nav-burger" id="nav-burger" aria-label="Apri menu">
             <span></span><span></span><span></span>
         </button>
@@ -233,7 +205,7 @@
 <section class="gp-hero">
     <div class="gp-hero-kanji" aria-hidden="true">選手</div>
     <h1 class="gp-hero-title">GIOCA<span>TORI</span></h1>
-    <p class="gp-hero-sub">選手登録 · Registra il tuo profilo e il tuo mazzo</p>
+    <p class="gp-hero-sub">選手登録 · Registra il tuo profilo e i tuoi mazzi</p>
     <div class="gp-stats">
         <div class="gp-stat">
             <div class="gp-stat-val" id="stat-players">—</div>
@@ -254,15 +226,9 @@
     </div>
     <select class="gp-filter" id="gp-filter" onchange="filterPlayers()">
         <option value="">Tutti i formati</option>
-        <option>Magic Standard</option>
-        <option>Magic Modern</option>
-        <option>Magic Legacy</option>
-        <option>Magic Commander</option>
-        <option>Pokémon</option>
-        <option>Yu-Gi-Oh!</option>
-        <option>One Piece</option>
-        <option>Dragon Ball Super</option>
-        <option>Altro</option>
+        <option>Magic Standard</option><option>Magic Modern</option><option>Magic Legacy</option>
+        <option>Magic Commander</option><option>Pokémon</option><option>Yu-Gi-Oh!</option>
+        <option>One Piece</option><option>Dragon Ball Super</option><option>Altro</option>
     </select>
 </div>
 
@@ -272,34 +238,93 @@
 </div>
 
 <!-- ── FAB ── -->
-<button class="gp-fab" onclick="openModal('reg')">
+<button class="gp-fab" id="gp-fab" onclick="onFabClick()">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-    Registrati
+    <span id="gp-fab-label">Accedi</span>
 </button>
 
-<!-- ── MODAL REGISTRAZIONE ── -->
-<div class="gp-overlay" id="ov-reg" onclick="if(event.target===this)closeModal('reg')">
+<!-- ── MODAL AUTH ── -->
+<div class="gp-overlay" id="ov-auth" onclick="if(event.target===this)closeModal('auth')">
     <div class="gp-modal">
-        <div class="gp-modal-title">NUOVO <span>GIOCATORE</span></div>
-        <p class="gp-modal-sub">Crea il tuo profilo. Nickname unico richiesto.</p>
-        <div class="gp-form-row">
-            <label class="gp-label">Nome e Cognome *</label>
-            <input type="text" class="gp-input" id="reg-nome" placeholder="Mario Rossi">
+        <div class="gp-modal-title">AREA <span>GIOCATORI</span></div>
+        <p class="gp-modal-sub">Accedi o crea un nuovo profilo giocatore.</p>
+        <div class="gp-auth-tabs">
+            <button class="gp-auth-tab active" id="atab-login" onclick="switchAuthTab('login')">Accedi</button>
+            <button class="gp-auth-tab" id="atab-register" onclick="switchAuthTab('register')">Nuovo profilo</button>
         </div>
-        <div class="gp-form-row">
-            <label class="gp-label">Nickname *</label>
-            <input type="text" class="gp-input" id="reg-nick" placeholder="DarkMage97">
-            <div class="gp-err" id="reg-nick-err">Nickname già in uso. Scegline un altro.</div>
+
+        <!-- Login -->
+        <div id="auth-login">
+            <div class="gp-form-row">
+                <label class="gp-label">Email</label>
+                <input type="email" class="gp-input" id="login-email" placeholder="mario@email.com" autocomplete="email">
+            </div>
+            <div class="gp-form-row">
+                <label class="gp-label">Password</label>
+                <input type="password" class="gp-input" id="login-pw" placeholder="••••••••" autocomplete="current-password">
+            </div>
+            <div class="gp-err" id="login-err"></div>
+            <div class="gp-modal-actions">
+                <button class="gp-mbtn gp-mbtn--ghost" onclick="closeModal('auth')">Annulla</button>
+                <button class="gp-mbtn gp-mbtn--primary" id="login-btn" onclick="submitLogin()">Entra</button>
+            </div>
         </div>
-        <hr class="gp-divider">
-        <div class="gp-section-title">🃏 Mazzo Attuale <span style="font-weight:400;text-transform:none;letter-spacing:0">(opzionale)</span></div>
+
+        <!-- Register -->
+        <div id="auth-register" style="display:none">
+            <div class="gp-form-row">
+                <label class="gp-label">Nome e Cognome *</label>
+                <input type="text" class="gp-input" id="reg-nome" placeholder="Mario Rossi" autocomplete="name">
+            </div>
+            <div class="gp-form-row">
+                <label class="gp-label">Nickname * <span style="font-weight:400;text-transform:none;letter-spacing:0">(pubblico, unico)</span></label>
+                <input type="text" class="gp-input" id="reg-nick" placeholder="DarkMage97">
+                <div class="gp-err" id="reg-nick-err">Nickname già in uso. Scegline un altro.</div>
+            </div>
+            <div class="gp-form-row">
+                <label class="gp-label">Email *</label>
+                <input type="email" class="gp-input" id="reg-email" placeholder="mario@email.com" autocomplete="email">
+            </div>
+            <div class="gp-form-row">
+                <label class="gp-label">Password * <span style="font-weight:400;text-transform:none;letter-spacing:0">(min. 6 caratteri)</span></label>
+                <input type="password" class="gp-input" id="reg-pw" placeholder="••••••••" autocomplete="new-password">
+            </div>
+            <div class="gp-err" id="reg-err"></div>
+            <div class="gp-modal-actions">
+                <button class="gp-mbtn gp-mbtn--ghost" onclick="closeModal('auth')">Annulla</button>
+                <button class="gp-mbtn gp-mbtn--primary" id="reg-btn" onclick="submitRegister()">Crea Profilo</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── MODAL GESTISCI MAZZI ── -->
+<div class="gp-overlay" id="ov-mazzi" onclick="if(event.target===this)closeModal('mazzi')">
+    <div class="gp-modal" style="max-width:500px">
+        <div class="gp-modal-title" id="mazzi-modal-title">I TUOI <span>MAZZI</span></div>
+        <p class="gp-modal-sub" id="mazzi-modal-sub">Gestisci la tua collezione di mazzi. Il mazzo 👑 Main verrà usato ai tornei.</p>
+        <div id="mazzi-list" class="gp-deck-list"></div>
+        <button class="gp-add-deck-btn" id="mazzi-add-btn" onclick="openAddDeck()" style="display:none">
+            + Aggiungi mazzo
+        </button>
+        <div class="gp-modal-actions" style="margin-top:14px">
+            <button class="gp-mbtn gp-mbtn--ghost" onclick="closeModal('mazzi')">Chiudi</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── MODAL ADD/EDIT MAZZO ── -->
+<div class="gp-overlay" id="ov-deck-edit" onclick="if(event.target===this)closeModal('deck-edit')">
+    <div class="gp-modal">
+        <div class="gp-modal-title" id="deck-edit-title">NUOVO <span>MAZZO</span></div>
+        <p class="gp-modal-sub">Aggiungi un mazzo al tuo profilo.</p>
         <div class="gp-form-row">
-            <label class="gp-label">Nome mazzo</label>
-            <input type="text" class="gp-input" id="reg-deck-nome" placeholder="es. Burn R/W">
+            <label class="gp-label">Nome mazzo *</label>
+            <input type="text" class="gp-input" id="de-nome" placeholder="es. Burn R/W">
         </div>
         <div class="gp-form-row">
             <label class="gp-label">Formato / Gioco</label>
-            <select class="gp-input" id="reg-deck-fmt">
+            <select class="gp-input" id="de-fmt">
                 <option value="">— Seleziona —</option>
                 <option>Magic Standard</option><option>Magic Modern</option><option>Magic Legacy</option>
                 <option>Magic Commander</option><option>Pokémon</option><option>Yu-Gi-Oh!</option>
@@ -307,53 +332,17 @@
             </select>
         </div>
         <div class="gp-form-row">
-            <label class="gp-label">Decklist</label>
-            <textarea class="gp-input" id="reg-deck-list" placeholder="One Piece: 4 OP01-001&#10;Magic: 4x Lightning Bolt&#10;..."></textarea>
+            <label class="gp-label">Decklist <span style="font-weight:400;text-transform:none;letter-spacing:0">(opzionale)</span></label>
+            <textarea class="gp-input" id="de-list" placeholder="One Piece: 4 OP01-001&#10;Magic: 4x Lightning Bolt&#10;..."></textarea>
         </div>
         <div class="gp-modal-actions">
-            <button class="gp-mbtn gp-mbtn--ghost" onclick="closeModal('reg')">Annulla</button>
-            <button class="gp-mbtn gp-mbtn--primary" id="reg-btn" onclick="submitReg()">Registrati</button>
+            <button class="gp-mbtn gp-mbtn--ghost" onclick="closeModal('deck-edit')">Annulla</button>
+            <button class="gp-mbtn gp-mbtn--primary" id="de-btn" onclick="submitDeckEdit()">Salva</button>
         </div>
     </div>
 </div>
 
-<!-- ── MODAL MODIFICA MAZZO ── -->
-<div class="gp-overlay" id="ov-edit" onclick="if(event.target===this)closeModal('edit')">
-    <div class="gp-modal">
-        <div class="gp-modal-title">AGGIORNA <span>MAZZO</span></div>
-        <p class="gp-modal-sub">Inserisci il tuo nickname per verificare l'identità.</p>
-        <div class="gp-form-row">
-            <label class="gp-label">Il tuo Nickname *</label>
-            <input type="text" class="gp-input" id="edit-nick" placeholder="Il tuo nickname esatto">
-            <div class="gp-err" id="edit-nick-err">Nickname non trovato o non corrispondente.</div>
-        </div>
-        <hr class="gp-divider">
-        <div class="gp-section-title">🃏 Mazzo Attuale</div>
-        <div class="gp-form-row">
-            <label class="gp-label">Nome mazzo</label>
-            <input type="text" class="gp-input" id="edit-deck-nome" placeholder="es. Burn R/W">
-        </div>
-        <div class="gp-form-row">
-            <label class="gp-label">Formato / Gioco</label>
-            <select class="gp-input" id="edit-deck-fmt">
-                <option value="">— Seleziona —</option>
-                <option>Magic Standard</option><option>Magic Modern</option><option>Magic Legacy</option>
-                <option>Magic Commander</option><option>Pokémon</option><option>Yu-Gi-Oh!</option>
-                <option>One Piece</option><option>Dragon Ball Super</option><option>Altro</option>
-            </select>
-        </div>
-        <div class="gp-form-row">
-            <label class="gp-label">Decklist</label>
-            <textarea class="gp-input" id="edit-deck-list" placeholder="One Piece: 4 OP01-001&#10;Magic: 4x Lightning Bolt&#10;..."></textarea>
-        </div>
-        <div class="gp-modal-actions">
-            <button class="gp-mbtn gp-mbtn--ghost" onclick="closeModal('edit')">Annulla</button>
-            <button class="gp-mbtn gp-mbtn--primary" id="edit-btn" onclick="submitEdit()">Salva Mazzo</button>
-        </div>
-    </div>
-</div>
-
-<!-- ── MODAL DECK ── -->
+<!-- ── MODAL DECK VIEWER ── -->
 <div class="gp-overlay" id="ov-deck" onclick="if(event.target===this)closeModal('deck')">
     <div class="gp-modal" style="max-width:560px">
         <div class="gp-modal-title" id="deck-title">DECK</div>
@@ -456,66 +445,170 @@ var _fbCfg = {
     messagingSenderId:'466874129336',
     appId:'1:466874129336:web:fd07925523c35921fe8d4d'
 };
-if (!firebase.apps.length) firebase.initializeApp(_fbCfg);
-var _db = firebase.firestore();
+var _app = firebase.apps.length ? firebase.app() : firebase.initializeApp(_fbCfg);
+var _db   = _app.firestore();
+var _auth = _app.auth();
 
 var IMG_BASE = 'https://optcgapi.com/media/static/Card_Images/';
 
 /* ── State ── */
 var _players     = [];
-var _editId      = null;
+var _currentUser = null;   /* Firebase Auth user */
+var _myProfile   = null;   /* giocatori doc of logged-in user */
 var _deckRaw     = '';
 var _deckFormato = '';
+/* deck manager state */
+var _mazziTargetId  = null;   /* player id whose decks we're managing/viewing */
+var _mazziIsOwner   = false;
+var _editDeckId     = null;   /* deck id being edited (null = new) */
 
-/* ── Avatar ── */
+/* ── Helpers ── */
 var _COLORS = ['#DC2626','#2563EB','#16A34A','#D97706','#7C3AED','#DB2777','#0891B2','#EA580C'];
 function _color(s) { var n=0; for(var i=0;i<s.length;i++) n+=s.charCodeAt(i); return _COLORS[n%_COLORS.length]; }
 function _initials(s) { var p=s.trim().split(/\s+/); return p.length>=2?(p[0][0]+p[1][0]).toUpperCase():s.slice(0,2).toUpperCase(); }
-function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function uuid() { return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+
+/* Get mazzi array from player (handles old format with only mazzoAttuale) */
+function getPlayerMazzi(p) {
+    if (p.mazzi && p.mazzi.length) return p.mazzi;
+    if (p.mazzoAttuale && p.mazzoAttuale.nome) {
+        return [{ id:'legacy', nome:p.mazzoAttuale.nome, formato:p.mazzoAttuale.formato||'', decklist:p.mazzoAttuale.decklist||'', isMain:true }];
+    }
+    return [];
+}
+function getMainDeck(p) {
+    var mazzi = getPlayerMazzi(p);
+    return mazzi.find(function(m){ return m.isMain; }) || mazzi[0] || null;
+}
 
 /* ── Toast ── */
 var _tc = null;
 function showToast(msg, type) {
-    if (!_tc) { _tc = document.createElement('div'); _tc.style.cssText='position:fixed;bottom:80px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px'; document.body.appendChild(_tc); }
-    var t = document.createElement('div');
-    t.style.cssText='padding:10px 16px;border-radius:8px;font-size:13px;font-weight:600;color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.3);animation:fadeIn .2s';
-    t.style.background = type==='success'?'#16a34a':type==='error'?'#dc2626':'#2563eb';
-    t.textContent = msg; _tc.appendChild(t);
+    if (!_tc) { _tc=document.createElement('div'); _tc.style.cssText='position:fixed;bottom:80px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px'; document.body.appendChild(_tc); }
+    var t=document.createElement('div');
+    t.style.cssText='padding:10px 16px;border-radius:8px;font-size:13px;font-weight:600;color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.3)';
+    t.style.background=type==='success'?'#16a34a':type==='error'?'#dc2626':'#2563eb';
+    t.textContent=msg; _tc.appendChild(t);
     setTimeout(function(){ t.remove(); }, 3200);
+}
+
+/* ── Auth state ── */
+function onAuthStateChanged(user) {
+    _currentUser = user;
+    var btn   = document.getElementById('gp-auth-btn');
+    var label = document.getElementById('gp-auth-label');
+    if (user) {
+        /* find player profile by uid */
+        _myProfile = _players.find(function(p){ return p.uid===user.uid; }) || null;
+        var nick = _myProfile ? _myProfile.nickname : (user.email||'').split('@')[0];
+        label.textContent = nick;
+        btn.classList.add('logged');
+        var dot = document.createElement('span');
+        /* already added via rerender */
+    } else {
+        _myProfile = null;
+        label.textContent = 'Accedi';
+        btn.classList.remove('logged');
+    }
+    updateFab();
+    /* Re-render grid so owner badges/buttons update */
+    filterPlayers();
+}
+
+function updateFab() {
+    var fab   = document.getElementById('gp-fab');
+    var label = document.getElementById('gp-fab-label');
+    if (!_currentUser) {
+        fab.removeAttribute('hidden');
+        label.textContent = 'Accedi';
+        fab.querySelector('svg').style.display = 'none';
+    } else if (!_myProfile) {
+        fab.removeAttribute('hidden');
+        fab.querySelector('svg').style.display = '';
+        label.textContent = 'Crea profilo';
+    } else {
+        fab.setAttribute('hidden','');
+    }
+}
+
+function onFabClick() {
+    if (!_currentUser) { switchAuthTab('login'); openModal('auth'); }
+    else if (!_myProfile) { switchAuthTab('register'); openModal('auth'); }
+}
+
+function onAuthBtnClick() {
+    if (_currentUser) {
+        if (confirm('Vuoi uscire dall\'account?')) {
+            _auth.signOut().then(function(){ showToast('Disconnesso','info'); });
+        }
+    } else {
+        switchAuthTab('login');
+        openModal('auth');
+    }
 }
 
 /* ── Firebase subscribe ── */
 function init() {
     _db.collection('giocatori').orderBy('createdAt','desc').onSnapshot(function(snap) {
         _players = snap.docs.map(function(d){ var o=d.data(); o.id=d.id; return o; });
-        renderGrid(_players);
+        /* Update myProfile reference */
+        if (_currentUser) {
+            _myProfile = _players.find(function(p){ return p.uid===_currentUser.uid; }) || null;
+            var label = document.getElementById('gp-auth-label');
+            if (_myProfile) label.textContent = _myProfile.nickname;
+        }
+        /* Stats */
+        var totalDecks = _players.reduce(function(s,p){ return s+getPlayerMazzi(p).length; },0);
         document.getElementById('stat-players').textContent = _players.length;
-        document.getElementById('stat-decks').textContent = _players.filter(function(p){ return p.mazzoAttuale&&p.mazzoAttuale.nome; }).length;
+        document.getElementById('stat-decks').textContent   = totalDecks;
+        renderGrid(_players);
+        updateFab();
     }, function(e){ console.error(e); });
+
+    _auth.onAuthStateChanged(onAuthStateChanged);
 }
 
 /* ── Render grid ── */
 function renderGrid(list) {
     var g = document.getElementById('gp-grid');
     if (!list || !list.length) {
-        g.innerHTML = '<div class="gp-empty"><span class="gp-empty-kanji">無</span><p>Nessun giocatore ancora.<br>Sii il primo a registrarti!</p></div>';
+        g.innerHTML='<div class="gp-empty"><span class="gp-empty-kanji">無</span><p>Nessun giocatore ancora.<br>Sii il primo a registrarti!</p></div>';
         return;
     }
     g.innerHTML = list.map(function(p) {
-        var col = _color(p.nickname||'x');
-        var ini = _initials(p.nickname||'?');
-        var deck = p.mazzoAttuale && p.mazzoAttuale.nome
-            ? '<div class="gp-deck"><div class="gp-deck-lbl">Mazzo attuale</div><div class="gp-deck-name">'+esc(p.mazzoAttuale.nome)+'</div>'+(p.mazzoAttuale.formato?'<div class="gp-deck-fmt">'+esc(p.mazzoAttuale.formato)+'</div>':'')+'</div>'
-            : '<div class="gp-deck"><div class="gp-deck-empty">Nessun mazzo registrato</div></div>';
-        var hasList = p.mazzoAttuale && p.mazzoAttuale.decklist && p.mazzoAttuale.decklist.trim();
-        return '<div class="gp-card">'
+        var col    = _color(p.nickname||'x');
+        var ini    = _initials(p.nickname||'?');
+        var isMe   = _currentUser && p.uid===_currentUser.uid;
+        var mazzi  = getPlayerMazzi(p);
+        var main   = getMainDeck(p);
+        var extra  = mazzi.length > 1 ? mazzi.length-1 : 0;
+
+        var deckHtml;
+        if (main) {
+            deckHtml = '<div class="gp-main-deck">'
+                +'<div class="gp-main-deck-lbl"><span>👑 Mazzo Main</span></div>'
+                +'<div class="gp-main-deck-name">'+esc(main.nome)+'</div>'
+                +(main.formato?'<div class="gp-main-deck-fmt">'+esc(main.formato)+'</div>':'')
+                +'</div>';
+        } else {
+            deckHtml = '<div class="gp-main-deck"><div class="gp-deck-empty">Nessun mazzo registrato</div></div>';
+        }
+        if (extra>0) deckHtml += '<div class="gp-deck-count">+'+extra+' altro'+(extra>1?'i':'')+' mazz'+(extra>1?'i':'o')+'</div>';
+
+        var actions = '<div class="gp-actions">';
+        actions += '<button class="gp-btn" onclick="openMazziModal(\''+p.id+'\')">🃏 '+(isMe?'I tuoi mazzi':'Mazzi')+'</button>';
+        if (isMe) actions += '<button class="gp-btn gp-btn--red" onclick="openMazziModal(\''+p.id+'\')">✏️ Modifica</button>';
+        actions += '</div>';
+
+        return '<div class="gp-card'+(isMe?' gp-card--mine':'')+'">'
             +'<div class="gp-card-head"><div class="gp-avatar" style="background:'+col+'">'+esc(ini)+'</div>'
-            +'<div><div class="gp-nickname">'+esc(p.nickname||'')+'</div><div class="gp-nome">'+esc(p.nome||'')+'</div></div></div>'
-            +deck
-            +'<div class="gp-actions">'
-            +(hasList?'<button class="gp-btn" onclick="openDeckView(\''+p.id+'\')">🃏 Deck</button>':'')
-            +'<button class="gp-btn gp-btn--red" onclick="openEdit(\''+p.id+'\')">✏️ Modifica</button>'
-            +'</div></div>';
+            +'<div style="min-width:0"><div class="gp-nickname">'+esc(p.nickname||'')+'</div>'
+            +(isMe?'<div class="gp-mine-badge">IL TUO PROFILO</div>':'<div class="gp-nome">'+esc(p.nome||'')+'</div>')
+            +'</div></div>'
+            +deckHtml
+            +actions
+            +'</div>';
     }).join('');
 }
 
@@ -524,7 +617,7 @@ function filterPlayers() {
     var f = document.getElementById('gp-filter').value;
     var r = _players.filter(function(p) {
         var mq = !q || (p.nickname||'').toLowerCase().includes(q) || (p.nome||'').toLowerCase().includes(q);
-        var mf = !f  || (p.mazzoAttuale && p.mazzoAttuale.formato === f);
+        var mf = !f  || getPlayerMazzi(p).some(function(m){ return m.formato===f; });
         return mq && mf;
     });
     renderGrid(r);
@@ -532,75 +625,233 @@ function filterPlayers() {
 
 /* ── Modals ── */
 function openModal(id) { document.getElementById('ov-'+id).classList.add('open'); document.body.style.overflow='hidden'; }
-function closeModal(id) { document.getElementById('ov-'+id).classList.remove('open'); document.body.style.overflow=''; if(id==='edit') _editId=null; }
+function closeModal(id) { document.getElementById('ov-'+id).classList.remove('open'); document.body.style.overflow=''; }
 
-/* ── Registrazione ── */
-function submitReg() {
-    var nome = document.getElementById('reg-nome').value.trim();
-    var nick = document.getElementById('reg-nick').value.trim();
-    var err  = document.getElementById('reg-nick-err');
-    err.classList.remove('on');
-    if (!nome||!nick) { showToast('Nome e Nickname obbligatori','error'); return; }
-    var nl = nick.toLowerCase();
-    if (_players.some(function(p){ return (p.nicknameLower||(p.nickname||'').toLowerCase())===nl; })) { err.classList.add('on'); return; }
-    var btn = document.getElementById('reg-btn'); btn.disabled=true; btn.textContent='Invio…';
-    _db.collection('giocatori').add({
-        nome:nome, nickname:nick, nicknameLower:nl,
-        mazzoAttuale:{ nome:document.getElementById('reg-deck-nome').value.trim(), formato:document.getElementById('reg-deck-fmt').value, decklist:document.getElementById('reg-deck-list').value.trim() },
-        createdAt:firebase.firestore.FieldValue.serverTimestamp()
-    }).then(function(){
-        showToast('Benvenuto '+nick+' 🎮','success');
-        closeModal('reg');
-        ['reg-nome','reg-nick','reg-deck-nome','reg-deck-list'].forEach(function(i){ document.getElementById(i).value=''; });
-        document.getElementById('reg-deck-fmt').value='';
-    }).catch(function(e){ showToast('Errore: '+(e.message||e),'error'); })
-      .finally(function(){ btn.disabled=false; btn.textContent='Registrati'; });
+/* ── Auth modal ── */
+function switchAuthTab(tab) {
+    document.getElementById('atab-login').classList.toggle('active', tab==='login');
+    document.getElementById('atab-register').classList.toggle('active', tab==='register');
+    document.getElementById('auth-login').style.display    = tab==='login'?'block':'none';
+    document.getElementById('auth-register').style.display = tab==='register'?'block':'none';
 }
 
-/* ── Modifica mazzo ── */
-function openEdit(id) {
-    _editId = id;
-    var p = _players.find(function(x){ return x.id===id; });
-    document.getElementById('edit-nick').value = '';
-    document.getElementById('edit-nick-err').classList.remove('on');
-    if (p && p.mazzoAttuale) {
-        document.getElementById('edit-deck-nome').value = p.mazzoAttuale.nome||'';
-        document.getElementById('edit-deck-fmt').value  = p.mazzoAttuale.formato||'';
-        document.getElementById('edit-deck-list').value = p.mazzoAttuale.decklist||'';
-    } else {
-        document.getElementById('edit-deck-nome').value='';
-        document.getElementById('edit-deck-fmt').value='';
-        document.getElementById('edit-deck-list').value='';
+function submitLogin() {
+    var email = document.getElementById('login-email').value.trim();
+    var pw    = document.getElementById('login-pw').value;
+    var err   = document.getElementById('login-err');
+    err.style.display='none';
+    if (!email||!pw) { err.textContent='Compila tutti i campi.'; err.style.display='block'; return; }
+    var btn=document.getElementById('login-btn'); btn.disabled=true; btn.textContent='Accesso…';
+    _auth.signInWithEmailAndPassword(email,pw)
+        .then(function(){ closeModal('auth'); showToast('Bentornato! 👋','success'); })
+        .catch(function(e){ err.textContent=_authError(e.code); err.style.display='block'; })
+        .finally(function(){ btn.disabled=false; btn.textContent='Entra'; });
+}
+
+function submitRegister() {
+    var nome  = document.getElementById('reg-nome').value.trim();
+    var nick  = document.getElementById('reg-nick').value.trim();
+    var email = document.getElementById('reg-email').value.trim();
+    var pw    = document.getElementById('reg-pw').value;
+    var nickErr = document.getElementById('reg-nick-err');
+    var err     = document.getElementById('reg-err');
+    nickErr.classList.remove('on'); err.style.display='none';
+    if (!nome||!nick||!email||!pw) { err.textContent='Compila tutti i campi obbligatori.'; err.style.display='block'; return; }
+    var nl = nick.toLowerCase();
+    if (_players.some(function(p){ return (p.nicknameLower||(p.nickname||'').toLowerCase())===nl; })) { nickErr.classList.add('on'); return; }
+    var btn=document.getElementById('reg-btn'); btn.disabled=true; btn.textContent='Creazione…';
+    _auth.createUserWithEmailAndPassword(email,pw)
+        .then(function(cred){
+            return _db.collection('giocatori').add({
+                uid:cred.user.uid, nome:nome, nickname:nick, nicknameLower:nl,
+                mazzi:[], mazzoAttuale:null,
+                createdAt:firebase.firestore.FieldValue.serverTimestamp()
+            });
+        })
+        .then(function(){ closeModal('auth'); showToast('Benvenuto '+nick+' 🎮','success'); })
+        .catch(function(e){ err.textContent=_authError(e.code)||(e.message||e); err.style.display='block'; })
+        .finally(function(){ btn.disabled=false; btn.textContent='Crea Profilo'; });
+}
+
+function _authError(code) {
+    var map = {
+        'auth/user-not-found':'Utente non trovato.',
+        'auth/wrong-password':'Password errata.',
+        'auth/invalid-credential':'Email o password errati.',
+        'auth/email-already-in-use':'Email già registrata. Prova ad accedere.',
+        'auth/weak-password':'Password troppo corta (min. 6 caratteri).',
+        'auth/invalid-email':'Email non valida.'
+    };
+    return map[code]||null;
+}
+
+/* ── Deck manager modal ── */
+function openMazziModal(playerId) {
+    var p = _players.find(function(x){ return x.id===playerId; });
+    if (!p) return;
+    _mazziTargetId = playerId;
+    _mazziIsOwner  = !!((_currentUser && p.uid===_currentUser.uid));
+
+    document.getElementById('mazzi-modal-title').innerHTML = _mazziIsOwner
+        ? 'I TUOI <span>MAZZI</span>'
+        : 'MAZZI DI <span>'+esc(p.nickname||'')+'</span>';
+    document.getElementById('mazzi-modal-sub').textContent = _mazziIsOwner
+        ? 'Gestisci la tua collezione. Il mazzo 👑 Main verrà usato ai tornei.'
+        : 'Collezione mazzi di '+esc(p.nickname||'')+'. Solo il proprietario può modificarli.';
+    document.getElementById('mazzi-add-btn').style.display = _mazziIsOwner?'block':'none';
+
+    renderMazziList(p);
+    openModal('mazzi');
+}
+
+function renderMazziList(p) {
+    var mazzi = getPlayerMazzi(p);
+    var el    = document.getElementById('mazzi-list');
+    if (!mazzi.length) {
+        el.innerHTML = '<div class="gp-deck-empty-list">'
+            +(_mazziIsOwner?'Nessun mazzo. Aggiungine uno con il pulsante qui sotto.':'Nessun mazzo registrato.')
+            +'</div>';
+        return;
     }
-    openModal('edit');
+    el.innerHTML = mazzi.map(function(m){
+        var isMain = !!m.isMain;
+        var hasList = m.decklist && m.decklist.trim();
+        var html = '<div class="gp-deck-item'+(isMain?' is-main':'')+'" id="deck-item-'+m.id+'">'
+            +'<div class="gp-deck-item-info">'
+            +'<div class="gp-deck-item-name">'
+            +(isMain?'<span class="gp-crown">👑</span>':'')
+            +esc(m.nome)
+            +(isMain?'<span class="gp-main-tag">MAIN</span>':'')
+            +'</div>'
+            +(m.formato?'<div class="gp-deck-item-fmt">'+esc(m.formato)+'</div>':'')
+            +'</div>'
+            +'<div class="gp-deck-item-btns">';
+        if (hasList) html += '<button class="gp-icon-btn" onclick="openDeckViewById(\''+_mazziTargetId+'\',\''+m.id+'\')" title="Vedi carte">🃏</button>';
+        if (_mazziIsOwner) {
+            html += '<button class="gp-icon-btn'+(isMain?' active':'')+'" onclick="setMain(\''+m.id+'\')" title="Imposta come Main">👑</button>';
+            html += '<button class="gp-icon-btn" onclick="editDeck(\''+m.id+'\')" title="Modifica">✏️</button>';
+            html += '<button class="gp-icon-btn gp-icon-btn--del" onclick="deleteDeck(\''+m.id+'\')" title="Elimina">🗑️</button>';
+        }
+        html += '</div></div>';
+        return html;
+    }).join('');
 }
 
-function submitEdit() {
-    var nick = document.getElementById('edit-nick').value.trim();
-    var err  = document.getElementById('edit-nick-err');
-    err.classList.remove('on');
-    if (!nick) { showToast('Inserisci il tuo nickname','error'); return; }
-    var nl = nick.toLowerCase();
-    var p  = _editId
-        ? _players.find(function(x){ return x.id===_editId && (x.nicknameLower||(x.nickname||'').toLowerCase())===nl; })
-        : _players.find(function(x){ return (x.nicknameLower||(x.nickname||'').toLowerCase())===nl; });
-    if (!p) { err.classList.add('on'); return; }
-    var btn = document.getElementById('edit-btn'); btn.disabled=true; btn.textContent='Salvataggio…';
-    _db.collection('giocatori').doc(p.id).update({
-        mazzoAttuale:{ nome:document.getElementById('edit-deck-nome').value.trim(), formato:document.getElementById('edit-deck-fmt').value, decklist:document.getElementById('edit-deck-list').value.trim() }
-    }).then(function(){ showToast('Mazzo aggiornato ✓','success'); closeModal('edit'); })
-      .catch(function(e){ showToast('Errore: '+(e.message||e),'error'); })
-      .finally(function(){ btn.disabled=false; btn.textContent='Salva Mazzo'; });
+function openAddDeck() {
+    _editDeckId = null;
+    document.getElementById('deck-edit-title').innerHTML = 'NUOVO <span>MAZZO</span>';
+    document.getElementById('de-nome').value='';
+    document.getElementById('de-fmt').value='';
+    document.getElementById('de-list').value='';
+    closeModal('mazzi');
+    openModal('deck-edit');
+}
+
+function editDeck(deckId) {
+    var p = _players.find(function(x){ return x.id===_mazziTargetId; });
+    if (!p) return;
+    var mazzi = getPlayerMazzi(p);
+    var deck  = mazzi.find(function(m){ return m.id===deckId; });
+    if (!deck) return;
+    _editDeckId = deckId;
+    document.getElementById('deck-edit-title').innerHTML = 'MODIFICA <span>MAZZO</span>';
+    document.getElementById('de-nome').value  = deck.nome||'';
+    document.getElementById('de-fmt').value   = deck.formato||'';
+    document.getElementById('de-list').value  = deck.decklist||'';
+    closeModal('mazzi');
+    openModal('deck-edit');
+}
+
+function submitDeckEdit() {
+    if (!_currentUser || !_mazziTargetId || !_mazziIsOwner) return;
+    var nome    = document.getElementById('de-nome').value.trim();
+    if (!nome) { showToast('Nome mazzo obbligatorio','error'); return; }
+    var formato  = document.getElementById('de-fmt').value;
+    var decklist = document.getElementById('de-list').value.trim();
+    var btn = document.getElementById('de-btn'); btn.disabled=true; btn.textContent='Salvataggio…';
+
+    var p     = _players.find(function(x){ return x.id===_mazziTargetId; });
+    var mazzi = p ? getPlayerMazzi(p).slice() : [];
+    /* Remove legacy tag if exists */
+    mazzi = mazzi.filter(function(m){ return m.id!=='legacy'; });
+
+    if (_editDeckId) {
+        /* Edit existing */
+        mazzi = mazzi.map(function(m){
+            if (m.id===_editDeckId) return { id:m.id, nome:nome, formato:formato, decklist:decklist, isMain:m.isMain };
+            return m;
+        });
+    } else {
+        /* Add new — first deck is automatically main */
+        var isFirst = mazzi.length===0;
+        mazzi.push({ id:uuid(), nome:nome, formato:formato, decklist:decklist, isMain:isFirst });
+    }
+
+    /* Sync mazzoAttuale with main deck */
+    var main = mazzi.find(function(m){ return m.isMain; }) || mazzi[0];
+    var mazzoAttuale = main ? { nome:main.nome, formato:main.formato, decklist:main.decklist } : null;
+
+    _db.collection('giocatori').doc(_mazziTargetId).update({ mazzi:mazzi, mazzoAttuale:mazzoAttuale })
+        .then(function(){
+            showToast(_editDeckId?'Mazzo aggiornato ✓':'Mazzo aggiunto ✓','success');
+            closeModal('deck-edit');
+            /* Reopen mazzi modal */
+            setTimeout(function(){
+                var updated = _players.find(function(x){ return x.id===_mazziTargetId; });
+                if (updated) { renderMazziList(updated); openModal('mazzi'); }
+            }, 300);
+        })
+        .catch(function(e){ showToast('Errore: '+(e.message||e),'error'); })
+        .finally(function(){ btn.disabled=false; btn.textContent='Salva'; });
+}
+
+function setMain(deckId) {
+    if (!_currentUser||!_mazziTargetId||!_mazziIsOwner) return;
+    var p     = _players.find(function(x){ return x.id===_mazziTargetId; });
+    var mazzi = p ? getPlayerMazzi(p).slice() : [];
+    mazzi = mazzi.filter(function(m){ return m.id!=='legacy'; });
+    mazzi = mazzi.map(function(m){ return Object.assign({},m,{isMain:m.id===deckId}); });
+    var main = mazzi.find(function(m){ return m.isMain; });
+    var mazzoAttuale = main ? { nome:main.nome, formato:main.formato, decklist:main.decklist } : null;
+    _db.collection('giocatori').doc(_mazziTargetId).update({ mazzi:mazzi, mazzoAttuale:mazzoAttuale })
+        .then(function(){
+            showToast('Mazzo Main aggiornato 👑','success');
+            var updated = _players.find(function(x){ return x.id===_mazziTargetId; });
+            if (updated) renderMazziList(updated);
+        })
+        .catch(function(e){ showToast('Errore: '+(e.message||e),'error'); });
+}
+
+function deleteDeck(deckId) {
+    if (!_currentUser||!_mazziTargetId||!_mazziIsOwner) return;
+    if (!confirm('Eliminare questo mazzo?')) return;
+    var p     = _players.find(function(x){ return x.id===_mazziTargetId; });
+    var mazzi = p ? getPlayerMazzi(p).slice() : [];
+    mazzi = mazzi.filter(function(m){ return m.id!=='legacy' && m.id!==deckId; });
+    /* If deleted deck was main, assign main to first remaining */
+    if (mazzi.length && !mazzi.some(function(m){ return m.isMain; })) mazzi[0].isMain=true;
+    var main = mazzi.find(function(m){ return m.isMain; }) || mazzi[0];
+    var mazzoAttuale = main ? { nome:main.nome, formato:main.formato, decklist:main.decklist } : null;
+    _db.collection('giocatori').doc(_mazziTargetId).update({ mazzi:mazzi, mazzoAttuale:mazzoAttuale })
+        .then(function(){
+            showToast('Mazzo eliminato','info');
+            var updated = _players.find(function(x){ return x.id===_mazziTargetId; });
+            if (updated) renderMazziList(updated);
+        })
+        .catch(function(e){ showToast('Errore: '+(e.message||e),'error'); });
 }
 
 /* ── Deck viewer ── */
-function openDeckView(id) {
-    var p = _players.find(function(x){ return x.id===id; });
-    if (!p||!p.mazzoAttuale) return;
-    _deckRaw     = p.mazzoAttuale.decklist || '';
-    _deckFormato = (p.mazzoAttuale.formato||'').toLowerCase();
-    document.getElementById('deck-title').textContent = (p.mazzoAttuale.nome||'Deck')+' — '+p.nickname;
-    document.getElementById('deck-fmt').textContent   = p.mazzoAttuale.formato||'';
+function openDeckViewById(playerId, deckId) {
+    var p = _players.find(function(x){ return x.id===playerId; });
+    if (!p) return;
+    var mazzi = getPlayerMazzi(p);
+    var deck  = mazzi.find(function(m){ return m.id===deckId; }) || mazzi[0];
+    if (!deck) return;
+    _deckRaw     = deck.decklist||'';
+    _deckFormato = (deck.formato||'').toLowerCase();
+    document.getElementById('deck-title').textContent = esc(deck.nome||'Deck')+' — '+esc(p.nickname||'');
+    document.getElementById('deck-fmt').textContent   = deck.formato||'';
     document.getElementById('deck-raw').textContent   = _deckRaw;
     document.getElementById('deck-copy').textContent  = 'Copia';
     document.getElementById('deck-copy').classList.remove('copied');
@@ -610,8 +861,8 @@ function openDeckView(id) {
 
 function switchDeckTab(tab) {
     ['cards','raw'].forEach(function(t){
-        document.getElementById('dtab-'+t).classList.toggle('active', t===tab);
-        document.getElementById('dp-'+t).classList.toggle('active', t===tab);
+        document.getElementById('dtab-'+t).classList.toggle('active',t===tab);
+        document.getElementById('dp-'+t).classList.toggle('active',t===tab);
     });
     if (tab==='cards') renderDeckCards();
 }
@@ -619,60 +870,43 @@ function switchDeckTab(tab) {
 function copyDeck() {
     if (!_deckRaw) return;
     navigator.clipboard.writeText(_deckRaw).then(function(){
-        var b = document.getElementById('deck-copy');
+        var b=document.getElementById('deck-copy');
         b.textContent='✓ Copiata!'; b.classList.add('copied');
-        setTimeout(function(){ b.textContent='Copia'; b.classList.remove('copied'); }, 2000);
+        setTimeout(function(){ b.textContent='Copia'; b.classList.remove('copied'); },2000);
     });
 }
 
 /* ── Parser decklist ── */
 function parseDeck(raw) {
-    var lines = (raw||'').trim().split(/\r?\n/);
-    var cards = [], section = '';
+    var lines=(raw||'').trim().split(/\r?\n/);
+    var cards=[],section='';
     lines.forEach(function(line){
-        line = line.trim(); if (!line) return;
-        var qty = 1;
-        var qm = line.match(/^(\d+)\s*[xX]?/i);
-        if (qm) qty = parseInt(qm[1],10);
-        /* Cerca ID tipo OP01-001 o SV1-001 */
-        var idM = line.match(/\[([A-Za-z]{1,6}\d{1,3}-\d{3,4}[a-z0-9_-]*)\]/i)
-               || line.match(/([A-Za-z]{2,6}\d{1,3}-\d{3,4}[a-z0-9_-]*)/i);
-        if (idM) {
-            cards.push({ qty:qty, id:idM[1].toUpperCase(), name:idM[1].toUpperCase(), section:section, hasId:true });
-        } else {
-            /* Prova nome carta (es. Magic) */
-            var nameM = line.match(/^\d+[xX]?\s+(.+)$/) || line.match(/^[xX]?\d+\s+(.+)$/);
-            if (nameM) {
-                cards.push({ qty:qty, id:null, name:nameM[1].trim(), section:section, hasId:false });
-            } else {
-                section = line.replace(/^[\/\/#\-]+\s*/,'');
-            }
+        line=line.trim(); if(!line) return;
+        var qty=1, qm=line.match(/^(\d+)\s*[xX]?/i);
+        if(qm) qty=parseInt(qm[1],10);
+        var idM=line.match(/\[([A-Za-z]{1,6}\d{1,3}-\d{3,4}[a-z0-9_-]*)\]/i)||line.match(/([A-Za-z]{2,6}\d{1,3}-\d{3,4}[a-z0-9_-]*)/i);
+        if(idM){ cards.push({qty:qty,id:idM[1].toUpperCase(),name:idM[1].toUpperCase(),section:section,hasId:true}); }
+        else {
+            var nameM=line.match(/^\d+[xX]?\s+(.+)$/)||line.match(/^[xX]?\d+\s+(.+)$/);
+            if(nameM){ cards.push({qty:qty,id:null,name:nameM[1].trim(),section:section,hasId:false}); }
+            else { section=line.replace(/^[\/\/#\-]+\s*/,''); }
         }
     });
     return cards;
 }
 
-/* ── Render cards con immagini ── */
 function renderDeckCards() {
-    var view  = document.getElementById('deck-grid');
-    var cards = parseDeck(_deckRaw);
-    if (!cards.length) { view.innerHTML='<div class="gp-loading">Nessuna carta trovata.</div>'; return; }
-
-    var total = cards.reduce(function(s,c){ return s+c.qty; },0);
-    var header = '<div style="font-size:11px;color:rgba(245,240,232,.38);margin-bottom:12px">Totale: <strong style="color:#f5f0e8">'+total+' carte</strong></div>';
-
-    /* Se tutte le carte hanno ID → usa optcgapi direttamente */
-    var allIds = cards.every(function(c){ return c.hasId; });
-    if (allIds) {
-        view.innerHTML = header + buildIdGrid(cards);
-        return;
-    }
-
-    /* Carte per nome (Magic) → Scryfall */
-    var isMagic = _deckFormato.includes('magic') || !_deckFormato;
-    if (isMagic) {
-        view.innerHTML = '<div class="gp-loading">Caricamento immagini Scryfall…</div>';
-        var unique = [], seen = {};
+    var view=document.getElementById('deck-grid');
+    var cards=parseDeck(_deckRaw);
+    if(!cards.length){ view.innerHTML='<div class="gp-loading">Nessuna carta trovata.</div>'; return; }
+    var total=cards.reduce(function(s,c){ return s+c.qty; },0);
+    var header='<div style="font-size:11px;color:rgba(245,240,232,.38);margin-bottom:12px">Totale: <strong style="color:#f5f0e8">'+total+' carte</strong></div>';
+    var allIds=cards.every(function(c){ return c.hasId; });
+    if(allIds){ view.innerHTML=header+buildIdGrid(cards); return; }
+    var isMagic=_deckFormato.includes('magic')||!_deckFormato;
+    if(isMagic){
+        view.innerHTML='<div class="gp-loading">Caricamento immagini Scryfall…</div>';
+        var unique=[],seen={};
         cards.forEach(function(c){ if(!seen[c.name]){ seen[c.name]=true; unique.push({name:c.name}); } });
         var batches=[]; for(var i=0;i<unique.length;i+=75) batches.push(unique.slice(i,i+75));
         var imgMap={};
@@ -684,20 +918,15 @@ function renderDeckCards() {
                 (d.data||[]).forEach(function(c){
                     var img=c.image_uris?c.image_uris.normal:(c.card_faces&&c.card_faces[0].image_uris?c.card_faces[0].image_uris.normal:null);
                     if(img) imgMap[c.name.toLowerCase()]=img;
-                });
-                fetchBatch(idx+1);
+                }); fetchBatch(idx+1);
             }).catch(function(){ view.innerHTML=header+buildNameGrid(cards,imgMap); });
         }
         fetchBatch(0);
-    } else {
-        /* Altri giochi senza ID → lista testo */
-        view.innerHTML = header + buildTextList(cards);
-    }
+    } else { view.innerHTML=header+buildTextList(cards); }
 }
 
-function buildIdGrid(cards) {
-    var html='', cur=null;
-    html += '<div class="gp-card-grid">';
+function buildIdGrid(cards){
+    var html='',cur=null; html+='<div class="gp-card-grid">';
     cards.forEach(function(c){
         if(c.section!==cur){ if(cur!==null) html+='</div><div class="gp-card-grid">'; if(c.section) html+='</div><div class="gp-sep">'+esc(c.section)+'</div><div class="gp-card-grid">'; cur=c.section; }
         html+='<div class="gp-card-item" title="'+esc(c.id)+'">'
@@ -707,32 +936,17 @@ function buildIdGrid(cards) {
             +'<span class="gp-card-qty">×'+c.qty+'</span>'
             +'<div class="gp-card-id">'+esc(c.id)+'</div>'
             +'</div>';
-    });
-    return html+'</div>';
+    }); return html+'</div>';
 }
-
-function buildNameGrid(cards, imgMap) {
-    var html='', cur=null;
-    html += '<div class="gp-card-grid">';
+function buildNameGrid(cards,imgMap){
+    var html='',cur=null; html+='<div class="gp-card-grid">';
     cards.forEach(function(c){
         if(c.section!==cur){ if(cur!==null) html+='</div><div class="gp-card-grid">'; if(c.section) html+='</div><div class="gp-sep">'+esc(c.section)+'</div><div class="gp-card-grid">'; cur=c.section; }
-        var img = imgMap[c.name.toLowerCase()];
-        if(img){
-            html+='<div class="gp-card-item" title="'+esc(c.name)+'">'
-                +'<img src="'+img+'" alt="'+esc(c.name)+'" loading="lazy">'
-                +'<span class="gp-card-qty">×'+c.qty+'</span>'
-                +'<div class="gp-card-id">'+esc(c.name)+'</div>'
-                +'</div>';
-        } else {
-            html+='<div class="gp-card-item"><div class="gp-no-img">'+esc(c.name)+'</div>'
-                +'<span class="gp-card-qty">×'+c.qty+'</span>'
-                +'<div class="gp-card-id">'+esc(c.name)+'</div>'
-                +'</div>';
-        }
-    });
-    return html+'</div>';
+        var img=imgMap[c.name.toLowerCase()];
+        if(img){ html+='<div class="gp-card-item" title="'+esc(c.name)+'">'+'<img src="'+img+'" alt="'+esc(c.name)+'" loading="lazy">'+'<span class="gp-card-qty">×'+c.qty+'</span>'+'<div class="gp-card-id">'+esc(c.name)+'</div>'+'</div>'; }
+        else { html+='<div class="gp-card-item"><div class="gp-no-img">'+esc(c.name)+'</div>'+'<span class="gp-card-qty">×'+c.qty+'</span>'+'<div class="gp-card-id">'+esc(c.name)+'</div>'+'</div>'; }
+    }); return html+'</div>';
 }
-
 function buildTextList(cards){
     return cards.map(function(c){
         return (c.section?'<div class="gp-sep">'+esc(c.section)+'</div>':'')
@@ -742,24 +956,15 @@ function buildTextList(cards){
     }).join('');
 }
 
-/* ── Navbar burger ── */
+/* ── Navbar ── */
 document.addEventListener('DOMContentLoaded', function(){
-    var burger = document.getElementById('nav-burger');
-    var links  = document.getElementById('nav-links');
-    if (burger) burger.addEventListener('click', function(){
-        links.classList.toggle('is-open');
-        burger.classList.toggle('is-open');
-    });
-    document.addEventListener('scroll', function(){
-        var nav = document.getElementById('nav');
-        if (nav) nav.classList.toggle('scrolled', window.scrollY > 50);
-    }, { passive:true });
-    document.addEventListener('keydown', function(e){
-        if (e.key==='Escape') ['reg','edit','deck'].forEach(function(id){ closeModal(id); });
-    });
+    var burger=document.getElementById('nav-burger');
+    var links=document.getElementById('nav-links');
+    if(burger) burger.addEventListener('click',function(){ links.classList.toggle('is-open'); burger.classList.toggle('is-open'); });
+    document.addEventListener('scroll',function(){ var nav=document.getElementById('nav'); if(nav) nav.classList.toggle('scrolled',window.scrollY>50); },{passive:true});
+    document.addEventListener('keydown',function(e){ if(e.key==='Escape') ['auth','mazzi','deck-edit','deck'].forEach(function(id){ closeModal(id); }); });
     init();
-    /* Rimuovi loading */
-    setTimeout(function(){ document.body.classList.remove('is-loading'); }, 300);
+    setTimeout(function(){ document.body.classList.remove('is-loading'); },300);
 });
 </script>
 </body>
