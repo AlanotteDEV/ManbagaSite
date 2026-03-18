@@ -4,6 +4,19 @@
 
 'use strict';
 
+/* Notifica leggera — sostituisce alert() */
+function mbNotify(msg, type) {
+    var n = document.createElement('div');
+    var bg = (type === 'error') ? '#dc2626' : '#16a34a';
+    n.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);'
+        + 'background:' + bg + ';color:#fff;padding:12px 24px;border-radius:8px;'
+        + 'font-size:14px;font-weight:600;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.4);'
+        + 'max-width:90vw;text-align:center;animation:fadeIn .2s ease-out;';
+    n.textContent = msg;
+    document.body.appendChild(n);
+    setTimeout(function() { if (n.parentNode) n.parentNode.removeChild(n); }, 4000);
+}
+
 /* ============================================================
    EMAIL CONFIG — EmailJS (GRATUITO fino a 200 email/mese)
    ============================================================
@@ -674,16 +687,16 @@ function openProductModal(productId) {
         + '<input type="text" id="po-contact-' + _pid + '" class="form-input" placeholder="email@esempio.it oppure +39 …"></div>'
         + '<div class="form-row"><label class="form-label">Note (opzionale)</label>'
         + '<textarea id="po-notes-' + _pid + '" class="form-input" rows="2" placeholder="Quantità, variante, data prevista ritiro…"></textarea></div>'
-        + '<p style="font-size:11px;color:rgba(245,240,232,0.45);line-height:1.5;margin:8px 0 4px">'
+        + '<p style="font-size:11px;color:#555;line-height:1.5;margin:8px 0 4px">'
         + 'Inviando questa richiesta accetti il trattamento dei tuoi dati personali per la gestione del preordine, '
-        + 'ai sensi del <a href="privacy.html" target="_blank" style="color:rgba(245,240,232,0.65);text-decoration:underline">GDPR e della nostra Privacy Policy</a>. '
+        + 'ai sensi del <a href="privacy.html" target="_blank" style="color:#4F46E5;text-decoration:underline">GDPR e della nostra Privacy Policy</a>. '
         + 'I dati (nome, contatto) saranno usati esclusivamente per contattarti riguardo a questo preordine e non ceduti a terzi.'
         + '</p>'
         + '<div style="display:flex;gap:8px;margin-top:4px">'
         + '<button class="btn btn-primary" style="clip-path:none;flex:1;border-radius:0;background:#4F46E5;border:none" onclick="submitPreorder(\'' + _pid + '\')">'
         + '&#10003; INVIA RICHIESTA'
         + '</button>'
-        + '<button class="btn btn-ghost" style="border-radius:0;min-width:100px" onclick="hidePreorderForm(\'' + _pid + '\')">Annulla</button>'
+        + '<button class="btn" style="border-radius:0;min-width:100px;background:#f3f4f6;color:#374151;border:1px solid #d1d5db" onclick="hidePreorderForm(\'' + _pid + '\')">Annulla</button>'
         + '</div>'
         + '</div>'
         + '</div>'
@@ -723,7 +736,7 @@ function submitPreorder(productId) {
     var notes   = document.getElementById('po-notes-'   + productId).value.trim();
 
     if (!name || !contact) {
-        alert('⚠️ Inserisci nome e contatto per procedere.');
+        mbNotify('Inserisci nome e contatto per procedere.', 'error');
         return;
     }
 
@@ -731,7 +744,7 @@ function submitPreorder(productId) {
     if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Invio in corso…'; }
 
     if (!_fbMainDb) {
-        alert('Connessione non disponibile. Riprova tra un momento.');
+        mbNotify('Connessione non disponibile. Riprova tra un momento.', 'error');
         if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Invia Richiesta'; }
         return;
     }
@@ -755,7 +768,7 @@ function submitPreorder(productId) {
         if (msg.toLowerCase().includes('permission') || msg.toLowerCase().includes('insufficient')) {
             msg = 'Servizio temporaneamente non disponibile. Contattaci su Instagram o WhatsApp per il preordine.';
         }
-        alert('Errore durante l\'invio:\n' + msg);
+        mbNotify('Errore durante l\'invio: ' + msg, 'error');
         if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Invia Richiesta'; }
     });
 }
@@ -891,7 +904,7 @@ function addAdminEvent() {
     var price = document.getElementById('event-price').value.trim();
 
     if (!title || !desc) {
-        alert('⚠️ Titolo e descrizione sono obbligatori.');
+        mbNotify('Titolo e descrizione sono obbligatori.', 'error');
         return;
     }
 
@@ -928,7 +941,7 @@ function addAdminProduct() {
     var subcat = document.getElementById('product-subcat') ? document.getElementById('product-subcat').value : '';
 
     if (!title || !desc || !image) {
-        alert('⚠️ Titolo, descrizione e immagine sono obbligatori.');
+        mbNotify('Titolo, descrizione e immagine sono obbligatori.', 'error');
         return;
     }
 
