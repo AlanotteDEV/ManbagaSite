@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Tutti i giocatori registrati ai tornei MANBAGA Comics & Games di Canosa di Puglia. Registrati e mostra il tuo mazzo!">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://manbaga-site.vercel.app/giocatori.html">
+    <meta property="og:title" content="Giocatori — MANBAGA Comics & Games">
+    <meta property="og:description" content="Registrati e mostra il tuo mazzo! Tutti i giocatori dei tornei MANBAGA a Canosa di Puglia.">
+    <meta property="og:image" content="https://manbaga-site.vercel.app/WhatsApp_Image_2026-03-10_at_11.15.27-removebg-preview.png">
+    <meta property="og:locale" content="it_IT">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="theme-color" content="#0d0d0d">
+    <link rel="icon" type="image/png" href="WhatsApp_Image_2026-03-10_at_11.15.27-removebg-preview.png">
+    <title>Giocatori — MANBAGA Comics &amp; Games</title>
+
+    <link rel="stylesheet" href="fonts/fonts.css">
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+
+    <style>
+    /* ── Dark theme override (style.css imposta body su --white/black) ── */
+    body {
+        background: #0d0d0d !important;
+        color: #f5f0e8 !important;
+    }
+    /* Resetta colori che style.css potrebbe ereditare */
+    .gp-hero, .gp-toolbar, .gp-grid,
+    .gp-overlay, .gp-modal, .gp-card,
+    .gp-deck, .gp-dscroll, .gp-dpanel {
+        color: #f5f0e8;
+    }
+    /* Input/select: sfondo scuro + testo chiaro */
+    .gp-input, .gp-search, .gp-filter {
+        background: #161616 !important;
+        color: #f5f0e8 !important;
+        border: 1px solid rgba(255,255,255,.07) !important;
+    }
+    .gp-input option, .gp-filter option { background: #161616; color: #f5f0e8; }
+
+    :root {
+        --bg2:  #111111;
+        --bg3:  #161616;
+    }
+
+    /* ── HERO ── */
+    .gp-hero {
+        padding-top: calc(var(--nav-h, 64px) + 64px);
+        padding-bottom: 48px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    .gp-hero-kanji {
+        position: absolute; font-family: var(--font-comic, 'Bangers', cursive);
+        font-size: clamp(120px,22vw,260px); opacity: .03;
+        top: 50%; left: 50%; transform: translate(-50%,-50%);
+        pointer-events: none; user-select: none; white-space: nowrap; color: var(--white,#f5f0e8);
+    }
+    .gp-hero-title {
+        font-family: var(--font-comic, 'Bangers', cursive);
+        font-size: clamp(52px,10vw,100px);
+        letter-spacing: .04em; line-height: 1; color: var(--white,#f5f0e8); position: relative;
+    }
+    .gp-hero-title span { color: var(--red,#DC2626); }
+    .gp-hero-sub { font-size: 13px; color: rgba(245,240,232,.38); margin-top: 10px; letter-spacing: .06em; position: relative; }
+    .gp-stats {
+        display: flex; justify-content: center; gap: 32px; margin-top: 28px;
+        flex-wrap: wrap; position: relative;
+    }
+    .gp-stat { text-align: center; }
+    .gp-stat-val { font-family: var(--font-comic,'Bangers',cursive); font-size: 36px; color: var(--red,#DC2626); letter-spacing: .04em; line-height: 1; }
+    .gp-stat-label { font-size: 11px; color: rgba(245,240,232,.38); text-transform: uppercase; letter-spacing: .1em; margin-top: 2px; }
+
+    /* ── TOOLBAR ── */
+    .gp-toolbar {
+        max-width: 920px; margin: 0 auto 24px; padding: 0 20px;
+        display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+    }
+    .gp-search-wrap { position: relative; flex: 1; min-width: 200px; }
+    .gp-search-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); opacity: .4; pointer-events: none; }
+    .gp-search { width: 100%; padding: 10px 12px 10px 36px; background: var(--bg3,#161616); border: 1px solid rgba(255,255,255,.07); border-radius: 8px; color: var(--white,#f5f0e8); font-family: var(--font-body,'Inter',sans-serif); font-size: 13px; outline: none; transition: border-color .2s; }
+    .gp-search:focus { border-color: rgba(220,38,38,.5); }
+    .gp-search::placeholder { color: rgba(245,240,232,.25); }
+    .gp-filter { padding: 10px 12px; background: var(--bg3,#161616); border: 1px solid rgba(255,255,255,.07); border-radius: 8px; color: var(--white,#f5f0e8); font-family: var(--font-body,'Inter',sans-serif); font-size: 13px; outline: none; cursor: pointer; }
+
+    /* ── GRID ── */
+    .gp-grid {
+        max-width: 920px; margin: 0 auto; padding: 0 20px 100px;
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap: 16px;
+    }
+    .gp-card {
+        background: var(--bg2,#111); border: 1px solid rgba(255,255,255,.07);
+        border-radius: 14px; padding: 20px 18px; transition: border-color .2s, transform .15s;
+        display: flex; flex-direction: column; gap: 12px;
+    }
+    .gp-card:hover { border-color: rgba(220,38,38,.35); transform: translateY(-2px); }
+    .gp-card-head { display: flex; align-items: center; gap: 12px; }
+    .gp-avatar {
+        width: 46px; height: 46px; border-radius: 50%; flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center;
+        font-family: var(--font-comic,'Bangers',cursive); font-size: 18px; color: #fff; letter-spacing: .04em;
+    }
+    .gp-nickname { font-family: var(--font-comic,'Bangers',cursive); font-size: 19px; letter-spacing: .04em; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .gp-nome { font-size: 11px; color: rgba(245,240,232,.38); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .gp-deck {
+        background: var(--bg3,#161616); border-radius: 8px; padding: 10px 12px;
+        font-size: 12px; border-left: 3px solid var(--red,#DC2626);
+    }
+    .gp-deck-lbl { font-size: 10px; text-transform: uppercase; letter-spacing: .1em; color: rgba(245,240,232,.38); margin-bottom: 3px; }
+    .gp-deck-name { font-weight: 600; }
+    .gp-deck-fmt { font-size: 11px; color: rgba(245,240,232,.38); margin-top: 1px; }
+    .gp-deck-empty { font-size: 12px; color: rgba(245,240,232,.2); font-style: italic; }
+    .gp-actions { display: flex; gap: 8px; }
+    .gp-btn {
+        flex: 1; padding: 7px 10px; border-radius: 7px; border: 1px solid rgba(255,255,255,.07);
+        background: transparent; color: rgba(245,240,232,.38); font-family: var(--font-body,'Inter',sans-serif);
+        font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+        cursor: pointer; transition: all .15s; display: flex; align-items: center; justify-content: center; gap: 5px;
+    }
+    .gp-btn:hover { background: rgba(220,38,38,.12); border-color: rgba(220,38,38,.4); color: var(--white,#f5f0e8); }
+    .gp-btn--red { background: var(--red,#DC2626); border-color: var(--red,#DC2626); color: #fff; }
+    .gp-btn--red:hover { background: #991b1b; }
+
+    /* ── EMPTY ── */
+    .gp-empty { text-align: center; padding: 80px 20px; color: rgba(245,240,232,.38); grid-column: 1/-1; }
+    .gp-empty-kanji { font-family: var(--font-comic,'Bangers',cursive); font-size: 80px; opacity: .08; display: block; margin-bottom: 12px; }
+
+    /* ── FAB ── */
+    .gp-fab {
+        position: fixed; bottom: 28px; right: 24px; z-index: 700;
+        background: var(--red,#DC2626); color: #fff; border: none; border-radius: 50px;
+        padding: 14px 22px; font-family: var(--font-comic,'Bangers',cursive); font-size: 16px; letter-spacing: .08em;
+        cursor: pointer; display: flex; align-items: center; gap: 8px;
+        box-shadow: 0 4px 20px rgba(220,38,38,.4); transition: background .15s, transform .15s;
+    }
+    .gp-fab:hover { background: #991b1b; transform: translateY(-2px); }
+
+    /* ── MODALS ── */
+    .gp-overlay {
+        position: fixed; inset: 0; background: rgba(0,0,0,.75); z-index: 900;
+        display: flex; align-items: center; justify-content: center; padding: 20px;
+        opacity: 0; pointer-events: none; transition: opacity .2s;
+    }
+    .gp-overlay.open { opacity: 1; pointer-events: all; }
+    .gp-modal {
+        background: #141414; border: 1px solid rgba(255,255,255,.07); border-radius: 16px;
+        width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto;
+        padding: 28px 24px; transform: translateY(20px); transition: transform .2s;
+    }
+    .gp-overlay.open .gp-modal { transform: translateY(0); }
+    .gp-modal-title { font-family: var(--font-comic,'Bangers',cursive); font-size: 26px; letter-spacing: .06em; margin-bottom: 6px; }
+    .gp-modal-title span { color: var(--red,#DC2626); }
+    .gp-modal-sub { font-size: 12px; color: rgba(245,240,232,.38); margin-bottom: 20px; line-height: 1.5; }
+    .gp-form-row { margin-bottom: 14px; }
+    .gp-label { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: rgba(245,240,232,.38); display: block; margin-bottom: 5px; }
+    .gp-input {
+        width: 100%; padding: 10px 12px; background: var(--bg3,#161616);
+        border: 1px solid rgba(255,255,255,.07); border-radius: 8px;
+        color: var(--white,#f5f0e8); font-family: var(--font-body,'Inter',sans-serif); font-size: 13px;
+        outline: none; transition: border-color .2s;
+    }
+    .gp-input:focus { border-color: rgba(220,38,38,.5); }
+    .gp-input::placeholder { color: rgba(245,240,232,.25); }
+    textarea.gp-input { resize: vertical; min-height: 90px; line-height: 1.5; }
+    .gp-divider { border: none; border-top: 1px solid rgba(255,255,255,.07); margin: 18px 0; }
+    .gp-section-title { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(245,240,232,.38); margin-bottom: 12px; }
+    .gp-modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+    .gp-mbtn { flex: 1; padding: 11px; border-radius: 8px; font-family: var(--font-body,'Inter',sans-serif); font-size: 13px; font-weight: 700; letter-spacing: .05em; cursor: pointer; border: none; transition: background .15s; }
+    .gp-mbtn--primary { background: var(--red,#DC2626); color: #fff; }
+    .gp-mbtn--primary:hover { background: #991b1b; }
+    .gp-mbtn--ghost { background: var(--bg3,#161616); color: rgba(245,240,232,.38); border: 1px solid rgba(255,255,255,.07); }
+    .gp-mbtn--ghost:hover { color: var(--white,#f5f0e8); }
+    .gp-err { font-size: 12px; color: #f87171; margin-top: 6px; display: none; }
+    .gp-err.on { display: block; }
+
+    /* ── DECK MODAL ── */
+    .gp-deck-tabs { display: flex; gap: 6px; margin-bottom: 12px; align-items: center; }
+    .gp-dtab { padding: 5px 14px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; cursor: pointer; border: 1px solid rgba(255,255,255,.07); background: transparent; color: rgba(245,240,232,.38); transition: all .15s; }
+    .gp-dtab.active { background: var(--red,#DC2626); border-color: var(--red,#DC2626); color: #fff; }
+    .gp-copy-btn { padding: 5px 14px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; cursor: pointer; border: 1px solid rgba(255,255,255,.07); background: transparent; color: rgba(245,240,232,.38); transition: all .15s; margin-left: auto; }
+    .gp-copy-btn:hover { border-color: rgba(220,38,38,.4); color: var(--white,#f5f0e8); }
+    .gp-copy-btn.copied { border-color: #16a34a; color: #4ade80; }
+    .gp-dpanel { display: none; }
+    .gp-dpanel.active { display: block; }
+    .gp-dscroll { background: var(--bg3,#161616); border-radius: 10px; padding: 14px; max-height: 380px; overflow-y: auto; }
+    .gp-dscroll pre { font-size: 12px; color: rgba(245,240,232,.38); white-space: pre-wrap; word-break: break-word; line-height: 1.6; font-family: var(--font-body,'Inter',sans-serif); }
+    /* Griglia carte */
+    .gp-card-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .gp-card-item { position: relative; width: 100px; flex-shrink: 0; }
+    .gp-card-item img { width: 100%; border-radius: 7px; display: block; min-height: 140px; object-fit: cover; background: var(--bg3,#161616); }
+    .gp-card-item .gp-card-qty { position: absolute; bottom: 22px; left: 4px; background: rgba(0,0,0,.85); color: #fff; border: 1px solid rgba(255,255,255,.3); border-radius: 4px; padding: 1px 6px; font-size: 11px; font-weight: 800; }
+    .gp-card-item .gp-card-id { font-size: 10px; color: rgba(245,240,232,.38); margin-top: 3px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .gp-sep { width: 100%; font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--red,#DC2626); padding: 8px 0 4px; }
+    .gp-loading { text-align: center; padding: 30px; color: rgba(245,240,232,.38); font-size: 13px; }
+    .gp-no-img { background: var(--bg3,#161616); border-radius: 7px; min-height: 140px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: rgba(245,240,232,.38); text-align: center; padding: 6px; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+        .gp-grid { grid-template-columns: 1fr; }
+        .gp-overlay { align-items: flex-end; padding: 0; }
+        .gp-modal { border-radius: 20px 20px 0 0; max-height: 88vh; }
+        .gp-fab { bottom: 20px; right: 16px; }
+    }
+    </style>
+</head>
+<body class="is-loading">
+
+<!-- ── NAV ── -->
+<nav id="nav">
+    <div class="nav-inner">
+        <a class="nav-logo" href="index.html">MAN<span class="dot">B</span>AGA<span class="dot">.</span></a>
+        <ul class="nav-links" id="nav-links">
+            <li><a href="index.html#catalogo">Catalogo</a></li>
+            <li><a href="index.html#nuovi-arrivi">Novità</a></li>
+            <li><a href="index.html#eventi">Eventi</a></li>
+            <li><a href="index.html#recensioni">Recensioni</a></li>
+            <li><a href="tavoli.html">Tavoli</a></li>
+            <li><a href="chi-siamo.html">Chi Siamo</a></li>
+            <li><a href="giocatori.html" class="nav-cta">Giocatori</a></li>
+            <li><a href="index.html#contatti">Contatti</a></li>
+        </ul>
+        <button class="nav-burger" id="nav-burger" aria-label="Apri menu">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="gp-hero">
+    <div class="gp-hero-kanji" aria-hidden="true">選手</div>
+    <h1 class="gp-hero-title">GIOCA<span>TORI</span></h1>
+    <p class="gp-hero-sub">選手登録 · Registra il tuo profilo e il tuo mazzo</p>
+    <div class="gp-stats">
+        <div class="gp-stat">
+            <div class="gp-stat-val" id="stat-players">—</div>
+            <div class="gp-stat-label">Giocatori</div>
+        </div>
+        <div class="gp-stat">
+            <div class="gp-stat-val" id="stat-decks">—</div>
+            <div class="gp-stat-label">Mazzi registrati</div>
+        </div>
+    </div>
+</section>
+
+<!-- ── TOOLBAR ── -->
+<div class="gp-toolbar">
+    <div class="gp-search-wrap">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="gp-search" id="gp-search" placeholder="Cerca per nome o nickname…" oninput="filterPlayers()">
+    </div>
+    <select class="gp-filter" id="gp-filter" onchange="filterPlayers()">
+        <option value="">Tutti i formati</option>
+        <option>Magic Standard</option>
+        <option>Magic Modern</option>
+        <option>Magic Legacy</option>
+        <option>Magic Commander</option>
+        <option>Pokémon</option>
+        <option>Yu-Gi-Oh!</option>
+        <option>One Piece</option>
+        <option>Dragon Ball Super</option>
+        <option>Altro</option>
+    </select>
+</div>
+
+<!-- ── PLAYERS GRID ── -->
+<div class="gp-grid" id="gp-grid">
+    <div class="gp-empty"><span class="gp-empty-kanji">待</span><p>Caricamento…</p></div>
+</div>
+
+<!-- ── FAB ── -->
+<button class="gp-fab" onclick="openModal('reg')">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Registrati
+</button>
+
+<!-- ── MODAL REGISTRAZIONE ── -->
+<div class="gp-overlay" id="ov-reg" onclick="if(event.target===this)closeModal('reg')">
+    <div class="gp-modal">
+        <div class="gp-modal-title">NUOVO <span>GIOCATORE</span></div>
+        <p class="gp-modal-sub">Crea il tuo profilo. Nickname unico richiesto.</p>
+        <div class="gp-form-row">
+            <label class="gp-label">Nome e Cognome *</label>
+            <input type="text" class="gp-input" id="reg-nome" placeholder="Mario Rossi">
+        </div>
+        <div class="gp-form-row">
+            <label class="gp-label">Nickname *</label>
+            <input type="text" class="gp-input" id="reg-nick" placeholder="DarkMage97">
+            <div class="gp-err" id="reg-nick-err">Nickname già in uso. Scegline un altro.</div>
+        </div>
+        <hr class="gp-divider">
+        <div class="gp-section-title">🃏 Mazzo Attuale <span style="font-weight:400;text-transform:none;letter-spacing:0">(opzionale)</span></div>
+        <div class="gp-form-row">
+            <label class="gp-label">Nome mazzo</label>
+            <input type="text" class="gp-input" id="reg-deck-nome" placeholder="es. Burn R/W">
+        </div>
+        <div class="gp-form-row">
+            <label class="gp-label">Formato / Gioco</label>
+            <select class="gp-input" id="reg-deck-fmt">
+                <option value="">— Seleziona —</option>
+                <option>Magic Standard</option><option>Magic Modern</option><option>Magic Legacy</option>
+                <option>Magic Commander</option><option>Pokémon</option><option>Yu-Gi-Oh!</option>
+                <option>One Piece</option><option>Dragon Ball Super</option><option>Altro</option>
+            </select>
+        </div>
+        <div class="gp-form-row">
+            <label class="gp-label">Decklist</label>
+            <textarea class="gp-input" id="reg-deck-list" placeholder="One Piece: 4 OP01-001&#10;Magic: 4x Lightning Bolt&#10;..."></textarea>
+        </div>
+        <div class="gp-modal-actions">
+            <button class="gp-mbtn gp-mbtn--ghost" onclick="closeModal('reg')">Annulla</button>
+            <button class="gp-mbtn gp-mbtn--primary" id="reg-btn" onclick="submitReg()">Registrati</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── MODAL MODIFICA MAZZO ── -->
+<div class="gp-overlay" id="ov-edit" onclick="if(event.target===this)closeModal('edit')">
+    <div class="gp-modal">
+        <div class="gp-modal-title">AGGIORNA <span>MAZZO</span></div>
+        <p class="gp-modal-sub">Inserisci il tuo nickname per verificare l'identità.</p>
+        <div class="gp-form-row">
+            <label class="gp-label">Il tuo Nickname *</label>
+            <input type="text" class="gp-input" id="edit-nick" placeholder="Il tuo nickname esatto">
+            <div class="gp-err" id="edit-nick-err">Nickname non trovato o non corrispondente.</div>
+        </div>
+        <hr class="gp-divider">
+        <div class="gp-section-title">🃏 Mazzo Attuale</div>
+        <div class="gp-form-row">
+            <label class="gp-label">Nome mazzo</label>
+            <input type="text" class="gp-input" id="edit-deck-nome" placeholder="es. Burn R/W">
+        </div>
+        <div class="gp-form-row">
+            <label class="gp-label">Formato / Gioco</label>
+            <select class="gp-input" id="edit-deck-fmt">
+                <option value="">— Seleziona —</option>
+                <option>Magic Standard</option><option>Magic Modern</option><option>Magic Legacy</option>
+                <option>Magic Commander</option><option>Pokémon</option><option>Yu-Gi-Oh!</option>
+                <option>One Piece</option><option>Dragon Ball Super</option><option>Altro</option>
+            </select>
+        </div>
+        <div class="gp-form-row">
+            <label class="gp-label">Decklist</label>
+            <textarea class="gp-input" id="edit-deck-list" placeholder="One Piece: 4 OP01-001&#10;Magic: 4x Lightning Bolt&#10;..."></textarea>
+        </div>
+        <div class="gp-modal-actions">
+            <button class="gp-mbtn gp-mbtn--ghost" onclick="closeModal('edit')">Annulla</button>
+            <button class="gp-mbtn gp-mbtn--primary" id="edit-btn" onclick="submitEdit()">Salva Mazzo</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── MODAL DECK ── -->
+<div class="gp-overlay" id="ov-deck" onclick="if(event.target===this)closeModal('deck')">
+    <div class="gp-modal" style="max-width:560px">
+        <div class="gp-modal-title" id="deck-title">DECK</div>
+        <div id="deck-fmt" style="font-size:12px;color:rgba(245,240,232,.38);margin-bottom:14px"></div>
+        <div class="gp-deck-tabs">
+            <button class="gp-dtab active" id="dtab-cards" onclick="switchDeckTab('cards')">🃏 Carte</button>
+            <button class="gp-dtab" id="dtab-raw" onclick="switchDeckTab('raw')">📄 Testo</button>
+            <button class="gp-copy-btn" id="deck-copy" onclick="copyDeck()">Copia</button>
+        </div>
+        <div class="gp-dpanel active" id="dp-cards">
+            <div class="gp-dscroll" id="deck-grid"><div class="gp-loading">Caricamento…</div></div>
+        </div>
+        <div class="gp-dpanel" id="dp-raw">
+            <div class="gp-dscroll"><pre id="deck-raw"></pre></div>
+        </div>
+        <div class="gp-modal-actions" style="margin-top:16px">
+            <button class="gp-mbtn gp-mbtn--ghost" onclick="closeModal('deck')">Chiudi</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer id="footer">
+    <div class="footer-inner">
+        <div class="footer-grid">
+            <div class="footer-col footer-col--brand">
+                <span class="footer-logo">MAN<span class="dot">B</span>AGA<span class="dot">.</span></span>
+                <p class="footer-tagline">Manga, comics, giochi di carte e gadget anime.<br>Il punto di riferimento per gli appassionati<br>di Canosa di Puglia e dintorni.</p>
+                <div class="footer-brand-badges">
+                    <span class="footer-badge">Manga</span>
+                    <span class="footer-badge">TCG</span>
+                    <span class="footer-badge">Figures</span>
+                    <span class="footer-badge">Gadget</span>
+                </div>
+                <nav class="footer-nav-links" aria-label="Link rapidi">
+                    <a href="index.html#catalogo">Catalogo</a>
+                    <a href="index.html#eventi">Eventi</a>
+                    <a href="cronologia-tornei.html">Cronologia Tornei</a>
+                    <a href="tavoli.html">Prenota un tavolo</a>
+                    <a href="faq.html">FAQ</a>
+                    <a href="chi-siamo.html">Chi siamo</a>
+                    <a href="giocatori.html">Giocatori</a>
+                </nav>
+            </div>
+            <div class="footer-col">
+                <div class="footer-col-h">ORARI <span class="footer-col-h-jp">営業時間</span></div>
+                <div class="footer-hours">
+                    <div class="footer-hours-row"><span>Lun &ndash; Sabato</span><span class="footer-hours-time">10:00 &ndash; 13:00</span></div>
+                    <div class="footer-hours-row"><span></span><span class="footer-hours-time">17:00 &ndash; 20:30</span></div>
+                    <div class="footer-hours-row"><span>Domenica</span><span class="footer-hours-time">10:00 &ndash; 13:00</span></div>
+                    <div class="footer-hours-row footer-hours-closed"><span></span><span>Pomeriggio chiuso</span></div>
+                </div>
+            </div>
+            <div class="footer-col">
+                <div class="footer-col-h">DOVE SIAMO <span class="footer-col-h-jp">所在地</span></div>
+                <address class="footer-address">Via Padre Reginaldo<br>Giuliani, 21<br>76012 Canosa di Puglia (BT)</address>
+                <a href="https://maps.google.com/?q=Via+Padre+Reginaldo+Giuliani+21+Canosa+di+Puglia" target="_blank" rel="noopener noreferrer" class="footer-map-link">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    Apri in Google Maps
+                </a>
+            </div>
+            <div class="footer-col">
+                <div class="footer-col-h">CONTATTI <span class="footer-col-h-jp">連絡先</span></div>
+                <a href="https://www.instagram.com/_manbaga_/" target="_blank" rel="noopener noreferrer" class="footer-social-link footer-social-link--ig">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>
+                    <span><span class="footer-link-label">Instagram</span><span class="footer-link-sub">@_manbaga_</span></span>
+                </a>
+                <a href="mailto:manbagacomics@gmail.com" class="footer-social-link footer-social-link--mail">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg>
+                    <span><span class="footer-link-label">Email</span><span class="footer-link-sub">manbagacomics@gmail.com</span></span>
+                </a>
+            </div>
+        </div>
+        <div class="footer-divider">
+            <div class="footer-divider-line"></div>
+            <span class="footer-divider-mark" aria-hidden="true">&#10022;</span>
+            <div class="footer-divider-line"></div>
+        </div>
+        <div class="footer-bottom">
+            <span>&copy; 2026 MANBAGA Comics &amp; Games &mdash; Canosa di Puglia &mdash; P.IVA 09055430723</span>
+            <span class="footer-bottom-links">
+                <a href="faq.html" class="footer-bottom-link">FAQ</a>
+                <span class="footer-bottom-sep">&middot;</span>
+                <a href="privacy.html" class="footer-bottom-link">Privacy &amp; Cookie Policy</a>
+            </span>
+        </div>
+    </div>
+</footer>
+
+<script src="cookie-banner.js"></script>
+<script src="manga-mode.js"></script>
+
+<script>
+/* ── Firebase ── */
+var _fbCfg = {
+    apiKey:'AIzaSyCG0-J2wxZGSz6eDh_E-aAe2uvpTGLmXz0',
+    authDomain:'prenotazioninegozio-65eb1.firebaseapp.com',
+    projectId:'prenotazioninegozio-65eb1',
+    storageBucket:'prenotazioninegozio-65eb1.appspot.com',
+    messagingSenderId:'466874129336',
+    appId:'1:466874129336:web:fd07925523c35921fe8d4d'
+};
+if (!firebase.apps.length) firebase.initializeApp(_fbCfg);
+var _db = firebase.firestore();
+
+var IMG_BASE = 'https://optcgapi.com/media/static/Card_Images/';
+
+/* ── State ── */
+var _players     = [];
+var _editId      = null;
+var _deckRaw     = '';
+var _deckFormato = '';
+
+/* ── Avatar ── */
+var _COLORS = ['#DC2626','#2563EB','#16A34A','#D97706','#7C3AED','#DB2777','#0891B2','#EA580C'];
+function _color(s) { var n=0; for(var i=0;i<s.length;i++) n+=s.charCodeAt(i); return _COLORS[n%_COLORS.length]; }
+function _initials(s) { var p=s.trim().split(/\s+/); return p.length>=2?(p[0][0]+p[1][0]).toUpperCase():s.slice(0,2).toUpperCase(); }
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+/* ── Toast ── */
+var _tc = null;
+function showToast(msg, type) {
+    if (!_tc) { _tc = document.createElement('div'); _tc.style.cssText='position:fixed;bottom:80px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px'; document.body.appendChild(_tc); }
+    var t = document.createElement('div');
+    t.style.cssText='padding:10px 16px;border-radius:8px;font-size:13px;font-weight:600;color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.3);animation:fadeIn .2s';
+    t.style.background = type==='success'?'#16a34a':type==='error'?'#dc2626':'#2563eb';
+    t.textContent = msg; _tc.appendChild(t);
+    setTimeout(function(){ t.remove(); }, 3200);
+}
+
+/* ── Firebase subscribe ── */
+function init() {
+    _db.collection('giocatori').orderBy('createdAt','desc').onSnapshot(function(snap) {
+        _players = snap.docs.map(function(d){ var o=d.data(); o.id=d.id; return o; });
+        renderGrid(_players);
+        document.getElementById('stat-players').textContent = _players.length;
+        document.getElementById('stat-decks').textContent = _players.filter(function(p){ return p.mazzoAttuale&&p.mazzoAttuale.nome; }).length;
+    }, function(e){ console.error(e); });
+}
+
+/* ── Render grid ── */
+function renderGrid(list) {
+    var g = document.getElementById('gp-grid');
+    if (!list || !list.length) {
+        g.innerHTML = '<div class="gp-empty"><span class="gp-empty-kanji">無</span><p>Nessun giocatore ancora.<br>Sii il primo a registrarti!</p></div>';
+        return;
+    }
+    g.innerHTML = list.map(function(p) {
+        var col = _color(p.nickname||'x');
+        var ini = _initials(p.nickname||'?');
+        var deck = p.mazzoAttuale && p.mazzoAttuale.nome
+            ? '<div class="gp-deck"><div class="gp-deck-lbl">Mazzo attuale</div><div class="gp-deck-name">'+esc(p.mazzoAttuale.nome)+'</div>'+(p.mazzoAttuale.formato?'<div class="gp-deck-fmt">'+esc(p.mazzoAttuale.formato)+'</div>':'')+'</div>'
+            : '<div class="gp-deck"><div class="gp-deck-empty">Nessun mazzo registrato</div></div>';
+        var hasList = p.mazzoAttuale && p.mazzoAttuale.decklist && p.mazzoAttuale.decklist.trim();
+        return '<div class="gp-card">'
+            +'<div class="gp-card-head"><div class="gp-avatar" style="background:'+col+'">'+esc(ini)+'</div>'
+            +'<div><div class="gp-nickname">'+esc(p.nickname||'')+'</div><div class="gp-nome">'+esc(p.nome||'')+'</div></div></div>'
+            +deck
+            +'<div class="gp-actions">'
+            +(hasList?'<button class="gp-btn" onclick="openDeckView(\''+p.id+'\')">🃏 Deck</button>':'')
+            +'<button class="gp-btn gp-btn--red" onclick="openEdit(\''+p.id+'\')">✏️ Modifica</button>'
+            +'</div></div>';
+    }).join('');
+}
+
+function filterPlayers() {
+    var q = document.getElementById('gp-search').value.trim().toLowerCase();
+    var f = document.getElementById('gp-filter').value;
+    var r = _players.filter(function(p) {
+        var mq = !q || (p.nickname||'').toLowerCase().includes(q) || (p.nome||'').toLowerCase().includes(q);
+        var mf = !f  || (p.mazzoAttuale && p.mazzoAttuale.formato === f);
+        return mq && mf;
+    });
+    renderGrid(r);
+}
+
+/* ── Modals ── */
+function openModal(id) { document.getElementById('ov-'+id).classList.add('open'); document.body.style.overflow='hidden'; }
+function closeModal(id) { document.getElementById('ov-'+id).classList.remove('open'); document.body.style.overflow=''; if(id==='edit') _editId=null; }
+
+/* ── Registrazione ── */
+function submitReg() {
+    var nome = document.getElementById('reg-nome').value.trim();
+    var nick = document.getElementById('reg-nick').value.trim();
+    var err  = document.getElementById('reg-nick-err');
+    err.classList.remove('on');
+    if (!nome||!nick) { showToast('Nome e Nickname obbligatori','error'); return; }
+    var nl = nick.toLowerCase();
+    if (_players.some(function(p){ return (p.nicknameLower||(p.nickname||'').toLowerCase())===nl; })) { err.classList.add('on'); return; }
+    var btn = document.getElementById('reg-btn'); btn.disabled=true; btn.textContent='Invio…';
+    _db.collection('giocatori').add({
+        nome:nome, nickname:nick, nicknameLower:nl,
+        mazzoAttuale:{ nome:document.getElementById('reg-deck-nome').value.trim(), formato:document.getElementById('reg-deck-fmt').value, decklist:document.getElementById('reg-deck-list').value.trim() },
+        createdAt:firebase.firestore.FieldValue.serverTimestamp()
+    }).then(function(){
+        showToast('Benvenuto '+nick+' 🎮','success');
+        closeModal('reg');
+        ['reg-nome','reg-nick','reg-deck-nome','reg-deck-list'].forEach(function(i){ document.getElementById(i).value=''; });
+        document.getElementById('reg-deck-fmt').value='';
+    }).catch(function(e){ showToast('Errore: '+(e.message||e),'error'); })
+      .finally(function(){ btn.disabled=false; btn.textContent='Registrati'; });
+}
+
+/* ── Modifica mazzo ── */
+function openEdit(id) {
+    _editId = id;
+    var p = _players.find(function(x){ return x.id===id; });
+    document.getElementById('edit-nick').value = '';
+    document.getElementById('edit-nick-err').classList.remove('on');
+    if (p && p.mazzoAttuale) {
+        document.getElementById('edit-deck-nome').value = p.mazzoAttuale.nome||'';
+        document.getElementById('edit-deck-fmt').value  = p.mazzoAttuale.formato||'';
+        document.getElementById('edit-deck-list').value = p.mazzoAttuale.decklist||'';
+    } else {
+        document.getElementById('edit-deck-nome').value='';
+        document.getElementById('edit-deck-fmt').value='';
+        document.getElementById('edit-deck-list').value='';
+    }
+    openModal('edit');
+}
+
+function submitEdit() {
+    var nick = document.getElementById('edit-nick').value.trim();
+    var err  = document.getElementById('edit-nick-err');
+    err.classList.remove('on');
+    if (!nick) { showToast('Inserisci il tuo nickname','error'); return; }
+    var nl = nick.toLowerCase();
+    var p  = _editId
+        ? _players.find(function(x){ return x.id===_editId && (x.nicknameLower||(x.nickname||'').toLowerCase())===nl; })
+        : _players.find(function(x){ return (x.nicknameLower||(x.nickname||'').toLowerCase())===nl; });
+    if (!p) { err.classList.add('on'); return; }
+    var btn = document.getElementById('edit-btn'); btn.disabled=true; btn.textContent='Salvataggio…';
+    _db.collection('giocatori').doc(p.id).update({
+        mazzoAttuale:{ nome:document.getElementById('edit-deck-nome').value.trim(), formato:document.getElementById('edit-deck-fmt').value, decklist:document.getElementById('edit-deck-list').value.trim() }
+    }).then(function(){ showToast('Mazzo aggiornato ✓','success'); closeModal('edit'); })
+      .catch(function(e){ showToast('Errore: '+(e.message||e),'error'); })
+      .finally(function(){ btn.disabled=false; btn.textContent='Salva Mazzo'; });
+}
+
+/* ── Deck viewer ── */
+function openDeckView(id) {
+    var p = _players.find(function(x){ return x.id===id; });
+    if (!p||!p.mazzoAttuale) return;
+    _deckRaw     = p.mazzoAttuale.decklist || '';
+    _deckFormato = (p.mazzoAttuale.formato||'').toLowerCase();
+    document.getElementById('deck-title').textContent = (p.mazzoAttuale.nome||'Deck')+' — '+p.nickname;
+    document.getElementById('deck-fmt').textContent   = p.mazzoAttuale.formato||'';
+    document.getElementById('deck-raw').textContent   = _deckRaw;
+    document.getElementById('deck-copy').textContent  = 'Copia';
+    document.getElementById('deck-copy').classList.remove('copied');
+    switchDeckTab('cards');
+    openModal('deck');
+}
+
+function switchDeckTab(tab) {
+    ['cards','raw'].forEach(function(t){
+        document.getElementById('dtab-'+t).classList.toggle('active', t===tab);
+        document.getElementById('dp-'+t).classList.toggle('active', t===tab);
+    });
+    if (tab==='cards') renderDeckCards();
+}
+
+function copyDeck() {
+    if (!_deckRaw) return;
+    navigator.clipboard.writeText(_deckRaw).then(function(){
+        var b = document.getElementById('deck-copy');
+        b.textContent='✓ Copiata!'; b.classList.add('copied');
+        setTimeout(function(){ b.textContent='Copia'; b.classList.remove('copied'); }, 2000);
+    });
+}
+
+/* ── Parser decklist ── */
+function parseDeck(raw) {
+    var lines = (raw||'').trim().split(/\r?\n/);
+    var cards = [], section = '';
+    lines.forEach(function(line){
+        line = line.trim(); if (!line) return;
+        var qty = 1;
+        var qm = line.match(/^(\d+)\s*[xX]?/i);
+        if (qm) qty = parseInt(qm[1],10);
+        /* Cerca ID tipo OP01-001 o SV1-001 */
+        var idM = line.match(/\[([A-Za-z]{1,6}\d{1,3}-\d{3,4}[a-z0-9_-]*)\]/i)
+               || line.match(/([A-Za-z]{2,6}\d{1,3}-\d{3,4}[a-z0-9_-]*)/i);
+        if (idM) {
+            cards.push({ qty:qty, id:idM[1].toUpperCase(), name:idM[1].toUpperCase(), section:section, hasId:true });
+        } else {
+            /* Prova nome carta (es. Magic) */
+            var nameM = line.match(/^\d+[xX]?\s+(.+)$/) || line.match(/^[xX]?\d+\s+(.+)$/);
+            if (nameM) {
+                cards.push({ qty:qty, id:null, name:nameM[1].trim(), section:section, hasId:false });
+            } else {
+                section = line.replace(/^[\/\/#\-]+\s*/,'');
+            }
+        }
+    });
+    return cards;
+}
+
+/* ── Render cards con immagini ── */
+function renderDeckCards() {
+    var view  = document.getElementById('deck-grid');
+    var cards = parseDeck(_deckRaw);
+    if (!cards.length) { view.innerHTML='<div class="gp-loading">Nessuna carta trovata.</div>'; return; }
+
+    var total = cards.reduce(function(s,c){ return s+c.qty; },0);
+    var header = '<div style="font-size:11px;color:rgba(245,240,232,.38);margin-bottom:12px">Totale: <strong style="color:#f5f0e8">'+total+' carte</strong></div>';
+
+    /* Se tutte le carte hanno ID → usa optcgapi direttamente */
+    var allIds = cards.every(function(c){ return c.hasId; });
+    if (allIds) {
+        view.innerHTML = header + buildIdGrid(cards);
+        return;
+    }
+
+    /* Carte per nome (Magic) → Scryfall */
+    var isMagic = _deckFormato.includes('magic') || !_deckFormato;
+    if (isMagic) {
+        view.innerHTML = '<div class="gp-loading">Caricamento immagini Scryfall…</div>';
+        var unique = [], seen = {};
+        cards.forEach(function(c){ if(!seen[c.name]){ seen[c.name]=true; unique.push({name:c.name}); } });
+        var batches=[]; for(var i=0;i<unique.length;i+=75) batches.push(unique.slice(i,i+75));
+        var imgMap={};
+        function fetchBatch(idx){
+            if(idx>=batches.length){ view.innerHTML=header+buildNameGrid(cards,imgMap); return; }
+            fetch('https://api.scryfall.com/cards/collection',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({identifiers:batches[idx]})})
+            .then(function(r){ return r.json(); })
+            .then(function(d){
+                (d.data||[]).forEach(function(c){
+                    var img=c.image_uris?c.image_uris.normal:(c.card_faces&&c.card_faces[0].image_uris?c.card_faces[0].image_uris.normal:null);
+                    if(img) imgMap[c.name.toLowerCase()]=img;
+                });
+                fetchBatch(idx+1);
+            }).catch(function(){ view.innerHTML=header+buildNameGrid(cards,imgMap); });
+        }
+        fetchBatch(0);
+    } else {
+        /* Altri giochi senza ID → lista testo */
+        view.innerHTML = header + buildTextList(cards);
+    }
+}
+
+function buildIdGrid(cards) {
+    var html='', cur=null;
+    html += '<div class="gp-card-grid">';
+    cards.forEach(function(c){
+        if(c.section!==cur){ if(cur!==null) html+='</div><div class="gp-card-grid">'; if(c.section) html+='</div><div class="gp-sep">'+esc(c.section)+'</div><div class="gp-card-grid">'; cur=c.section; }
+        html+='<div class="gp-card-item" title="'+esc(c.id)+'">'
+            +'<img src="'+IMG_BASE+c.id+'.jpg" alt="'+esc(c.id)+'" loading="lazy"'
+            +' onerror="var t=this;if(!t._p){t._p=1;t.src=\''+IMG_BASE+'\'+t.alt+\'.png\';}else{t.style.display=\'none\';t.nextSibling.style.display=\'flex\';}">'
+            +'<div class="gp-no-img" style="display:none">'+esc(c.id)+'</div>'
+            +'<span class="gp-card-qty">×'+c.qty+'</span>'
+            +'<div class="gp-card-id">'+esc(c.id)+'</div>'
+            +'</div>';
+    });
+    return html+'</div>';
+}
+
+function buildNameGrid(cards, imgMap) {
+    var html='', cur=null;
+    html += '<div class="gp-card-grid">';
+    cards.forEach(function(c){
+        if(c.section!==cur){ if(cur!==null) html+='</div><div class="gp-card-grid">'; if(c.section) html+='</div><div class="gp-sep">'+esc(c.section)+'</div><div class="gp-card-grid">'; cur=c.section; }
+        var img = imgMap[c.name.toLowerCase()];
+        if(img){
+            html+='<div class="gp-card-item" title="'+esc(c.name)+'">'
+                +'<img src="'+img+'" alt="'+esc(c.name)+'" loading="lazy">'
+                +'<span class="gp-card-qty">×'+c.qty+'</span>'
+                +'<div class="gp-card-id">'+esc(c.name)+'</div>'
+                +'</div>';
+        } else {
+            html+='<div class="gp-card-item"><div class="gp-no-img">'+esc(c.name)+'</div>'
+                +'<span class="gp-card-qty">×'+c.qty+'</span>'
+                +'<div class="gp-card-id">'+esc(c.name)+'</div>'
+                +'</div>';
+        }
+    });
+    return html+'</div>';
+}
+
+function buildTextList(cards){
+    return cards.map(function(c){
+        return (c.section?'<div class="gp-sep">'+esc(c.section)+'</div>':'')
+            +'<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04)">'
+            +'<span style="background:rgba(220,38,38,.18);color:#DC2626;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:700;min-width:26px;text-align:center">'+c.qty+'x</span>'
+            +'<span style="font-size:13px">'+esc(c.name)+'</span></div>';
+    }).join('');
+}
+
+/* ── Navbar burger ── */
+document.addEventListener('DOMContentLoaded', function(){
+    var burger = document.getElementById('nav-burger');
+    var links  = document.getElementById('nav-links');
+    if (burger) burger.addEventListener('click', function(){
+        links.classList.toggle('is-open');
+        burger.classList.toggle('is-open');
+    });
+    document.addEventListener('scroll', function(){
+        var nav = document.getElementById('nav');
+        if (nav) nav.classList.toggle('scrolled', window.scrollY > 50);
+    }, { passive:true });
+    document.addEventListener('keydown', function(e){
+        if (e.key==='Escape') ['reg','edit','deck'].forEach(function(id){ closeModal(id); });
+    });
+    init();
+    /* Rimuovi loading */
+    setTimeout(function(){ document.body.classList.remove('is-loading'); }, 300);
+});
+</script>
+</body>
+</html>

@@ -322,7 +322,7 @@
             <span style="font-size:20px;flex-shrink:0">📋</span>
             <div>
                 <strong>Informativa sintetica</strong> — Questo sito usa esclusivamente cookie tecnici necessari al funzionamento:
-                prenotazione tavoli (Firebase Auth + Realtime Database), catalogo prodotti, recensioni e preordini (Firebase Firestore), modulo di contatto (EmailJS).
+                prenotazione tavoli (Firebase Auth + Realtime Database), catalogo prodotti, recensioni, preordini e profili giocatore (Firebase Firestore), modulo di contatto (EmailJS).
                 I font tipografici sono ospitati direttamente sul nostro server — nessuna richiesta a Google Fonts.
                 Non usiamo cookie analitici, pubblicitari o di profilazione. Non vendiamo né cediamo i tuoi dati a terzi per scopi commerciali.
             </div>
@@ -368,6 +368,11 @@
                 <li><strong>Dati del preordine:</strong> nome, numero di telefono o indirizzo email di contatto, titolo/prodotto richiesto. I dati vengono memorizzati su Firebase Firestore e sono accessibili esclusivamente al titolare tramite il gestionale interno. Non è richiesta registrazione.</li>
             </ul>
 
+            <p style="margin-top:12px"><strong style="color:var(--white)">Profilo Giocatore</strong></p>
+            <ul>
+                <li><strong>Dati del profilo:</strong> nome e cognome, nickname (pubblicamente visibile nella pagina Giocatori), formato di gioco preferito e decklist del mazzo attuale (opzionale). I dati vengono memorizzati su Firebase Firestore e sono visibili a tutti i visitatori del sito. Non è richiesta registrazione né autenticazione.</li>
+            </ul>
+
             <p style="margin-top:12px"><strong style="color:var(--white)">Dati Tecnici (raccolti automaticamente)</strong></p>
             <ul>
                 <li>Indirizzo IP, tipo di browser e sistema operativo, raccolti automaticamente dall'infrastruttura Google/Firebase per sicurezza e funzionamento del servizio. Non vengono utilizzati per profilare l'utente.</li>
@@ -385,6 +390,7 @@
                 <li>Visualizzare il catalogo prodotti ed eventi del negozio (dati gestiti internamente, non personali).</li>
                 <li>Rispondere alle richieste di contatto inviate tramite il modulo nella homepage.</li>
                 <li>Ricevere e gestire le richieste di preordine di prodotti, contattare il cliente quando il prodotto è disponibile.</li>
+                <li>Creare e mostrare pubblicamente il profilo giocatore nella sezione Tornei, incluso nickname e mazzo registrato, a fini comunitari e organizzativi.</li>
                 <li>Garantire la sicurezza del servizio e prevenire usi fraudolenti.</li>
             </ul>
             <p>
@@ -400,6 +406,7 @@
                 <li><strong>Recensioni:</strong> consenso espresso dell'utente (art. 6.1.a GDPR) — l'invio è volontario. L'utente può richiedere la cancellazione in qualsiasi momento.</li>
                 <li><strong>Modulo di contatto:</strong> legittimo interesse a rispondere alle richieste (art. 6.1.f GDPR).</li>
                 <li><strong>Preordini:</strong> esecuzione di misure precontrattuali su richiesta dell'interessato (art. 6.1.b GDPR) — i dati sono necessari per poter contattare il cliente al momento della disponibilità del prodotto richiesto.</li>
+                <li><strong>Profilo Giocatore:</strong> consenso espresso dell'utente (art. 6.1.a GDPR) — la registrazione è volontaria. Il giocatore può richiedere la cancellazione del proprio profilo in qualsiasi momento scrivendo a <a href="mailto:manbagacomics@gmail.com">manbagacomics@gmail.com</a> indicando il proprio nickname.</li>
                 <li><strong>Dati tecnici:</strong> legittimo interesse alla sicurezza e al corretto funzionamento del servizio (art. 6.1.f GDPR).</li>
             </ul>
         </div>
