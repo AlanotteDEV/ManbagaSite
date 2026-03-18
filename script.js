@@ -646,7 +646,8 @@ function openProductModal(productId) {
         if (typeof renderRecentlyViewed === 'function') renderRecentlyViewed();
     } catch(e) {}
 
-    var isPreorder = (product.badge === 'PREORDINA' || product.badge === 'IN ARRIVO');
+    var isPreorder = (product.badge === 'PREORDINA');
+    var isInArrivo = (product.badge === 'IN ARRIVO');
 
     /* Bottone azione principale */
     var _pid = String(product.id);
@@ -654,6 +655,11 @@ function openProductModal(productId) {
         ? '<button class="btn btn-primary" style="clip-path:none;flex:1;border-radius:0;min-width:160px;background:#4F46E5;border:none" onclick="showPreorderForm(\'' + _pid + '\')">'
             + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 12v6a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h6"/><polyline points="16 2 22 2 22 8"/><line x1="11" y1="13" x2="22" y2="2"/></svg>'
             + ' Richiedi Preordine'
+            + '</button>'
+        : isInArrivo
+        ? '<button class="btn btn-primary" style="clip-path:none;flex:1;border-radius:0;min-width:160px;background:#64748b;border:none;cursor:default" disabled>'
+            + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'
+            + ' Prossimamente'
             + '</button>'
         : '<button class="btn btn-primary" style="clip-path:none;flex:1;border-radius:0;min-width:140px" onclick="window.open(\'https://www.instagram.com/_manbaga_/\',\'_blank\')">'
             + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>'
@@ -1558,7 +1564,10 @@ function renderRecensioni(list) {
     var totStelle = list.reduce(function(s,r){ return s + (r.stelle||5); }, 0);
     var avg = (totStelle / list.length).toFixed(1);
 
-    container.innerHTML = list.map(function(r, idx) {
+    var REVIEWS_LIMIT = 6;
+    var _rvAllList = list;
+
+    function _buildReviewCard(r, idx) {
         var n    = Math.max(1, Math.min(5, r.stelle || 5));
         var nome = r.nome || 'Anonimo';
         var init = nome.charAt(0).toUpperCase();
@@ -1582,7 +1591,37 @@ function renderRecensioni(list) {
             + '<div><div class="review-name">' + _escHtml(nome) + '</div>'
             + '<div class="review-sub">' + _fmtDataRecensione(r.createdAt) + '</div>'
             + '</div></div></div>';
+    }
+
+    var visible = _rvAllList.slice(0, REVIEWS_LIMIT);
+    var hasMore = _rvAllList.length > REVIEWS_LIMIT;
+
+    container.innerHTML = visible.map(function(r, idx) {
+        return _buildReviewCard(r, idx);
     }).join('');
+
+    /* "Vedi di più" button */
+    var moreBtn = document.getElementById('reviews-show-more');
+    if (!moreBtn) {
+        moreBtn = document.createElement('div');
+        moreBtn.id = 'reviews-show-more';
+        moreBtn.style.cssText = 'grid-column:1/-1;text-align:center;margin-top:8px';
+        container.parentNode.insertBefore(moreBtn, container.nextSibling);
+    }
+    if (hasMore) {
+        var remaining = _rvAllList.length - REVIEWS_LIMIT;
+        moreBtn.innerHTML = '<button onclick="window._expandReviews()" style="background:transparent;border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.75);padding:10px 28px;border-radius:20px;font-size:13px;cursor:pointer;font-family:inherit;transition:all .2s" onmouseover="this.style.borderColor=\'#dc2626\';this.style.color=\'#dc2626\'" onmouseout="this.style.borderColor=\'rgba(255,255,255,.25)\';this.style.color=\'rgba(255,255,255,.75)\'">'
+            + 'Vedi altre ' + remaining + ' recensioni ▼</button>';
+        window._expandReviews = function() {
+            container.innerHTML = _rvAllList.map(function(r, idx) {
+                return _buildReviewCard(r, idx);
+            }).join('');
+            moreBtn.innerHTML = '';
+            checkReveal();
+        };
+    } else {
+        moreBtn.innerHTML = '';
+    }
 
     /* Footer score */
     if (footer) {

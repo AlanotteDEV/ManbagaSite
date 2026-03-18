@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="description" content="Tutti i giocatori registrati ai tornei MANBAGA Comics & Games di Canosa di Puglia. Registrati e mostra il tuo mazzo!">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://manbaga-site.vercel.app/giocatori.html">
@@ -165,13 +165,53 @@
     .gp-loading { text-align:center; padding:30px; color:rgba(245,240,232,.38); font-size:13px; }
     .gp-no-img { background:var(--bg3,#161616); border-radius:7px; min-height:140px; display:flex; align-items:center; justify-content:center; font-size:10px; color:rgba(245,240,232,.38); text-align:center; padding:6px; }
 
-    /* ── RESPONSIVE ── */
-    @media (max-width:600px) {
-        .gp-grid { grid-template-columns:1fr; }
-        .gp-overlay { align-items:flex-end; padding:0; }
-        .gp-modal { border-radius:20px 20px 0 0; max-height:88vh; }
-        .gp-fab { bottom:20px; right:16px; }
+    /* ── RESPONSIVE & ANDROID WEBVIEW ── */
+
+    /* Safe area insets per notch / nav bar Android */
+    @supports (padding: max(0px)) {
+        nav#nav { padding-top: max(0px, env(safe-area-inset-top)); }
+        .gp-fab { bottom: max(20px, calc(16px + env(safe-area-inset-bottom))); }
+        .gp-overlay { padding-bottom: max(0px, env(safe-area-inset-bottom)); }
+        .gp-grid { padding-bottom: max(100px, calc(80px + env(safe-area-inset-bottom))); }
+    }
+
+    @media (max-width:768px) {
+        /* Nav: nascondi label auth, solo icona */
         .gp-nav-auth span { display:none; }
+        .gp-nav-auth { padding:6px 10px; margin-right:4px; min-width:36px; justify-content:center; }
+        /* Hero più compatto */
+        .gp-hero { padding-top:calc(var(--nav-h,64px) + 40px); padding-bottom:32px; }
+        /* Toolbar colonna su schermi stretti */
+        .gp-toolbar { flex-direction:column; gap:8px; }
+        .gp-filter { width:100%; }
+        /* Grid 1 colonna */
+        .gp-grid { grid-template-columns:1fr; padding:0 14px 100px; }
+        /* Card azioni impilate se troppo strette */
+        .gp-actions { flex-wrap:wrap; }
+        .gp-btn { min-width:0; font-size:10px; padding:6px 8px; }
+    }
+
+    @media (max-width:600px) {
+        /* Modali come bottom-sheet */
+        .gp-overlay { align-items:flex-end; padding:0; }
+        .gp-modal { border-radius:20px 20px 0 0; max-height:90vh; width:100%; max-width:100%; }
+        /* FAB */
+        .gp-fab { bottom:20px; right:16px; font-size:14px; padding:12px 18px; }
+        /* Deck viewer card più piccole */
+        .gp-card-item { width:80px; }
+        .gp-card-item img { min-height:112px; }
+        /* Deck item btns non escano */
+        .gp-deck-item { flex-wrap:wrap; gap:6px; }
+        .gp-deck-item-btns { flex-wrap:wrap; }
+        /* Auth tabs full width */
+        .gp-auth-tabs { gap:2px; }
+    }
+
+    @media (max-width:380px) {
+        .gp-hero-title { font-size:52px; }
+        .gp-stat-val { font-size:28px; }
+        .gp-card-item { width:68px; }
+        .gp-card-item img { min-height:96px; }
     }
     </style>
 </head>
