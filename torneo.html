@@ -90,6 +90,7 @@
             <li><a href="cronologia-tornei.html">Cronologia</a></li>
             <li><a href="index.html#recensioni">Recensioni</a></li>
             <li><a href="tavoli.html">Tavoli</a></li>
+            <li><a href="giocatori.html">Giocatori</a></li>
             <li><a href="index.html#contatti" class="nav-cta">Contatti</a></li>
         </ul>
         <button class="nav-burger" id="nav-burger" aria-label="Apri menu">
@@ -217,6 +218,8 @@
 
 /* ── Globals ── */
 var _db, _auth, _eventId, _eventData;
+var _myPlayerRef = null;   /* giocatori doc id dell'utente loggato */
+var _regMode = 'register'; /* 'register' | 'update' */
 var _COLORS = ['#DC2626','#2563EB','#16A34A','#D97706','#7C3AED','#DB2777','#0891B2','#EA580C'];
 function _col(s){ var n=0; for(var i=0;i<s.length;i++) n+=s.charCodeAt(i); return _COLORS[n%_COLORS.length]; }
 function _ini(s){ var p=s.trim().split(/\s+/); return p.length>=2?(p[0][0]+p[1][0]).toUpperCase():s.slice(0,2).toUpperCase(); }
@@ -228,21 +231,85 @@ function _getMainDeck(p) {
     return p.mazzoAttuale && p.mazzoAttuale.nome ? p.mazzoAttuale : null;
 }
 
+/* ── Load my profile (cached) ── */
+function _loadMyProfile(cb) {
+    var user = _auth ? _auth.currentUser : null;
+    if (!user) { _myPlayerRef = null; if (cb) cb(null); return; }
+    _db.collection('giocatori').where('uid','==',user.uid).limit(1).get()
+        .then(function(snap){
+            if (!snap.empty) {
+                var p = snap.docs[0].data(); p.id = snap.docs[0].id;
+                _myPlayerRef = p.id;
+                if (cb) cb(p);
+            } else {
+                _myPlayerRef = null;
+                if (cb) cb(null);
+            }
+        }).catch(function(){ _myPlayerRef = null; if (cb) cb(null); });
+}
+
+/* ── Registration CTA box ── */
+function renderRegBox(data, status) {
+    var regBox = document.getElementById('torneo-reg-box');
+    var players = Array.isArray(data.players) ? data.players : [];
+    var isRegistered = _myPlayerRef && players.some(function(p){ return p.playerRef === _myPlayerRef; });
+    var user = _auth ? _auth.currentUser : null;
+
+    if (status === 'completato') { regBox.style.display = 'none'; return; }
+    regBox.style.display = 'block';
+
+    if (!user) {
+        regBox.innerHTML = '<div class="torneo-reg-title">Partecipa al Torneo</div>'
+            + '<div class="torneo-reg-sub">Accedi al tuo profilo giocatore per iscriverti.</div>'
+            + '<button class="btn btn-primary" style="clip-path:none;margin-top:8px" onclick="openRegModal()">🃏 Iscriviti / Accedi</button>';
+    } else if (isRegistered) {
+        if (status === 'in-arrivo') {
+            regBox.innerHTML = '<div class="torneo-reg-title">✓ Sei iscritto</div>'
+                + '<div class="torneo-reg-sub">Puoi aggiornare il tuo mazzo main fino all\'inizio del torneo.</div>'
+                + '<button class="btn btn-primary" style="clip-path:none;margin-top:8px" onclick="openUpdateDeckModal()">🃏 Aggiorna mazzo</button>';
+        } else {
+            regBox.innerHTML = '<div class="torneo-reg-title">✓ Sei iscritto</div>'
+                + '<div class="torneo-reg-sub">Torneo in corso — il mazzo non può più essere modificato.</div>';
+        }
+    } else if (status === 'in-arrivo') {
+        var html = '<div class="torneo-reg-title">Partecipa al Torneo</div>'
+            + '<div class="torneo-reg-sub">Hai un profilo giocatore? Iscriviti con il tuo mazzo Main.</div>'
+            + '<button class="btn btn-primary" style="clip-path:none;margin-top:8px" onclick="openRegModal()">🃏 Registrati al Torneo</button>';
+        if (data.link) html += '<div style="margin-top:10px;font-size:12px;color:rgba(0,0,0,.45)">oppure <a href="'+data.link+'" target="_blank" rel="noopener" style="color:#DC2626;font-weight:700">iscriviti esternamente →</a></div>';
+        regBox.innerHTML = html;
+    } else {
+        regBox.style.display = 'none';
+    }
+}
+
 /* ── Registration modal ── */
 function openRegModal() {
+    _regMode = 'register';
     document.getElementById('trn-reg-modal').classList.add('open');
     document.body.style.overflow = 'hidden';
 
     var user = _auth ? _auth.currentUser : null;
     if (!user) { _showRegStep('reg-step0'); return; }
 
-    /* Find their giocatori profile */
-    _db.collection('giocatori').where('uid','==',user.uid).limit(1).get().then(function(snap){
-        if (snap.empty) { _showRegStep('reg-step-noprofile'); return; }
-        var profile = snap.docs[0].data(); profile.id = snap.docs[0].id;
+    _loadMyProfile(function(profile){
+        if (!profile) { _showRegStep('reg-step-noprofile'); return; }
         _buildConfirmCard(profile);
         _showRegStep('reg-step2');
-    }).catch(function(){ _showRegStep('reg-step0'); });
+    });
+}
+
+function openUpdateDeckModal() {
+    _regMode = 'update';
+    document.getElementById('trn-reg-modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+
+    _loadMyProfile(function(profile){
+        if (!profile) { _showRegStep('reg-step-noprofile'); return; }
+        document.getElementById('reg-modal-sub').textContent = 'Verrà usato il tuo mazzo Main attuale.';
+        _buildConfirmCard(profile);
+        document.getElementById('reg-confirm-btn').textContent = '🃏 Aggiorna mazzo';
+        _showRegStep('reg-step2');
+    });
 }
 
 function _showRegStep(id) {
@@ -309,27 +376,56 @@ function confirmRegistration() {
         return;
     }
 
-    btn.disabled = true; btn.textContent = 'Iscrizione…';
+    btn.disabled = true;
+    btn.textContent = _regMode === 'update' ? 'Aggiornamento…' : 'Iscrizione…';
 
-    var newPlayer = {
-        name:      nick,
-        playerRef: profileId,
-        deckList:  btn.dataset.decklist || '',
-        points: 0, wins: 0, losses: 0, draws: 0
-    };
+    var deckList = btn.dataset.decklist || '';
+    var deckName = btn.dataset.deckName || '';
 
-    _db.collection('events').doc(_eventId).update({
-        players: firebase.firestore.FieldValue.arrayUnion(newPlayer)
-    }).then(function(){
-        document.getElementById('reg-success-msg').innerHTML =
-            '<strong>'+_esc(nick)+'</strong> è iscritto al torneo!<br>'
-            +(btn.dataset.deckName ? 'Mazzo: <em>'+_esc(btn.dataset.deckName)+'</em>' : '');
-        _showRegStep('reg-step3');
-    }).catch(function(e){
-        var errEl3 = document.getElementById('reg-error');
-        errEl3.textContent = 'Errore: '+(e.message||e);
-        errEl3.style.display = 'block';
-    }).finally(function(){ btn.disabled=false; btn.textContent='✓ Conferma Iscrizione'; });
+    if (_regMode === 'update') {
+        /* Aggiorna deckList del giocatore già iscritto */
+        var players = (_eventData.players || []).slice();
+        var idx = -1;
+        for (var i = 0; i < players.length; i++) {
+            if (players[i].playerRef === profileId || (players[i].name||'').toLowerCase() === nick.toLowerCase()) { idx = i; break; }
+        }
+        if (idx === -1) {
+            var e2 = document.getElementById('reg-error');
+            e2.textContent = 'Non risulti iscritto a questo torneo.';
+            e2.style.display = 'block';
+            btn.disabled = false; btn.textContent = '🃏 Aggiorna mazzo';
+            return;
+        }
+        players[idx] = Object.assign({}, players[idx], { deckList: deckList });
+        _db.collection('events').doc(_eventId).update({ players: players })
+            .then(function(){
+                document.getElementById('reg-success-msg').innerHTML =
+                    'Mazzo aggiornato per <strong>'+_esc(nick)+'</strong>!<br>'
+                    +(deckName ? 'Nuovo mazzo: <em>'+_esc(deckName)+'</em>' : '');
+                _showRegStep('reg-step3');
+                renderRegBox(_eventData, _eventData.status||'in-arrivo');
+            })
+            .catch(function(e){ var el=document.getElementById('reg-error'); el.textContent='Errore: '+(e.message||e); el.style.display='block'; })
+            .finally(function(){ btn.disabled=false; btn.textContent='🃏 Aggiorna mazzo'; });
+    } else {
+        /* Nuova iscrizione */
+        var newPlayer = {
+            name: nick, playerRef: profileId,
+            deckList: deckList, points: 0, wins: 0, losses: 0, draws: 0
+        };
+        _db.collection('events').doc(_eventId).update({
+            players: firebase.firestore.FieldValue.arrayUnion(newPlayer)
+        }).then(function(){
+            _myPlayerRef = profileId;
+            document.getElementById('reg-success-msg').innerHTML =
+                '<strong>'+_esc(nick)+'</strong> è iscritto al torneo!<br>'
+                +(deckName ? 'Mazzo: <em>'+_esc(deckName)+'</em>' : '');
+            _showRegStep('reg-step3');
+            renderRegBox(_eventData, _eventData.status||'in-arrivo');
+        })
+        .catch(function(e){ var el=document.getElementById('reg-error'); el.textContent='Errore: '+(e.message||e); el.style.display='block'; })
+        .finally(function(){ btn.disabled=false; btn.textContent='✓ Conferma Iscrizione'; });
+    }
 }
 
 var TCG_LABELS = {
@@ -433,17 +529,7 @@ function renderTorneo(data) {
     document.getElementById('torneo-ranking-content').innerHTML = rankHtml;
 
     /* ---- Registration CTA ---- */
-    var regBox = document.getElementById('torneo-reg-box');
-    if (status === 'in-arrivo') {
-        regBox.style.display = 'block';
-        var regInner = '<div class="torneo-reg-title">Partecipa al Torneo</div>'
-            + '<div class="torneo-reg-sub">Hai un profilo giocatore? Iscriviti subito con il tuo mazzo attuale.</div>'
-            + '<button class="btn btn-primary" style="clip-path:none;margin-top:8px" onclick="openRegModal()">🃏 Registrati al Torneo</button>';
-        if (data.link) {
-            regInner += '<div style="margin-top:10px;font-size:12px;color:rgba(0,0,0,.45)">oppure <a href="' + data.link + '" target="_blank" rel="noopener" style="color:#DC2626;font-weight:700">iscriviti esternamente →</a></div>';
-        }
-        regBox.innerHTML = regInner;
-    }
+    renderRegBox(data, status);
 
     /* Show page */
     document.getElementById('torneo-main').style.display = 'block';
@@ -575,6 +661,13 @@ document.addEventListener('DOMContentLoaded', function() {
         catch(e2) { defaultApp = firebase.initializeApp(fbConfig); }
         _auth = defaultApp.auth();
     } catch(e) { renderError('Errore connessione Firebase.'); return; }
+
+    /* Auth state → aggiorna reg box */
+    _auth.onAuthStateChanged(function(user){
+        _loadMyProfile(function(){
+            if (_eventData) renderRegBox(_eventData, _eventData.status||'in-arrivo');
+        });
+    });
 
     /* Live subscription so ranking updates in real-time */
     db.collection('events').doc(id).onSnapshot(

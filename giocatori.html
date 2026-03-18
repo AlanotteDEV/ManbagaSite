@@ -794,8 +794,10 @@ function submitDeckEdit() {
     _db.collection('giocatori').doc(_mazziTargetId).update({ mazzi:mazzi, mazzoAttuale:mazzoAttuale })
         .then(function(){
             showToast(_editDeckId?'Mazzo aggiornato ✓':'Mazzo aggiunto ✓','success');
+            /* Se il mazzo salvato è il main, propaga ai tornei attivi */
+            if (main && (_editDeckId ? mazzi.find(function(m){ return m.id===_editDeckId&&m.isMain; }) : mazzi.length===1))
+                _propagateDeckToEvents(_mazziTargetId, main.decklist||'');
             closeModal('deck-edit');
-            /* Reopen mazzi modal */
             setTimeout(function(){
                 var updated = _players.find(function(x){ return x.id===_mazziTargetId; });
                 if (updated) { renderMazziList(updated); openModal('mazzi'); }
@@ -803,6 +805,30 @@ function submitDeckEdit() {
         })
         .catch(function(e){ showToast('Errore: '+(e.message||e),'error'); })
         .finally(function(){ btn.disabled=false; btn.textContent='Salva'; });
+}
+
+/* Propaga il mazzo main agli eventi in-arrivo e in-corso dove il giocatore è iscritto */
+function _propagateDeckToEvents(playerId, decklist) {
+    _db.collection('events').where('status','in',['in-arrivo','in-corso']).get()
+        .then(function(snap){
+            var promises = [];
+            snap.docs.forEach(function(doc){
+                var players = (doc.data().players||[]).slice();
+                var idx = -1;
+                for (var i=0;i<players.length;i++){
+                    if (players[i].playerRef===playerId){ idx=i; break; }
+                }
+                if (idx !== -1) {
+                    players[idx] = Object.assign({}, players[idx], { deckList: decklist||'' });
+                    promises.push(doc.ref.update({ players: players }));
+                }
+            });
+            if (promises.length) {
+                Promise.all(promises).then(function(){
+                    showToast('Deck aggiornato nei tornei attivi ✓','success');
+                });
+            }
+        });
 }
 
 function setMain(deckId) {
@@ -818,6 +844,7 @@ function setMain(deckId) {
             showToast('Mazzo Main aggiornato 👑','success');
             var updated = _players.find(function(x){ return x.id===_mazziTargetId; });
             if (updated) renderMazziList(updated);
+            if (main) _propagateDeckToEvents(_mazziTargetId, main.decklist||'');
         })
         .catch(function(e){ showToast('Errore: '+(e.message||e),'error'); });
 }
