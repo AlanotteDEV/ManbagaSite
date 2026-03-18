@@ -3709,11 +3709,13 @@ function exportCatalogoPDF() {
     }
 
     var filename = 'MANBAGA_Catalogo_' + todayFile + '.pdf';
-    var pdfBlob = doc.output('blob');
-    var pdfFile = new File([pdfBlob], filename, { type: 'application/pdf' });
-    if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
-        navigator.share({ files: [pdfFile], title: filename })
-            .catch(function(e) { if (e.name !== 'AbortError') showToast('Errore condivisione PDF', 'error'); });
+    if (window.Capacitor && window.Capacitor.isNativePlatform()) {
+        var pdfB64 = doc.output('datauristring').split(',')[1];
+        var FS = window.Capacitor.Plugins.Filesystem;
+        var SH = window.Capacitor.Plugins.Share;
+        FS.writeFile({ path: filename, data: pdfB64, directory: 'CACHE' })
+            .then(function(res) { return SH.share({ title: filename, url: res.uri }); })
+            .catch(function(e) { showToast('Errore export PDF: ' + (e.message || e), 'error'); });
     } else {
         doc.save(filename);
     }
@@ -3915,12 +3917,13 @@ function exportContabilitaExcel() {
        SALVA FILE
     ════════════════════════════════════════ */
     var filename = 'Contabilita_MANBAGA_' + new Date().toISOString().slice(0, 10) + '.xlsx';
-    var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-    var xlsxBlob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    var xlsxFile = new File([xlsxBlob], filename, { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    if (navigator.canShare && navigator.canShare({ files: [xlsxFile] })) {
-        navigator.share({ files: [xlsxFile], title: filename })
-            .catch(function(e) { if (e.name !== 'AbortError') showToast('Errore condivisione Excel', 'error'); });
+    if (window.Capacitor && window.Capacitor.isNativePlatform()) {
+        var xlsxB64 = XLSX.write(wb, { bookType: 'xlsx', type: 'base64' });
+        var FS = window.Capacitor.Plugins.Filesystem;
+        var SH = window.Capacitor.Plugins.Share;
+        FS.writeFile({ path: filename, data: xlsxB64, directory: 'CACHE' })
+            .then(function(res) { return SH.share({ title: filename, url: res.uri }); })
+            .catch(function(e) { showToast('Errore export Excel: ' + (e.message || e), 'error'); });
     } else {
         XLSX.writeFile(wb, filename);
     }
