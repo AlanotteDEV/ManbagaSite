@@ -3708,7 +3708,15 @@ function exportCatalogoPDF() {
         doc.text('Pag. ' + i + ' / ' + pageCount, 280, 205, { align: 'right' });
     }
 
-    doc.save('MANBAGA_Catalogo_' + todayFile + '.pdf');
+    var filename = 'MANBAGA_Catalogo_' + todayFile + '.pdf';
+    var pdfBlob = doc.output('blob');
+    var pdfFile = new File([pdfBlob], filename, { type: 'application/pdf' });
+    if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+        navigator.share({ files: [pdfFile], title: filename })
+            .catch(function(e) { if (e.name !== 'AbortError') showToast('Errore condivisione PDF', 'error'); });
+    } else {
+        doc.save(filename);
+    }
     showToast('PDF generato — ' + _products.length + ' prodotti', 'success');
 }
 
@@ -3907,7 +3915,15 @@ function exportContabilitaExcel() {
        SALVA FILE
     ════════════════════════════════════════ */
     var filename = 'Contabilita_MANBAGA_' + new Date().toISOString().slice(0, 10) + '.xlsx';
-    XLSX.writeFile(wb, filename);
+    var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    var xlsxBlob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    var xlsxFile = new File([xlsxBlob], filename, { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    if (navigator.canShare && navigator.canShare({ files: [xlsxFile] })) {
+        navigator.share({ files: [xlsxFile], title: filename })
+            .catch(function(e) { if (e.name !== 'AbortError') showToast('Errore condivisione Excel', 'error'); });
+    } else {
+        XLSX.writeFile(wb, filename);
+    }
     showToast('Export Excel completato ✓ — ' + filename, 'success');
 }
 

@@ -740,6 +740,27 @@ function submitPreorder(productId) {
         return;
     }
 
+    /* ── Validazione contatto ── */
+    var isEmail = contact.indexOf('@') !== -1;
+    if (isEmail) {
+        /* Email: deve avere nome@dominio.tld con TLD ≥ 2 caratteri */
+        var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(contact);
+        if (!emailOk) {
+            mbNotify('Email non valida. Esempio: mario@gmail.com', 'error');
+            return;
+        }
+    } else {
+        /* Telefono: solo cifre/spazi/trattini/+, almeno 9 cifre */
+        var digits = contact.replace(/[\s\-().+]/g, '');
+        /* Rimuovi prefisso Italia se presente */
+        var stripped = digits.replace(/^(0039|39)/, '');
+        var phoneOk = /^\d{9,13}$/.test(stripped);
+        if (!phoneOk) {
+            mbNotify('Numero di telefono non valido. Esempio: 347 1234567', 'error');
+            return;
+        }
+    }
+
     var submitBtn = document.querySelector('#preorder-form-' + productId + ' .btn-primary');
     if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Invio in corso…'; }
 
