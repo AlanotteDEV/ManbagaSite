@@ -17,41 +17,7 @@ function mbNotify(msg, type) {
     setTimeout(function() { if (n.parentNode) n.parentNode.removeChild(n); }, 4000);
 }
 
-/* ============================================================
-   EMAIL CONFIG — EmailJS (GRATUITO fino a 200 email/mese)
-   ============================================================
-   ISTRUZIONI SETUP (5 minuti):
-   1. Vai su https://www.emailjs.com e crea un account gratuito
-   2. Dashboard → "Add New Service" → Gmail
-      → collegalo a manbagacomics@gmail.com → copia il SERVICE ID
-   3. Dashboard → "Email Templates" → crea DUE template:
 
-      ─ Template 1: ID = "template_contact"
-        Subject: {{subject}}
-        Body:
-          Da: {{from_name}} <{{from_email}}>
-          ---
-          {{message}}
-        To email: manbagacomics@gmail.com
-
-      ─ Template 2: ID = "template_preorder"
-        Subject: [PREORDINE] {{product_title}} {{product_volume}}
-        Body:
-          ⭐ NUOVA RICHIESTA DI PREORDINE
-
-          Prodotto: {{product_title}}
-          Volume:   {{product_volume}}
-          Stato:    {{product_badge}}
-
-          ─────────────────────────────
-          Cliente:  {{customer_name}}
-          Contatto: {{customer_contact}}
-          Note:     {{customer_notes}}
-        To email: manbagacomics@gmail.com
-
-   4. Dashboard → Account → General → API Keys → copia la Public Key
-   5. Sostituisci i valori nelle costanti qui sotto
-   ============================================================ */
 var EMAILJS_CONFIG = {
     publicKey:         'RMUoD23dWNtheAZiE',
     serviceId:         'service_x1xol32',
@@ -325,21 +291,22 @@ function renderEvents() {
 
 function _renderEventCard(e) {
     var tagCls = e.type === 'community' ? ' event-tag--community' : '';
+    var safeLink = (e.link && /^https?:\/\//i.test(e.link)) ? e.link : '';
     return '<div class="event-row">'
         + '<div class="event-date-box">'
-        + '<div class="event-day-num">' + (e.day || '—') + '</div>'
-        + '<div class="event-month-txt">' + ((e.month || '').toUpperCase()) + '</div>'
-        + (e.year ? '<div class="event-year-txt">' + e.year + '</div>' : '')
+        + '<div class="event-day-num">' + _escHtml(e.day || '—') + '</div>'
+        + '<div class="event-month-txt">' + _escHtml((e.month || '').toUpperCase()) + '</div>'
+        + (e.year ? '<div class="event-year-txt">' + _escHtml(e.year) + '</div>' : '')
         + '</div>'
         + '<div class="event-body">'
-        + (e.tag ? '<div class="event-tag' + tagCls + '">' + e.tag + '</div>' : '')
-        + '<h3 class="event-title">' + e.title + '</h3>'
-        + '<p class="event-desc">' + e.desc + '</p>'
+        + (e.tag ? '<div class="event-tag' + tagCls + '">' + _escHtml(e.tag) + '</div>' : '')
+        + '<h3 class="event-title">' + _escHtml(e.title) + '</h3>'
+        + '<p class="event-desc">' + _escHtml(e.desc) + '</p>'
         + '<div class="event-meta">'
-        + (e.time  ? '<span>⏰ ' + e.time + '</span>' : '')
-        + (e.price ? '<span>' + e.price + '</span>' : '')
+        + (e.time  ? '<span>⏰ ' + _escHtml(e.time) + '</span>' : '')
+        + (e.price ? '<span>' + _escHtml(e.price) + '</span>' : '')
         + '</div>'
-        + (e.link ? '<a href="' + e.link + '" target="_blank" rel="noopener noreferrer" class="event-link-btn" onclick="event.stopPropagation()">Iscriviti &#8594;</a>' : '')
+        + (safeLink ? '<a href="' + _escHtml(safeLink) + '" target="_blank" rel="noopener noreferrer" class="event-link-btn" onclick="event.stopPropagation()">Iscriviti &#8594;</a>' : '')
         + '</div>'
         + '</div>';
 }
@@ -350,11 +317,12 @@ function _renderCompCard(e) {
     var players = Array.isArray(e.players) ? e.players : [];
     var tcgLbl  = _TCG_LABELS[tcg]    || 'TCG';
     var stLbl   = _STATUS_LABELS[status] || status;
-    var fid     = e._fid   || e.id;
+    var fid     = _escHtml(e._fid || e.id || '');
+    var safeLink = (e.link && /^https?:\/\//i.test(e.link)) ? e.link : '';
 
     var actions = '';
-    if (e.link && status === 'in-arrivo') {
-        actions += '<a href="' + e.link + '" target="_blank" rel="noopener noreferrer" class="event-link-btn" onclick="event.stopPropagation()">Iscriviti &#8594;</a>';
+    if (safeLink && status === 'in-arrivo') {
+        actions += '<a href="' + _escHtml(safeLink) + '" target="_blank" rel="noopener noreferrer" class="event-link-btn" onclick="event.stopPropagation()">Iscriviti &#8594;</a>';
     }
     if (status === 'in-arrivo' && fid) {
         actions += '<a href="torneo.html?id=' + fid + '" class="ev-ranking-btn">&#128197; Info torneo</a>';
@@ -368,23 +336,23 @@ function _renderCompCard(e) {
 
     return '<div class="event-row event-row--comp">'
         + '<div class="event-date-box">'
-        + '<div class="event-day-num">' + (e.day || '—') + '</div>'
-        + '<div class="event-month-txt">' + ((e.month || '').toUpperCase()) + '</div>'
-        + (e.year ? '<div class="event-year-txt">' + e.year + '</div>' : '')
-        + '<div class="ev-tcg-badge ev-tcg--' + tcg + '">' + tcgLbl + '</div>'
+        + '<div class="event-day-num">' + _escHtml(e.day || '—') + '</div>'
+        + '<div class="event-month-txt">' + _escHtml((e.month || '').toUpperCase()) + '</div>'
+        + (e.year ? '<div class="event-year-txt">' + _escHtml(e.year) + '</div>' : '')
+        + '<div class="ev-tcg-badge ev-tcg--' + tcg + '">' + _escHtml(tcgLbl) + '</div>'
         + '</div>'
         + '<div class="event-body">'
         + '<div class="ev-comp-hd">'
         + '<div class="event-tag">&#127942; TORNEO</div>'
-        + '<div class="ev-status-badge ev-status--' + status + '">' + stLbl + '</div>'
+        + '<div class="ev-status-badge ev-status--' + status + '">' + _escHtml(stLbl) + '</div>'
         + (players.length ? '<span style="font-size:11px;color:#888;font-weight:600">' + players.length + ' partecipanti</span>' : '')
         + '</div>'
-        + '<h3 class="event-title">' + e.title + '</h3>'
-        + '<p class="event-desc">' + e.desc + '</p>'
+        + '<h3 class="event-title">' + _escHtml(e.title) + '</h3>'
+        + '<p class="event-desc">' + _escHtml(e.desc) + '</p>'
         + '<div class="event-meta">'
-        + (e.time       ? '<span>&#9200; ' + e.time + '</span>' : '')
-        + (e.price      ? '<span>' + e.price + '</span>' : '')
-        + (e.maxPlayers ? '<span>&#128101; Max ' + e.maxPlayers + '</span>' : '')
+        + (e.time       ? '<span>&#9200; ' + _escHtml(e.time) + '</span>' : '')
+        + (e.price      ? '<span>' + _escHtml(e.price) + '</span>' : '')
+        + (e.maxPlayers ? '<span>&#128101; Max ' + _escHtml(e.maxPlayers) + '</span>' : '')
         + '</div>'
         + (actions ? '<div class="ev-comp-actions">' + actions + '</div>' : '')
         + '</div>'
@@ -444,17 +412,17 @@ function renderProducts() {
 
     track.innerHTML = products.map(function (p) {
         var isOos = (p.badge === 'OUT OF STOCK' || p.badge === 'ESAURITO');
-        return '<div class="product-card' + (isOos ? ' product-card--oos' : '') + '" data-badge="' + (p.badge || '') + '" onclick="openProductModal(' + p.id + ')">'
-            + '<div class="product-badge" data-badge="' + (p.badge || 'Disponibile') + '">' + (p.badge || 'Disponibile') + '</div>'
+        return '<div class="product-card' + (isOos ? ' product-card--oos' : '') + '" data-badge="' + _escHtml(p.badge || '') + '" onclick="openProductModal(' + p.id + ')">'
+            + '<div class="product-badge" data-badge="' + _escHtml(p.badge || 'Disponibile') + '">' + _escHtml(p.badge || 'Disponibile') + '</div>'
             + '<div class="product-img-wrap">'
-            + '<img class="product-img" src="' + p.image + '" alt="' + p.title + '" loading="lazy" onerror="this.src=\'https://placehold.co/400x500/0a0a0a/333?text=Cover\'">'
+            + '<img class="product-img" src="' + _escHtml(p.image) + '" alt="' + _escHtml(p.title) + '" loading="lazy" onerror="this.src=\'https://placehold.co/400x500/0a0a0a/333?text=Cover\'">'
             + '<div class="product-img-overlay"><span>Scopri di più</span></div>'
             + '</div>'
             + '<div class="product-info">'
             + '<div class="product-store-tag">MANBAGA.</div>'
-            + '<div class="product-name">' + p.title + '</div>'
-            + '<div class="product-vol">' + (p.volume || '') + '</div>'
-            + (p.price ? '<div class="product-price">' + p.price + '</div>' : '')
+            + '<div class="product-name">' + _escHtml(p.title) + '</div>'
+            + '<div class="product-vol">' + _escHtml(p.volume || '') + '</div>'
+            + (p.price ? '<div class="product-price">' + _escHtml(p.price) + '</div>' : '')
             + '</div>'
             + '</div>';
     }).join('');
@@ -669,24 +637,24 @@ function openProductModal(productId) {
     document.getElementById('product-detail-content').innerHTML =
         '<div class="pd-grid">'
         + '<div class="pd-img-wrap" onclick="zoomProductImage(\'' + product.image.replace(/'/g, "\\'") + '\',\'' + product.title.replace(/'/g, "\\'") + '\')">'
-        + '<img class="pd-img" src="' + product.image + '" alt="' + product.title + '" onerror="this.src=\'https://placehold.co/400x500/0a0a0a/333?text=Cover\'">'
+        + '<img class="pd-img" src="' + _escHtml(product.image) + '" alt="' + _escHtml(product.title) + '" onerror="this.src=\'https://placehold.co/400x500/0a0a0a/333?text=Cover\'">'
         + '<div class="pd-zoom-hint"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg> Clicca per ingrandire</div>'
         + '</div>'
         + '<div>'
-        + '<div class="pd-badge" data-badge="' + (product.badge || 'Disponibile') + '">' + (product.badge || 'Disponibile') + '</div>'
-        + '<h2 class="pd-title">' + product.title + '</h2>'
-        + '<div class="pd-vol">' + (product.volume || '') + '</div>'
-        + (product.price ? '<div class="pd-price">' + product.price + '</div>' : '')
+        + '<div class="pd-badge" data-badge="' + _escHtml(product.badge || 'Disponibile') + '">' + _escHtml(product.badge || 'Disponibile') + '</div>'
+        + '<h2 class="pd-title">' + _escHtml(product.title) + '</h2>'
+        + '<div class="pd-vol">' + _escHtml(product.volume || '') + '</div>'
+        + (product.price ? '<div class="pd-price">' + _escHtml(product.price) + '</div>' : '')
         + '<div class="pd-desc-block" style="margin-bottom:24px">'
         + '<h3>Descrizione</h3>'
-        + '<p>' + product.desc.replace(/\n/g, '<br>') + '</p>'
+        + '<p>' + _escHtml(product.desc).replace(/\n/g, '<br>') + '</p>'
         + '</div>'
         + '<div style="display:flex;gap:10px;flex-wrap:wrap">'
         + actionBtn
         + '</div>'
         /* Form preordine (nascosto) */
         + '<div id="preorder-form-' + _pid + '" class="preorder-panel hidden" data-product-id="' + _pid + '">'
-        + '<div class="preorder-panel-head">&#9993; Richiesta Preordine — ' + product.title + '</div>'
+        + '<div class="preorder-panel-head">&#9993; Richiesta Preordine — ' + _escHtml(product.title) + '</div>'
         + '<div class="form-row"><label class="form-label">Il tuo nome *</label>'
         + '<input type="text" id="po-name-' + _pid + '" class="form-input" placeholder="Nome e Cognome"></div>'
         + '<div class="form-row"><label class="form-label">Email o Telefono *</label>'
@@ -1441,7 +1409,7 @@ function _fmtDataRecensione(ts) {
 }
 
 function _escHtml(s) {
-    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 /* --- Modal form recensione --- */

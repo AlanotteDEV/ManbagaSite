@@ -951,7 +951,7 @@ function parseDeck(raw) {
         line=line.trim(); if(!line) return;
         var qty=1, qm=line.match(/^(\d+)\s*[xX]?/i);
         if(qm) qty=parseInt(qm[1],10);
-        var idM=line.match(/\[([A-Za-z]{1,6}\d{1,3}-\d{3,4}[a-z0-9_-]*)\]/i)||line.match(/([A-Za-z]{2,6}\d{1,3}-\d{3,4}[a-z0-9_-]*)/i);
+        var idM=line.match(/\[([A-Za-z]{1,6}\d{0,3}-\d{3,4}[a-z0-9_-]*)\]/i)||line.match(/([A-Za-z]{1,6}\d{0,3}-\d{3,4}[a-z0-9_-]*)/i);
         if(idM){ cards.push({qty:qty,id:idM[1].toUpperCase(),name:idM[1].toUpperCase(),section:section,hasId:true}); }
         else {
             var nameM=line.match(/^\d+[xX]?\s+(.+)$/)||line.match(/^[xX]?\d+\s+(.+)$/);
@@ -996,9 +996,15 @@ function buildIdGrid(cards){
     var html='',cur=null; html+='<div class="gp-card-grid">';
     cards.forEach(function(c){
         if(c.section!==cur){ if(cur!==null) html+='</div><div class="gp-card-grid">'; if(c.section) html+='</div><div class="gp-sep">'+esc(c.section)+'</div><div class="gp-card-grid">'; cur=c.section; }
+        var isPromo=/^P-\d{3,4}$/i.test(c.id);
+        var imgSrc = isPromo
+            ? '/api/promo-image?id='+encodeURIComponent(c.id.toUpperCase())
+            : IMG_BASE+c.id+'.jpg';
+        var onerr = isPromo
+            ? 'this.style.display=\'none\';this.nextSibling.style.display=\'flex\';'
+            : 'var t=this;if(!t._p){t._p=1;t.src=\''+IMG_BASE+'\'+t.alt+\'.png\';}else{t.style.display=\'none\';t.nextSibling.style.display=\'flex\';}';
         html+='<div class="gp-card-item" title="'+esc(c.id)+'">'
-            +'<img src="'+IMG_BASE+c.id+'.jpg" alt="'+esc(c.id)+'" loading="lazy"'
-            +' onerror="var t=this;if(!t._p){t._p=1;t.src=\''+IMG_BASE+'\'+t.alt+\'.png\';}else{t.style.display=\'none\';t.nextSibling.style.display=\'flex\';}">'
+            +'<img src="'+imgSrc+'" alt="'+esc(c.id)+'" loading="lazy" onerror="'+onerr+'">'
             +'<div class="gp-no-img" style="display:none">'+esc(c.id)+'</div>'
             +'<span class="gp-card-qty">×'+c.qty+'</span>'
             +'<div class="gp-card-id">'+esc(c.id)+'</div>'
@@ -1027,7 +1033,7 @@ function buildTextList(cards){
 document.addEventListener('DOMContentLoaded', function(){
     var burger=document.getElementById('nav-burger');
     var links=document.getElementById('nav-links');
-    if(burger) burger.addEventListener('click',function(){ links.classList.toggle('is-open'); burger.classList.toggle('is-open'); });
+    if(burger) burger.addEventListener('click',function(){ links.classList.toggle('open'); burger.classList.toggle('open'); });
     document.addEventListener('scroll',function(){ var nav=document.getElementById('nav'); if(nav) nav.classList.toggle('scrolled',window.scrollY>50); },{passive:true});
     document.addEventListener('keydown',function(e){ if(e.key==='Escape') ['auth','mazzi','deck-edit','deck'].forEach(function(id){ closeModal(id); }); });
     init();
