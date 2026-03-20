@@ -47,45 +47,138 @@
         overflow-x: hidden;
     }
 
-    /* ── HEADER ── */
-    #header {
+    /* ── NAV ── */
+    #nav {
         position: fixed;
         top: 0; left: 0; right: 0;
-        height: var(--nav-h);
-        background: rgba(8,8,8,.97);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border-bottom: 1px solid rgba(220,38,38,.2);
         z-index: 800;
+        height: var(--nav-h);
+        background: rgba(13,13,13,.96);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-bottom: 2px solid rgba(220,38,38,.6);
+    }
+    .nav-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        height: 100%;
+        padding: 0 24px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0 28px;
+        gap: 24px;
     }
-    .header-logo {
+    .nav-logo {
         font-family: var(--comic);
-        font-size: 26px;
-        letter-spacing: .06em;
-        text-decoration: none;
+        font-size: 30px;
+        letter-spacing: .05em;
         color: var(--white);
-    }
-    .header-logo .dot { color: var(--red); }
-    .header-back {
-        display: inline-flex;
-        align-items: center;
-        gap: 7px;
-        font-size: 11px;
-        font-weight: 700;
-        letter-spacing: .12em;
-        text-transform: uppercase;
-        color: var(--gray);
         text-decoration: none;
-        padding: 7px 16px;
-        border: 1px solid rgba(255,255,255,.08);
-        border-radius: 24px;
-        transition: color .2s, border-color .2s, background .2s;
+        flex-shrink: 0;
     }
-    .header-back:hover { color: var(--white); border-color: rgba(220,38,38,.5); background: rgba(220,38,38,.08); }
+    .nav-logo .dot { color: var(--red); }
+    .nav-logo:hover { color: rgba(255,255,255,.7); }
+    .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        list-style: none;
+    }
+    .nav-links a {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: .18em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,.55);
+        text-decoration: none;
+        padding: 6px 12px;
+        transition: color .2s;
+        position: relative;
+    }
+    .nav-links a::after {
+        content: '';
+        position: absolute;
+        bottom: 0; left: 12px; right: 12px;
+        height: 1px;
+        background: var(--red);
+        transform: scaleX(0);
+        transition: transform .2s;
+    }
+    .nav-links a:hover { color: var(--white); }
+    .nav-links a:hover::after { transform: scaleX(1); }
+    .nav-cta {
+        background: var(--red) !important;
+        color: var(--white) !important;
+        padding: 8px 20px !important;
+        clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+        letter-spacing: .15em !important;
+    }
+    .nav-cta::after { display: none !important; }
+    .nav-cta:hover { background: var(--white) !important; color: #0d0d0d !important; }
+    .nav-burger {
+        display: none;
+        flex-direction: column;
+        gap: 5px;
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 6px;
+        flex-shrink: 0;
+    }
+    .nav-burger span { display: block; width: 22px; height: 2px; background: var(--white); transition: all .3s; }
+    .nav-burger.open span:nth-child(1) { transform: rotate(45deg) translate(5px,5px); }
+    .nav-burger.open span:nth-child(2) { opacity: 0; }
+    .nav-burger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px,-5px); }
+    @media (max-width: 1024px) {
+        .nav-links {
+            display: none;
+            flex-direction: column;
+            position: fixed;
+            top: var(--nav-h); left: 0; right: 0;
+            background: rgba(13,13,13,.98);
+            backdrop-filter: blur(16px);
+            padding: 20px 24px 28px;
+            border-bottom: 2px solid rgba(220,38,38,.5);
+            gap: 2px;
+            z-index: 999;
+            max-height: calc(100vh - var(--nav-h));
+            overflow-y: auto;
+            box-shadow: 0 16px 40px rgba(0,0,0,.6);
+        }
+        .nav-links.open {
+            display: flex;
+            animation: navSlideDown .25s cubic-bezier(.19,1,.22,1) forwards;
+        }
+        @keyframes navSlideDown {
+            from { opacity: 0; transform: translateY(-8px); }
+            to   { opacity: 1; transform: none; }
+        }
+        .nav-links li { width: 100%; }
+        .nav-links a {
+            display: block;
+            padding: 13px 4px;
+            border-bottom: 1px solid rgba(255,255,255,.07);
+            font-size: 14px;
+            letter-spacing: .12em;
+            color: rgba(255,255,255,.65);
+        }
+        .nav-links li:last-child a { border-bottom: none; }
+        .nav-links a::after { display: none; }
+        .nav-links .nav-cta {
+            display: block;
+            margin-top: 14px;
+            padding: 14px !important;
+            text-align: center;
+            border-radius: 8px;
+            clip-path: none !important;
+            background: var(--red) !important;
+            color: var(--white) !important;
+            letter-spacing: .18em !important;
+            font-size: 13px;
+        }
+        .nav-links .nav-cta:hover { background: var(--white) !important; color: #0d0d0d !important; }
+        .nav-burger { display: flex; }
+    }
 
     main { padding-top: var(--nav-h); }
 
@@ -660,10 +753,22 @@
     <div class="lb-caption" id="lb-cap"></div>
 </div>
 
-<header id="header">
-    <a href="index.html" class="header-logo">MAN<span class="dot">B</span>AGA<span class="dot">.</span></a>
-    <a href="index.html" class="header-back">&#8592; Torna al sito</a>
-</header>
+<nav id="nav">
+    <div class="nav-inner">
+        <a class="nav-logo" href="index.html">MAN<span class="dot">B</span>AGA<span class="dot">.</span></a>
+        <ul class="nav-links" id="nav-links">
+            <li><a href="index.html#catalogo">Catalogo</a></li>
+            <li><a href="index.html#nuovi-arrivi">Novit&#224;</a></li>
+            <li><a href="index.html#eventi">Eventi</a></li>
+            <li><a href="index.html#recensioni">Recensioni</a></li>
+            <li><a href="tavoli.html">Tavoli</a></li>
+            <li><a href="index.html#contatti" class="nav-cta">Contatti</a></li>
+        </ul>
+        <button class="nav-burger" id="nav-burger" aria-label="Apri menu">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</nav>
 
 <main>
 
@@ -862,5 +967,25 @@ document.addEventListener('keydown', function(e) {
 </script>
 
 <script src="manga-mode.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var burger = document.getElementById('nav-burger');
+    var links  = document.getElementById('nav-links');
+    if (burger) burger.addEventListener('click', function() {
+        links.classList.toggle('open');
+        burger.classList.toggle('open');
+    });
+    links.querySelectorAll('a').forEach(function(a) {
+        a.addEventListener('click', function() {
+            links.classList.remove('open');
+            burger.classList.remove('open');
+        });
+    });
+    window.addEventListener('scroll', function() {
+        var nav = document.getElementById('nav');
+        if (nav) nav.classList.toggle('scrolled', window.scrollY > 40);
+    }, { passive: true });
+});
+</script>
 </body>
 </html>

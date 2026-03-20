@@ -15,7 +15,7 @@
         { "key": "Strict-Transport-Security", "value": "max-age=31536000; includeSubDomains; preload" },
         { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
         { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=(), payment=(), usb=(), bluetooth=()" },
-        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com wss://*.firebaseio.com https://api.scryfall.com https://cdn.emailjs.com https://optcgapi.com https://db.ygoprodeck.com https://api.pokemontcg.io https://apitcg.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';" }
+        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com wss://*.firebaseio.com https://*.firebasedatabase.app wss://*.firebasedatabase.app https://api.scryfall.com https://cdn.emailjs.com https://optcgapi.com https://db.ygoprodeck.com https://api.pokemontcg.io https://apitcg.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';" }
       ]
     }
   ]
