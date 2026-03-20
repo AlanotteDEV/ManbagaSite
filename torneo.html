@@ -252,7 +252,9 @@ function _loadMyProfile(cb) {
 function renderRegBox(data, status) {
     var regBox = document.getElementById('torneo-reg-box');
     var players = Array.isArray(data.players) ? data.players : [];
+    var pending = Array.isArray(data.pendingPlayers) ? data.pendingPlayers : [];
     var isRegistered = _myPlayerRef && players.some(function(p){ return p.playerRef === _myPlayerRef; });
+    var isPending    = _myPlayerRef && pending.some(function(p){ return p.playerRef === _myPlayerRef; });
     var user = _auth ? _auth.currentUser : null;
 
     if (status === 'completato') { regBox.style.display = 'none'; return; }
@@ -271,6 +273,9 @@ function renderRegBox(data, status) {
             regBox.innerHTML = '<div class="torneo-reg-title">✓ Sei iscritto</div>'
                 + '<div class="torneo-reg-sub">Torneo in corso — il mazzo non può più essere modificato.</div>';
         }
+    } else if (isPending) {
+        regBox.innerHTML = '<div class="torneo-reg-title">⏳ Richiesta inviata</div>'
+            + '<div class="torneo-reg-sub">La tua iscrizione è in attesa di approvazione da parte dell\'admin. Ti avviseremo presto!</div>';
     } else if (status === 'in-arrivo') {
         var html = '<div class="torneo-reg-title">Partecipa al Torneo</div>'
             + '<div class="torneo-reg-sub">Hai un profilo giocatore? Iscriviti con il tuo mazzo Main.</div>'
@@ -355,15 +360,18 @@ function confirmRegistration() {
     var nick      = btn.dataset.nick;
     if (!profileId || !nick) return;
 
-    /* Duplicate check */
+    /* Duplicate check — approved + pending */
     var players = Array.isArray(_eventData.players) ? _eventData.players : [];
-    var dup = players.some(function(p){
+    var pending = Array.isArray(_eventData.pendingPlayers) ? _eventData.pendingPlayers : [];
+    var dup = players.concat(pending).some(function(p){
         return (p.playerRef && p.playerRef===profileId)
             || (p.name||'').toLowerCase()===nick.toLowerCase();
     });
     if (dup) {
         var errEl = document.getElementById('reg-error');
-        errEl.textContent = '⚠️ Sei già iscritto a questo torneo!';
+        errEl.textContent = players.some(function(p){ return p.playerRef===profileId; })
+            ? '⚠️ Sei già iscritto a questo torneo!'
+            : '⚠️ Hai già inviato una richiesta di iscrizione. Attendi l\'approvazione dell\'admin.';
         errEl.style.display = 'block';
         return;
     }
@@ -408,18 +416,19 @@ function confirmRegistration() {
             .catch(function(e){ var el=document.getElementById('reg-error'); el.textContent='Errore: '+(e.message||e); el.style.display='block'; })
             .finally(function(){ btn.disabled=false; btn.textContent='🃏 Aggiorna mazzo'; });
     } else {
-        /* Nuova iscrizione */
-        var newPlayer = {
+        /* Nuova iscrizione → in attesa di approvazione admin */
+        var pendingPlayer = {
             name: nick, playerRef: profileId,
-            deckList: deckList, points: 0, wins: 0, losses: 0, draws: 0
+            deckList: deckList, deckName: deckName,
+            requestedAt: Date.now()
         };
         _db.collection('events').doc(_eventId).update({
-            players: firebase.firestore.FieldValue.arrayUnion(newPlayer)
+            pendingPlayers: firebase.firestore.FieldValue.arrayUnion(pendingPlayer)
         }).then(function(){
-            _myPlayerRef = profileId;
             document.getElementById('reg-success-msg').innerHTML =
-                '<strong>'+_esc(nick)+'</strong> è iscritto al torneo!<br>'
-                +(deckName ? 'Mazzo: <em>'+_esc(deckName)+'</em>' : '');
+                '⏳ Richiesta inviata per <strong>'+_esc(nick)+'</strong>!<br>'
+                + 'L\'admin approverà la tua iscrizione a breve.'
+                +(deckName ? '<br>Mazzo: <em>'+_esc(deckName)+'</em>' : '');
             _showRegStep('reg-step3');
             renderRegBox(_eventData, _eventData.status||'in-arrivo');
         })
