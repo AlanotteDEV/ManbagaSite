@@ -259,12 +259,18 @@
         margin-bottom: 40px;
     }
 
-    /* ─── AUTH CARD ──────────────────────────────────────────── */
+    /* ─── AUTH OVERLAY ───────────────────────────────────────── */
     #auth-screen {
+        position: fixed;
+        inset: 0;
         display: flex;
         align-items: center;
         justify-content: center;
-        min-height: calc(100vh - var(--nav-h) - 48px);
+        background: rgba(8,8,8,.88);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        z-index: 200;
+        padding: 20px;
     }
 
     .auth-card {
@@ -364,8 +370,6 @@
     .btn-toggle:hover { color: var(--pink); }
 
     /* ─── APP ────────────────────────────────────────────────── */
-    #app-screen { display: none; }
-    #app-screen.visible { display: block; }
 
     /* Stats bar */
     .stats-bar {
@@ -889,6 +893,7 @@
         </svg>
         <span>Torna al sito</span>
     </a>
+    <button id="header-login" onclick="showAuthOverlay()" class="btn-logout">Accedi</button>
     <div id="header-user" class="hidden">
         <span id="header-nome"></span>
         <button onclick="doLogout()" class="btn-logout">Esci</button>
@@ -903,7 +908,7 @@
         <p class="page-subtitle">Scegli il tavolo, scegli l'orario &mdash; gratis e veloce! 🎮✨</p>
 
         <!-- AUTH -->
-        <div id="auth-screen">
+        <div id="auth-screen" class="hidden" onclick="if(event.target===this)hideAuthOverlay()">
             <div class="auth-card">
                 <div class="auth-head">
                     <p id="auth-eyebrow" class="auth-eyebrow">Accedi per prenotare</p>
@@ -1040,6 +1045,7 @@ let selectedPeople  = null;
 let selectedMaxPeople = 2;
 let isReg = false;
 let currentData = {}; // cache of last Firebase snapshot
+let pendingTable  = null; // table clicked before login
 
 /* ── LIVE CLOCK ──────────────────────────────────────────── */
 function updateClock() {
@@ -1095,34 +1101,48 @@ function doAuth() {
 }
 
 function doLogout() {
-    auth.signOut().then(() => toast('A presto! 👋', 'info')).catch(() => {});
+    auth.signOut().then(() => {
+        pendingTable = null;
+        toast('A presto! 👋', 'info');
+    }).catch(() => {});
 }
+
+/* ── DB LISTENER (always on, no auth needed to view) ────── */
+db.ref('prenotazioni').on('value', snap => {
+    currentData = snap.val() || {};
+    render(currentData);
+});
 
 /* ── AUTH STATE ──────────────────────────────────────────── */
 auth.onAuthStateChanged(user => {
-    const authEl = document.getElementById('auth-screen');
-    const appEl  = document.getElementById('app-screen');
-    const userEl = document.getElementById('header-user');
-    const nomeEl = document.getElementById('header-nome');
+    const authEl   = document.getElementById('auth-screen');
+    const userEl   = document.getElementById('header-user');
+    const loginBtn = document.getElementById('header-login');
+    const nomeEl   = document.getElementById('header-nome');
 
     if (user) {
-        authEl.style.display = 'none';
-        appEl.classList.add('visible');
+        authEl.classList.add('hidden');
         userEl.classList.remove('hidden');
+        if (loginBtn) loginBtn.classList.add('hidden');
 
         db.ref('utenti/' + user.uid).once('value', snap => {
             const nome = snap.val()?.nome || user.email;
             if (nomeEl) nomeEl.textContent = nome;
         });
 
-        db.ref('prenotazioni').on('value', snap => {
-            currentData = snap.val() || {};
+        // If user clicked a table before logging in, open booking now
+        if (pendingTable) {
+            const { num, max } = pendingTable;
+            pendingTable = null;
+            openModal(num, max);
+        } else {
             render(currentData);
-        });
+        }
     } else {
-        authEl.style.display = 'flex';
-        appEl.classList.remove('visible');
+        authEl.classList.add('hidden');
         userEl.classList.add('hidden');
+        if (loginBtn) loginBtn.classList.remove('hidden');
+        render(currentData);
     }
 });
 
@@ -1159,7 +1179,6 @@ function isExpiringSoon(expiresAt) {
 
 /* ── RENDER ──────────────────────────────────────────────── */
 function render(data) {
-    if (!auth.currentUser) return;
     const all = Object.values(data);
 
     // Clean expired (only owner can delete in Firebase)
@@ -1202,12 +1221,14 @@ function render(data) {
     document.getElementById('n-occ').textContent    = occ;
 
     // My bookings list
-    const uid  = auth.currentUser.uid;
-    const mie  = active.filter(x => x.utenteId === uid);
+    const uid  = auth.currentUser?.uid || null;
+    const mie  = uid ? active.filter(x => x.utenteId === uid) : [];
     document.getElementById('badge-count').textContent = mie.length;
 
     const lista = document.getElementById('lista-mie');
-    if (mie.length === 0) {
+    if (!uid) {
+        lista.innerHTML = '<p class="empty-msg">🌸 <span onclick="showAuthOverlay()" style="cursor:pointer;color:var(--pink);text-decoration:underline">Accedi</span> per vedere le tue prenotazioni</p>';
+    } else if (mie.length === 0) {
         lista.innerHTML = '<p class="empty-msg">🌸 Nessuna prenotazione attiva</p>';
     } else {
         lista.innerHTML = mie.map(x => {
@@ -1308,8 +1329,21 @@ function fmtDate(d) {
     catch { return d; }
 }
 
+/* ── AUTH OVERLAY HELPERS ────────────────────────────────── */
+function showAuthOverlay() {
+    document.getElementById('auth-screen').classList.remove('hidden');
+}
+function hideAuthOverlay() {
+    document.getElementById('auth-screen').classList.add('hidden');
+}
+
 /* ── MODAL ───────────────────────────────────────────────── */
 function openModal(num, maxPeople) {
+    if (!auth.currentUser) {
+        pendingTable = { num, max: maxPeople || 2 };
+        showAuthOverlay();
+        return;
+    }
     maxPeople = maxPeople || 2;
     selectedTavolo    = num;
     selectedPeople    = null;
