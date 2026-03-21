@@ -29,11 +29,11 @@
     <link rel="stylesheet" href="fonts/fonts.css">
 
     <!-- Firebase — lettura prodotti/eventi dal gestionale -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js" integrity="sha384-mLD+wdwynYnAhgHAkdPP5hroWJXJTNy5C2OhPKM55zuiV2vjzFD1LtBohaHq2Ex8" crossorigin="anonymous"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js" integrity="sha384-/SBCyt0JELVRyyrOp+QG5CdnpVoAry+uw9hdherLgyZxxePtHjOvQmJU5CHymUhT" crossorigin="anonymous"></script>
 
     <!-- EmailJS — servizio email gratuito (200 email/mese) -->
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4.4.1/dist/email.min.js" integrity="sha384-SALc35EccAf6RzGw4iNsyj7kTPr33K7RoGzYu+7heZhT8s0GZouafRiCg1qy44AS" crossorigin="anonymous"></script>
 
     <!-- Stili -->
     <link rel="stylesheet" href="style.css">
@@ -551,6 +551,12 @@
                         <textarea id="contact-msg" class="form-input contact-input" placeholder="Scrivi il tuo messaggio..." rows="5" required></textarea>
                     </div>
                     <!-- SOSTITUISCI l'email qui sotto con la tua email reale nello script.js -->
+                    <div class="form-row" style="margin-top:4px">
+                        <label style="display:flex;align-items:flex-start;gap:10px;font-size:12px;color:rgba(245,240,232,.55);cursor:pointer;line-height:1.5">
+                            <input type="checkbox" id="contact-privacy" required style="margin-top:2px;flex-shrink:0;accent-color:#DC2626">
+                            Ho letto e accetto la <a href="privacy.html" target="_blank" style="color:#DC2626;text-decoration:underline">Privacy Policy</a> e acconsento al trattamento dei miei dati personali per rispondere alla mia richiesta (art.&nbsp;6.1.b GDPR). <span style="color:#DC2626">*</span>
+                        </label>
+                    </div>
                     <button type="submit" id="contact-submit-btn" class="btn btn-primary contact-submit">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
                             <line x1="22" y1="2" x2="11" y2="13"/>
