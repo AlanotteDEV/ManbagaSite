@@ -3171,6 +3171,7 @@ function renderPendingRequests(eventId, pending) {
 
 function approvePendingPlayer(eventId, playerRef) {
     if (!_db || !eventId || !playerRef) return;
+    var approvedPlayer = null;
     _db.collection('events').doc(eventId).get().then(function(doc) {
         if (!doc.exists) return;
         var data    = doc.data();
@@ -3179,19 +3180,24 @@ function approvePendingPlayer(eventId, playerRef) {
         if (!player) { showToast('Richiesta non trovata.', 'err'); return; }
 
         var newPending = pending.filter(function(p){ return p.playerRef !== playerRef; });
-        var approved   = { name: player.name, playerRef: player.playerRef, deckList: player.deckList || '', points: 0, wins: 0, losses: 0, draws: 0 };
+        approvedPlayer = { name: player.name, playerRef: player.playerRef, deckList: player.deckList || '', points: 0, wins: 0, losses: 0, draws: 0 };
 
         return doc.ref.update({
             pendingPlayers: newPending,
-            players: firebase.firestore.FieldValue.arrayUnion(approved)
+            players: firebase.firestore.FieldValue.arrayUnion(approvedPlayer)
         });
     }).then(function() {
+        if (!approvedPlayer) return;
         showToast('Giocatore approvato! ✓', 'ok');
-        // Refresh local event data
+        // Aggiorna _compPlayers e ricarica la classifica nel modal
+        _compPlayers.push({ name: approvedPlayer.name, wins: 0, losses: 0, draws: 0, deckList: approvedPlayer.deckList || '' });
+        renderCompPlayers();
+        // Aggiorna dati locali e lista richieste
         var ev = _events.find(function(e){ return e.firestoreId === eventId; });
         if (ev) {
-            var pending = Array.isArray(ev.pendingPlayers) ? ev.pendingPlayers : [];
-            ev.pendingPlayers = pending.filter(function(p){ return p.playerRef !== playerRef; });
+            ev.pendingPlayers = (ev.pendingPlayers || []).filter(function(p){ return p.playerRef !== playerRef; });
+            if (!Array.isArray(ev.players)) ev.players = [];
+            ev.players.push(approvedPlayer);
             renderPendingRequests(eventId, ev.pendingPlayers);
             renderEvents();
         }

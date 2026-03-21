@@ -658,17 +658,13 @@ document.addEventListener('DOMContentLoaded', function() {
         messagingSenderId: '466874129336',
         appId:             '1:466874129336:web:fd07925523c35921fe8d4d'
     };
-    var app, db;
     try {
-        try { app = firebase.app('torneo'); }
-        catch(e) { app = firebase.initializeApp(fbConfig, 'torneo'); }
-        db = app.firestore();
-        _db = db;
-        /* Auth usa l'app default (stessa istanza di giocatori.html → stato login condiviso) */
+        /* Usa sempre l'app default → auth e Firestore condividono lo stesso token */
         var defaultApp;
         try { defaultApp = firebase.app(); }
-        catch(e2) { defaultApp = firebase.initializeApp(fbConfig); }
+        catch(e) { defaultApp = firebase.initializeApp(fbConfig); }
         _auth = defaultApp.auth();
+        _db   = defaultApp.firestore();
     } catch(e) { renderError('Errore connessione Firebase.'); return; }
 
     /* Auth state → aggiorna reg box */
@@ -679,7 +675,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     /* Live subscription so ranking updates in real-time */
-    db.collection('events').doc(id).onSnapshot(
+    _db.collection('events').doc(id).onSnapshot(
         function(doc) {
             if (!doc.exists) { renderError('Torneo non trovato.'); return; }
             var data = doc.data();
