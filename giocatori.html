@@ -330,6 +330,14 @@
                 <input type="password" class="gp-input" id="reg-pw" placeholder="••••••••" autocomplete="new-password">
             </div>
             <div class="gp-err" id="reg-err"></div>
+            <div class="gp-form-row" style="margin-top:4px">
+                <label style="display:flex;align-items:flex-start;gap:10px;font-size:12px;color:rgba(245,240,232,.55);cursor:pointer;line-height:1.5">
+                    <input type="checkbox" id="reg-privacy" style="margin-top:2px;flex-shrink:0;accent-color:#DC2626">
+                    Ho letto e accetto la <a href="privacy.html" target="_blank" style="color:#DC2626;text-decoration:underline;margin:0 3px">Privacy Policy</a>
+                    e acconsento alla creazione del profilo pubblico con nome, nickname e mazzi (art.&nbsp;6.1.a GDPR). <span style="color:#DC2626">*</span>
+                </label>
+                <div class="gp-err" id="reg-privacy-err">Devi accettare la privacy policy per continuare.</div>
+            </div>
             <div class="gp-modal-actions">
                 <button class="gp-mbtn gp-mbtn--ghost" onclick="closeModal('auth')">Annulla</button>
                 <button class="gp-mbtn gp-mbtn--primary" id="reg-btn" onclick="submitRegister()">Crea Profilo</button>
@@ -693,10 +701,13 @@ function submitRegister() {
     var nick  = document.getElementById('reg-nick').value.trim();
     var email = document.getElementById('reg-email').value.trim();
     var pw    = document.getElementById('reg-pw').value;
-    var nickErr = document.getElementById('reg-nick-err');
-    var err     = document.getElementById('reg-err');
-    nickErr.classList.remove('on'); err.style.display='none';
+    var nickErr    = document.getElementById('reg-nick-err');
+    var err        = document.getElementById('reg-err');
+    var privacyEl  = document.getElementById('reg-privacy');
+    var privacyErr = document.getElementById('reg-privacy-err');
+    nickErr.classList.remove('on'); err.style.display='none'; privacyErr.style.display='none';
     if (!nome||!nick||!email||!pw) { err.textContent='Compila tutti i campi obbligatori.'; err.style.display='block'; return; }
+    if (!privacyEl.checked) { privacyErr.style.display='block'; return; }
     var nl = nick.toLowerCase();
     if (_players.some(function(p){ return (p.nicknameLower||(p.nickname||'').toLowerCase())===nl; })) { nickErr.classList.add('on'); return; }
     var btn=document.getElementById('reg-btn'); btn.disabled=true; btn.textContent='Creazione…';

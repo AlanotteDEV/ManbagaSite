@@ -1493,9 +1493,11 @@ function submitRecensione() {
         if (errEl) { errEl.textContent = msg; errEl.style.display = 'block'; }
     }
 
+    var privacyCheck = document.getElementById('rv-privacy');
     if (!nome)       { showErr('Inserisci il tuo nome.'); return; }
     if (!_rvStelle)  { showErr('Seleziona una valutazione.'); return; }
     if (!testo || testo.length < 10) { showErr('Scrivi almeno 10 caratteri.'); return; }
+    if (privacyCheck && !privacyCheck.checked) { showErr('Devi accettare la privacy policy per inviare la recensione.'); return; }
     if (errEl) errEl.style.display = 'none';
 
     if (!_fbMainDb) {
