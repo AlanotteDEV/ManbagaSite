@@ -13,7 +13,8 @@
       "Bash(powershell -Command \"git -C 'C:\\\\Users\\\\germi\\\\ManbagaSite' show --stat HEAD\")",
       "Bash(powershell -Command \"git -C 'C:\\\\Users\\\\germi\\\\ManbagaSite' show HEAD~1 --stat\")",
       "Bash(powershell -Command \"git -C 'C:\\\\Users\\\\germi\\\\ManbagaSite' checkout HEAD~1 -- gestionale/\")",
-      "Bash(powershell -Command \"Get-ChildItem 'C:\\\\Users\\\\germi\\\\ManbagaSite\\\\gestionale'\")"
+      "Bash(powershell -Command \"Get-ChildItem 'C:\\\\Users\\\\germi\\\\ManbagaSite\\\\gestionale'\")",
+      "Bash(powershell -Command \"Get-ChildItem 'C:\\\\Users\\\\germi\\\\ManbagaSite\\\\gestionale' -Force 2>&1\")"
     ]
   }
 }

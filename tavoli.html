@@ -992,12 +992,12 @@
             <div class="time-row">
                 <div>
                     <label class="field-label" for="p-ora">Orario Arrivo</label>
-                    <input type="time" id="p-ora" class="field-input">
+                    <input type="time" id="p-ora" class="field-input" min="09:00" max="20:30">
                 </div>
                 <div class="time-arrow" aria-hidden="true">&#8594;</div>
                 <div>
                     <label class="field-label" for="p-uscita">Orario Uscita</label>
-                    <input type="time" id="p-uscita" class="field-input">
+                    <input type="time" id="p-uscita" class="field-input" min="09:00" max="20:30">
                 </div>
             </div>
 
@@ -1390,6 +1390,7 @@ function selectPeople(n) {
 }
 
 function submitPren() {
+    const tavolo = selectedTavolo;
     const nome   = (document.getElementById('p-nome').value   || '').trim();
     const data   = (document.getElementById('p-data').value   || '').trim();
     const ora    = (document.getElementById('p-ora').value    || '').trim();
@@ -1399,14 +1400,17 @@ function submitPren() {
     if (!data)           { toast('Seleziona la data.', 'err'); return; }
     if (!ora)            { toast("Inserisci l'orario di arrivo.", 'err'); return; }
     if (!uscita)         { toast("Inserisci l'orario di uscita.", 'err'); return; }
+    if (ora  < '09:00')  { toast("L'orario di arrivo non può essere prima delle 09:00.", 'err'); return; }
+    if (ora  > '20:30')  { toast("L'orario di arrivo non può essere dopo le 20:30.", 'err'); return; }
+    if (uscita > '20:30'){ toast("L'orario di uscita non può essere dopo le 20:30.", 'err'); return; }
     if (uscita <= ora)   { toast("L'orario di uscita deve essere dopo l'arrivo.", 'err'); return; }
     if (!selectedPeople) { toast('Seleziona il numero di persone.', 'err'); return; }
-    if (!selectedTavolo) return;
+    if (!tavolo)         return;
 
     // Real-time seat check against latest cached data
     const activeNow    = Object.values(currentData).filter(x => !isExpired(x));
     const alreadyBooked = activeNow
-        .filter(x => String(x.tavolo) === String(selectedTavolo))
+        .filter(x => String(x.tavolo) === String(tavolo))
         .reduce((s, b) => s + (Number(b.persone) || 1), 0);
     const remaining = 2 - alreadyBooked;
     if (selectedPeople > remaining) {
@@ -1428,7 +1432,7 @@ function submitPren() {
     const id = Date.now();
     db.ref('prenotazioni/' + id).set({
         id,
-        tavolo:       selectedTavolo,
+        tavolo:       tavolo,
         nome,
         data,
         orario:       ora,
@@ -1439,7 +1443,7 @@ function submitPren() {
     })
     .then(() => {
         closeModal();
-        toast(`Tavolo ${selectedTavolo} prenotato per ${nome}! 🌸`, 'ok');
+        toast(`Tavolo ${tavolo} prenotato per ${nome}! 🌸`, 'ok');
     })
     .catch(() => toast('Errore. Verifica le regole del database Firebase.', 'err'))
     .finally(() => {
