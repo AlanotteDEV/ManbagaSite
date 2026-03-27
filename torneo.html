@@ -219,7 +219,6 @@
 /* ── Globals ── */
 var _db, _auth, _eventId, _eventData;
 var _myPlayerRef = null;   /* giocatori doc id dell'utente loggato */
-var _regMode = 'register'; /* 'register' | 'update' */
 var _COLORS = ['#DC2626','#2563EB','#16A34A','#D97706','#7C3AED','#DB2777','#0891B2','#EA580C'];
 function _col(s){ var n=0; for(var i=0;i<s.length;i++) n+=s.charCodeAt(i); return _COLORS[n%_COLORS.length]; }
 function _ini(s){ var p=s.trim().split(/\s+/); return p.length>=2?(p[0][0]+p[1][0]).toUpperCase():s.slice(0,2).toUpperCase(); }
@@ -265,14 +264,8 @@ function renderRegBox(data, status) {
             + '<div class="torneo-reg-sub">Accedi al tuo profilo giocatore per iscriverti.</div>'
             + '<button class="btn btn-primary" style="clip-path:none;margin-top:8px" onclick="openRegModal()">🃏 Iscriviti / Accedi</button>';
     } else if (isRegistered) {
-        if (status === 'in-arrivo') {
-            regBox.innerHTML = '<div class="torneo-reg-title">✓ Sei iscritto</div>'
-                + '<div class="torneo-reg-sub">Puoi aggiornare il tuo mazzo main fino all\'inizio del torneo.</div>'
-                + '<button class="btn btn-primary" style="clip-path:none;margin-top:8px" onclick="openUpdateDeckModal()">🃏 Aggiorna mazzo</button>';
-        } else {
-            regBox.innerHTML = '<div class="torneo-reg-title">✓ Sei iscritto</div>'
-                + '<div class="torneo-reg-sub">Torneo in corso — il mazzo non può più essere modificato.</div>';
-        }
+        regBox.innerHTML = '<div class="torneo-reg-title">✓ Sei iscritto</div>'
+            + '<div class="torneo-reg-sub">Il tuo mazzo attuale viene letto automaticamente dal tuo profilo giocatore.</div>';
     } else if (isPending) {
         regBox.innerHTML = '<div class="torneo-reg-title">⏳ Richiesta inviata</div>'
             + '<div class="torneo-reg-sub">La tua iscrizione è in attesa di approvazione da parte dell\'admin. Ti avviseremo presto!</div>';
@@ -289,7 +282,6 @@ function renderRegBox(data, status) {
 
 /* ── Registration modal ── */
 function openRegModal() {
-    _regMode = 'register';
     document.getElementById('trn-reg-modal').classList.add('open');
     document.body.style.overflow = 'hidden';
 
@@ -299,20 +291,6 @@ function openRegModal() {
     _loadMyProfile(function(profile){
         if (!profile) { _showRegStep('reg-step-noprofile'); return; }
         _buildConfirmCard(profile);
-        _showRegStep('reg-step2');
-    });
-}
-
-function openUpdateDeckModal() {
-    _regMode = 'update';
-    document.getElementById('trn-reg-modal').classList.add('open');
-    document.body.style.overflow = 'hidden';
-
-    _loadMyProfile(function(profile){
-        if (!profile) { _showRegStep('reg-step-noprofile'); return; }
-        document.getElementById('reg-modal-sub').textContent = 'Verrà usato il tuo mazzo Main attuale.';
-        _buildConfirmCard(profile);
-        document.getElementById('reg-confirm-btn').textContent = '🃏 Aggiorna mazzo';
         _showRegStep('reg-step2');
     });
 }
@@ -360,22 +338,20 @@ function confirmRegistration() {
     var nick      = btn.dataset.nick;
     if (!profileId || !nick) return;
 
-    /* Duplicate check — approved + pending (skip in update mode) */
+    /* Duplicate check — approved + pending */
     var players = Array.isArray(_eventData.players) ? _eventData.players : [];
     var pending = Array.isArray(_eventData.pendingPlayers) ? _eventData.pendingPlayers : [];
-    if (_regMode !== 'update') {
-        var dup = players.concat(pending).some(function(p){
-            return (p.playerRef && p.playerRef===profileId)
-                || (p.name||'').toLowerCase()===nick.toLowerCase();
-        });
-        if (dup) {
-            var errEl = document.getElementById('reg-error');
-            errEl.textContent = players.some(function(p){ return p.playerRef===profileId; })
-                ? '⚠️ Sei già iscritto a questo torneo!'
-                : '⚠️ Hai già inviato una richiesta di iscrizione. Attendi l\'approvazione dell\'admin.';
-            errEl.style.display = 'block';
-            return;
-        }
+    var dup = players.concat(pending).some(function(p){
+        return (p.playerRef && p.playerRef===profileId)
+            || (p.name||'').toLowerCase()===nick.toLowerCase();
+    });
+    if (dup) {
+        var errEl = document.getElementById('reg-error');
+        errEl.textContent = players.some(function(p){ return p.playerRef===profileId; })
+            ? '⚠️ Sei già iscritto a questo torneo!'
+            : '⚠️ Hai già inviato una richiesta di iscrizione. Attendi l\'approvazione dell\'admin.';
+        errEl.style.display = 'block';
+        return;
     }
 
     /* Max players check */
@@ -387,56 +363,29 @@ function confirmRegistration() {
     }
 
     btn.disabled = true;
-    btn.textContent = _regMode === 'update' ? 'Aggiornamento…' : 'Iscrizione…';
+    btn.textContent = 'Iscrizione…';
 
     var deckList = btn.dataset.decklist || '';
     var deckName = btn.dataset.deckName || '';
 
-    if (_regMode === 'update') {
-        /* Aggiorna deckList del giocatore già iscritto */
-        var players = (_eventData.players || []).slice();
-        var idx = -1;
-        for (var i = 0; i < players.length; i++) {
-            if (players[i].playerRef === profileId || (players[i].name||'').toLowerCase() === nick.toLowerCase()) { idx = i; break; }
-        }
-        if (idx === -1) {
-            var e2 = document.getElementById('reg-error');
-            e2.textContent = 'Non risulti iscritto a questo torneo.';
-            e2.style.display = 'block';
-            btn.disabled = false; btn.textContent = '🃏 Aggiorna mazzo';
-            return;
-        }
-        players[idx] = Object.assign({}, players[idx], { deckList: deckList });
-        _db.collection('events').doc(_eventId).update({ players: players })
-            .then(function(){
-                document.getElementById('reg-success-msg').innerHTML =
-                    'Mazzo aggiornato per <strong>'+_esc(nick)+'</strong>!<br>'
-                    +(deckName ? 'Nuovo mazzo: <em>'+_esc(deckName)+'</em>' : '');
-                _showRegStep('reg-step3');
-                renderRegBox(_eventData, _eventData.status||'in-arrivo');
-            })
-            .catch(function(e){ var el=document.getElementById('reg-error'); el.textContent='Errore: '+(e.message||e); el.style.display='block'; })
-            .finally(function(){ btn.disabled=false; btn.textContent='🃏 Aggiorna mazzo'; });
-    } else {
-        /* Nuova iscrizione → in attesa di approvazione admin */
-        var pendingPlayer = {
-            name: nick, playerRef: profileId,
-            deckList: deckList, deckName: deckName,
-            requestedAt: Date.now()
-        };
-        _db.collection('events').doc(_eventId).update({
-            pendingPlayers: firebase.firestore.FieldValue.arrayUnion(pendingPlayer)
-        }).then(function(){
-            document.getElementById('reg-success-msg').innerHTML =
-                '⏳ Richiesta inviata per <strong>'+_esc(nick)+'</strong>!<br>'
-                + 'L\'admin approverà la tua iscrizione a breve.'
-                +(deckName ? '<br>Mazzo: <em>'+_esc(deckName)+'</em>' : '');
-            _showRegStep('reg-step3');
-            renderRegBox(_eventData, _eventData.status||'in-arrivo');
-        })
-        .catch(function(e){ var el=document.getElementById('reg-error'); el.textContent='Errore: '+(e.message||e); el.style.display='block'; })
-        .finally(function(){ btn.disabled=false; btn.textContent='✓ Conferma Iscrizione'; });
-    }
+    /* Nuova iscrizione → in attesa di approvazione admin */
+    var pendingPlayer = {
+        name: nick, playerRef: profileId,
+        deckList: deckList, deckName: deckName,
+        requestedAt: Date.now()
+    };
+    _db.collection('events').doc(_eventId).update({
+        pendingPlayers: firebase.firestore.FieldValue.arrayUnion(pendingPlayer)
+    }).then(function(){
+        document.getElementById('reg-success-msg').innerHTML =
+            '⏳ Richiesta inviata per <strong>'+_esc(nick)+'</strong>!<br>'
+            + 'L\'admin approverà la tua iscrizione a breve.'
+            +(deckName ? '<br>Mazzo: <em>'+_esc(deckName)+'</em>' : '');
+        _showRegStep('reg-step3');
+        renderRegBox(_eventData, _eventData.status||'in-arrivo');
+    })
+    .catch(function(e){ var el=document.getElementById('reg-error'); el.textContent='Errore: '+(e.message||e); el.style.display='block'; })
+    .finally(function(){ btn.disabled=false; btn.textContent='✓ Conferma Iscrizione'; });
 }
 
 var TCG_LABELS = {
@@ -457,6 +406,67 @@ var IMG_BASE = 'https://optcgapi.com/media/static/Card_Images/';
 
 function _esc(str) {
     return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ---- Fetch live decks from giocatori docs ---- */
+function _fetchPlayerDecks(players, cb) {
+    if (!players.length || !_db) { cb(players); return; }
+    var promises = players.map(function(p) {
+        if (!p.playerRef) return Promise.resolve(p);
+        return _db.collection('giocatori').doc(p.playerRef).get()
+            .then(function(doc) {
+                if (!doc.exists) return p;
+                var prof = doc.data();
+                var deck = _getMainDeck(prof);
+                return Object.assign({}, p, {
+                    deckList: (deck && deck.decklist) || '',
+                    deckName: (deck && deck.nome) || ''
+                });
+            }).catch(function() { return p; });
+    });
+    Promise.all(promises).then(cb).catch(function() { cb(players); });
+}
+
+function _renderRanking(players, status) {
+    var rankHtml;
+    if (players.length === 0) {
+        rankHtml = '<div class="trn-empty">'
+            + (status === 'in-arrivo' ? '⏳ Il torneo non è ancora iniziato.<br>La classifica sarà disponibile durante o dopo l\'evento.' : '📋 Nessun risultato disponibile.')
+            + '</div>';
+    } else {
+        var sorted = players.slice().sort(function(a, b) {
+            if (a.placement && b.placement) return a.placement - b.placement;
+            return (b.points || 0) - (a.points || 0) || (b.wins || 0) - (a.wins || 0);
+        });
+        _trnPlayers = sorted;
+        rankHtml = '<table class="torneo-table">'
+            + '<thead><tr>'
+            + '<th>#</th><th>Giocatore</th>'
+            + '<th>V</th><th>S</th><th>P</th>'
+            + '<th>Punti</th>'
+            + '</tr></thead>'
+            + '<tbody>'
+            + sorted.map(function(p, i) {
+                var rank = p.placement || (i + 1);
+                var medal = rank <= 3 ? MEDAL[rank - 1] + ' ' : '';
+                var rowCls = rank <= 3 ? ' class="trn-row--' + rank + '"' : '';
+                var rankCls = 'trn-rank' + (rank <= 3 ? ' trn-rank--' + rank : '');
+                var deckBtn = p.deckList
+                    ? '<button class="trn-deck-btn" onclick="openDeckModal(' + i + ')" title="Vedi deck list">&#127183;</button>'
+                    : '';
+                return '<tr' + rowCls + '>'
+                    + '<td class="' + rankCls + '">' + rank + '</td>'
+                    + '<td class="trn-name">' + medal + _esc(p.name) + deckBtn + '</td>'
+                    + '<td>' + (p.wins   || 0) + '</td>'
+                    + '<td>' + (p.losses || 0) + '</td>'
+                    + '<td>' + (p.draws  || 0) + '</td>'
+                    + '<td class="trn-pts">' + (p.points || 0) + '</td>'
+                    + '</tr>';
+            }).join('')
+            + '</tbody></table>'
+            + '<div style="margin-top:12px;font-size:11px;color:#aaa;font-weight:600;letter-spacing:0.05em">V = Vittorie &nbsp;·&nbsp; S = Sconfitte &nbsp;·&nbsp; P = Pareggi &nbsp;·&nbsp; Punti: V×3 + P×1</div>';
+    }
+    document.getElementById('torneo-ranking-content').innerHTML = rankHtml;
 }
 
 function renderTorneo(data) {
@@ -496,55 +506,17 @@ function renderTorneo(data) {
     document.getElementById('torneo-status-chip').innerHTML =
         '<div class="torneo-status-chip ' + (STATUS_CSS[status] || '') + '">' + stLbl + '</div>';
 
-    /* ---- Ranking table ---- */
-    var rankHtml;
-    if (players.length === 0) {
-        rankHtml = '<div class="trn-empty">'
-            + (status === 'in-arrivo' ? '⏳ Il torneo non è ancora iniziato.<br>La classifica sarà disponibile durante o dopo l\'evento.' : '📋 Nessun risultato disponibile.')
-            + '</div>';
-    } else {
-        /* Sort by placement or points */
-        var sorted = players.slice().sort(function(a, b) {
-            if (a.placement && b.placement) return a.placement - b.placement;
-            return (b.points || 0) - (a.points || 0) || (b.wins || 0) - (a.wins || 0);
-        });
-        _trnPlayers = sorted;
-
-        rankHtml = '<table class="torneo-table">'
-            + '<thead><tr>'
-            + '<th>#</th><th>Giocatore</th>'
-            + '<th>V</th><th>S</th><th>P</th>'
-            + '<th>Punti</th>'
-            + '</tr></thead>'
-            + '<tbody>'
-            + sorted.map(function(p, i) {
-                var rank = p.placement || (i + 1);
-                var medal = rank <= 3 ? MEDAL[rank - 1] + ' ' : '';
-                var rowCls = rank <= 3 ? ' class="trn-row--' + rank + '"' : '';
-                var rankCls = 'trn-rank' + (rank <= 3 ? ' trn-rank--' + rank : '');
-                var deckBtn = p.deckList
-                    ? '<button class="trn-deck-btn" onclick="openDeckModal(' + i + ')" title="Vedi deck list">&#127183;</button>'
-                    : '';
-                return '<tr' + rowCls + '>'
-                    + '<td class="' + rankCls + '">' + rank + '</td>'
-                    + '<td class="trn-name">' + medal + _esc(p.name) + deckBtn + '</td>'
-                    + '<td>' + (p.wins   || 0) + '</td>'
-                    + '<td>' + (p.losses || 0) + '</td>'
-                    + '<td>' + (p.draws  || 0) + '</td>'
-                    + '<td class="trn-pts">' + (p.points || 0) + '</td>'
-                    + '</tr>';
-            }).join('')
-            + '</tbody></table>'
-            + '<div style="margin-top:12px;font-size:11px;color:#aaa;font-weight:600;letter-spacing:0.05em">V = Vittorie &nbsp;·&nbsp; S = Sconfitte &nbsp;·&nbsp; P = Pareggi &nbsp;·&nbsp; Punti: V×3 + P×1</div>';
-    }
-    document.getElementById('torneo-ranking-content').innerHTML = rankHtml;
-
     /* ---- Registration CTA ---- */
     renderRegBox(data, status);
 
     /* Show page */
     document.getElementById('torneo-main').style.display = 'block';
     document.title = (data.title || 'Torneo') + ' — MANBAGA';
+
+    /* ---- Ranking table (live decks from giocatori) ---- */
+    _fetchPlayerDecks(players, function(enriched) {
+        _renderRanking(enriched, status);
+    });
 }
 
 function _infoCard(val, lbl) {
