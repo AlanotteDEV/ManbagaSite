@@ -636,14 +636,6 @@ document.addEventListener('DOMContentLoaded', function() {
         nav && nav.classList.toggle('scrolled', window.scrollY > 50);
     }, { passive: true });
 
-    /* Hamburger */
-    var burger = document.getElementById('nav-burger');
-    var links  = document.getElementById('nav-links');
-    if (burger) burger.addEventListener('click', function() {
-        links.classList.toggle('open');
-        burger.classList.toggle('open');
-    });
-
     /* Close deck modal on backdrop click */
     var deckModal = document.getElementById('trn-deck-modal');
     if (deckModal) deckModal.addEventListener('click', function(e) {
