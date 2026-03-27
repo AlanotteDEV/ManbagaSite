@@ -360,20 +360,22 @@ function confirmRegistration() {
     var nick      = btn.dataset.nick;
     if (!profileId || !nick) return;
 
-    /* Duplicate check — approved + pending */
+    /* Duplicate check — approved + pending (skip in update mode) */
     var players = Array.isArray(_eventData.players) ? _eventData.players : [];
     var pending = Array.isArray(_eventData.pendingPlayers) ? _eventData.pendingPlayers : [];
-    var dup = players.concat(pending).some(function(p){
-        return (p.playerRef && p.playerRef===profileId)
-            || (p.name||'').toLowerCase()===nick.toLowerCase();
-    });
-    if (dup) {
-        var errEl = document.getElementById('reg-error');
-        errEl.textContent = players.some(function(p){ return p.playerRef===profileId; })
-            ? '⚠️ Sei già iscritto a questo torneo!'
-            : '⚠️ Hai già inviato una richiesta di iscrizione. Attendi l\'approvazione dell\'admin.';
-        errEl.style.display = 'block';
-        return;
+    if (_regMode !== 'update') {
+        var dup = players.concat(pending).some(function(p){
+            return (p.playerRef && p.playerRef===profileId)
+                || (p.name||'').toLowerCase()===nick.toLowerCase();
+        });
+        if (dup) {
+            var errEl = document.getElementById('reg-error');
+            errEl.textContent = players.some(function(p){ return p.playerRef===profileId; })
+                ? '⚠️ Sei già iscritto a questo torneo!'
+                : '⚠️ Hai già inviato una richiesta di iscrizione. Attendi l\'approvazione dell\'admin.';
+            errEl.style.display = 'block';
+            return;
+        }
     }
 
     /* Max players check */
