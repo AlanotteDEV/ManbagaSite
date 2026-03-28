@@ -21,6 +21,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js" integrity="sha384-mLD+wdwynYnAhgHAkdPP5hroWJXJTNy5C2OhPKM55zuiV2vjzFD1LtBohaHq2Ex8" crossorigin="anonymous"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js" integrity="sha384-fXPb0uemoXlFCqQMtM0MOAv7FM0LsMegbR6x22q7lfnohaCNmTQzgA8BTrR8WqGx" crossorigin="anonymous"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js" integrity="sha384-NiuRnBs5Z0OgJ12kYJLSeWxANeJN369zH3+Zn0TGVPaCH/TKmbPFqfOmmLtrj+wg" crossorigin="anonymous"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 
     <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -858,6 +859,111 @@
         .t-card      { min-height: 185px; padding: 14px 10px 12px; }
     }
 
+    /* ─── TORNEO LOCK ────────────────────────────────────────── */
+    #torneo-lock {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 48px 24px;
+        gap: 20px;
+        background: linear-gradient(160deg, #1a0505 0%, #0d0d0d 60%);
+        border: 1px solid rgba(220,38,38,0.3);
+        border-radius: 20px;
+        position: relative;
+        overflow: hidden;
+    }
+    #torneo-lock::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(220,38,38,0.18) 0%, transparent 70%);
+        pointer-events: none;
+    }
+    #app-screen.torneo-attivo .tabs,
+    #app-screen.torneo-attivo #view-mappa,
+    #app-screen.torneo-attivo #view-lista {
+        display: none !important;
+    }
+    #app-screen.torneo-attivo #torneo-lock {
+        display: flex;
+    }
+    .tlock-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        background: rgba(220,38,38,0.15);
+        border: 1px solid rgba(220,38,38,0.4);
+        color: #ef4444;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: .2em;
+        text-transform: uppercase;
+        padding: 5px 14px;
+        border-radius: 30px;
+    }
+    .tlock-badge::before {
+        content: '';
+        width: 6px; height: 6px;
+        border-radius: 50%;
+        background: #ef4444;
+        box-shadow: 0 0 8px #ef4444;
+        animation: blink 1.2s ease infinite;
+    }
+    .tlock-icon {
+        font-size: 64px;
+        line-height: 1;
+        filter: drop-shadow(0 0 24px rgba(220,38,38,0.5));
+        animation: tlock-pulse 2.5s ease infinite;
+    }
+    @keyframes tlock-pulse {
+        0%, 100% { transform: scale(1);    filter: drop-shadow(0 0 20px rgba(220,38,38,0.4)); }
+        50%       { transform: scale(1.07); filter: drop-shadow(0 0 36px rgba(220,38,38,0.7)); }
+    }
+    .tlock-title {
+        font-family: var(--comic);
+        font-size: clamp(36px, 8vw, 56px);
+        letter-spacing: .06em;
+        color: var(--white);
+        line-height: 1;
+    }
+    .tlock-title span {
+        color: var(--red);
+    }
+    .tlock-name {
+        font-family: var(--comic);
+        font-size: clamp(18px, 4vw, 26px);
+        color: rgba(255,255,255,0.55);
+        letter-spacing: .05em;
+        margin-top: -8px;
+    }
+    .tlock-desc {
+        font-size: 14px;
+        color: rgba(255,255,255,0.45);
+        line-height: 1.7;
+        max-width: 320px;
+    }
+    .tlock-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--red);
+        color: #fff;
+        font-family: var(--comic);
+        font-size: 16px;
+        letter-spacing: .1em;
+        padding: 10px 28px;
+        border-radius: 50px;
+        text-decoration: none;
+        transition: transform .2s, box-shadow .2s;
+        box-shadow: 0 4px 20px rgba(220,38,38,0.35);
+    }
+    .tlock-link:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 28px rgba(220,38,38,0.5);
+    }
+
     /* ─── GRAIN ──────────────────────────────────────────────── */
     body::after {
         content: '';
@@ -941,6 +1047,19 @@
                 <span class="stats-spacer"></span>
                 <span class="stats-clock" id="live-clock">00:00</span>
                 <span class="stats-info">6 tavoli &middot; 4 posti</span>
+            </div>
+
+            <!-- Torneo in corso — lock -->
+            <div id="torneo-lock">
+                <span class="tlock-badge">Live</span>
+                <div class="tlock-icon">🏆</div>
+                <div class="tlock-title">TORNEO<br><span>IN CORSO</span></div>
+                <div id="tlock-nome" class="tlock-name"></div>
+                <p class="tlock-desc">
+                    Le prenotazioni tavoli sono sospese durante lo svolgimento del torneo.<br>
+                    Torna al termine dell'evento per prenotare il tuo posto! 🌸
+                </p>
+                <a id="tlock-live-btn" href="#" class="tlock-link hidden">&#128202; Segui il Live</a>
             </div>
 
             <!-- Tabs -->
@@ -1035,8 +1154,32 @@ const FB_CONFIG = {
     appId:       '1:466874129336:web:fd07925523c35921fe8d4d'
 };
 firebase.initializeApp(FB_CONFIG);
-const auth = firebase.auth();
-const db   = firebase.database();
+const auth      = firebase.auth();
+const db        = firebase.database();
+const firestore = firebase.firestore();
+
+/* ── TORNEO IN CORSO ──────────────────────────────────────── */
+firestore.collection('events')
+    .where('status', '==', 'in-corso')
+    .where('type',   '==', 'competizione')
+    .onSnapshot(snap => {
+        const appScreen = document.getElementById('app-screen');
+        if (!snap.empty) {
+            const torneo = snap.docs[0].data();
+            const fid    = snap.docs[0].id;
+            document.getElementById('tlock-nome').textContent = torneo.title || '';
+            const liveBtn = document.getElementById('tlock-live-btn');
+            liveBtn.href = 'torneo.html?id=' + fid;
+            liveBtn.classList.remove('hidden');
+            appScreen.classList.add('torneo-attivo');
+        } else {
+            document.getElementById('tlock-nome').textContent = '';
+            document.getElementById('tlock-live-btn').classList.add('hidden');
+            appScreen.classList.remove('torneo-attivo');
+        }
+    }, () => {
+        // se Firestore non raggiungibile, non bloccare nulla
+    });
 
 /* ── STATE ───────────────────────────────────────────────── */
 let selectedTavolo  = null;
