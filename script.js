@@ -997,7 +997,7 @@ function showToast(message, type) {
     toast.setAttribute('role', 'alert');
     toast.innerHTML =
         '<span class="toast-icon">' + (icons[type] || icons.info) + '</span>' +
-        '<span>' + message + '</span>';
+        '<span>' + _escHtml(message) + '</span>';
 
     container.appendChild(toast);
 
@@ -1233,7 +1233,7 @@ function tavSubmitPrenotazione() {
     })
     .then(function () {
         tavCloseModal();
-        showToast('Tavolo ' + _tavSelectedTavolo + ' prenotato per ' + nome + '!', 'success');
+        showToast('Tavolo ' + _escHtml(String(_tavSelectedTavolo)) + ' prenotato per ' + _escHtml(nome) + '!', 'success');
     })
     .catch(function () {
         showToast('Errore. Verifica le regole del database Firebase.', 'error');
