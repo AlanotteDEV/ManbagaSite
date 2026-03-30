@@ -1385,7 +1385,7 @@ function render(data) {
             const expSoon  = x.expiresAt ? isExpiringSoon(x.expiresAt) : false;
             return `<div class="pren-row">
                 <div class="pren-main">
-                    <span class="pren-table">Tavolo ${x.tavolo}</span>
+                    <span class="pren-table">Tavolo ${esc(String(x.tavolo))}</span>
                     <span class="pren-name">${esc(x.nome)}</span>
                     <span class="pren-meta">${timeStr}${dateStr}</span>
                     <div class="pren-people-dots">${dots}</div>
@@ -1467,8 +1467,8 @@ function esc(s) {
 }
 function fmtDate(d) {
     if (!d) return '';
-    try { const [y,m,g] = d.split('-'); return `${g}/${m}/${y}`; }
-    catch { return d; }
+    try { const [y,m,g] = d.split('-'); return `${esc(g)}/${esc(m)}/${esc(y)}`; }
+    catch { return esc(d); }
 }
 
 /* ── AUTH OVERLAY HELPERS ────────────────────────────────── */
