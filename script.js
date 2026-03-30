@@ -4,6 +4,18 @@
 
 'use strict';
 
+var _ALLOWED_DOMAINS = ['instagram.com', 'manbaga-site.vercel.app'];
+
+function isSafeLink(url) {
+    if (!url || !/^https?:\/\//i.test(url)) return false;
+    try {
+        var domain = new URL(url).hostname.replace('www.', '');
+        return _ALLOWED_DOMAINS.some(function(d) {
+            return domain === d || domain.endsWith('.' + d);
+        });
+    } catch(e) { return false; }
+}
+
 /* Notifica leggera — sostituisce alert() */
 function mbNotify(msg, type) {
     var n = document.createElement('div');
@@ -291,7 +303,7 @@ function renderEvents() {
 
 function _renderEventCard(e) {
     var tagCls = e.type === 'community' ? ' event-tag--community' : '';
-    var safeLink = (e.link && /^https?:\/\//i.test(e.link)) ? e.link : '';
+    var safeLink = isSafeLink(e.link) ? e.link : '';
     return '<div class="event-row">'
         + '<div class="event-date-box">'
         + '<div class="event-day-num">' + _escHtml(e.day || '—') + '</div>'
@@ -318,7 +330,7 @@ function _renderCompCard(e) {
     var tcgLbl  = _TCG_LABELS[tcg]    || 'TCG';
     var stLbl   = _STATUS_LABELS[status] || status;
     var fid     = _escHtml(e._fid || e.id || '');
-    var safeLink = (e.link && /^https?:\/\//i.test(e.link)) ? e.link : '';
+    var safeLink = isSafeLink(e.link) ? e.link : '';
 
     var actions = '';
     if (safeLink && status === 'in-arrivo') {
