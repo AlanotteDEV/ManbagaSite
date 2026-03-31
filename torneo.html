@@ -273,7 +273,7 @@ function renderRegBox(data, status) {
         var html = '<div class="torneo-reg-title">Partecipa al Torneo</div>'
             + '<div class="torneo-reg-sub">Hai un profilo giocatore? Iscriviti con il tuo mazzo Main.</div>'
             + '<button class="btn btn-primary" style="clip-path:none;margin-top:8px" onclick="openRegModal()">🃏 Registrati al Torneo</button>';
-        if (data.link) html += '<div style="margin-top:10px;font-size:12px;color:rgba(0,0,0,.45)">oppure <a href="'+data.link+'" target="_blank" rel="noopener" style="color:#DC2626;font-weight:700">iscriviti esternamente →</a></div>';
+       if (data.link) html += '<div style="margin-top:10px;font-size:12px;color:rgba(0,0,0,.45)">oppure <a href="' + (/^https?:\/\//i.test(data.link) ? _esc(data.link) : '#') + '" target="_blank" rel="noopener" style="color:#DC2626;font-weight:700">iscriviti esternamente →</a></div>';
         regBox.innerHTML = html;
     } else {
         regBox.style.display = 'none';
@@ -579,7 +579,7 @@ function openDeckModal(idx) {
                     + '<span class="trn-deck-card-qty">×' + c.qty + '</span>'
                     + '<img src="' + IMG_BASE + c.id + '.jpg" alt="' + c.id + '" loading="lazy"'
                     + ' onerror="var t=this;if(!t._p){t._p=1;t.src=\'' + IMG_BASE + '\'+t.alt+\'.png\';}else{t.parentNode.classList.add(\'no-img\');}">'
-                    + '<div class="trn-deck-card-id">' + c.id + '</div>'
+                    + '<div class="trn-deck-card-id">' + _esc(c.id) + '</div>'
                     + '</div>';
             }).join('')
             + '</div>';
