@@ -370,7 +370,7 @@
 
             <p style="margin-top:12px"><strong style="color:var(--white)">Profilo Giocatore</strong></p>
             <ul>
-                <li><strong>Dati del profilo:</strong> nome e cognome, nickname (pubblicamente visibile nella pagina Giocatori), formato di gioco preferito e decklist del mazzo attuale (opzionale). I dati vengono memorizzati su Firebase Firestore e sono visibili a tutti i visitatori del sito. Non è richiesta registrazione né autenticazione.</li>
+                <li><strong>Dati del profilo:</strong> nome e cognome, nickname (pubblicamente visibile nella pagina Giocatori), formato di gioco preferito e decklist del mazzo attuale (opzionale). I dati vengono memorizzati su Firebase Firestore e sono visibili a tutti i visitatori del sito. È richiesta la registrazione con account Firebase per creare o modificare il proprio profilo.</li>
             </ul>
 
             <p style="margin-top:12px"><strong style="color:var(--white)">Dati Tecnici (raccolti automaticamente)</strong></p>
@@ -435,7 +435,7 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td><code>manbaga_cookie_consent</code></td>
+                        <td><code>manbaga_cookie_v2</code></td>
                         <td><span class="badge-necessary">Necessario</span></td>
                         <td>Persistente</td>
                         <td>Salva la tua scelta sul consenso cookie per non mostrare di nuovo il banner.</td>
@@ -533,6 +533,15 @@
                     <strong>EmailJS (EmailJS Ltd.):</strong> servizio di invio email per il modulo di contatto e preordini. I dati del form (nome, email, messaggio) transitano sui server di EmailJS con infrastruttura negli USA. EmailJS aderisce alle misure di protezione adeguate ai sensi dell'art. 46 GDPR.
                     <a href="https://www.emailjs.com/legal/privacy-policy/" target="_blank" rel="noopener">Privacy Policy EmailJS ↗</a>
                 </li>
+                <li>
+     <strong>Vercel Inc.:</strong> servizio di hosting e distribuzione del sito web. 
+    Ogni richiesta HTTP al sito transita attraverso l'infrastruttura Vercel, che registra 
+    automaticamente l'indirizzo IP nei propri log di accesso come residuo tecnico della 
+    connessione HTTP, senza alcuna finalità di profilazione. Vercel Inc. ha sede negli USA 
+    e aderisce al framework <strong>EU-U.S. Data Privacy Framework</strong>, garantendo 
+    un livello adeguato di protezione per i trasferimenti di dati verso gli USA.
+    <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noopener">Privacy Policy Vercel ↗</a>
+</li>
                 <li>
                     <strong>optcgapi.com:</strong> servizio di terze parti non ufficiale utilizzato per il caricamento delle immagini delle carte One Piece TCG nelle sezioni Tornei e Giocatori. Endpoint utilizzato: <code>https://optcgapi.com/media/static/Card_Images/</code>. Quando il browser carica un'immagine, l'indirizzo IP dell'utente viene registrato automaticamente nei log del server di optcgapi.com come residuo tecnico della connessione HTTP, senza alcuna finalità di profilazione. Non vengono trasmessi dati personali aggiuntivi. Il servizio non imposta cookie. Le immagini delle carte sono di proprietà di <strong>Bandai Co., Ltd.</strong>; il loro utilizzo avviene a scopo informativo e di riferimento per la community TCG.
                 </li>
