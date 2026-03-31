@@ -528,7 +528,7 @@ function _infoCard(val, lbl) {
 
 function renderError(msg) {
     document.getElementById('torneo-hero-inner').innerHTML =
-        '<div style="color:rgba(245,240,232,0.6);font-size:14px">' + (msg || 'Torneo non trovato.') + '</div>'
+        '<div style="color:rgba(245,240,232,0.6);font-size:14px">' + _esc(msg || 'Torneo non trovato.') + '</div>'
         + '<a href="index.html#eventi" style="display:inline-block;margin-top:20px;color:#DC2626;font-weight:700;text-decoration:none">← Torna agli eventi</a>';
 }
 
