@@ -17,11 +17,12 @@
 
     <!-- Fonts self-hosted (GDPR compliant — nessuna richiesta a Google) -->
     <link rel="stylesheet" href="fonts/fonts.css">
+    <link rel="stylesheet" href="style.css">
 
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js" integrity="sha384-mLD+wdwynYnAhgHAkdPP5hroWJXJTNy5C2OhPKM55zuiV2vjzFD1LtBohaHq2Ex8" crossorigin="anonymous"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js" integrity="sha384-fXPb0uemoXlFCqQMtM0MOAv7FM0LsMegbR6x22q7lfnohaCNmTQzgA8BTrR8WqGx" crossorigin="anonymous"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js" integrity="sha384-NiuRnBs5Z0OgJ12kYJLSeWxANeJN369zH3+Zn0TGVPaCH/TKmbPFqfOmmLtrj+wg" crossorigin="anonymous"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js" integrity="sha384-/SBCyt0JELVRyyrOp+QG5CdnpVoAry+uw9hdherLgyZxxePtHjOvQmJU5CHymUhT" crossorigin="anonymous"></script>
 
     <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -129,51 +130,7 @@
     @keyframes tIn  { from { transform: translateX(calc(100% + 20px)); opacity: 0; } to { transform: none; opacity: 1; } }
     @keyframes tOut { from { opacity: 1; max-height: 80px; } to { opacity: 0; max-height: 0; padding: 0; margin: 0; } }
 
-    /* ─── HEADER ─────────────────────────────────────────────── */
-    #header {
-        position: fixed;
-        top: 0; left: 0; right: 0;
-        height: var(--nav-h);
-        background: rgba(8,8,8,.97);
-        backdrop-filter: blur(14px);
-        border-bottom: 2px solid rgba(244,114,182,.25);
-        z-index: 800;
-        display: flex;
-        align-items: center;
-        padding: 0 20px;
-        gap: 12px;
-        justify-content: space-between;
-    }
-
-    .header-logo {
-        font-family: var(--comic);
-        font-size: 26px;
-        letter-spacing: .06em;
-        text-decoration: none;
-        flex-shrink: 0;
-        background: linear-gradient(135deg, var(--white) 40%, var(--pink));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
-
-    .header-back {
-        display: inline-flex;
-        align-items: center;
-        gap: 7px;
-        font-size: 11px;
-        font-weight: 700;
-        letter-spacing: .12em;
-        text-transform: uppercase;
-        color: var(--gray);
-        text-decoration: none;
-        transition: color .2s, border-color .2s;
-        padding: 6px 14px;
-        border: 1px solid rgba(255,255,255,.08);
-        border-radius: 20px;
-        white-space: nowrap;
-    }
-    .header-back:hover { color: var(--pink); border-color: rgba(244,114,182,.4); }
+    /* ─── NAV AUTH ───────────────────────────────────────────── */
 
     #header-user {
         display: flex;
@@ -845,18 +802,34 @@
     .btn-confirm:disabled { opacity: .4; cursor: not-allowed; transform: none; box-shadow: none; }
 
     /* ─── RESPONSIVE ─────────────────────────────────────────── */
+    /* Nav auth: limita la larghezza del nome utente */
+    #header-user { max-width: 140px; overflow: hidden; }
+    #header-nome { max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; vertical-align: middle; }
+
     @media (max-width: 700px) {
         #grid-tavoli { grid-template-columns: repeat(2, 1fr); gap: 11px; }
         .page-inner  { padding: 28px 16px 60px; }
         .auth-card   { padding: 30px 20px; }
         .tab-btn     { padding: 10px 14px 12px; font-size: 10px; }
-        #header      { padding: 0 14px; gap: 8px; }
-        .header-logo { font-size: 22px; }
-        .header-back span { display: none; }
+        .stats-bar   { gap: 6px; font-size: 11px; }
+    }
+    @media (max-width: 520px) {
+        .page-label  { font-size: 10px; }
+        .modal-box   { padding: 22px 16px 20px; border-radius: 18px 18px 0 0; position: fixed; bottom: 0; left: 0; right: 0; top: auto; max-height: 92vh; overflow-y: auto; }
+        #modal-overlay { align-items: flex-end; }
+        .time-row    { gap: 8px; }
+        .people-btn  { padding: 14px 8px; }
+    }
+    @media (max-width: 480px) {
+        /* Nasconde il nome e mostra solo "Esci" su schermi molto piccoli */
+        #header-nome { display: none; }
+        #header-user { max-width: none; }
+        .stats-info  { display: none; }
     }
     @media (max-width: 400px) {
         #grid-tavoli { grid-template-columns: 1fr 1fr; gap: 9px; }
         .t-card      { min-height: 185px; padding: 14px 10px 12px; }
+        .auth-card   { padding: 24px 14px; }
     }
 
     /* ─── TORNEO LOCK ────────────────────────────────────────── */
@@ -971,7 +944,7 @@
         background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
         pointer-events: none; z-index: 0; opacity: .4;
     }
-    main, #header { position: relative; z-index: 1; }
+    main { position: relative; z-index: 1; }
     </style>
 </head>
 <body>
@@ -990,20 +963,29 @@
 <div id="toast-wrap" aria-live="polite"></div>
 
 <!-- Header -->
-<header id="header">
-    <a href="index.html" class="header-logo">MAN<span>B</span>AGA</a>
-    <a href="index.html" class="header-back">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-            <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
-        </svg>
-        <span>Torna al sito</span>
-    </a>
-    <button id="header-login" onclick="showAuthOverlay()" class="btn-logout">Accedi</button>
-    <div id="header-user" class="hidden">
-        <span id="header-nome"></span>
-        <button onclick="doLogout()" class="btn-logout">Esci</button>
+<nav id="nav">
+    <div class="nav-inner">
+        <a class="nav-logo" href="index.html">MAN<span class="dot">B</span>AGA<span class="dot">.</span></a>
+        <ul class="nav-links" id="nav-links">
+            <li><a href="index.html#catalogo">Catalogo</a></li>
+            <li><a href="index.html#nuovi-arrivi">Novit&#224;</a></li>
+            <li><a href="index.html#eventi">Eventi</a></li>
+            <li><a href="index.html#recensioni">Recensioni</a></li>
+            <li><a href="tavoli.html">Tavoli</a></li>
+            <li><a href="chi-siamo.html">Chi Siamo</a></li>
+            <li><a href="giocatori.html">Giocatori</a></li>
+            <li><a href="index.html#contatti" class="nav-cta">Contatti</a></li>
+        </ul>
+        <div id="header-user" class="hidden" style="display:flex;align-items:center;gap:8px;margin-right:4px">
+            <span id="header-nome" class="btn-logout" style="border:none;cursor:default"></span>
+            <button onclick="doLogout()" class="btn-logout">Esci</button>
+        </div>
+        <button id="header-login" onclick="showAuthOverlay()" class="btn-logout">Accedi</button>
+        <button class="nav-burger" id="nav-burger" aria-label="Apri menu">
+            <span></span><span></span><span></span>
+        </button>
     </div>
-</header>
+</nav>
 
 <main>
     <div class="page-inner">
@@ -1099,7 +1081,7 @@
 
             <div>
                 <label class="field-label" for="p-nome">Nome Prenotazione</label>
-                <input type="text" id="p-nome" class="field-input" placeholder="Es. Mario Rossi"
+                <input type="text" id="p-nome" class="field-input" placeholder="Es. Mario Rossi" maxlength="80"
                        onkeypress="if(event.key==='Enter')document.getElementById('p-data').focus()">
             </div>
 
@@ -1391,7 +1373,7 @@ function render(data) {
                     <div class="pren-people-dots">${dots}</div>
                     ${expSoon ? '<span class="t-expire-soon">⏱ In scadenza!</span>' : ''}
                 </div>
-                <button class="btn-del" onclick="delPren('${x.id}')" title="Cancella" aria-label="Cancella prenotazione">✕</button>
+                <button class="btn-del" onclick="delPren('${esc(x.id)}')" title="Cancella" aria-label="Cancella prenotazione">✕</button>
             </div>`;
         }).join('');
     }
@@ -1540,6 +1522,7 @@ function submitPren() {
     const uscita = (document.getElementById('p-uscita').value || '').trim();
 
     if (!nome)           { toast('Inserisci il nome per la prenotazione.', 'err'); return; }
+    if (nome.length > 80){ toast('Nome troppo lungo (max 80 caratteri).', 'err'); return; }
     if (!data)           { toast('Seleziona la data.', 'err'); return; }
     if (!ora)            { toast("Inserisci l'orario di arrivo.", 'err'); return; }
     if (!uscita)         { toast("Inserisci l'orario di uscita.", 'err'); return; }
@@ -1572,8 +1555,9 @@ function submitPren() {
     btn.disabled = true;
     btn.textContent = 'Salvataggio...';
 
-    const id = Date.now();
-    db.ref('prenotazioni/' + id).set({
+    const ref = db.ref('prenotazioni').push();
+    const id  = ref.key;
+    ref.set({
         id,
         tavolo:       tavolo,
         nome,
@@ -1596,6 +1580,12 @@ function submitPren() {
 }
 
 function delPren(id) {
+    if (!auth.currentUser) { toast('Devi essere autenticato.', 'err'); return; }
+    const booking = Object.values(currentData).find(x => String(x.id) === String(id));
+    if (!booking || booking.utenteId !== auth.currentUser.uid) {
+        toast('Non autorizzato.', 'err');
+        return;
+    }
     if (!confirm('Cancellare questa prenotazione?')) return;
     db.ref('prenotazioni/' + id).remove()
         .then(() => toast('Prenotazione cancellata.', 'info'))
@@ -1616,7 +1606,7 @@ function autoCleanExpired(all) {
     all.forEach(p => {
         if (isExpired(p) && p.utenteId === auth.currentUser.uid) {
             db.ref('prenotazioni/' + p.id).remove()
-               toast(`Tavolo ${esc(String(p.tavolo))} liberato automaticamente! 🌸`, 'info')
+                .then(() => toast(`Tavolo ${esc(String(p.tavolo))} liberato automaticamente! 🌸`, 'info'))
                 .catch(() => {});
         }
     });
@@ -1637,7 +1627,155 @@ document.addEventListener('keydown', e => {
     }
 });
 </script>
+<footer id="footer">
+    <div class="footer-inner">
+        <div class="footer-grid">
+
+            <div class="footer-col footer-col--brand">
+                <span class="footer-logo">MAN<span class="dot">B</span>AGA<span class="dot">.</span></span>
+                <p class="footer-tagline">
+                    Manga, comics, giochi di carte e gadget anime.<br>
+                    Il punto di riferimento per gli appassionati<br>di Canosa di Puglia e dintorni.
+                </p>
+                <div class="footer-brand-badges">
+                    <span class="footer-badge">Manga</span>
+                    <span class="footer-badge">TCG</span>
+                    <span class="footer-badge">Figures</span>
+                    <span class="footer-badge">Gadget</span>
+                </div>
+                <nav class="footer-nav-links" aria-label="Link rapidi">
+                    <a href="index.html#catalogo">Catalogo</a>
+                    <a href="index.html#nuovi-arrivi">Novità</a>
+                    <a href="index.html#eventi">Eventi</a>
+                    <a href="cronologia-tornei.html">Cronologia Tornei</a>
+                    <a href="index.html#recensioni">Recensioni</a>
+                    <a href="tavoli.html">Prenota un tavolo</a>
+                    <a href="faq.html">FAQ</a>
+                    <a href="chi-siamo.html">Chi siamo</a>
+                    <a href="giocatori.html">Giocatori</a>
+                </nav>
+            </div>
+
+            <div class="footer-col">
+                <div class="footer-col-h">ORARI <span class="footer-col-h-jp">営業時間</span></div>
+                <div class="footer-hours">
+                    <div class="footer-hours-row">
+                        <span>Lun &ndash; Sabato</span>
+                        <span class="footer-hours-time">10:00 &ndash; 13:00</span>
+                    </div>
+                    <div class="footer-hours-row">
+                        <span></span>
+                        <span class="footer-hours-time">17:00 &ndash; 20:30</span>
+                    </div>
+                    <div class="footer-hours-row">
+                        <span>Domenica</span>
+                        <span class="footer-hours-time">10:00 &ndash; 13:00</span>
+                    </div>
+                    <div class="footer-hours-row footer-hours-closed">
+                        <span></span>
+                        <span>Pomeriggio chiuso</span>
+                    </div>
+                </div>
+                <div class="footer-open-badge">
+                    <span class="footer-open-dot"></span>
+                    Aperto oggi
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <div class="footer-col-h">DOVE SIAMO <span class="footer-col-h-jp">所在地</span></div>
+                <address class="footer-address">
+                    Via Padre Reginaldo<br>
+                    Giuliani, 21<br>
+                    76012 Canosa di Puglia (BT)
+                </address>
+                <a href="https://maps.google.com/?q=Via+Padre+Reginaldo+Giuliani+21+Canosa+di+Puglia"
+                   target="_blank" rel="noopener noreferrer" class="footer-map-link">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    Apri in Google Maps
+                </a>
+            </div>
+
+            <div class="footer-col">
+                <div class="footer-col-h">CONTATTI <span class="footer-col-h-jp">連絡先</span></div>
+                <a href="https://www.instagram.com/_manbaga_/" target="_blank" rel="noopener noreferrer"
+                   class="footer-social-link footer-social-link--ig">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" aria-hidden="true">
+                        <rect x="2" y="2" width="20" height="20" rx="5"/>
+                        <circle cx="12" cy="12" r="4"/>
+                        <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/>
+                    </svg>
+                    <span>
+                        <span class="footer-link-label">Instagram</span>
+                        <span class="footer-link-sub">@_manbaga_</span>
+                    </span>
+                </a>
+                <a href="mailto:manbagacomics@gmail.com"
+                   class="footer-social-link footer-social-link--mail">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" aria-hidden="true">
+                        <rect x="2" y="4" width="20" height="16" rx="2"/>
+                        <polyline points="2,4 12,13 22,4"/>
+                    </svg>
+                    <span>
+                        <span class="footer-link-label">Email</span>
+                        <span class="footer-link-sub">manbagacomics@gmail.com</span>
+                    </span>
+                </a>
+                <a href="index.html#contatti" class="footer-social-link footer-social-link--form">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" aria-hidden="true">
+                        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                    </svg>
+                    <span>
+                        <span class="footer-link-label">Form contatti</span>
+                        <span class="footer-link-sub">Scrivici dal sito</span>
+                    </span>
+                </a>
+            </div>
+
+        </div>
+
+        <div class="footer-divider">
+            <div class="footer-divider-line"></div>
+            <span class="footer-divider-mark" aria-hidden="true">&#10022;</span>
+            <div class="footer-divider-line"></div>
+        </div>
+
+        <div class="footer-bottom">
+            <span>&copy; 2026 MANBAGA Comics &amp; Games &mdash; Canosa di Puglia &mdash; P.IVA 09055430723</span>
+            <span class="footer-bottom-links">
+                <a href="faq.html" class="footer-bottom-link">FAQ</a>
+                <span class="footer-bottom-sep">&middot;</span>
+                <a href="privacy.html" class="footer-bottom-link">Privacy &amp; Cookie Policy</a>
+                <span class="footer-bottom-sep">&middot;</span>
+                <button class="footer-bottom-link footer-cookie-btn" onclick="mbResetCookies()" type="button">Gestisci cookie</button>
+            </span>
+        </div>
+    </div>
+</footer>
+
 <script src="cookie-banner.js"></script>
 <script src="manga-mode.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var burger = document.getElementById('nav-burger');
+    var links  = document.getElementById('nav-links');
+    if (burger && links) {
+        burger.addEventListener('click', function() {
+            links.classList.toggle('open');
+            burger.classList.toggle('open');
+        });
+        links.querySelectorAll('a').forEach(function(a) {
+            a.addEventListener('click', function() {
+                links.classList.remove('open');
+                burger.classList.remove('open');
+            });
+        });
+    }
+    window.addEventListener('scroll', function() {
+        var nav = document.getElementById('nav');
+        if (nav) nav.classList.toggle('scrolled', window.scrollY > 40);
+    }, { passive: true });
+});
+</script>
 </body>
 </html>

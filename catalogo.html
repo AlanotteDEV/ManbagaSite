@@ -65,6 +65,8 @@
             <li><a href="index.html#eventi">Eventi</a></li>
             <li><a href="index.html#recensioni">Recensioni</a></li>
             <li><a href="tavoli.html">Tavoli</a></li>
+            <li><a href="chi-siamo.html">Chi Siamo</a></li>
+            <li><a href="giocatori.html">Giocatori</a></li>
             <li><a href="index.html#contatti" class="nav-cta">Contatti</a></li>
         </ul>
 
@@ -416,7 +418,7 @@ var catPage = (function () {
         var c = params.get('cat');
         var s = params.get('sub');
         if (c && CATS[c]) _cat = c;
-        if (s) _sub = s;
+        if (s && CATS[_cat] && CATS[_cat].subs && CATS[_cat].subs.some(function(sub){ return sub.key === s; })) _sub = s;
     }
 
     /* ---- Update URL ---- */

@@ -90,6 +90,7 @@
             <li><a href="cronologia-tornei.html">Cronologia</a></li>
             <li><a href="index.html#recensioni">Recensioni</a></li>
             <li><a href="tavoli.html">Tavoli</a></li>
+            <li><a href="chi-siamo.html">Chi Siamo</a></li>
             <li><a href="giocatori.html">Giocatori</a></li>
             <li><a href="index.html#contatti" class="nav-cta">Contatti</a></li>
         </ul>
@@ -135,7 +136,11 @@
             <div class="trn-reg-modal-sub" id="reg-modal-sub">Il tuo mazzo Main verrà registrato automaticamente.</div>
             <div id="reg-selected-card" class="trn-reg-selected"></div>
             <div id="reg-error" class="trn-reg-error" style="display:none"></div>
-            <div style="display:flex;gap:10px;margin-top:16px">
+            <p style="font-size:11px;color:rgba(245,240,232,.4);line-height:1.5;margin-top:12px;border-top:1px solid rgba(255,255,255,.06);padding-top:10px">
+                ⚠️ Nickname e mazzo saranno visibili pubblicamente nella classifica del torneo.
+                <a href="privacy.html" target="_blank" style="color:#DC2626;text-decoration:underline">Privacy Policy ↗</a>
+            </p>
+            <div style="display:flex;gap:10px;margin-top:10px">
                 <button class="trn-reg-btn trn-reg-btn--ghost" onclick="closeRegModal()">Annulla</button>
                 <button class="trn-reg-btn trn-reg-btn--primary" id="reg-confirm-btn" onclick="confirmRegistration()">✓ Conferma Iscrizione</button>
             </div>
@@ -199,9 +204,122 @@
 <!-- FOOTER -->
 <footer id="footer">
     <div class="footer-inner">
-        <div class="footer-bottom" style="border-top:1px solid rgba(255,255,255,0.08);padding-top:24px;margin-top:0">
-            <span>&copy; 2026 MANBAGA Comics &amp; Games &mdash; Canosa di Puglia</span>
+        <div class="footer-grid">
+
+            <div class="footer-col footer-col--brand">
+                <span class="footer-logo">MAN<span class="dot">B</span>AGA<span class="dot">.</span></span>
+                <p class="footer-tagline">
+                    Manga, comics, giochi di carte e gadget anime.<br>
+                    Il punto di riferimento per gli appassionati<br>di Canosa di Puglia e dintorni.
+                </p>
+                <div class="footer-brand-badges">
+                    <span class="footer-badge">Manga</span>
+                    <span class="footer-badge">TCG</span>
+                    <span class="footer-badge">Figures</span>
+                    <span class="footer-badge">Gadget</span>
+                </div>
+                <nav class="footer-nav-links" aria-label="Link rapidi">
+                    <a href="index.html#catalogo">Catalogo</a>
+                    <a href="index.html#nuovi-arrivi">Novità</a>
+                    <a href="index.html#eventi">Eventi</a>
+                    <a href="cronologia-tornei.html">Cronologia Tornei</a>
+                    <a href="index.html#recensioni">Recensioni</a>
+                    <a href="tavoli.html">Prenota un tavolo</a>
+                    <a href="faq.html">FAQ</a>
+                    <a href="chi-siamo.html">Chi siamo</a>
+                    <a href="giocatori.html">Giocatori</a>
+                </nav>
+            </div>
+
+            <div class="footer-col">
+                <div class="footer-col-h">ORARI <span class="footer-col-h-jp">営業時間</span></div>
+                <div class="footer-hours">
+                    <div class="footer-hours-row">
+                        <span>Lun &ndash; Sabato</span>
+                        <span class="footer-hours-time">10:00 &ndash; 13:00</span>
+                    </div>
+                    <div class="footer-hours-row">
+                        <span></span>
+                        <span class="footer-hours-time">17:00 &ndash; 20:30</span>
+                    </div>
+                    <div class="footer-hours-row">
+                        <span>Domenica</span>
+                        <span class="footer-hours-time">10:00 &ndash; 13:00</span>
+                    </div>
+                    <div class="footer-hours-row footer-hours-closed">
+                        <span></span>
+                        <span>Pomeriggio chiuso</span>
+                    </div>
+                </div>
+                <div class="footer-open-badge">
+                    <span class="footer-open-dot"></span>
+                    Aperto oggi
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <div class="footer-col-h">DOVE SIAMO <span class="footer-col-h-jp">所在地</span></div>
+                <address class="footer-address">
+                    Via Padre Reginaldo<br>
+                    Giuliani, 21<br>
+                    76012 Canosa di Puglia (BT)
+                </address>
+                <a href="https://maps.google.com/?q=Via+Padre+Reginaldo+Giuliani+21+Canosa+di+Puglia"
+                   target="_blank" rel="noopener noreferrer" class="footer-map-link">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    Apri in Google Maps
+                </a>
+            </div>
+
+            <div class="footer-col">
+                <div class="footer-col-h">CONTATTI <span class="footer-col-h-jp">連絡先</span></div>
+                <a href="https://www.instagram.com/_manbaga_/" target="_blank" rel="noopener noreferrer"
+                   class="footer-social-link footer-social-link--ig">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" aria-hidden="true">
+                        <rect x="2" y="2" width="20" height="20" rx="5"/>
+                        <circle cx="12" cy="12" r="4"/>
+                        <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/>
+                    </svg>
+                    <span>
+                        <span class="footer-link-label">Instagram</span>
+                        <span class="footer-link-sub">@_manbaga_</span>
+                    </span>
+                </a>
+                <a href="mailto:manbagacomics@gmail.com"
+                   class="footer-social-link footer-social-link--mail">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" aria-hidden="true">
+                        <rect x="2" y="4" width="20" height="16" rx="2"/>
+                        <polyline points="2,4 12,13 22,4"/>
+                    </svg>
+                    <span>
+                        <span class="footer-link-label">Email</span>
+                        <span class="footer-link-sub">manbagacomics@gmail.com</span>
+                    </span>
+                </a>
+                <a href="index.html#contatti" class="footer-social-link footer-social-link--form">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" aria-hidden="true">
+                        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                    </svg>
+                    <span>
+                        <span class="footer-link-label">Form contatti</span>
+                        <span class="footer-link-sub">Scrivici dal sito</span>
+                    </span>
+                </a>
+            </div>
+
+        </div>
+
+        <div class="footer-divider">
+            <div class="footer-divider-line"></div>
+            <span class="footer-divider-mark" aria-hidden="true">&#10022;</span>
+            <div class="footer-divider-line"></div>
+        </div>
+
+        <div class="footer-bottom">
+            <span>&copy; 2026 MANBAGA Comics &amp; Games &mdash; Canosa di Puglia &mdash; P.IVA 09055430723</span>
             <span class="footer-bottom-links">
+                <a href="faq.html" class="footer-bottom-link">FAQ</a>
+                <span class="footer-bottom-sep">&middot;</span>
                 <a href="privacy.html" class="footer-bottom-link">Privacy &amp; Cookie Policy</a>
                 <span class="footer-bottom-sep">&middot;</span>
                 <button class="footer-bottom-link footer-cookie-btn" onclick="mbResetCookies()" type="button">Gestisci cookie</button>
@@ -273,7 +391,7 @@ function renderRegBox(data, status) {
         var html = '<div class="torneo-reg-title">Partecipa al Torneo</div>'
             + '<div class="torneo-reg-sub">Hai un profilo giocatore? Iscriviti con il tuo mazzo Main.</div>'
             + '<button class="btn btn-primary" style="clip-path:none;margin-top:8px" onclick="openRegModal()">🃏 Registrati al Torneo</button>';
-       if (data.link) html += '<div style="margin-top:10px;font-size:12px;color:rgba(0,0,0,.45)">oppure <a href="' + (/^https?:\/\//i.test(data.link) ? _esc(data.link) : '#') + '" target="_blank" rel="noopener" style="color:#DC2626;font-weight:700">iscriviti esternamente →</a></div>';
+       if (data.link) { var extUrl = _safeExternalUrl(data.link); if (extUrl) html += '<div style="margin-top:10px;font-size:12px;color:rgba(0,0,0,.45)">oppure <a href="' + _esc(extUrl) + '" target="_blank" rel="noopener noreferrer" style="color:#DC2626;font-weight:700">iscriviti esternamente →</a></div>'; }
         regBox.innerHTML = html;
     } else {
         regBox.style.display = 'none';
@@ -333,6 +451,12 @@ function closeRegModal() {
 
 function confirmRegistration() {
     if (!_db || !_eventId || !_eventData) return;
+    if (!_auth || !_auth.currentUser) {
+        var errEl0 = document.getElementById('reg-error');
+        errEl0.textContent = '⚠️ Sessione scaduta. Ricarica la pagina e accedi di nuovo.';
+        errEl0.style.display = 'block';
+        return;
+    }
     var btn = document.getElementById('reg-confirm-btn');
     var profileId = btn.dataset.profileId;
     var nick      = btn.dataset.nick;
@@ -407,6 +531,11 @@ var IMG_BASE = 'https://optcgapi.com/media/static/Card_Images/';
 function _esc(str) {
     return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
+function _safeExternalUrl(url) {
+    if (!url || typeof url !== 'string') return '';
+    try { return new URL(url).protocol === 'https:' ? url : ''; }
+    catch(e) { return ''; }
+}
 
 /* ---- Fetch live decks from giocatori docs ---- */
 function _fetchPlayerDecks(players, cb) {
@@ -418,10 +547,13 @@ function _fetchPlayerDecks(players, cb) {
                 if (!doc.exists) return p;
                 var prof = doc.data();
                 var deck = _getMainDeck(prof);
-                return Object.assign({}, p, {
+                return {
+                    name: p.name, playerRef: p.playerRef,
+                    placement: p.placement, points: p.points,
+                    wins: p.wins, losses: p.losses, draws: p.draws,
                     deckList: (deck && deck.decklist) || '',
                     deckName: (deck && deck.nome) || ''
-                });
+                };
             }).catch(function() { return p; });
     });
     Promise.all(promises).then(cb).catch(function() { cb(players); });
@@ -577,7 +709,7 @@ function openDeckModal(idx) {
             + cards.map(function(c) {
                 return '<div class="trn-deck-card">'
                     + '<span class="trn-deck-card-qty">×' + c.qty + '</span>'
-                    + '<img src="' + IMG_BASE + c.id + '.jpg" alt="' + c.id + '" loading="lazy"'
+                    + '<img src="' + IMG_BASE + _esc(c.id) + '.jpg" alt="' + _esc(c.id) + '" loading="lazy"'
                     + ' onerror="var t=this;if(!t._p){t._p=1;t.src=\'' + IMG_BASE + '\'+t.alt+\'.png\';}else{t.parentNode.classList.add(\'no-img\');}">'
                     + '<div class="trn-deck-card-id">' + _esc(c.id) + '</div>'
                     + '</div>';
@@ -599,7 +731,7 @@ function closeDeckModal() {
 document.addEventListener('DOMContentLoaded', function() {
     var params = new URLSearchParams(window.location.search);
     var id = params.get('id');
-    if (!id) { renderError('ID torneo mancante.'); return; }
+    if (!id || !/^[a-zA-Z0-9_-]{1,128}$/.test(id)) { renderError('ID torneo non valido.'); return; }
     _eventId = id;
 
     /* Navbar scrolled effect */

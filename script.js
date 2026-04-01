@@ -51,18 +51,22 @@ document.addEventListener('DOMContentLoaded', function () {
    LOADER
    ============================================================ */
 window.addEventListener('load', function () {
-    setTimeout(function () {
-        var loader = document.getElementById('loader');
-        if (!loader) return;
+    var loader = document.getElementById('loader');
+    if (!loader) return;
 
+    var alreadySeen = sessionStorage.getItem('mb_loader_seen');
+    var delay = alreadySeen ? 0 : 2400;
+
+    setTimeout(function () {
         loader.classList.add('exit');
         document.body.classList.remove('is-loading');
+        sessionStorage.setItem('mb_loader_seen', '1');
 
         setTimeout(function () {
             loader.remove();
             checkReveal();
-        }, 900);
-    }, 2400);
+        }, alreadySeen ? 0 : 900);
+    }, delay);
 });
 
 /* ============================================================
@@ -424,7 +428,7 @@ function renderProducts() {
 
     track.innerHTML = products.map(function (p) {
         var isOos = (p.badge === 'OUT OF STOCK' || p.badge === 'ESAURITO');
-        return '<div class="product-card' + (isOos ? ' product-card--oos' : '') + '" data-badge="' + _escHtml(p.badge || '') + '" onclick="openProductModal(' + p.id + ')">'
+        return '<div class="product-card' + (isOos ? ' product-card--oos' : '') + '" data-badge="' + _escHtml(p.badge || '') + '" data-pid="' + _escHtml(String(p.id)) + '" onclick="openProductModal(this.dataset.pid)">'
             + '<div class="product-badge" data-badge="' + _escHtml(p.badge || 'Disponibile') + '">' + _escHtml(p.badge || 'Disponibile') + '</div>'
             + '<div class="product-img-wrap">'
             + '<img class="product-img" src="' + _escHtml(p.image) + '" alt="' + _escHtml(p.title) + '" loading="lazy" onerror="this.src=\'https://placehold.co/400x500/0a0a0a/333?text=Cover\'">'
@@ -614,7 +618,7 @@ function debounce(fn, delay) {
    PRODUCT MODAL
    ============================================================ */
 function openProductModal(productId) {
-    var product = getProducts().find(function (p) { return p.id === productId; });
+    var product = getProducts().find(function (p) { return String(p.id) === String(productId); });
     if (!product) return;
 
     /* Track recently viewed */
@@ -631,6 +635,8 @@ function openProductModal(productId) {
 
     /* Bottone azione principale */
     var _pid = String(product.id);
+    /* Valida _pid: solo caratteri sicuri per attributi HTML e onclick literal */
+    if (!/^[a-zA-Z0-9_-]{1,128}$/.test(_pid)) { _pid = ''; }
     var actionBtn = isPreorder
         ? '<button class="btn btn-primary" style="clip-path:none;flex:1;border-radius:0;min-width:160px;background:#4F46E5;border:none" onclick="showPreorderForm(\'' + _pid + '\')">'
             + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 12v6a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h6"/><polyline points="16 2 22 2 22 8"/><line x1="11" y1="13" x2="22" y2="2"/></svg>'
@@ -648,7 +654,7 @@ function openProductModal(productId) {
 
     document.getElementById('product-detail-content').innerHTML =
         '<div class="pd-grid">'
-        + '<div class="pd-img-wrap" onclick="zoomProductImage(\'' + product.image.replace(/'/g, "\\'") + '\',\'' + product.title.replace(/'/g, "\\'") + '\')">'
+        + '<div class="pd-img-wrap" data-img="' + _escHtml(product.image) + '" data-title="' + _escHtml(product.title) + '" onclick="zoomProductImage(this.dataset.img,this.dataset.title)">'
         + '<img class="pd-img" src="' + _escHtml(product.image) + '" alt="' + _escHtml(product.title) + '" onerror="this.src=\'https://placehold.co/400x500/0a0a0a/333?text=Cover\'">'
         + '<div class="pd-zoom-hint"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg> Clicca per ingrandire</div>'
         + '</div>'

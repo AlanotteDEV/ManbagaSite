@@ -228,8 +228,8 @@
             <li><a href="index.html#recensioni">Recensioni</a></li>
             <li><a href="tavoli.html">Tavoli</a></li>
             <li><a href="chi-siamo.html">Chi Siamo</a></li>
-            <li><a href="giocatori.html" class="nav-cta">Giocatori</a></li>
-            <li><a href="index.html#contatti">Contatti</a></li>
+            <li><a href="giocatori.html">Giocatori</a></li>
+            <li><a href="index.html#contatti" class="nav-cta">Contatti</a></li>
         </ul>
         <button class="gp-nav-auth" id="gp-auth-btn" onclick="onAuthBtnClick()">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
@@ -314,11 +314,11 @@
         <div id="auth-register" style="display:none">
             <div class="gp-form-row">
                 <label class="gp-label">Nome e Cognome *</label>
-                <input type="text" class="gp-input" id="reg-nome" placeholder="Mario Rossi" autocomplete="name">
+                <input type="text" class="gp-input" id="reg-nome" placeholder="Mario Rossi" autocomplete="name" maxlength="80">
             </div>
             <div class="gp-form-row">
                 <label class="gp-label">Nickname * <span style="font-weight:400;text-transform:none;letter-spacing:0">(pubblico, unico)</span></label>
-                <input type="text" class="gp-input" id="reg-nick" placeholder="DarkMage97">
+                <input type="text" class="gp-input" id="reg-nick" placeholder="DarkMage97" maxlength="30">
                 <div class="gp-err" id="reg-nick-err">Nickname già in uso. Scegline un altro.</div>
             </div>
             <div class="gp-form-row">
@@ -387,7 +387,7 @@
         </div>
         <div class="gp-form-row">
             <label class="gp-label">Decklist <span style="font-weight:400;text-transform:none;letter-spacing:0">(opzionale)</span></label>
-            <textarea class="gp-input" id="de-list" placeholder="One Piece: 4 OP01-001&#10;Magic: 4x Lightning Bolt&#10;..."></textarea>
+            <textarea class="gp-input" id="de-list" placeholder="One Piece: 4 OP01-001&#10;Magic: 4x Lightning Bolt&#10;..." maxlength="8000"></textarea>
         </div>
         <div class="gp-modal-actions">
             <button class="gp-mbtn gp-mbtn--ghost" onclick="closeModal('deck-edit')">Annulla</button>
@@ -618,7 +618,7 @@ function init() {
         document.getElementById('stat-decks').textContent   = totalDecks;
         renderGrid(_players);
         updateFab();
-    }, function(e){ console.error(e); });
+    }, function(){ /* Firestore subscription error */ });
 
     _auth.onAuthStateChanged(onAuthStateChanged);
 }
@@ -713,6 +713,8 @@ function submitRegister() {
     var privacyErr = document.getElementById('reg-privacy-err');
     nickErr.classList.remove('on'); err.style.display='none'; privacyErr.style.display='none';
     if (!nome||!nick||!email||!pw) { err.textContent='Compila tutti i campi obbligatori.'; err.style.display='block'; return; }
+    if (nome.length > 80) { err.textContent='Nome troppo lungo (max 80 caratteri).'; err.style.display='block'; return; }
+    if (nick.length > 30) { err.textContent='Nickname troppo lungo (max 30 caratteri).'; err.style.display='block'; return; }
     if (!privacyEl.checked) { privacyErr.style.display='block'; return; }
     var nl = nick.toLowerCase();
     if (_players.some(function(p){ return (p.nicknameLower||(p.nickname||'').toLowerCase())===nl; })) { nickErr.classList.add('on'); return; }
@@ -754,7 +756,7 @@ function openMazziModal(playerId) {
         : 'MAZZI DI <span>'+esc(p.nickname||'')+'</span>';
     document.getElementById('mazzi-modal-sub').textContent = _mazziIsOwner
         ? 'Gestisci la tua collezione. Il mazzo 👑 Main verrà usato ai tornei.'
-        : 'Collezione mazzi di '+esc(p.nickname||'')+'. Solo il proprietario può modificarli.';
+        : 'Collezione mazzi di '+(p.nickname||'')+'. Solo il proprietario può modificarli.';
     document.getElementById('mazzi-add-btn').style.display = _mazziIsOwner?'block':'none';
 
     renderMazziList(p);
@@ -876,7 +878,8 @@ function _propagateDeckToEvents(playerId, decklist) {
                     if (players[i].playerRef===playerId){ idx=i; break; }
                 }
                 if (idx !== -1) {
-                    players[idx] = Object.assign({}, players[idx], { deckList: decklist||'' });
+                    var src = players[idx];
+                    players[idx] = { name: src.name, playerRef: src.playerRef, placement: src.placement, points: src.points, wins: src.wins, losses: src.losses, draws: src.draws, requestedAt: src.requestedAt, deckList: decklist||'', deckName: src.deckName||'' };
                     promises.push(doc.ref.update({ players: players }));
                 }
             });
@@ -893,7 +896,7 @@ function setMain(deckId) {
     var p     = _players.find(function(x){ return x.id===_mazziTargetId; });
     var mazzi = p ? getPlayerMazzi(p).slice() : [];
     mazzi = mazzi.filter(function(m){ return m.id!=='legacy'; });
-    mazzi = mazzi.map(function(m){ return Object.assign({},m,{isMain:m.id===deckId}); });
+    mazzi = mazzi.map(function(m){ return { id:m.id, nome:m.nome, formato:m.formato, decklist:m.decklist, isMain:m.id===deckId }; });
     var main = mazzi.find(function(m){ return m.isMain; });
     var mazzoAttuale = main ? { nome:main.nome, formato:main.formato, decklist:main.decklist } : null;
     _db.collection('giocatori').doc(_mazziTargetId).update({ mazzi:mazzi, mazzoAttuale:mazzoAttuale })
@@ -934,7 +937,7 @@ function openDeckViewById(playerId, deckId) {
     if (!deck) return;
     _deckRaw     = deck.decklist||'';
     _deckFormato = (deck.formato||'').toLowerCase();
-    document.getElementById('deck-title').textContent = esc(deck.nome||'Deck')+' — '+esc(p.nickname||'');
+    document.getElementById('deck-title').textContent = (deck.nome||'Deck')+' — '+(p.nickname||'');
     document.getElementById('deck-fmt').textContent   = deck.formato||'';
     document.getElementById('deck-raw').textContent   = _deckRaw;
     document.getElementById('deck-copy').textContent  = 'Copia';
