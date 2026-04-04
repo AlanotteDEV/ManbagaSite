@@ -202,7 +202,6 @@ function _subscribeFirestoreEvents() {
             });
             try { localStorage.setItem('manbaga-events', JSON.stringify(_fbEvents)); } catch(e){}
             renderEvents();
-            _autoCheckEventStatus(); /* controlla subito dopo ogni aggiornamento */
         },
         function(err) { console.warn('Firestore events error:', err); }
     );
