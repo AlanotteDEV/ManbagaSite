@@ -10,6 +10,7 @@
 
     <!-- Fonts self-hosted (GDPR compliant — nessuna richiesta a Google) -->
     <link rel="stylesheet" href="fonts/fonts.css">
+    <link rel="stylesheet" href="style.css">
 
     <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -27,7 +28,6 @@
         --font:  'Inter', sans-serif;
         --comic: 'Bangers', cursive;
         --nav-h: 64px;
-        --max:   780px;
     }
 
     html { scroll-behavior: smooth; }
@@ -41,51 +41,6 @@
         line-height: 1.7;
     }
 
-    /* ── HEADER ──────────────────────────────────────────── */
-    #header {
-        position: fixed;
-        top: 0; left: 0; right: 0;
-        height: var(--nav-h);
-        background: rgba(8,8,8,.97);
-        backdrop-filter: blur(14px);
-        border-bottom: 2px solid rgba(244,114,182,.25);
-        z-index: 800;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 24px;
-        gap: 16px;
-    }
-
-    .header-logo {
-        font-family: var(--comic);
-        font-size: 26px;
-        letter-spacing: .06em;
-        text-decoration: none;
-        background: linear-gradient(135deg, var(--white) 40%, var(--pink));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        flex-shrink: 0;
-    }
-
-    .header-back {
-        display: inline-flex;
-        align-items: center;
-        gap: 7px;
-        font-size: 11px;
-        font-weight: 700;
-        letter-spacing: .12em;
-        text-transform: uppercase;
-        color: var(--gray);
-        text-decoration: none;
-        transition: color .2s, border-color .2s;
-        padding: 6px 14px;
-        border: 1px solid rgba(255,255,255,.08);
-        border-radius: 20px;
-    }
-    .header-back:hover { color: var(--pink); border-color: rgba(244,114,182,.4); }
-
     /* ── MAIN ────────────────────────────────────────────── */
     main {
         padding-top: var(--nav-h);
@@ -93,7 +48,7 @@
     }
 
     .page-inner {
-        max-width: var(--max);
+        max-width: 780px;
         margin: 0 auto;
         padding: 52px 24px 100px;
     }
@@ -296,16 +251,24 @@
 </head>
 <body>
 
-<!-- Header -->
-<header id="header">
-    <a href="index.html" class="header-logo">MAN<span>B</span>AGA</a>
-    <a href="index.html" class="header-back">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-            <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
-        </svg>
-        Torna al sito
-    </a>
-</header>
+<nav id="nav">
+    <div class="nav-inner">
+        <a class="nav-logo" href="index.html">MAN<span class="dot">B</span>AGA<span class="dot">.</span></a>
+        <ul class="nav-links" id="nav-links">
+            <li><a href="index.html#catalogo">Catalogo</a></li>
+            <li><a href="index.html#nuovi-arrivi">Novit&#224;</a></li>
+            <li><a href="index.html#eventi">Eventi</a></li>
+            <li><a href="index.html#recensioni">Recensioni</a></li>
+            <li><a href="tavoli.html">Tavoli</a></li>
+            <li><a href="cronologia-tornei.html">Cronologia</a></li>
+            <li><a href="giocatori.html">Giocatori</a></li>
+            <li><a href="index.html#contatti" class="nav-cta">Contatti</a></li>
+        </ul>
+        <button class="nav-burger" id="nav-burger" aria-label="Apri menu">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</nav>
 
 <main>
     <div class="page-inner">
@@ -646,24 +609,163 @@
             </p>
         </div>
 
-        <!-- Footer -->
-        <div class="privacy-footer">
-            <p>
-                &copy; 2026 MANBAGA Comics &amp; Games &mdash; Via Padre Reginaldo Giuliani, 21, Canosa di Puglia (BT)<br>
-                P.IVA: 09055430723 &nbsp;&middot;&nbsp;
-                <a href="mailto:manbagacomics@gmail.com">manbagacomics@gmail.com</a>
-                &nbsp;&middot;&nbsp;
-                <a href="index.html">Torna alla homepage</a>
-            </p>
-        </div>
-
     </div>
 </main>
+
+<footer id="footer">
+    <div class="footer-inner">
+        <div class="footer-grid">
+
+            <div class="footer-col footer-col--brand">
+                <span class="footer-logo">MAN<span class="dot">B</span>AGA<span class="dot">.</span></span>
+                <p class="footer-tagline">
+                    Manga, comics, giochi di carte e gadget anime.<br>
+                    Il punto di riferimento per gli appassionati<br>di Canosa di Puglia e dintorni.
+                </p>
+                <div class="footer-brand-badges">
+                    <span class="footer-badge">Manga</span>
+                    <span class="footer-badge">TCG</span>
+                    <span class="footer-badge">Figures</span>
+                    <span class="footer-badge">Gadget</span>
+                </div>
+                <nav class="footer-nav-links" aria-label="Link rapidi">
+                    <a href="index.html#catalogo">Catalogo</a>
+                    <a href="index.html#nuovi-arrivi">Novità</a>
+                    <a href="index.html#eventi">Eventi</a>
+                    <a href="cronologia-tornei.html">Cronologia Tornei</a>
+                    <a href="index.html#recensioni">Recensioni</a>
+                    <a href="tavoli.html">Prenota un tavolo</a>
+                    <a href="faq.html">FAQ</a>
+                    <a href="chi-siamo.html">Chi siamo</a>
+                    <a href="giocatori.html">Giocatori</a>
+                </nav>
+            </div>
+
+            <div class="footer-col">
+                <div class="footer-col-h">ORARI <span class="footer-col-h-jp">営業時間</span></div>
+                <div class="footer-hours">
+                    <div class="footer-hours-row">
+                        <span>Lun &ndash; Sabato</span>
+                        <span class="footer-hours-time">10:00 &ndash; 13:00</span>
+                    </div>
+                    <div class="footer-hours-row">
+                        <span></span>
+                        <span class="footer-hours-time">17:00 &ndash; 20:30</span>
+                    </div>
+                    <div class="footer-hours-row">
+                        <span>Domenica</span>
+                        <span class="footer-hours-time">10:00 &ndash; 13:00</span>
+                    </div>
+                    <div class="footer-hours-row footer-hours-closed">
+                        <span></span>
+                        <span>Pomeriggio chiuso</span>
+                    </div>
+                </div>
+                <div class="footer-open-badge">
+                    <span class="footer-open-dot"></span>
+                    Aperto oggi
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <div class="footer-col-h">DOVE SIAMO <span class="footer-col-h-jp">所在地</span></div>
+                <address class="footer-address">
+                    Via Padre Reginaldo<br>
+                    Giuliani, 21<br>
+                    76012 Canosa di Puglia (BT)
+                </address>
+                <a href="https://maps.google.com/?q=Via+Padre+Reginaldo+Giuliani+21+Canosa+di+Puglia"
+                   target="_blank" rel="noopener noreferrer" class="footer-map-link">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    Apri in Google Maps
+                </a>
+            </div>
+
+            <div class="footer-col">
+                <div class="footer-col-h">CONTATTI <span class="footer-col-h-jp">連絡先</span></div>
+                <a href="https://www.instagram.com/_manbaga_/" target="_blank" rel="noopener noreferrer"
+                   class="footer-social-link footer-social-link--ig">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" aria-hidden="true">
+                        <rect x="2" y="2" width="20" height="20" rx="5"/>
+                        <circle cx="12" cy="12" r="4"/>
+                        <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/>
+                    </svg>
+                    <span>
+                        <span class="footer-link-label">Instagram</span>
+                        <span class="footer-link-sub">@_manbaga_</span>
+                    </span>
+                </a>
+                <a href="mailto:manbagacomics@gmail.com"
+                   class="footer-social-link footer-social-link--mail">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" aria-hidden="true">
+                        <rect x="2" y="4" width="20" height="16" rx="2"/>
+                        <polyline points="2,4 12,13 22,4"/>
+                    </svg>
+                    <span>
+                        <span class="footer-link-label">Email</span>
+                        <span class="footer-link-sub">manbagacomics@gmail.com</span>
+                    </span>
+                </a>
+                <a href="index.html#contatti" class="footer-social-link footer-social-link--form">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" aria-hidden="true">
+                        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                    </svg>
+                    <span>
+                        <span class="footer-link-label">Form contatti</span>
+                        <span class="footer-link-sub">Scrivici dal sito</span>
+                    </span>
+                </a>
+            </div>
+
+        </div>
+
+        <div class="footer-divider">
+            <div class="footer-divider-line"></div>
+            <span class="footer-divider-mark" aria-hidden="true">&#10022;</span>
+            <div class="footer-divider-line"></div>
+        </div>
+
+        <div class="footer-bottom">
+            <span>&copy; 2026 MANBAGA Comics &amp; Games &mdash; Canosa di Puglia &mdash; P.IVA 09055430723</span>
+            <span class="footer-bottom-links">
+                <a href="faq.html" class="footer-bottom-link">FAQ</a>
+                <span class="footer-bottom-sep">&middot;</span>
+                <a href="privacy.html" class="footer-bottom-link">Privacy &amp; Cookie Policy</a>
+                <span class="footer-bottom-sep">&middot;</span>
+                <button class="footer-bottom-link footer-cookie-btn" onclick="mbResetCookies()" type="button">Gestisci cookie</button>
+            </span>
+        </div>
+    </div>
+</footer>
 
 <script>
 document.getElementById('last-update').textContent = new Intl.DateTimeFormat('it-IT', {
     day: '2-digit', month: 'long', year: 'numeric'
 }).format(new Date('2026-03-14'));
+
+/* Nav burger */
+(function() {
+    var burger = document.getElementById('nav-burger');
+    var links  = document.getElementById('nav-links');
+    var nav    = document.getElementById('nav');
+    if (burger && links) {
+        burger.addEventListener('click', function() {
+            burger.classList.toggle('open');
+            links.classList.toggle('open');
+        });
+        links.addEventListener('click', function(e) {
+            if (e.target.tagName === 'A') {
+                burger.classList.remove('open');
+                links.classList.remove('open');
+            }
+        });
+    }
+    window.addEventListener('scroll', function() {
+        if (nav) nav.classList.toggle('scrolled', window.scrollY > 40);
+    }, { passive: true });
+})();
 </script>
+<script src="cookie-banner.js"></script>
+<script src="manga-mode.js"></script>
 </body>
 </html>

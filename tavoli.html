@@ -937,6 +937,96 @@
         box-shadow: 0 8px 28px rgba(220,38,38,0.5);
     }
 
+    /* ─── PASQUA OVERLAY ────────────────────────────────────── */
+    #pasqua-overlay {
+        position: relative;
+        min-height: calc(100vh - var(--nav-h));
+        width: 100%;
+        background: radial-gradient(ellipse at 50% 30%, #1a0a2e 0%, #0d0d0d 70%);
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        text-align: center; padding: 24px;
+        overflow: hidden;
+    }
+    #pasqua-overlay.po-hidden { display: none !important; }
+    .po-eggs-bg {
+        position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+    }
+    .po-egg {
+        position: absolute;
+        border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+        opacity: 0.12;
+        animation: po-float linear infinite;
+    }
+    .po-egg:nth-child(1)  { width:80px; height:100px; background:#f59e0b; left:5%;  top:10%; animation-duration:8s;  animation-delay:0s; }
+    .po-egg:nth-child(2)  { width:50px; height:65px;  background:#a855f7; left:18%; top:70%; animation-duration:11s; animation-delay:2s; }
+    .po-egg:nth-child(3)  { width:65px; height:82px;  background:#22c55e; left:80%; top:15%; animation-duration:9s;  animation-delay:1s; }
+    .po-egg:nth-child(4)  { width:45px; height:58px;  background:#f43f5e; left:88%; top:65%; animation-duration:13s; animation-delay:3s; }
+    .po-egg:nth-child(5)  { width:70px; height:88px;  background:#38bdf8; left:50%; top:80%; animation-duration:10s; animation-delay:0.5s; }
+    .po-egg:nth-child(6)  { width:55px; height:70px;  background:#f59e0b; left:35%; top:5%;  animation-duration:12s; animation-delay:4s; }
+    .po-egg:nth-child(7)  { width:40px; height:52px;  background:#a855f7; left:65%; top:50%; animation-duration:7s;  animation-delay:1.5s; }
+    @keyframes po-float {
+        0%   { transform: translateY(0px)   rotate(-8deg); }
+        50%  { transform: translateY(-28px) rotate(8deg); }
+        100% { transform: translateY(0px)   rotate(-8deg); }
+    }
+    .po-badge {
+        font-family: var(--comic); font-size: 13px; letter-spacing: .3em;
+        color: #f59e0b; text-transform: uppercase; margin-bottom: 16px;
+        display: flex; align-items: center; gap: 10px;
+    }
+    .po-badge::before, .po-badge::after {
+        content: ''; flex: 1; height: 1px;
+        background: linear-gradient(90deg, transparent, #f59e0b55, transparent);
+        min-width: 30px;
+    }
+    .po-title {
+        font-family: var(--comic); font-size: clamp(52px, 12vw, 110px);
+        line-height: 0.9; letter-spacing: .04em;
+        background: linear-gradient(135deg, #f59e0b 0%, #fde68a 40%, #f59e0b 70%, #d97706 100%);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text; filter: drop-shadow(0 0 40px rgba(245,158,11,0.4));
+        margin-bottom: 14px;
+    }
+    .po-emoji-row {
+        font-size: clamp(36px, 8vw, 64px); margin-bottom: 20px;
+        animation: po-bounce 1.8s ease-in-out infinite;
+    }
+    @keyframes po-bounce {
+        0%, 100% { transform: translateY(0); }
+        50%       { transform: translateY(-10px); }
+    }
+    .po-sub {
+        font-size: clamp(15px, 3vw, 20px); color: rgba(245,240,232,0.75);
+        max-width: 520px; line-height: 1.65; margin-bottom: 32px;
+        font-weight: 400;
+    }
+    .po-sub strong { color: var(--white); font-weight: 700; }
+    .po-notice {
+        display: inline-flex; align-items: center; gap: 10px;
+        background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3);
+        border-radius: 50px; padding: 10px 22px;
+        font-size: 13px; color: #fde68a; font-weight: 600; letter-spacing: .04em;
+    }
+    .po-notice-dot {
+        width: 7px; height: 7px; border-radius: 50%; background: #f59e0b;
+        box-shadow: 0 0 8px #f59e0b; animation: blink 1.2s ease infinite;
+        flex-shrink: 0;
+    }
+    .po-stars {
+        position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+    }
+    .po-star {
+        position: absolute; width: 2px; height: 2px; border-radius: 50%;
+        background: #fff; opacity: 0;
+        animation: po-twinkle ease-in-out infinite;
+    }
+
+    @keyframes po-twinkle {
+        0%, 100% { opacity: 0; transform: scale(1); }
+        50%       { opacity: 0.7; transform: scale(1.8); }
+    }
+
     /* ─── GRAIN ──────────────────────────────────────────────── */
     body::after {
         content: '';
@@ -988,6 +1078,32 @@
 </nav>
 
 <main>
+    <!-- ─── PASQUA OVERLAY (visibile fino al 6 aprile 2026) ─── -->
+    <div id="pasqua-overlay">
+        <div class="po-stars" id="po-stars-wrap"></div>
+        <div class="po-eggs-bg">
+            <div class="po-egg"></div>
+            <div class="po-egg"></div>
+            <div class="po-egg"></div>
+            <div class="po-egg"></div>
+            <div class="po-egg"></div>
+            <div class="po-egg"></div>
+            <div class="po-egg"></div>
+        </div>
+        <p class="po-badge">MANBAGA Comics &amp; Games</p>
+        <div class="po-emoji-row">🐣🥚🌸</div>
+        <h1 class="po-title">BUONA<br>PASQUA!</h1>
+        <p class="po-sub">
+            Dal team di <strong>MANBAGA</strong> a tutta la community —<br>
+            che questa Pasqua vi porti tanta gioia, tanto gioco<br>
+            e uova piene di carte rare! 🎴✨
+        </p>
+        <div class="po-notice">
+            <span class="po-notice-dot"></span>
+            Le prenotazioni torneranno attive dal 7 aprile 2026
+        </div>
+    </div>
+
     <div class="page-inner">
 
         <div class="page-label">🌸 テーブル予約 &mdash; Prenota il tuo posto</div>
@@ -1776,6 +1892,48 @@ document.addEventListener('DOMContentLoaded', function() {
         if (nav) nav.classList.toggle('scrolled', window.scrollY > 40);
     }, { passive: true });
 });
+</script>
+
+<!-- ─── PASQUA: mostra overlay fino al 6 aprile 2026 ─── -->
+<script>
+(function() {
+    var FINE_PASQUA = new Date('2026-04-07T00:00:00');
+    var overlay = document.getElementById('pasqua-overlay');
+    var pageInner = document.querySelector('.page-inner');
+    if (!overlay) return;
+
+    if (new Date() >= FINE_PASQUA) {
+        overlay.classList.add('po-hidden');
+        return;
+    }
+
+    /* Nasconde la sezione prenotazioni finché è Pasqua */
+    if (pageInner) pageInner.style.display = 'none';
+
+    /* Genera stelline casuali */
+    var wrap = document.getElementById('po-stars-wrap');
+    if (wrap) {
+        for (var i = 0; i < 60; i++) {
+            var s = document.createElement('div');
+            s.className = 'po-star';
+            s.style.left = Math.random() * 100 + '%';
+            s.style.top  = Math.random() * 100 + '%';
+            s.style.animationDuration  = (2 + Math.random() * 4).toFixed(1) + 's';
+            s.style.animationDelay     = (Math.random() * 4).toFixed(1) + 's';
+            s.style.width  = s.style.height = (1 + Math.random() * 2).toFixed(1) + 'px';
+            wrap.appendChild(s);
+        }
+    }
+
+    /* Controlla ogni minuto se è scattata la mezzanotte del 6 aprile */
+    var timer = setInterval(function() {
+        if (new Date() >= FINE_PASQUA) {
+            overlay.classList.add('po-hidden');
+            if (pageInner) pageInner.style.display = '';
+            clearInterval(timer);
+        }
+    }, 60000);
+})();
 </script>
 </body>
 </html>
