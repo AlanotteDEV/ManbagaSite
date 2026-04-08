@@ -35,6 +35,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js" integrity="sha384-mLD+wdwynYnAhgHAkdPP5hroWJXJTNy5C2OhPKM55zuiV2vjzFD1LtBohaHq2Ex8" crossorigin="anonymous"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js" integrity="sha384-/SBCyt0JELVRyyrOp+QG5CdnpVoAry+uw9hdherLgyZxxePtHjOvQmJU5CHymUhT" crossorigin="anonymous"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js" crossorigin="anonymous"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js" crossorigin="anonymous"></script>
 
     <!-- EmailJS — servizio email gratuito (200 email/mese) -->
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4.4.1/dist/email.min.js" integrity="sha384-SALc35EccAf6RzGw4iNsyj7kTPr33K7RoGzYu+7heZhT8s0GZouafRiCg1qy44AS" crossorigin="anonymous"></script>
@@ -411,13 +412,20 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="#9146FF" aria-hidden="true"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/></svg>
             Ultimo video su Twitch
         </div>
-        <div class="twitch-embed-wrap">
-            <iframe
-                src="https://player.twitch.tv/?video=2741699514&parent=manbaga-site.vercel.app&parent=localhost&autoplay=false"
-                allowfullscreen
-                frameborder="0"
-                title="Ultimo video Twitch — MANBAGA">
-            </iframe>
+        <div class="twitch-card" id="twitch-card" role="button" tabindex="0" aria-label="Riproduci video Twitch MANBAGA" onclick="loadTwitchEmbed()" onkeydown="if(event.key==='Enter'||event.key===' ')loadTwitchEmbed()">
+            <div class="twitch-card-bg" aria-hidden="true"></div>
+            <div class="twitch-card-body">
+                <div class="twitch-card-logo">
+                    <svg width="44" height="44" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/></svg>
+                </div>
+                <div class="twitch-card-play">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
+                </div>
+                <div class="twitch-card-info">
+                    <div class="twitch-card-channel">manbagatv</div>
+                    <div class="twitch-card-cta">Clicca per guardare ▶</div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
