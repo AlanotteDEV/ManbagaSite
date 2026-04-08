@@ -466,18 +466,18 @@
 
 <!-- SEARCH -->
 <div class="faq-search-wrap">
-    <input class="faq-search" type="text" id="faq-search" placeholder="Cerca tra le domande…" oninput="faqSearch(this.value)" autocomplete="off">
+    <input class="faq-search" type="text" id="faq-search" placeholder="Cerca tra le domande…" autocomplete="off">
     <svg class="faq-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
 </div>
 
 <!-- CATEGORIES -->
 <div class="faq-cats">
-    <button class="faq-cat-btn active" onclick="faqFilter('all', this)">Tutte</button>
-    <button class="faq-cat-btn" onclick="faqFilter('negozio', this)">Negozio</button>
-    <button class="faq-cat-btn" onclick="faqFilter('preordini', this)">Preordini</button>
-    <button class="faq-cat-btn" onclick="faqFilter('tornei', this)">Tornei</button>
-    <button class="faq-cat-btn" onclick="faqFilter('tavoli', this)">Tavoli</button>
-    <button class="faq-cat-btn" onclick="faqFilter('prodotti', this)">Prodotti</button>
+    <button class="faq-cat-btn active" data-cat="all">Tutte</button>
+    <button class="faq-cat-btn" data-cat="negozio">Negozio</button>
+    <button class="faq-cat-btn" data-cat="preordini">Preordini</button>
+    <button class="faq-cat-btn" data-cat="tornei">Tornei</button>
+    <button class="faq-cat-btn" data-cat="tavoli">Tavoli</button>
+    <button class="faq-cat-btn" data-cat="prodotti">Prodotti</button>
 </div>
 
 <!-- MAIN -->
@@ -492,7 +492,7 @@
         </div>
 
         <div class="faq-item" data-cat="negozio">
-            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+            <button class="faq-question" aria-expanded="false">
                 <span class="faq-q-num">01</span>
                 <span class="faq-q-text">Dove si trova MANBAGA e quali sono gli orari?</span>
                 <span class="faq-q-arrow" aria-hidden="true">
@@ -511,7 +511,7 @@
         </div>
 
         <div class="faq-item" data-cat="negozio">
-            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+            <button class="faq-question" aria-expanded="false">
                 <span class="faq-q-num">02</span>
                 <span class="faq-q-text">Come posso contattarvi?</span>
                 <span class="faq-q-arrow" aria-hidden="true">
@@ -530,7 +530,7 @@
         </div>
 
         <div class="faq-item" data-cat="negozio">
-            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+            <button class="faq-question" aria-expanded="false">
                 <span class="faq-q-num">03</span>
                 <span class="faq-q-text">Fate spedizioni a domicilio?</span>
                 <span class="faq-q-arrow" aria-hidden="true">
@@ -546,7 +546,7 @@
         </div>
 
         <div class="faq-item" data-cat="negozio">
-            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+            <button class="faq-question" aria-expanded="false">
                 <span class="faq-q-num">04</span>
                 <span class="faq-q-text">Accettate pagamenti con carta o bancomat?</span>
                 <span class="faq-q-arrow" aria-hidden="true">
@@ -561,7 +561,7 @@
         </div>
 
         <div class="faq-item" data-cat="negozio">
-            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+            <button class="faq-question" aria-expanded="false">
                 <span class="faq-q-num">05</span>
                 <span class="faq-q-text">Dove vedo le novità e gli arrivi recenti?</span>
                 <span class="faq-q-arrow" aria-hidden="true">
@@ -577,7 +577,7 @@
         </div>
 
         <div class="faq-item" data-cat="negozio">
-            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+            <button class="faq-question" aria-expanded="false">
                 <span class="faq-q-num">06</span>
                 <span class="faq-q-text">Fate usato o compravendita di carte singole?</span>
                 <span class="faq-q-arrow" aria-hidden="true">
@@ -601,7 +601,7 @@
         </div>
 
         <div class="faq-item" data-cat="preordini">
-            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+            <button class="faq-question" aria-expanded="false">
                 <span class="faq-q-num">01</span>
                 <span class="faq-q-text">Come funziona il sistema di preordine?</span>
                 <span class="faq-q-arrow" aria-hidden="true">
@@ -618,7 +618,7 @@
         </div>
 
         <div class="faq-item" data-cat="preordini">
-            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+            <button class="faq-question" aria-expanded="false">
                 <span class="faq-q-num">02</span>
                 <span class="faq-q-text">Quanto tempo ci vuole per ricevere un preordine?</span>
                 <span class="faq-q-arrow" aria-hidden="true">
@@ -634,7 +634,7 @@
         </div>
 
         <div class="faq-item" data-cat="preordini">
-            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+            <button class="faq-question" aria-expanded="false">
                 <span class="faq-q-num">03</span>
                 <span class="faq-q-text">Posso preordinare un prodotto non presente nel catalogo?</span>
                 <span class="faq-q-arrow" aria-hidden="true">
@@ -649,7 +649,7 @@
         </div>
 
         <div class="faq-item" data-cat="preordini">
-            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+            <button class="faq-question" aria-expanded="false">
                 <span class="faq-q-num">04</span>
                 <span class="faq-q-text">Cosa succede se non ritiro il preordine?</span>
                 <span class="faq-q-arrow" aria-hidden="true">
@@ -673,7 +673,7 @@
         </div>
 
         <div class="faq-item" data-cat="tornei">
-            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+            <button class="faq-question" aria-expanded="false">
                 <span class="faq-q-num">01</span>
                 <span class="faq-q-text">Che tornei organizzate?</span>
                 <span class="faq-q-arrow" aria-hidden="true">
@@ -694,7 +694,7 @@
         </div>
 
         <div class="faq-item" data-cat="tornei">
-            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+            <button class="faq-question" aria-expanded="false">
                 <span class="faq-q-num">02</span>
                 <span class="faq-q-text">Come mi iscrivo a un torneo?</span>
                 <span class="faq-q-arrow" aria-hidden="true">
@@ -710,7 +710,7 @@
         </div>
 
         <div class="faq-item" data-cat="tornei">
-            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+            <button class="faq-question" aria-expanded="false">
                 <span class="faq-q-num">03</span>
                 <span class="faq-q-text">I tornei sono a pagamento?</span>
                 <span class="faq-q-arrow" aria-hidden="true">
@@ -725,7 +725,7 @@
         </div>
 
         <div class="faq-item" data-cat="tornei">
-            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+            <button class="faq-question" aria-expanded="false">
                 <span class="faq-q-num">04</span>
                 <span class="faq-q-text">Dove vedo la classifica del torneo?</span>
                 <span class="faq-q-arrow" aria-hidden="true">
@@ -749,7 +749,7 @@
         </div>
 
         <div class="faq-item" data-cat="tavoli">
-            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+            <button class="faq-question" aria-expanded="false">
                 <span class="faq-q-num">01</span>
                 <span class="faq-q-text">Come prenoto un tavolo per giocare?</span>
                 <span class="faq-q-arrow" aria-hidden="true">
@@ -764,7 +764,7 @@
         </div>
 
         <div class="faq-item" data-cat="tavoli">
-            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+            <button class="faq-question" aria-expanded="false">
                 <span class="faq-q-num">02</span>
                 <span class="faq-q-text">La prenotazione del tavolo è gratuita?</span>
                 <span class="faq-q-arrow" aria-hidden="true">
@@ -779,7 +779,7 @@
         </div>
 
         <div class="faq-item" data-cat="tavoli">
-            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+            <button class="faq-question" aria-expanded="false">
                 <span class="faq-q-num">03</span>
                 <span class="faq-q-text">Posso portare il mio gioco da casa?</span>
                 <span class="faq-q-arrow" aria-hidden="true">
@@ -803,7 +803,7 @@
         </div>
 
         <div class="faq-item" data-cat="prodotti">
-            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+            <button class="faq-question" aria-expanded="false">
                 <span class="faq-q-num">01</span>
                 <span class="faq-q-text">Come faccio a sapere se un prodotto è disponibile?</span>
                 <span class="faq-q-arrow" aria-hidden="true">
@@ -823,7 +823,7 @@
         </div>
 
         <div class="faq-item" data-cat="prodotti">
-            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+            <button class="faq-question" aria-expanded="false">
                 <span class="faq-q-num">02</span>
                 <span class="faq-q-text">Avete manga in italiano?</span>
                 <span class="faq-q-arrow" aria-hidden="true">
@@ -838,7 +838,7 @@
         </div>
 
         <div class="faq-item" data-cat="prodotti">
-            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+            <button class="faq-question" aria-expanded="false">
                 <span class="faq-q-num">03</span>
                 <span class="faq-q-text">I prezzi sul sito sono quelli definitivi?</span>
                 <span class="faq-q-arrow" aria-hidden="true">
@@ -853,7 +853,7 @@
         </div>
 
         <div class="faq-item" data-cat="prodotti">
-            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+            <button class="faq-question" aria-expanded="false">
                 <span class="faq-q-num">04</span>
                 <span class="faq-q-text">Vendete anche libri e romanzi?</span>
                 <span class="faq-q-arrow" aria-hidden="true">
@@ -870,7 +870,7 @@
 
         <!-- Easter egg hint -->
         <div class="faq-item" data-cat="negozio">
-            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+            <button class="faq-question" aria-expanded="false">
                 <span class="faq-q-text">C'è qualcosa di segreto nel sito? 👀</span>
                 <span class="faq-q-arrow" aria-hidden="true">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -1034,102 +1034,15 @@
                 <span class="footer-bottom-sep">&middot;</span>
                 <a href="privacy.html" class="footer-bottom-link">Privacy &amp; Cookie Policy</a>
                 <span class="footer-bottom-sep">&middot;</span>
-                <button class="footer-bottom-link footer-cookie-btn" onclick="mbResetCookies()" type="button">Gestisci cookie</button>
+                <button class="footer-bottom-link footer-cookie-btn" type="button">Gestisci cookie</button>
             </span>
         </div>
     </div>
 </footer>
 
-<script>
-    /* ── ACCORDION ── */
-    function toggleFaq(btn) {
-        var isOpen = btn.classList.contains('open');
-        /* Chiudi tutti nella stessa sezione */
-        var section = btn.closest('.faq-section');
-        section.querySelectorAll('.faq-question.open').forEach(function(q) {
-            q.classList.remove('open');
-            q.setAttribute('aria-expanded', 'false');
-            q.nextElementSibling.classList.remove('open');
-        });
-        if (!isOpen) {
-            btn.classList.add('open');
-            btn.setAttribute('aria-expanded', 'true');
-            btn.nextElementSibling.classList.add('open');
-        }
-    }
 
-    /* ── CATEGORY FILTER ── */
-    function faqFilter(cat, btn) {
-        document.querySelectorAll('.faq-cat-btn').forEach(function(b) { b.classList.remove('active'); });
-        btn.classList.add('active');
-        document.getElementById('faq-search').value = '';
-        clearSearch();
-        document.querySelectorAll('.faq-section').forEach(function(s) {
-            s.dataset.hidden = (cat !== 'all' && s.dataset.cat !== cat) ? 'true' : 'false';
-        });
-    }
 
-    /* ── SEARCH ── */
-    function faqSearch(query) {
-        var q = query.trim().toLowerCase();
-        var totalVisible = 0;
-
-        document.querySelectorAll('.faq-section').forEach(function(s) { s.dataset.hidden = 'false'; });
-
-        document.querySelectorAll('.faq-item').forEach(function(item) {
-            var text = item.querySelector('.faq-q-text').textContent.toLowerCase()
-                + ' ' + item.querySelector('.faq-answer-inner').textContent.toLowerCase();
-            var match = !q || text.includes(q);
-            item.dataset.hidden = match ? 'false' : 'true';
-            if (match) totalVisible++;
-        });
-
-        /* Nascondi sezioni completamente vuote */
-        document.querySelectorAll('.faq-section').forEach(function(s) {
-            var visible = Array.from(s.querySelectorAll('.faq-item')).some(function(i) { return i.dataset.hidden !== 'true'; });
-            s.dataset.hidden = visible ? 'false' : 'true';
-        });
-
-        var noRes = document.getElementById('faq-no-results');
-        if (q && totalVisible === 0) {
-            noRes.style.display = 'block';
-            document.getElementById('faq-no-q').textContent = query;
-        } else {
-            noRes.style.display = 'none';
-        }
-
-        /* Reset category buttons */
-        document.querySelectorAll('.faq-cat-btn').forEach(function(b) { b.classList.remove('active'); });
-        document.querySelector('.faq-cat-btn').classList.add('active');
-    }
-
-    function clearSearch() {
-        document.getElementById('faq-no-results').style.display = 'none';
-        document.querySelectorAll('.faq-item').forEach(function(i) { i.dataset.hidden = 'false'; });
-    }
-</script>
-<script>
-(function() {
-    var burger = document.getElementById('nav-burger');
-    var links  = document.getElementById('nav-links');
-    var nav    = document.getElementById('nav');
-    if (burger && links) {
-        burger.addEventListener('click', function() {
-            burger.classList.toggle('open');
-            links.classList.toggle('open');
-        });
-        links.addEventListener('click', function(e) {
-            if (e.target.tagName === 'A') {
-                burger.classList.remove('open');
-                links.classList.remove('open');
-            }
-        });
-    }
-    window.addEventListener('scroll', function() {
-        if (nav) nav.classList.toggle('scrolled', window.scrollY > 40);
-    }, { passive: true });
-})();
-</script>
+<script src="faq-init.js" defer></script>
 <script src="cookie-banner.js"></script>
 <script src="manga-mode.js"></script>
 </body>

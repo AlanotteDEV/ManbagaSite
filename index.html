@@ -50,7 +50,7 @@
 <div id="toast-container" class="toast-container" aria-live="polite"></div>
 
 <!-- Quiz floating hint -->
-<button class="quiz-hint-fab" id="quiz-hint-fab" aria-label="Vai ai quiz disponibili" style="display:none" onclick="document.getElementById('quiz').scrollIntoView({behavior:'smooth'})">
+<button class="quiz-hint-fab" id="quiz-hint-fab" aria-label="Vai ai quiz disponibili" style="display:none">
     <span class="quiz-hint-icon" aria-hidden="true">
         <svg class="quiz-burst-svg" viewBox="0 0 64 64" width="40" height="40" xmlns="http://www.w3.org/2000/svg">
             <polygon class="quiz-burst-shape" points="32,1 37,17 49,5 45,21 61,18 50,28 63,38 47,36 52,52 38,44 36,62 29,47 18,60 19,43 3,48 12,35 0,26 16,25 8,10 23,18" fill="#DC2626"/>
@@ -92,12 +92,12 @@
 <!-- ============================================================
      MODAL — DETTAGLIO PRODOTTO
      ============================================================ -->
-<div id="product-modal" class="modal-wrap hidden" onclick="if(event.target===this)closeProductModal()">
+<div id="product-modal" class="modal-wrap hidden">
     <div class="modal-box" role="dialog" aria-modal="true" aria-label="Dettaglio prodotto">
         <div class="modal-head">
             <span class="modal-head-title">DETTAGLIO PRODOTTO</span>
             <div class="modal-head-actions">
-                <button class="btn-modal-close" onclick="closeProductModal()">&#10005; Chiudi</button>
+                <button class="btn-modal-close">&#10005; Chiudi</button>
             </div>
         </div>
         <div class="modal-body" id="product-detail-content"></div>
@@ -343,13 +343,11 @@
 
         <!-- Tab selector -->
         <div class="ev-tabs" id="ev-tabs" role="tablist" aria-label="Tipo evento">
-            <button class="ev-tab is-active" data-type="competizione" role="tab" aria-selected="true"
-                    onclick="switchEvTab('competizione')">
+            <button class="ev-tab is-active" data-type="competizione" role="tab" aria-selected="true">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                 Competizioni
             </button>
-            <button class="ev-tab" data-type="evento" role="tab" aria-selected="false"
-                    onclick="switchEvTab('evento')">
+            <button class="ev-tab" data-type="evento" role="tab" aria-selected="false">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                 Eventi
             </button>
@@ -423,7 +421,7 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="#9146FF" aria-hidden="true"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/></svg>
             <span id="twitch-label-text">Ultimo video su Twitch</span>
         </div>
-        <div class="twitch-card" id="twitch-card" role="button" tabindex="0" aria-label="Riproduci video Twitch MANBAGA" onclick="loadTwitchEmbed()" onkeydown="if(event.key==='Enter'||event.key===' ')loadTwitchEmbed()">
+        <div class="twitch-card" id="twitch-card" role="button" tabindex="0" aria-label="Riproduci video Twitch MANBAGA">
             <div class="twitch-card-bg" aria-hidden="true"></div>
             <span class="twitch-live-badge" id="twitch-live-badge" aria-label="In diretta ora" style="display:none">&#9679; LIVE</span>
             <div class="twitch-card-body">
@@ -451,7 +449,7 @@
         <div class="section-label">レビュー &mdash; Cosa dicono di noi</div>
         <div class="reviews-header reveal">
             <h2 class="section-title" style="margin-bottom:0">COSA DICONO<br>I NOSTRI CLIENTI</h2>
-            <button class="btn btn-primary" onclick="openReviewModal()" style="clip-path:none;border-radius:0;flex-shrink:0">
+            <button class="btn btn-primary" data-action="open-review" style="clip-path:none;border-radius:0;flex-shrink:0">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
                 Lascia la tua recensione
             </button>
@@ -477,12 +475,12 @@
 </section>
 
 <!-- MODALE LASCIA RECENSIONE -->
-<div id="review-modal" class="modal-wrap hidden" onclick="if(event.target===this)closeReviewModal()">
+<div id="review-modal" class="modal-wrap hidden">
     <div class="modal-box" role="dialog" aria-modal="true" aria-label="Lascia una recensione" style="max-width:520px">
         <div class="modal-head">
             <span class="modal-head-title">LASCIA UNA RECENSIONE</span>
             <div class="modal-head-actions">
-                <button class="btn-modal-close" onclick="closeReviewModal()">&#10005; Chiudi</button>
+                <button class="btn-modal-close" id="rv-close-btn">&#10005; Chiudi</button>
             </div>
         </div>
         <div class="modal-body" id="review-modal-body">
@@ -498,11 +496,11 @@
                 <div class="form-row">
                     <label class="form-label">Valutazione <span style="color:#dc2626">*</span></label>
                     <div class="rv-stars" id="rv-stars">
-                        <button type="button" class="rv-star-btn" data-v="1" onclick="selectStar(1)" onmouseenter="hoverStar(1)" onmouseleave="hoverStar(0)"></button>
-                        <button type="button" class="rv-star-btn" data-v="2" onclick="selectStar(2)" onmouseenter="hoverStar(2)" onmouseleave="hoverStar(0)"></button>
-                        <button type="button" class="rv-star-btn" data-v="3" onclick="selectStar(3)" onmouseenter="hoverStar(3)" onmouseleave="hoverStar(0)"></button>
-                        <button type="button" class="rv-star-btn" data-v="4" onclick="selectStar(4)" onmouseenter="hoverStar(4)" onmouseleave="hoverStar(0)"></button>
-                        <button type="button" class="rv-star-btn" data-v="5" onclick="selectStar(5)" onmouseenter="hoverStar(5)" onmouseleave="hoverStar(0)"></button>
+                        <button type="button" class="rv-star-btn" data-v="1"></button>
+                        <button type="button" class="rv-star-btn" data-v="2"></button>
+                        <button type="button" class="rv-star-btn" data-v="3"></button>
+                        <button type="button" class="rv-star-btn" data-v="4"></button>
+                        <button type="button" class="rv-star-btn" data-v="5"></button>
                     </div>
                     <div class="rv-star-label" id="rv-star-label">Tocca un fiore di loto per votare</div>
                 </div>
@@ -523,7 +521,7 @@
 
                 <div id="rv-error" class="rv-error" style="display:none"></div>
 
-                <button class="btn btn-primary contact-submit" onclick="submitRecensione()" id="rv-submit-btn"
+                <button class="btn btn-primary contact-submit" id="rv-submit-btn"
                         style="width:100%;clip-path:none;border-radius:0;justify-content:center;margin-top:8px">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
                     Invia Recensione
@@ -547,7 +545,7 @@
                     La tua recensione è stata inviata con successo.<br>
                     Apparirà sul sito dopo approvazione del negozio.
                 </div>
-                <button class="btn btn-primary" onclick="closeReviewModal()"
+                <button class="btn btn-primary" id="rv-success-close"
                         style="margin-top:28px;clip-path:none;border-radius:0">Chiudi</button>
             </div>
 
@@ -613,7 +611,7 @@
                     <span class="contact-form-head-label">INVIA UN MESSAGGIO</span>
                     <span class="contact-form-head-jp">メッセージ</span>
                 </div>
-                <form onsubmit="sendContactMail(event)" class="contact-form-body">
+                <form class="contact-form-body">
                     <div class="form-row">
                         <label class="form-label" for="contact-nome">Nome</label>
                         <input type="text" id="contact-nome" class="form-input contact-input" placeholder="Il tuo nome" required>
@@ -777,7 +775,7 @@
                 <span class="footer-bottom-sep">&middot;</span>
                 <a href="privacy.html" class="footer-bottom-link">Privacy &amp; Cookie Policy</a>
                 <span class="footer-bottom-sep">&middot;</span>
-                <button class="footer-bottom-link footer-cookie-btn" onclick="mbResetCookies()" type="button">Gestisci cookie</button>
+                <button class="footer-bottom-link footer-cookie-btn" type="button">Gestisci cookie</button>
             </span>
         </div>
     </div>
@@ -786,17 +784,17 @@
 
 <!-- Quiz Modal -->
 <div id="quiz-modal" class="quiz-modal hidden" role="dialog" aria-modal="true" aria-label="Quiz">
-    <div class="quiz-modal-backdrop" onclick="closeQuizModal()"></div>
+    <div class="quiz-modal-backdrop"></div>
     <div class="quiz-modal-inner">
-        <button class="quiz-modal-close" onclick="closeQuizModal()" aria-label="Chiudi">&#10005;</button>
+        <button class="quiz-modal-close" aria-label="Chiudi">&#10005;</button>
         <div id="quiz-modal-content"></div>
     </div>
 </div>
 
 <!-- Lightbox zoom immagine prodotto -->
-<div id="img-lightbox" class="img-lightbox hidden" onclick="closeImageZoom()">
-    <button class="lightbox-close" onclick="closeImageZoom()" aria-label="Chiudi">&#10005;</button>
-    <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()">
+<div id="img-lightbox" class="img-lightbox hidden">
+    <button class="lightbox-close" aria-label="Chiudi">&#10005;</button>
+    <img id="lightbox-img" src="" alt="">
 </div>
 
 <script src="script.js" defer></script>
@@ -804,6 +802,8 @@
 <script src="poll.js" defer></script>
 <script src="cookie-banner.js" defer></script>
 <script src="manga-mode.js" defer></script>
+<script src="index-init.js" defer></script>
+<script src="pwa.js" defer></script>
 
 <!-- Banner installa app -->
 <div id="pwa-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px));background:#1a1a1a;border-top:1px solid rgba(220,38,38,.4);box-shadow:0 -4px 24px rgba(0,0,0,.6);animation:pwaSlideUp .3s ease-out">
@@ -813,63 +813,13 @@
       <div style="font-weight:700;font-size:14px;color:#f5f0e8;font-family:Inter,sans-serif">Installa MANBAGA</div>
       <div style="font-size:12px;color:rgba(245,240,232,.5);font-family:Inter,sans-serif;margin-top:1px">Aggiungila alla schermata Home</div>
     </div>
-    <button onclick="window._pwaDismiss()" style="background:transparent;border:none;color:rgba(245,240,232,.35);font-size:20px;padding:4px 8px;cursor:pointer;flex-shrink:0;line-height:1">✕</button>
-    <button onclick="window._pwaInstall()" style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:9px 16px;font-weight:700;font-size:13px;font-family:Inter,sans-serif;cursor:pointer;flex-shrink:0;white-space:nowrap">Installa</button>
+    <button id="pwa-btn-dismiss" style="background:transparent;border:none;color:rgba(245,240,232,.35);font-size:20px;padding:4px 8px;cursor:pointer;flex-shrink:0;line-height:1">✕</button>
+    <button id="pwa-btn-install" style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:9px 16px;font-weight:700;font-size:13px;font-family:Inter,sans-serif;cursor:pointer;flex-shrink:0;white-space:nowrap">Installa</button>
   </div>
 </div>
 <style>
 @keyframes pwaSlideUp { from { transform: translateY(100%); opacity:0; } to { transform: translateY(0); opacity:1; } }
 </style>
-
-<script>
-(function() {
-  var _deferredPrompt = null;
-  var _banner = document.getElementById('pwa-banner');
-
-  /* Ascolta l'evento nativo di Chrome/Android */
-  window.addEventListener('beforeinstallprompt', function(e) {
-    e.preventDefault();
-    _deferredPrompt = e;
-    /* Non mostrare se già ignorato di recente */
-    if (!sessionStorage.getItem('pwa-dismissed')) {
-      setTimeout(function() { _banner.style.display = 'block'; }, 2000);
-    }
-  });
-
-  window._pwaInstall = function() {
-    if (!_deferredPrompt) return;
-    _deferredPrompt.prompt();
-    _deferredPrompt.userChoice.then(function() {
-      _deferredPrompt = null;
-      _banner.style.display = 'none';
-    });
-  };
-
-  window._pwaDismiss = function() {
-    _banner.style.display = 'none';
-    sessionStorage.setItem('pwa-dismissed', '1');
-  };
-
-  /* Su iOS Safari non c'è beforeinstallprompt: mostra banner manuale */
-  var isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  var isInStandaloneMode = ('standalone' in navigator && navigator.standalone);
-  if (isIos && !isInStandaloneMode && !sessionStorage.getItem('pwa-dismissed')) {
-    setTimeout(function() { _banner.style.display = 'block'; }, 2000);
-    /* Su iOS il bottone spiega come fare */
-    var btn = _banner.querySelector('button:last-child');
-    btn.textContent = 'Come fare?';
-    btn.onclick = function() {
-      alert('Su Safari: tocca il tasto Condividi (□↑) in basso, poi "Aggiungi a schermata Home".');
-    };
-  }
-
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function() {
-      navigator.serviceWorker.register('/sw.js').catch(function(){});
-    });
-  }
-})();
-</script>
 </body>
 
 </html>

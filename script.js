@@ -4,6 +4,14 @@
 
 'use strict';
 
+/* ── Global image error handler (sostituisce onerror="…" inline) ── */
+document.addEventListener('error', function (e) {
+    if (e.target.tagName === 'IMG' && !e.target.dataset.errHandled) {
+        e.target.dataset.errHandled = '1';
+        e.target.src = 'https://placehold.co/400x500/0a0a0a/333?text=Cover';
+    }
+}, true /* capture phase */);
+
 var _ALLOWED_DOMAINS = ['instagram.com', 'manbaga-site.vercel.app'];
 
 function isSafeLink(url) {
@@ -520,7 +528,7 @@ function renderProducts() {
         return '<div class="product-card' + (isOos ? ' product-card--oos' : '') + '" data-badge="' + _escHtml(p.badge || '') + '" data-pid="' + _escHtml(String(p.id)) + '" onclick="openProductModal(this.dataset.pid)">'
             + '<div class="product-badge" data-badge="' + _escHtml(p.badge || 'Disponibile') + '">' + _escHtml(p.badge || 'Disponibile') + '</div>'
             + '<div class="product-img-wrap">'
-            + '<img class="product-img" src="' + _escHtml(p.image) + '" alt="' + _escHtml(p.title) + '" loading="lazy" onerror="this.src=\'https://placehold.co/400x500/0a0a0a/333?text=Cover\'">'
+            + '<img class="product-img" src="' + _escHtml(p.image) + '" alt="' + _escHtml(p.title) + '" loading="lazy">'
             + '<div class="product-img-overlay"><span>Scopri di più</span></div>'
             + '</div>'
             + '<div class="product-info">'
@@ -744,7 +752,7 @@ function openProductModal(productId) {
     document.getElementById('product-detail-content').innerHTML =
         '<div class="pd-grid">'
         + '<div class="pd-img-wrap" data-img="' + _escHtml(product.image) + '" data-title="' + _escHtml(product.title) + '" onclick="zoomProductImage(this.dataset.img,this.dataset.title)">'
-        + '<img class="pd-img" src="' + _escHtml(product.image) + '" alt="' + _escHtml(product.title) + '" onerror="this.src=\'https://placehold.co/400x500/0a0a0a/333?text=Cover\'">'
+        + '<img class="pd-img" src="' + _escHtml(product.image) + '" alt="' + _escHtml(product.title) + '">'
         + '<div class="pd-zoom-hint"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg> Clicca per ingrandire</div>'
         + '</div>'
         + '<div>'
@@ -842,6 +850,13 @@ function submitPreorder(productId) {
         }
     }
 
+    /* Rate limiting: max 1 preordine ogni 30 secondi */
+    var _lastPo = parseInt(localStorage.getItem('mb_preorder_last') || '0', 10);
+    if (Date.now() - _lastPo < 30000) {
+        mbNotify('Attendi un momento prima di inviare un\'altra richiesta.', 'error');
+        return;
+    }
+
     var submitBtn = document.querySelector('#preorder-form-' + productId + ' .btn-primary');
     if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Invio in corso…'; }
 
@@ -862,6 +877,7 @@ function submitPreorder(productId) {
         status:          'nuovo',
         createdAt:       firebase.firestore.FieldValue.serverTimestamp()
     }).then(function() {
+        localStorage.setItem('mb_preorder_last', String(Date.now()));
         _preorderSuccess(productId, submitBtn);
     }).catch(function(err) {
         console.error('Preorder save error:', err);
@@ -1010,6 +1026,13 @@ function closeImageZoom() {
 function sendContactMail(e) {
     e.preventDefault();
 
+    /* Rate limiting: max 1 messaggio ogni 60 secondi */
+    var _lastSent = parseInt(localStorage.getItem('mb_contact_last') || '0', 10);
+    if (Date.now() - _lastSent < 60000) {
+        mbNotify('Attendi un momento prima di inviare un altro messaggio.', 'error');
+        return;
+    }
+
     var nome    = document.getElementById('contact-nome').value.trim();
     var email   = document.getElementById('contact-email').value.trim();
     var oggetto = document.getElementById('contact-oggetto').value.trim();
@@ -1037,6 +1060,7 @@ function sendContactMail(e) {
             reply_to:   email
         })
         .then(function () {
+            localStorage.setItem('mb_contact_last', String(Date.now()));
             _contactSuccess(btn, origHTML);
             /* 2) Autoreply al cliente — errori silenziosi, non bloccano l'UX */
             emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateAutoreply, {
@@ -1330,8 +1354,10 @@ function tavSubmitPrenotazione() {
     if (!ora)  { showToast('Inserisci l\'orario di arrivo.', 'error'); return; }
     if (!_tavSelectedTavolo) return;
 
-    var id = Date.now();
-    _tavDb.ref('prenotazioni/' + id).set({
+    /* Firebase push() genera ID univoci sicuri — evita race condition su Date.now() */
+    var newRef = _tavDb.ref('prenotazioni').push();
+    var id = newRef.key;
+    newRef.set({
         id:       id,
         tavolo:   _tavSelectedTavolo,
         nome:     nome,
@@ -1676,10 +1702,9 @@ function _updateTwitchCard(isLive) {
     if (cta)   cta.textContent     = isLive ? 'In diretta ora ▶' : 'Clicca per guardare ▶';
     if (label) label.textContent   = isLive ? 'In diretta su Twitch' : 'Ultimo video su Twitch';
 
-    /* Se è live e la card è ancora visibile → carica automaticamente */
-    if (isLive && document.getElementById('twitch-card')) {
-        loadTwitchEmbed();
-    }
+    /* GDPR: il player Twitch (che può impostare cookie di terze parti) viene caricato
+       SOLO su click esplicito dell'utente — mai automaticamente.
+       Aggiorniamo solo il testo del CTA, non carichiamo l'embed. */
 }
 
 /* Check al caricamento + ogni minuto */

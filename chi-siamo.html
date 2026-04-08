@@ -748,8 +748,8 @@
 <body>
 
 <!-- Lightbox -->
-<div class="lb-overlay" id="lb" onclick="closeLb()">
-    <button class="lb-close" onclick="closeLb()">&#x2715;</button>
+<div class="lb-overlay" id="lb">
+    <button class="lb-close">&#x2715;</button>
     <img id="lb-img" src="" alt="">
     <div class="lb-caption" id="lb-cap"></div>
 </div>
@@ -862,7 +862,7 @@
 
                 <!-- Foto 1 — Polaroid (dritta) -->
                 <div class="frame-wrap">
-                    <div class="frame-polaroid" style="transform:none" onclick="openLb('foto/1.jpeg','#01 — La notte in cui è nata MANBAGA')">
+                    <div class="frame-polaroid" style="transform:none" data-lb-src="foto/1.jpeg" data-lb-cap="#01 — La notte in cui è nata MANBAGA">
                         <div class="photo-frame" style="overflow:hidden">
                             <img src="foto/1.jpeg" alt="La nascita di MANBAGA" loading="lazy" style="transform:rotate(225deg) scale(1.5); transform-origin:center center;">
                             <span class="photo-num">#01</span>
@@ -873,7 +873,7 @@
 
                 <!-- Foto 2 — Comic Panel -->
                 <div class="frame-wrap">
-                    <div class="frame-comic" onclick="openLb('foto/2.jpeg','#02 — Rinascita')">
+                    <div class="frame-comic" data-lb-src="foto/2.jpeg" data-lb-cap="#02 — Rinascita">
                         <div class="photo-frame">
                             <img src="foto/2.jpeg" alt="Rinascita" loading="lazy">
                             <div class="photo-caption">Rinascita</div>
@@ -884,7 +884,7 @@
 
                 <!-- Foto 3 — Red Glow -->
                 <div class="frame-wrap">
-                    <div class="frame-glow" onclick="openLb('foto/3.jpeg','#03 — Il lavoro')">
+                    <div class="frame-glow" data-lb-src="foto/3.jpeg" data-lb-cap="#03 — Il lavoro">
                         <div class="photo-frame">
                             <img src="foto/3.jpeg" alt="Il lavoro" loading="lazy">
                             <div class="photo-caption">Il lavoro</div>
@@ -895,7 +895,7 @@
 
                 <!-- Foto 4 — Film Strip -->
                 <div class="frame-wrap">
-                    <div class="frame-film" onclick="openLb('foto/4.jpeg','#04 — La nascita di un sogno')">
+                    <div class="frame-film" data-lb-src="foto/4.jpeg" data-lb-cap="#04 — La nascita di un sogno">
                         <div class="photo-frame">
                             <img src="foto/4.jpeg" alt="La nascita di un sogno" loading="lazy">
                             <div class="photo-caption">La nascita di un sogno</div>
@@ -906,7 +906,7 @@
 
                 <!-- Foto 5 — Double Border -->
                 <div class="frame-wrap">
-                    <div class="frame-double" onclick="openLb('foto/5.jpeg','#05 — Passione')">
+                    <div class="frame-double" data-lb-src="foto/5.jpeg" data-lb-cap="#05 — Passione">
                         <div class="photo-frame">
                             <img src="foto/5.jpeg" alt="Passione" loading="lazy">
                             <div class="photo-caption">Passione</div>
@@ -1066,50 +1066,14 @@
                 <span class="footer-bottom-sep">&middot;</span>
                 <a href="privacy.html" class="footer-bottom-link">Privacy &amp; Cookie Policy</a>
                 <span class="footer-bottom-sep">&middot;</span>
-                <button class="footer-bottom-link footer-cookie-btn" onclick="mbResetCookies()" type="button">Gestisci cookie</button>
+                <button class="footer-bottom-link footer-cookie-btn" type="button">Gestisci cookie</button>
             </span>
         </div>
     </div>
 </footer>
 
-<script>
-function openLb(src, cap) {
-    document.getElementById('lb-img').src = src;
-    document.getElementById('lb-cap').textContent = cap;
-    document.getElementById('lb').classList.add('active');
-    document.body.style.overflow = 'hidden';
-}
-function closeLb() {
-    document.getElementById('lb').classList.remove('active');
-    document.getElementById('lb-img').src = '';
-    document.body.style.overflow = '';
-}
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeLb();
-});
-</script>
-
 <script src="cookie-banner.js"></script>
 <script src="manga-mode.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    var burger = document.getElementById('nav-burger');
-    var links  = document.getElementById('nav-links');
-    if (burger) burger.addEventListener('click', function() {
-        links.classList.toggle('open');
-        burger.classList.toggle('open');
-    });
-    links.querySelectorAll('a').forEach(function(a) {
-        a.addEventListener('click', function() {
-            links.classList.remove('open');
-            burger.classList.remove('open');
-        });
-    });
-    window.addEventListener('scroll', function() {
-        var nav = document.getElementById('nav');
-        if (nav) nav.classList.toggle('scrolled', window.scrollY > 40);
-    }, { passive: true });
-});
-</script>
+<script src="chi-siamo-init.js" defer></script>
 </body>
 </html>

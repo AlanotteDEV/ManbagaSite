@@ -455,7 +455,7 @@
                 </span>
                 Prossimi Tornei
             </a>
-            <a href="javascript:history.back()" class="err-btn err-btn--ghost">
+            <a href="#" id="back-btn" class="err-btn err-btn--ghost">
                 <span class="err-btn-icon">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
                 </span>
@@ -466,14 +466,7 @@
     </div>
 </div>
 
-<script>
-    /* Auto-redirect after 30s */
-    var _countdown = 30;
-    var _t = setInterval(function() {
-        _countdown--;
-        if (_countdown <= 0) { clearInterval(_t); window.location.href = 'index.html'; }
-    }, 1000);
-</script>
+<script src="404-init.js" defer></script>
 <script src="manga-mode.js"></script>
 </body>
 </html>

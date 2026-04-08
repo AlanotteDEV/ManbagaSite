@@ -1213,9 +1213,9 @@
         </ul>
         <div id="header-user" class="hidden" style="display:flex;align-items:center;gap:8px;margin-right:4px">
             <span id="header-nome" class="btn-logout" style="border:none;cursor:default"></span>
-            <button onclick="doLogout()" class="btn-logout">Esci</button>
+            <button id="logout-btn" class="btn-logout">Esci</button>
         </div>
-        <button id="header-login" onclick="showAuthOverlay()" class="btn-logout">Accedi</button>
+        <button id="header-login" class="btn-logout">Accedi</button>
         <button class="nav-burger" id="nav-burger" aria-label="Apri menu">
             <span></span><span></span><span></span>
         </button>
@@ -1247,7 +1247,7 @@
             <span class="po-notice-dot"></span>
             Le prenotazioni torneranno attive dal 7 aprile 2026
         </div>
-        <button class="po-game-btn" onclick="openEasterGame()">🎴 Memory Manga</button>
+        <button id="open-game-btn" class="po-game-btn">🎴 Memory Manga</button>
 
         <!-- ─── MINI GIOCO MEMORY (dentro l'overlay, non copre il footer) ─── -->
         <div id="po-game">
@@ -1257,7 +1257,7 @@
                     <div class="pg-stat"><span class="pg-stat-val" id="pg-moves">0</span>MOSSE</div>
                     <div class="pg-stat"><span class="pg-stat-val" id="pg-timer">0:00</span>TEMPO</div>
                 </div>
-                <button class="pg-close" onclick="closeEasterGame()">✕ Esci</button>
+                <button class="pg-close">✕ Esci</button>
             </div>
             <div id="pg-arena">
                 <div class="pg-grid" id="pg-grid"></div>
@@ -1268,7 +1268,7 @@
                         nascosti nelle uova di Pasqua! 🥚<br>
                         Meno mosse fai, più stelle ottieni ⭐
                     </p>
-                    <button class="pg-start-btn" onclick="startEasterGame()">▶ GIOCA</button>
+                    <button class="pg-start-btn">▶ GIOCA</button>
                 </div>
                 <div class="pg-screen hidden" id="pg-end-screen">
                     <div class="pg-stars" id="pg-stars">⭐⭐⭐</div>
@@ -1276,7 +1276,7 @@
                     <div class="pg-screen-time" id="pg-final-time">0:00</div>
                     <div class="pg-screen-moves" id="pg-final-moves">0 mosse</div>
                     <p class="pg-screen-sub" id="pg-final-msg"></p>
-                    <button class="pg-start-btn" onclick="startEasterGame()">🔄 Rigioca</button>
+                    <button class="pg-start-btn">🔄 Rigioca</button>
                 </div>
             </div>
         </div>
@@ -1289,7 +1289,7 @@
         <p class="page-subtitle">Scegli il tavolo, scegli l'orario &mdash; gratis e veloce! 🎮✨</p>
 
         <!-- AUTH -->
-        <div id="auth-screen" class="hidden" onclick="if(event.target===this)hideAuthOverlay()">
+        <div id="auth-screen" class="hidden">
             <div class="auth-card">
                 <div class="auth-head">
                     <p id="auth-eyebrow" class="auth-eyebrow">Accedi per prenotare</p>
@@ -1299,10 +1299,9 @@
                     <input type="text"     id="reg-nome"   class="field-input hidden" placeholder="IL TUO NOME" autocomplete="name">
                     <input type="email"    id="auth-email" class="field-input" placeholder="Email" autocomplete="email">
                     <input type="password" id="auth-pass"  class="field-input" placeholder="Password"
-                           autocomplete="current-password"
-                           onkeypress="if(event.key==='Enter')doAuth()">
-                    <button id="auth-btn" onclick="doAuth()" class="btn-primary">ACCEDI 🌸</button>
-                    <button id="auth-toggle" onclick="toggleMode()" class="btn-toggle">
+                           autocomplete="current-password">
+                    <button id="auth-btn" class="btn-primary">ACCEDI 🌸</button>
+                    <button id="auth-toggle" class="btn-toggle">
                         Non hai un account? Registrati
                     </button>
                 </div>
@@ -1340,8 +1339,8 @@
 
             <!-- Tabs -->
             <div class="tabs">
-                <button class="tab-btn active" onclick="switchTab('mappa', this)">🗾 Mappa</button>
-                <button class="tab-btn" onclick="switchTab('lista', this)">
+                <button class="tab-btn active" data-tab="mappa">🗾 Mappa</button>
+                <button class="tab-btn" data-tab="lista">
                     📋 Le Mie Prenotazioni
                     <span class="tab-badge" id="badge-count">0</span>
                 </button>
@@ -1362,21 +1361,20 @@
 </main>
 
 <!-- Modal prenotazione -->
-<div id="modal-overlay" class="hidden" onclick="if(event.target===this)closeModal()">
+<div id="modal-overlay" class="hidden">
     <div class="modal-box" role="dialog" aria-modal="true" aria-label="Prenota tavolo">
         <div class="modal-head">
             <div>
                 <p class="modal-eyebrow">🌸 Nuova Prenotazione</p>
                 <h2 id="modal-title" class="modal-title">TAVOLO 1</h2>
             </div>
-            <button class="modal-close" onclick="closeModal()" aria-label="Chiudi">&#10005;</button>
+            <button class="modal-close" aria-label="Chiudi">&#10005;</button>
         </div>
         <div class="modal-body">
 
             <div>
                 <label class="field-label" for="p-nome">Nome Prenotazione</label>
-                <input type="text" id="p-nome" class="field-input" placeholder="Es. Mario Rossi" maxlength="80"
-                       onkeypress="if(event.key==='Enter')document.getElementById('p-data').focus()">
+                <input type="text" id="p-nome" class="field-input" placeholder="Es. Mario Rossi" maxlength="80">
             </div>
 
             <div>
@@ -1400,11 +1398,11 @@
                 <label class="field-label">Numero di Persone</label>
                 <div id="seats-note" class="seats-note hidden"></div>
                 <div class="people-selector" id="people-selector" style="margin-top:8px">
-                    <button class="people-btn" onclick="selectPeople(1)" data-n="1">
+                    <button class="people-btn" data-n="1">
                         <span class="people-icon">👤</span>
                         <span class="people-num">1</span>
                     </button>
-                    <button class="people-btn" onclick="selectPeople(2)" data-n="2">
+                    <button class="people-btn" data-n="2">
                         <span class="people-icon">👥</span>
                         <span class="people-num">2</span>
                     </button>
@@ -1412,515 +1410,15 @@
             </div>
 
             <div class="modal-actions">
-                <button onclick="closeModal()" class="btn-cancel">Annulla</button>
-                <button onclick="submitPren()" class="btn-confirm" id="confirm-btn">🌸 Prenota!</button>
+                <button id="cancel-pren-btn" class="btn-cancel">Annulla</button>
+                <button class="btn-confirm" id="confirm-btn">🌸 Prenota!</button>
             </div>
         </div>
     </div>
 </div>
 
 
-<script>
-/* ── FIREBASE ─────────────────────────────────────────────── */
-const FB_CONFIG = {
-    apiKey:      'AIzaSyCG0-J2wxZGSz6eDh_E-aAe2uvpTGLmXz0',
-    authDomain:  'prenotazioninegozio-65eb1.firebaseapp.com',
-    projectId:   'prenotazioninegozio-65eb1',
-    databaseURL: 'https://prenotazioninegozio-65eb1-default-rtdb.europe-west1.firebasedatabase.app',
-    appId:       '1:466874129336:web:fd07925523c35921fe8d4d'
-};
-firebase.initializeApp(FB_CONFIG);
-const auth      = firebase.auth();
-const db        = firebase.database();
-const firestore = firebase.firestore();
 
-/* ── TORNEO IN CORSO ──────────────────────────────────────── */
-firestore.collection('events')
-    .where('status', '==', 'in-corso')
-    .where('type',   '==', 'competizione')
-    .onSnapshot(snap => {
-        const appScreen = document.getElementById('app-screen');
-        if (!snap.empty) {
-            const torneo = snap.docs[0].data();
-            const fid    = snap.docs[0].id;
-            document.getElementById('tlock-nome').textContent = torneo.title || '';
-            const liveBtn = document.getElementById('tlock-live-btn');
-            liveBtn.href = 'torneo.html?id=' + fid;
-            liveBtn.classList.remove('hidden');
-            appScreen.classList.add('torneo-attivo');
-        } else {
-            document.getElementById('tlock-nome').textContent = '';
-            document.getElementById('tlock-live-btn').classList.add('hidden');
-            appScreen.classList.remove('torneo-attivo');
-        }
-    }, () => {
-        // se Firestore non raggiungibile, non bloccare nulla
-    });
-
-/* ── STATE ───────────────────────────────────────────────── */
-let selectedTavolo  = null;
-let selectedPeople  = null;
-let selectedMaxPeople = 2;
-let isReg = false;
-let currentData = {}; // cache of last Firebase snapshot
-let pendingTable  = null; // table clicked before login
-
-/* ── LIVE CLOCK ──────────────────────────────────────────── */
-function updateClock() {
-    const el = document.getElementById('live-clock');
-    if (!el) return;
-    const d = new Date();
-    el.textContent = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
-}
-setInterval(updateClock, 1000);
-updateClock();
-
-/* ── TOAST ───────────────────────────────────────────────── */
-function toast(msg, type = 'info') {
-    const wrap = document.getElementById('toast-wrap');
-    const icons = { ok: '✅', err: '❌', info: '🌸' };
-    const el = document.createElement('div');
-    el.className = `toast toast--${type}`;
-    el.setAttribute('role', 'alert');
-    el.innerHTML = `<span class="toast-icon">${icons[type] || icons.info}</span><span>${esc(msg)}</span>`;
-    wrap.appendChild(el);
-    setTimeout(() => {
-        el.classList.add('out');
-        setTimeout(() => el.remove(), 280);
-    }, 3800);
-}
-
-/* ── AUTH ────────────────────────────────────────────────── */
-function toggleMode() {
-    isReg = !isReg;
-    document.getElementById('reg-nome').classList.toggle('hidden', !isReg);
-    document.getElementById('auth-eyebrow').textContent = isReg ? 'Crea il tuo account' : 'Accedi per prenotare';
-    document.getElementById('auth-btn').textContent     = isReg ? 'REGISTRATI 🌸' : 'ACCEDI 🌸';
-    document.getElementById('auth-toggle').textContent  = isReg ? 'Hai già un account? Accedi' : 'Non hai un account? Registrati';
-}
-
-function doAuth() {
-    const email = (document.getElementById('auth-email').value || '').trim();
-    const pass  = document.getElementById('auth-pass').value || '';
-    if (!email || !pass) { toast('Inserisci email e password.', 'err'); return; }
-
-    if (isReg) {
-        const nome = (document.getElementById('reg-nome').value || '').trim();
-        if (!nome) { toast('Inserisci il tuo nome.', 'err'); return; }
-        auth.createUserWithEmailAndPassword(email, pass)
-            .then(r => db.ref('utenti/' + r.user.uid).set({ nome }))
-            .then(() => toast('Account creato! Benvenuto! 🎉', 'ok'))
-            .catch(e => toast(e.message, 'err'));
-    } else {
-        auth.signInWithEmailAndPassword(email, pass)
-            .then(() => toast('Accesso effettuato! 🌸', 'ok'))
-            .catch(() => toast('Credenziali non valide. Riprova.', 'err'));
-    }
-}
-
-function doLogout() {
-    auth.signOut().then(() => {
-        pendingTable = null;
-        toast('A presto! 👋', 'info');
-    }).catch(() => {});
-}
-
-/* ── DB LISTENER (always on, no auth needed to view) ────── */
-db.ref('prenotazioni').on('value', snap => {
-    currentData = snap.val() || {};
-    render(currentData);
-});
-
-/* ── AUTH STATE ──────────────────────────────────────────── */
-auth.onAuthStateChanged(user => {
-    const authEl   = document.getElementById('auth-screen');
-    const userEl   = document.getElementById('header-user');
-    const loginBtn = document.getElementById('header-login');
-    const nomeEl   = document.getElementById('header-nome');
-
-    if (user) {
-        authEl.classList.add('hidden');
-        userEl.classList.remove('hidden');
-        if (loginBtn) loginBtn.classList.add('hidden');
-
-        db.ref('utenti/' + user.uid).once('value', snap => {
-            const nome = snap.val()?.nome || user.email;
-            if (nomeEl) nomeEl.textContent = nome;
-        });
-
-        // If user clicked a table before logging in, open booking now
-        if (pendingTable) {
-            const { num, max } = pendingTable;
-            pendingTable = null;
-            openModal(num, max);
-        } else {
-            render(currentData);
-        }
-    } else {
-        authEl.classList.add('hidden');
-        userEl.classList.add('hidden');
-        if (loginBtn) loginBtn.classList.remove('hidden');
-        render(currentData);
-    }
-});
-
-/* ── EXPIRY HELPERS ──────────────────────────────────────── */
-/**
- * Returns true if the booking is expired.
- * Uses expiresAt (full timestamp) if available.
- * For old bookings without expiresAt, falls back to same-day HH:MM comparison.
- */
-function isExpired(p) {
-    if (p.expiresAt) {
-        return p.expiresAt <= Date.now();
-    }
-    // Legacy fallback: compare HH:MM strings (only reliable same-day)
-    // If no date stored, we can't reliably determine cross-day expiry — skip
-    if (!p.orarioUscita) return false;
-    if (!p.data) return false; // can't compare without a date
-    const todayStr = new Date().toISOString().split('T')[0];
-    if (p.data !== todayStr) {
-        // booking from a previous day without a timestamp → treat as expired
-        return new Date(p.data) < new Date(todayStr);
-    }
-    const [nh, nm] = [new Date().getHours(), new Date().getMinutes()];
-    const nowMins  = nh * 60 + nm;
-    const [uh, um] = p.orarioUscita.split(':').map(Number);
-    return (uh * 60 + um) <= nowMins;
-}
-
-function isExpiringSoon(expiresAt) {
-    if (!expiresAt) return false;
-    const diff = expiresAt - Date.now();
-    return diff > 0 && diff <= 15 * 60 * 1000; // ≤ 15 min
-}
-
-/* ── RENDER ──────────────────────────────────────────────── */
-function render(data) {
-    const all = Object.values(data);
-
-    // Clean expired (only owner can delete in Firebase)
-    autoCleanExpired(all);
-
-    // Filter expired from display so tables appear free immediately
-    const active = all.filter(p => !isExpired(p));
-
-    let liberi = 0, occ = 0;
-    const grid = document.getElementById('grid-tavoli');
-    grid.innerHTML = '';
-
-    for (let i = 1; i <= 8; i++) {
-        // Collect ALL bookings for this table
-        const bookings    = active.filter(x => String(x.tavolo) === String(i));
-        const totalPeople = bookings.reduce((s, b) => s + (Number(b.persone) || 1), 0);
-        const isFull      = totalPeople >= 2;
-        const card        = document.createElement('div');
-
-        if (bookings.length > 0) {
-            occ++;
-            if (isFull) {
-                card.className = 't-card t-card--occ';
-            } else {
-                // Partially occupied: still bookable
-                card.className = 't-card t-card--partial';
-                card.onclick   = () => openModal(i, 2 - totalPeople);
-            }
-            card.innerHTML = buildOcc(i, bookings, totalPeople);
-        } else {
-            liberi++;
-            card.className = 't-card t-card--free';
-            card.onclick   = () => openModal(i, 2);
-            card.innerHTML = buildFree(i);
-        }
-        grid.appendChild(card);
-    }
-
-    document.getElementById('n-liberi').textContent = liberi;
-    document.getElementById('n-occ').textContent    = occ;
-
-    // My bookings list
-    const uid  = auth.currentUser?.uid || null;
-    const mie  = uid ? active.filter(x => x.utenteId === uid) : [];
-    document.getElementById('badge-count').textContent = mie.length;
-
-    const lista = document.getElementById('lista-mie');
-    if (!uid) {
-        lista.innerHTML = '<p class="empty-msg">🌸 <span onclick="showAuthOverlay()" style="cursor:pointer;color:var(--pink);text-decoration:underline">Accedi</span> per vedere le tue prenotazioni</p>';
-    } else if (mie.length === 0) {
-        lista.innerHTML = '<p class="empty-msg">🌸 Nessuna prenotazione attiva</p>';
-    } else {
-        lista.innerHTML = mie.map(x => {
-            const n    = Number(x.persone) || 1;
-            const dots = [1,2].map(d =>
-                `<span class="pren-dot${d <= n ? ' filled' : ''}"></span>`
-            ).join('');
-            const timeStr = x.orarioUscita
-                ? `${esc(x.orario)} → ${esc(x.orarioUscita)}`
-                : `ore ${esc(x.orario)}`;
-            const dateStr  = x.data ? ` · ${fmtDate(x.data)}` : '';
-            const expSoon  = x.expiresAt ? isExpiringSoon(x.expiresAt) : false;
-            return `<div class="pren-row">
-                <div class="pren-main">
-                    <span class="pren-table">Tavolo ${esc(String(x.tavolo))}</span>
-                    <span class="pren-name">${esc(x.nome)}</span>
-                    <span class="pren-meta">${timeStr}${dateStr}</span>
-                    <div class="pren-people-dots">${dots}</div>
-                    ${expSoon ? '<span class="t-expire-soon">⏱ In scadenza!</span>' : ''}
-                </div>
-                <button class="btn-del" onclick="delPren('${esc(x.id)}')" title="Cancella" aria-label="Cancella prenotazione">✕</button>
-            </div>`;
-        }).join('');
-    }
-}
-
-/* ── CARD BUILDERS ───────────────────────────────────────── */
-function seats(n, type) {
-    const c = i => i < n ? `seat seat--taken-${type}` : 'seat seat--empty';
-    return `<div class="seats-row"><span class="${c(0)}"></span><span class="${c(1)}"></span></div>`;
-}
-function seatsBot(n, type) {
-    const c = i => i < n ? `seat seat--taken-${type}` : 'seat seat--empty';
-    return `<div class="seats-row"><span class="${c(2)}"></span><span class="${c(3)}"></span></div>`;
-}
-
-function buildFree(num) {
-    return `
-        <span class="t-ribbon t-ribbon--free">LIBERO</span>
-        <div class="t-visual">
-            ${seats(0,'free')}
-            <div class="t-top">
-                <span class="t-num">${num}</span>
-                <span class="t-seats-count t-seats-count--free" title="2 posti disponibili">2</span>
-            </div>
-        </div>
-        <div class="t-info"><span class="t-cta">Tocca per prenotare ✨</span></div>`;
-}
-
-function buildOcc(num, bookings, totalPeople) {
-    const MAX      = 2;
-    const isFull   = totalPeople >= MAX;
-    const remaining = MAX - totalPeople;
-    const seatType = isFull ? 'occ' : 'partial';
-    const expSoon  = bookings.some(b => b.expiresAt && isExpiringSoon(b.expiresAt));
-
-    // Build one entry per booking
-    const entries = bookings.map(b => {
-        const n = Number(b.persone) || 1;
-        const timeHtml = b.orarioUscita
-            ? `<span class="t-time-range">
-                   <span class="t-arr">${esc(b.orario)}</span>
-                   <span class="t-sep">→</span>
-                   <span class="t-usc">${esc(b.orarioUscita)}</span>
-               </span>`
-            : `<span class="t-guest-meta">ore ${esc(b.orario)}</span>`;
-        return `<div class="t-booking-entry">
-            <span class="t-guest-name">${esc(b.nome)}</span>
-            ${timeHtml}
-            <span class="t-entry-people">${'👤'.repeat(Math.min(n,4))} ${n} pers.</span>
-        </div>`;
-    }).join('<div class="t-booking-sep"></div>');
-
-    const ribbonLabel = isFull ? 'COMPLETO' : `${remaining} POSTI`;
-
-    return `
-        <span class="t-ribbon t-ribbon--${isFull ? 'occ' : 'partial'}">${ribbonLabel}</span>
-        <div class="t-visual">
-            ${seats(totalPeople, seatType)}
-            <div class="t-top">
-                <span class="t-num">${num}</span>
-                <span class="t-seats-count t-seats-count--${isFull ? 'occ' : 'partial'}" title="${totalPeople}/${MAX} persone">${totalPeople}/${MAX}</span>
-            </div>
-        </div>
-        <div class="t-info t-info--multi">
-            ${entries}
-            ${expSoon ? '<span class="t-expire-soon">⏱ In scadenza!</span>' : ''}
-            ${!isFull ? `<span class="t-cta-partial">Tocca per aggiungere ✨</span>` : ''}
-        </div>`;
-}
-
-function esc(s) {
-    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-function fmtDate(d) {
-    if (!d) return '';
-    try { const [y,m,g] = d.split('-'); return `${esc(g)}/${esc(m)}/${esc(y)}`; }
-    catch { return esc(d); }
-}
-
-/* ── AUTH OVERLAY HELPERS ────────────────────────────────── */
-function showAuthOverlay() {
-    document.getElementById('auth-screen').classList.remove('hidden');
-}
-function hideAuthOverlay() {
-    document.getElementById('auth-screen').classList.add('hidden');
-}
-
-/* ── MODAL ───────────────────────────────────────────────── */
-function openModal(num, maxPeople) {
-    if (!auth.currentUser) {
-        pendingTable = { num, max: maxPeople || 2 };
-        showAuthOverlay();
-        return;
-    }
-    maxPeople = maxPeople || 2;
-    selectedTavolo    = num;
-    selectedPeople    = null;
-    selectedMaxPeople = maxPeople;
-
-    document.getElementById('modal-title').textContent = 'TAVOLO ' + num;
-    document.getElementById('p-nome').value   = '';
-    document.getElementById('p-ora').value    = '';
-    document.getElementById('p-uscita').value = '';
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('p-data').min   = today;
-    document.getElementById('p-data').value = today;
-
-    // Enable/disable people buttons based on available seats
-    document.querySelectorAll('.people-btn').forEach(b => {
-        b.classList.remove('selected');
-        const n = Number(b.dataset.n);
-        b.disabled = (n > maxPeople);
-    });
-
-    // Show remaining-seats note if table is partially booked
-    const note = document.getElementById('seats-note');
-    if (maxPeople < 2) {
-        note.textContent = `⚠️ Solo ${maxPeople} posto${maxPeople > 1 ? 'i' : ''} disponibile${maxPeople > 1 ? '' : ''} a questo tavolo`;
-        note.classList.remove('hidden');
-    } else {
-        note.classList.add('hidden');
-    }
-
-    document.getElementById('modal-overlay').classList.remove('hidden');
-    setTimeout(() => document.getElementById('p-nome').focus(), 60);
-}
-
-function closeModal() {
-    document.getElementById('modal-overlay').classList.add('hidden');
-    selectedTavolo = null;
-    selectedPeople = null;
-}
-
-function selectPeople(n) {
-    selectedPeople = n;
-    document.querySelectorAll('.people-btn').forEach(b => {
-        b.classList.toggle('selected', Number(b.dataset.n) === n);
-    });
-}
-
-function submitPren() {
-    const tavolo = selectedTavolo;
-    const nome   = (document.getElementById('p-nome').value   || '').trim();
-    const data   = (document.getElementById('p-data').value   || '').trim();
-    const ora    = (document.getElementById('p-ora').value    || '').trim();
-    const uscita = (document.getElementById('p-uscita').value || '').trim();
-
-    if (!nome)           { toast('Inserisci il nome per la prenotazione.', 'err'); return; }
-    if (nome.length > 80){ toast('Nome troppo lungo (max 80 caratteri).', 'err'); return; }
-    if (!data)           { toast('Seleziona la data.', 'err'); return; }
-    if (!ora)            { toast("Inserisci l'orario di arrivo.", 'err'); return; }
-    if (!uscita)         { toast("Inserisci l'orario di uscita.", 'err'); return; }
-    if (ora  < '09:00')  { toast("L'orario di arrivo non può essere prima delle 09:00.", 'err'); return; }
-    if (ora  > '20:30')  { toast("L'orario di arrivo non può essere dopo le 20:30.", 'err'); return; }
-    if (uscita > '20:30'){ toast("L'orario di uscita non può essere dopo le 20:30.", 'err'); return; }
-    if (uscita <= ora)   { toast("L'orario di uscita deve essere dopo l'arrivo.", 'err'); return; }
-    if (!selectedPeople) { toast('Seleziona il numero di persone.', 'err'); return; }
-    if (!tavolo)         return;
-
-    // Real-time seat check against latest cached data
-    const activeNow    = Object.values(currentData).filter(x => !isExpired(x));
-    const alreadyBooked = activeNow
-        .filter(x => String(x.tavolo) === String(tavolo))
-        .reduce((s, b) => s + (Number(b.persone) || 1), 0);
-    const remaining = 2 - alreadyBooked;
-    if (selectedPeople > remaining) {
-        if (remaining <= 0) {
-            toast('Questo tavolo è al completo!', 'err');
-        } else {
-            toast(`Solo ${remaining} posto${remaining > 1 ? 'i' : ''} disponibile${remaining > 1 ? '' : ''}!`, 'err');
-        }
-        return;
-    }
-
-    // Full timestamp for reliable auto-expiry (works across midnight / days)
-    const expiresAt = new Date(data + 'T' + uscita + ':00').getTime();
-
-    const btn = document.getElementById('confirm-btn');
-    btn.disabled = true;
-    btn.textContent = 'Salvataggio...';
-
-    const ref = db.ref('prenotazioni').push();
-    const id  = ref.key;
-    ref.set({
-        id,
-        tavolo:       tavolo,
-        nome,
-        data,
-        orario:       ora,
-        orarioUscita: uscita,
-        expiresAt,
-        persone:      selectedPeople,
-        utenteId:     auth.currentUser.uid
-    })
-    .then(() => {
-        closeModal();
-        toast(`Tavolo ${tavolo} prenotato per ${nome}! 🌸`, 'ok');
-    })
-    .catch(() => toast('Errore. Verifica le regole del database Firebase.', 'err'))
-    .finally(() => {
-        btn.disabled = false;
-        btn.textContent = '🌸 Prenota!';
-    });
-}
-
-function delPren(id) {
-    if (!auth.currentUser) { toast('Devi essere autenticato.', 'err'); return; }
-    const booking = Object.values(currentData).find(x => String(x.id) === String(id));
-    if (!booking || booking.utenteId !== auth.currentUser.uid) {
-        toast('Non autorizzato.', 'err');
-        return;
-    }
-    if (!confirm('Cancellare questa prenotazione?')) return;
-    db.ref('prenotazioni/' + id).remove()
-        .then(() => toast('Prenotazione cancellata.', 'info'))
-        .catch(() => toast('Errore durante la cancellazione.', 'err'));
-}
-
-/* ── TABS ────────────────────────────────────────────────── */
-function switchTab(tab, btn) {
-    document.getElementById('view-mappa').classList.toggle('hidden', tab !== 'mappa');
-    document.getElementById('view-lista').classList.toggle('hidden', tab !== 'lista');
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    if (btn) btn.classList.add('active');
-}
-
-/* ── AUTO-SCADENZA ───────────────────────────────────────── */
-function autoCleanExpired(all) {
-    if (!auth.currentUser) return;
-    all.forEach(p => {
-        if (isExpired(p) && p.utenteId === auth.currentUser.uid) {
-            db.ref('prenotazioni/' + p.id).remove()
-                .then(() => toast(`Tavolo ${esc(String(p.tavolo))} liberato automaticamente! 🌸`, 'info'))
-                .catch(() => {});
-        }
-    });
-}
-
-// Check every minute
-setInterval(() => {
-    db.ref('prenotazioni').once('value', snap => {
-        autoCleanExpired(Object.values(snap.val() || {}));
-    });
-}, 60000);
-
-/* ── KEYBOARD ────────────────────────────────────────────── */
-document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
-        const m = document.getElementById('modal-overlay');
-        if (!m.classList.contains('hidden')) closeModal();
-    }
-});
-</script>
 <footer id="footer">
     <div class="footer-inner">
         <div class="footer-grid">
@@ -2041,202 +1539,20 @@ document.addEventListener('keydown', e => {
                 <span class="footer-bottom-sep">&middot;</span>
                 <a href="privacy.html" class="footer-bottom-link">Privacy &amp; Cookie Policy</a>
                 <span class="footer-bottom-sep">&middot;</span>
-                <button class="footer-bottom-link footer-cookie-btn" onclick="mbResetCookies()" type="button">Gestisci cookie</button>
+                <button class="footer-bottom-link footer-cookie-btn" type="button">Gestisci cookie</button>
             </span>
         </div>
     </div>
 </footer>
 
+<script src="tavoli-init.js" defer></script>
 <script src="cookie-banner.js"></script>
 <script src="manga-mode.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    var burger = document.getElementById('nav-burger');
-    var links  = document.getElementById('nav-links');
-    if (burger && links) {
-        burger.addEventListener('click', function() {
-            links.classList.toggle('open');
-            burger.classList.toggle('open');
-        });
-        links.querySelectorAll('a').forEach(function(a) {
-            a.addEventListener('click', function() {
-                links.classList.remove('open');
-                burger.classList.remove('open');
-            });
-        });
-    }
-    window.addEventListener('scroll', function() {
-        var nav = document.getElementById('nav');
-        if (nav) nav.classList.toggle('scrolled', window.scrollY > 40);
-    }, { passive: true });
-});
-</script>
+
 
 <!-- ─── MINI GIOCO MEMORY ─── -->
-<script>
-(function(){
-    /* 8 coppie: [emoji, colore gradiente] */
-    var PAIRS = [
-        ['🐉','#7c1c1c,#dc2626'], ['⚔️','#1c3a7c,#2563eb'],
-        ['🏴‍☠️','#1a1a2e,#4b5563'], ['🌸','#7c1c5a,#ec4899'],
-        ['🔥','#7c3a1c,#f97316'], ['👑','#7c6a1c,#eab308'],
-        ['🎴','#1c5a3a,#10b981'], ['🌀','#3a1c7c,#8b5cf6']
-    ];
 
-    var _flipped=[], _matched=0, _moves=0, _lock=false, _running=false;
-    var _startTime=0, _tickI=null;
 
-    window.openEasterGame = function(){
-        document.getElementById('po-game').classList.add('active');
-    };
-    window.closeEasterGame = function(){
-        _stop();
-        document.getElementById('po-game').classList.remove('active');
-        _showScreen('pg-start-screen');
-    };
-    window.startEasterGame = function(){
-        _stop();
-        _flipped=[]; _matched=0; _moves=0; _lock=false; _running=true;
-        _startTime=Date.now();
-        document.getElementById('pg-moves').textContent='0';
-        document.getElementById('pg-timer').textContent='0:00';
-        _showScreen(null);
-        _buildGrid();
-        _tickI=setInterval(function(){
-            if(!_running) return;
-            var s=Math.floor((Date.now()-_startTime)/1000);
-            document.getElementById('pg-timer').textContent=
-                Math.floor(s/60)+':'+(s%60<10?'0':'')+s%60;
-        },500);
-    };
 
-    function _stop(){
-        _running=false; clearInterval(_tickI); _tickI=null;
-    }
-    function _showScreen(id){
-        ['pg-start-screen','pg-end-screen'].forEach(function(s){
-            document.getElementById(s).classList.toggle('hidden', s!==id);
-        });
-    }
-
-    function _buildGrid(){
-        var grid=document.getElementById('pg-grid');
-        grid.innerHTML='';
-        /* Shuffled deck */
-        var deck=[];
-        PAIRS.forEach(function(p,i){ deck.push(i); deck.push(i); });
-        for(var i=deck.length-1;i>0;i--){
-            var j=Math.floor(Math.random()*(i+1));
-            var tmp=deck[i]; deck[i]=deck[j]; deck[j]=tmp;
-        }
-        deck.forEach(function(idx){
-            var p=PAIRS[idx];
-            var card=document.createElement('div');
-            card.className='pg-card';
-            card.dataset.idx=idx;
-            card.innerHTML=
-                '<div class="pg-card-inner">'
-                +'<div class="pg-card-back">🥚</div>'
-                +'<div class="pg-card-front" style="background:linear-gradient(145deg,'+p[1]+')">'+p[0]+'</div>'
-                +'</div>';
-            card.addEventListener('click',function(){ _flip(card); });
-            grid.appendChild(card);
-        });
-    }
-
-    function _flip(card){
-        if(_lock||!_running) return;
-        if(card.classList.contains('flipped')||card.classList.contains('matched')) return;
-        card.classList.add('flipped');
-        _flipped.push(card);
-        if(_flipped.length<2) return;
-
-        _moves++;
-        document.getElementById('pg-moves').textContent=_moves;
-        _lock=true;
-
-        var a=_flipped[0], b=_flipped[1];
-        if(a.dataset.idx===b.dataset.idx){
-            /* Match! */
-            setTimeout(function(){
-                a.classList.add('matched'); b.classList.add('matched');
-                _flipped=[]; _lock=false; _matched++;
-                if(_matched===PAIRS.length) _win();
-            },400);
-        } else {
-            /* No match — flip back + shake */
-            setTimeout(function(){
-                a.classList.add('wrong'); b.classList.add('wrong');
-            },500);
-            setTimeout(function(){
-                a.classList.remove('flipped','wrong');
-                b.classList.remove('flipped','wrong');
-                _flipped=[]; _lock=false;
-            },950);
-        }
-    }
-
-    function _win(){
-        _stop();
-        var secs=Math.floor((Date.now()-_startTime)/1000);
-        var timeStr=Math.floor(secs/60)+':'+(secs%60<10?'0':'')+secs%60;
-        /* Stelle: ≤16 mosse=3★, ≤22=2★, altro=1★ */
-        var stars=_moves<=16?'⭐⭐⭐':_moves<=22?'⭐⭐':'⭐';
-        var msgs={
-            '⭐⭐⭐':'Memoria leggendaria! Sei un vero maestro TCG 🏆',
-            '⭐⭐':'Ottimo! Ti ricordi le carte quasi come Luffy si ricorda il cibo 🍖',
-            '⭐':'Hai finito! La prossima andrà meglio, shinobi 🌀'
-        };
-        document.getElementById('pg-stars').textContent=stars;
-        document.getElementById('pg-final-time').textContent=timeStr;
-        document.getElementById('pg-final-moves').textContent=_moves+' mosse';
-        document.getElementById('pg-final-msg').textContent=msgs[stars];
-        _showScreen('pg-end-screen');
-    }
-})();
-</script>
-
-<!-- ─── PASQUA: mostra overlay fino al 6 aprile 2026 ─── -->
-<script>
-(function() {
-    var FINE_PASQUA = new Date('2026-04-07T00:00:00');
-    var overlay = document.getElementById('pasqua-overlay');
-    var pageInner = document.querySelector('.page-inner');
-    var footer = document.getElementById('footer');
-    if (!overlay) return;
-
-    if (new Date() >= FINE_PASQUA) {
-        overlay.classList.add('po-hidden');
-        return;
-    }
-
-    /* Nasconde solo la sezione prenotazioni */
-    if (pageInner) pageInner.style.display = 'none';
-
-    /* Genera stelline casuali */
-    var wrap = document.getElementById('po-stars-wrap');
-    if (wrap) {
-        for (var i = 0; i < 60; i++) {
-            var s = document.createElement('div');
-            s.className = 'po-star';
-            s.style.left = Math.random() * 100 + '%';
-            s.style.top  = Math.random() * 100 + '%';
-            s.style.animationDuration  = (2 + Math.random() * 4).toFixed(1) + 's';
-            s.style.animationDelay     = (Math.random() * 4).toFixed(1) + 's';
-            s.style.width  = s.style.height = (1 + Math.random() * 2).toFixed(1) + 'px';
-            wrap.appendChild(s);
-        }
-    }
-
-    /* Controlla ogni minuto se è scattata la mezzanotte del 6 aprile */
-    var timer = setInterval(function() {
-        if (new Date() >= FINE_PASQUA) {
-            overlay.classList.add('po-hidden');
-            if (pageInner) pageInner.style.display = '';
-            clearInterval(timer);
-        }
-    }, 60000);
-})();
-</script>
 </body>
 </html>

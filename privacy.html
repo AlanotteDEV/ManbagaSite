@@ -286,7 +286,7 @@
             <div>
                 <strong>Informativa sintetica</strong> — Questo sito usa esclusivamente cookie tecnici necessari al funzionamento:
                 prenotazione tavoli (Firebase Auth + Realtime Database), catalogo prodotti, recensioni, preordini, profili giocatore e sondaggi interattivi (Firebase Firestore + Firebase Anonymous Auth), modulo di contatto (EmailJS).
-                La sezione "Resta sempre aggiornato" controlla automaticamente ogni minuto se il canale Twitch <strong>manbagatv</strong> è in diretta tramite il servizio <strong>decapi.me</strong> (solo indirizzo IP, nessun cookie); se la diretta è attiva il player <strong>Twitch</strong> viene caricato automaticamente e può impostare propri cookie di sessione.
+                La sezione "Resta sempre aggiornato" controlla automaticamente ogni minuto se il canale Twitch <strong>manbagatv</strong> è in diretta tramite il servizio <strong>decapi.me</strong> (solo indirizzo IP, nessun cookie); il player <strong>Twitch</strong> viene caricato <strong>solo su click esplicito dell'utente</strong> e può impostare propri cookie di sessione funzionali.
                 I font tipografici sono ospitati direttamente sul nostro server — nessuna richiesta a Google Fonts.
                 Non usiamo cookie analitici, pubblicitari o di profilazione. Non vendiamo né cediamo i tuoi dati a terzi per scopi commerciali.
             </div>
@@ -469,7 +469,7 @@
                         <td>Service Worker Cache<br><small>(Cache API — locale)</small></td>
                         <td><span class="badge-necessary">Necessario</span></td>
                         <td>Persistente (fino ad aggiornamento)</td>
-                        <td>Memorizza localmente sul tuo dispositivo i file statici del sito (HTML, CSS, JS, immagini) per consentire il funzionamento dell'app installata e migliorare i tempi di caricamento. Nessun dato personale è incluso nella cache. Può essere eliminata dalle impostazioni del browser (DevTools &rarr; Application &rarr; Cache Storage &rarr; manbaga-v1).</td>
+                        <td>Memorizza localmente sul tuo dispositivo i file statici del sito (HTML, CSS, JS, immagini) per consentire il funzionamento dell'app installata e migliorare i tempi di caricamento. Nessun dato personale è incluso nella cache. Può essere eliminata dalle impostazioni del browser (DevTools &rarr; Application &rarr; Cache Storage &rarr; manbaga-v2).</td>
                     </tr>
                     <tr>
                         <td><code>pwa-dismissed</code><br><small>(sessionStorage)</small></td>
@@ -560,8 +560,12 @@
                     <strong>decapi.me:</strong> servizio pubblico di terze parti utilizzato esclusivamente per verificare se il canale Twitch <em>manbagatv</em> è in diretta. Il sito invia una richiesta HTTP a <code>https://decapi.me/twitch/uptime/manbagatv</code> ogni 60 secondi; tale richiesta comporta la trasmissione dell'indirizzo IP dell'utente ai server di decapi.me come residuo tecnico della connessione HTTP. Il servizio non imposta cookie e non trasmette dati personali aggiuntivi. La risposta è una stringa di testo (durata della diretta oppure "offline").
                 </li>
                 <li>
-                    <strong>Twitch (Twitch Interactive, Inc. — Amazon):</strong> player video integrato nella sezione "Resta sempre aggiornato". Il player viene caricato automaticamente quando il canale <em>manbagatv</em> è in diretta, oppure su click dell'utente per la visione del video. Il caricamento del player comporta connessioni ai server Twitch (<code>player.twitch.tv</code>) e può determinare l'impostazione di cookie di sessione da parte di Twitch. Twitch Interactive ha sede negli USA; i dati sono trattati secondo la propria informativa privacy.
+                    <strong>Twitch (Twitch Interactive, Inc. — Amazon):</strong> player video nella sezione "Resta sempre aggiornato". Il player viene caricato <strong>esclusivamente su click esplicito dell'utente</strong> (pulsante "Guarda su Twitch"); non viene mai caricato automaticamente senza interazione. Il caricamento del player comporta connessioni ai server Twitch (<code>player.twitch.tv</code>) e può determinare l'impostazione di cookie funzionali di sessione da parte di Twitch (es. preferenze volume, qualità video). Twitch Interactive ha sede negli USA; i dati sono trattati secondo la propria informativa privacy.
                     <a href="https://www.twitch.tv/p/it-it/legal/privacy-notice/" target="_blank" rel="noopener">Privacy Policy Twitch ↗</a>
+                </li>
+                <li>
+                    <strong>Google Maps (Google LLC):</strong> link nel footer del sito che rimanda alla pagina Google Maps con l'indirizzo del negozio. Il click apre il servizio Google Maps in una nuova scheda; qualsiasi dato raccolto da Google è soggetto alle proprie policy.
+                    <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Privacy Policy Google ↗</a>
                 </li>
             </ul>
             <p style="margin-top:12px">
@@ -628,16 +632,76 @@
                 perdita o divulgazione accidentale:
             </p>
             <ul>
-                <li>Tutte le comunicazioni avvengono su protocollo <strong>HTTPS/TLS</strong>.</li>
+                <li>Tutte le comunicazioni avvengono su protocollo <strong>HTTPS/TLS</strong> con HSTS abilitato.</li>
                 <li>Le password degli utenti sono gestite da <strong>Firebase Authentication</strong> e non vengono mai memorizzate in chiaro.</li>
                 <li>L'accesso al database è protetto da <strong>Firebase Security Rules</strong> che limitano le operazioni in base all'autenticazione e ai ruoli.</li>
                 <li>Le chiavi API Firebase visibili nel codice sorgente sono per design pubbliche: la sicurezza è garantita dalle Security Rules lato server, non dalla segretezza delle chiavi.</li>
+                <li>L'infrastruttura web è protetta da header di sicurezza HTTP: <code>X-Frame-Options: DENY</code>, <code>X-Content-Type-Options: nosniff</code>, <code>Content-Security-Policy</code>, <code>Permissions-Policy</code>.</li>
             </ul>
         </div>
 
-        <!-- 11 - Modifiche -->
+        <!-- 11 - Violazioni dei Dati -->
         <div class="section">
-            <h2 class="section-title"><span class="s-icon">🔄</span> 11. Modifiche alla Policy</h2>
+            <h2 class="section-title"><span class="s-icon">🚨</span> 11. Violazioni dei Dati Personali (Data Breach)</h2>
+            <p>
+                In caso di violazione dei dati personali (data breach) che possa comportare un rischio per i diritti e le libertà
+                degli interessati, il Titolare notificherà l'accaduto al <strong>Garante per la protezione dei dati personali</strong>
+                entro <strong>72 ore</strong> dal momento in cui ne è venuto a conoscenza, ai sensi dell'art. 33 del GDPR.
+            </p>
+            <p>
+                Qualora la violazione comporti un rischio elevato per gli interessati, il Titolare provvederà a comunicarlo
+                anche direttamente agli interessati coinvolti senza ingiustificato ritardo, ai sensi dell'art. 34 del GDPR.
+            </p>
+            <p>
+                Per segnalare una potenziale vulnerabilità o violazione di dati scrivi a:
+                <a href="mailto:manbagacomics@gmail.com">manbagacomics@gmail.com</a>
+            </p>
+        </div>
+
+        <!-- 12 - Diritti -->
+        <div class="section">
+            <h2 class="section-title"><span class="s-icon">🛡️</span> 12. I Tuoi Diritti (GDPR)</h2>
+            <p>
+                In conformità al Regolamento (UE) 2016/679 (GDPR), hai diritto a:
+            </p>
+            <ul>
+                <li><strong>Accesso (art. 15)</strong> — richiedere copia dei tuoi dati personali in nostro possesso.</li>
+                <li><strong>Rettifica (art. 16)</strong> — correggere dati inesatti o incompleti.</li>
+                <li><strong>Cancellazione (art. 17)</strong> — richiedere l'eliminazione dei tuoi dati ("diritto all'oblio").</li>
+                <li><strong>Limitazione (art. 18)</strong> — richiedere la sospensione temporanea del trattamento.</li>
+                <li><strong>Portabilità (art. 20)</strong> — ricevere i tuoi dati in formato strutturato e leggibile da macchina.</li>
+                <li><strong>Opposizione (art. 21)</strong> — opporsi al trattamento basato su legittimo interesse in qualsiasi momento.</li>
+                <li><strong>Revoca del consenso (art. 7.3)</strong> — ritirare il consenso senza pregiudizio per il trattamento pregresso.</li>
+            </ul>
+            <p>
+                Per esercitare questi diritti scrivi a <a href="mailto:manbagacomics@gmail.com">manbagacomics@gmail.com</a> indicando chiaramente la tua richiesta.
+                Risponderemo entro <strong>30 giorni</strong> dalla ricezione (prorogabili di ulteriori 60 giorni nei casi previsti dall'art. 12.3 GDPR).
+            </p>
+            <p>
+                Hai inoltre il diritto di proporre reclamo al <strong>Garante per la protezione dei dati personali</strong>
+                (<a href="https://www.garanteprivacy.it" target="_blank" rel="noopener">garanteprivacy.it ↗</a>)
+                qualora ritenga che il trattamento dei tuoi dati violi la normativa vigente.
+            </p>
+        </div>
+
+        <!-- 13 - Minori -->
+        <div class="section">
+            <h2 class="section-title"><span class="s-icon">👶</span> 13. Minori</h2>
+            <p>
+                I servizi del sito sono accessibili a tutti. I minori di 14 anni devono ottenere il consenso
+                di un genitore o tutore legale prima di registrarsi o fornire dati personali,
+                ai sensi dell'art. 8 del GDPR e dell'art. 2-quinquies del Codice Privacy italiano (D.Lgs. 196/2003 e s.m.i.).
+            </p>
+            <p>
+                Il Titolare non raccoglie consapevolmente dati personali di minori di 14 anni senza il consenso parentale.
+                Qualora si venisse a conoscenza di dati di minori di 14 anni raccolti senza tale consenso, provvederemo
+                alla loro cancellazione tempestiva.
+            </p>
+        </div>
+
+        <!-- 14 - Modifiche -->
+        <div class="section">
+            <h2 class="section-title"><span class="s-icon">🔄</span> 14. Modifiche alla Policy</h2>
             <p>
                 Ci riserviamo il diritto di aggiornare questa informativa per riflettere eventuali modifiche ai servizi
                 o agli obblighi normativi. Le modifiche sostanziali saranno segnalate tramite un avviso visibile sul sito.
@@ -771,40 +835,14 @@
                 <span class="footer-bottom-sep">&middot;</span>
                 <a href="privacy.html" class="footer-bottom-link">Privacy &amp; Cookie Policy</a>
                 <span class="footer-bottom-sep">&middot;</span>
-                <button class="footer-bottom-link footer-cookie-btn" onclick="mbResetCookies()" type="button">Gestisci cookie</button>
+                <button class="footer-bottom-link footer-cookie-btn" type="button">Gestisci cookie</button>
             </span>
         </div>
     </div>
 </footer>
 
-<script>
-document.getElementById('last-update').textContent = new Intl.DateTimeFormat('it-IT', {
-    day: '2-digit', month: 'long', year: 'numeric'
-}).format(new Date('2026-03-14'));
-
-/* Nav burger */
-(function() {
-    var burger = document.getElementById('nav-burger');
-    var links  = document.getElementById('nav-links');
-    var nav    = document.getElementById('nav');
-    if (burger && links) {
-        burger.addEventListener('click', function() {
-            burger.classList.toggle('open');
-            links.classList.toggle('open');
-        });
-        links.addEventListener('click', function(e) {
-            if (e.target.tagName === 'A') {
-                burger.classList.remove('open');
-                links.classList.remove('open');
-            }
-        });
-    }
-    window.addEventListener('scroll', function() {
-        if (nav) nav.classList.toggle('scrolled', window.scrollY > 40);
-    }, { passive: true });
-})();
-</script>
-<script src="cookie-banner.js"></script>
-<script src="manga-mode.js"></script>
+<script src="cookie-banner.js" defer></script>
+<script src="manga-mode.js" defer></script>
+<script src="privacy-init.js" defer></script>
 </body>
 </html>

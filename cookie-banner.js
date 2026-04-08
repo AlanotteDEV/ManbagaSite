@@ -274,6 +274,7 @@
             '<span class="mb-chip"><span class="mb-chip-icon">\uD83D\uDD25</span> Firebase Firestore</span>' +
             '<span class="mb-chip"><span class="mb-chip-icon">\uD83D\uDD25</span> Firebase Realtime DB</span>' +
             '<span class="mb-chip"><span class="mb-chip-icon">\uD83D\uDD25</span> EmailJS</span>' +
+            '<span class="mb-chip" title="Player caricato solo su click — opt-in"><span class="mb-chip-icon">&#9654;</span> Twitch (opt-in)</span>' +
         '</div>' +
 
         '<div class="mb-foot">' +
