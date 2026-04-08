@@ -6645,3 +6645,75 @@ textarea.form-input {
     .poll-card { padding: 28px 22px 26px; }
     .poll-title { font-size: 24px; }
 }
+
+/* ── Quiz floating hint FAB ───────────────────────────────────── */
+@keyframes quiz-fab-in {
+    from { opacity: 0; transform: translateY(20px) scale(0.85); }
+    to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+@keyframes quiz-fab-bounce {
+    0%, 100% { transform: translateY(0); }
+    40%       { transform: translateY(-8px); }
+    60%       { transform: translateY(-4px); }
+}
+@keyframes quiz-burst-spin {
+    0%   { transform: rotate(-8deg) scale(1); }
+    25%  { transform: rotate(6deg)  scale(1.08); }
+    50%  { transform: rotate(-4deg) scale(1); }
+    75%  { transform: rotate(7deg)  scale(1.06); }
+    100% { transform: rotate(-8deg) scale(1); }
+}
+@keyframes quiz-burst-pulse {
+    0%, 100% { filter: drop-shadow(0 0 4px rgba(220,38,38,0.6)); }
+    50%       { filter: drop-shadow(0 0 12px rgba(220,38,38,1)); }
+}
+
+.quiz-hint-fab {
+    position: fixed;
+    bottom: 28px;
+    right: 24px;
+    z-index: 900;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #1a0a2e 0%, #0d0d1a 100%);
+    border: 2px solid var(--red);
+    border-radius: 50px;
+    padding: 12px 20px 12px 14px;
+    cursor: pointer;
+    box-shadow: 0 6px 28px rgba(220,38,38,0.35), 0 2px 8px rgba(0,0,0,0.5);
+    animation: quiz-fab-in 0.4s cubic-bezier(0.34,1.56,0.64,1) both,
+               quiz-fab-bounce 2.8s ease-in-out 1s infinite;
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+.quiz-hint-fab:hover {
+    box-shadow: 0 8px 36px rgba(220,38,38,0.55), 0 2px 8px rgba(0,0,0,0.5);
+    transform: translateY(-3px) scale(1.04) !important;
+    animation-play-state: paused;
+}
+.quiz-hint-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.quiz-burst-svg {
+    display: block;
+    animation: quiz-burst-spin 2.4s ease-in-out infinite,
+               quiz-burst-pulse 1.8s ease-in-out infinite;
+    transform-origin: center;
+}
+.quiz-hint-label {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    color: var(--white);
+    white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+    .quiz-hint-fab { bottom: 18px; right: 14px; padding: 10px 16px 10px 12px; }
+    .quiz-burst-svg { width: 32px; height: 32px; }
+    .quiz-hint-label { font-size: 12px; }
+}

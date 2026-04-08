@@ -49,6 +49,17 @@
 <!-- Toast notifications container -->
 <div id="toast-container" class="toast-container" aria-live="polite"></div>
 
+<!-- Quiz floating hint -->
+<button class="quiz-hint-fab" id="quiz-hint-fab" aria-label="Vai ai quiz disponibili" style="display:none" onclick="document.getElementById('quiz').scrollIntoView({behavior:'smooth'})">
+    <span class="quiz-hint-icon" aria-hidden="true">
+        <svg class="quiz-burst-svg" viewBox="0 0 64 64" width="40" height="40" xmlns="http://www.w3.org/2000/svg">
+            <polygon class="quiz-burst-shape" points="32,1 37,17 49,5 45,21 61,18 50,28 63,38 47,36 52,52 38,44 36,62 29,47 18,60 19,43 3,48 12,35 0,26 16,25 8,10 23,18" fill="#DC2626"/>
+            <text x="32" y="39" text-anchor="middle" font-family="'Bangers',Impact,'Arial Black',sans-serif" font-size="19" fill="#fff" letter-spacing="1">?!</text>
+        </svg>
+    </span>
+    <span class="quiz-hint-label">Quiz disponibile!</span>
+</button>
+
 
 
 <!-- ============================================================

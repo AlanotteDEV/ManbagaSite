@@ -55,6 +55,23 @@
             });
     }
 
+    /* ---- Floating hint FAB ------------------------------------ */
+    function _updateFab() {
+        var fab = document.getElementById('quiz-hint-fab');
+        if (!fab) return;
+        if (_quizzes.length > 0) {
+            /* Mostra solo se la sezione quiz non è già visibile a schermo */
+            var section = document.getElementById('quiz');
+            var visible = section && section.getBoundingClientRect().top < window.innerHeight * 0.8;
+            fab.style.display = visible ? 'none' : '';
+        } else {
+            fab.style.display = 'none';
+        }
+    }
+
+    /* Nascondi il FAB quando l'utente scrolla verso la sezione quiz */
+    window.addEventListener('scroll', _updateFab, { passive: true });
+
     /* ---- Render cards ----------------------------------------- */
     function _render() {
         var container = document.getElementById('quiz-display');
@@ -62,9 +79,11 @@
         var section = document.getElementById('quiz');
         if (!_quizzes.length) {
             if (section) section.style.display = 'none';
+            _updateFab();
             return;
         }
         if (section) section.style.display = '';
+        _updateFab();
 
         container.innerHTML = _quizzes.map(function(q) {
             var cat = _CATS[q.category] || _CATS.generale;
