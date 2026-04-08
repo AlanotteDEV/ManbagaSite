@@ -1673,18 +1673,23 @@ function _updateTwitchCard(isLive) {
     var cta   = document.getElementById('twitch-card-cta');
     var label = document.getElementById('twitch-label-text');
     if (badge) badge.style.display = isLive ? '' : 'none';
-    if (cta)   cta.textContent     = isLive ? 'Guarda la diretta ▶' : 'Clicca per guardare ▶';
+    if (cta)   cta.textContent     = isLive ? 'In diretta ora ▶' : 'Clicca per guardare ▶';
     if (label) label.textContent   = isLive ? 'In diretta su Twitch' : 'Ultimo video su Twitch';
+
+    /* Se è live e la card è ancora visibile → carica automaticamente */
+    if (isLive && document.getElementById('twitch-card')) {
+        loadTwitchEmbed();
+    }
 }
 
-/* Check al caricamento + ogni 3 minuti */
+/* Check al caricamento + ogni minuto */
 (function _initTwitchLiveCheck() {
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() { _checkTwitchLive(_updateTwitchCard); });
     } else {
         _checkTwitchLive(_updateTwitchCard);
     }
-    setInterval(function() { _checkTwitchLive(_updateTwitchCard); }, 3 * 60 * 1000);
+    setInterval(function() { _checkTwitchLive(_updateTwitchCard); }, 60 * 1000);
 })();
 
 function loadTwitchEmbed() {

@@ -286,6 +286,7 @@
             <div>
                 <strong>Informativa sintetica</strong> — Questo sito usa esclusivamente cookie tecnici necessari al funzionamento:
                 prenotazione tavoli (Firebase Auth + Realtime Database), catalogo prodotti, recensioni, preordini, profili giocatore e sondaggi interattivi (Firebase Firestore + Firebase Anonymous Auth), modulo di contatto (EmailJS).
+                La sezione "Resta sempre aggiornato" controlla automaticamente ogni minuto se il canale Twitch <strong>manbagatv</strong> è in diretta tramite il servizio <strong>decapi.me</strong> (solo indirizzo IP, nessun cookie); se la diretta è attiva il player <strong>Twitch</strong> viene caricato automaticamente e può impostare propri cookie di sessione.
                 I font tipografici sono ospitati direttamente sul nostro server — nessuna richiesta a Google Fonts.
                 Non usiamo cookie analitici, pubblicitari o di profilazione. Non vendiamo né cediamo i tuoi dati a terzi per scopi commerciali.
             </div>
@@ -476,6 +477,18 @@
                         <td>Sessione (eliminata alla chiusura del browser)</td>
                         <td>Registra se hai chiuso il banner di installazione dell'app durante la sessione corrente, per non mostrarlo nuovamente. Non contiene dati personali. Viene eliminata automaticamente alla chiusura del browser.</td>
                     </tr>
+                    <tr>
+                        <td>decapi.me<br><small>(richiesta HTTP — nessun cookie)</small></td>
+                        <td><span class="badge-necessary">Tecnico</span></td>
+                        <td>Non applicabile</td>
+                        <td>Ogni 60 secondi il sito contatta <code>decapi.me/twitch/uptime/manbagatv</code> per verificare se il canale Twitch è in diretta. Non vengono impostati cookie; l'unico dato trasmesso è l'indirizzo IP come residuo tecnico della connessione HTTP.</td>
+                    </tr>
+                    <tr>
+                        <td>Twitch Player<br><small>(cookie di terze parti — player.twitch.tv)</small></td>
+                        <td><span class="badge-necessary">Funzionale</span></td>
+                        <td>Variabile (definita da Twitch)</td>
+                        <td>Quando il canale è in diretta il player Twitch viene caricato automaticamente; in alternativa si attiva su click dell'utente. Twitch può impostare propri cookie di sessione necessari al funzionamento del player (es. preferenze volume, qualità video). Il trattamento di tali cookie è soggetto alla <a href="https://www.twitch.tv/p/it-it/legal/privacy-notice/" target="_blank" rel="noopener">Privacy Policy di Twitch ↗</a>.</td>
+                    </tr>
                 </tbody>
             </table>
 
@@ -542,6 +555,13 @@
                 <li>
                     <strong>Instagram (Meta Platforms):</strong> link al profilo Instagram del negozio. Il click reindirizza alla piattaforma Instagram; eventuali dati raccolti da Meta sono soggetti alle loro policy.
                     <a href="https://privacycenter.instagram.com/policy/" target="_blank" rel="noopener">Privacy Policy Instagram ↗</a>
+                </li>
+                <li>
+                    <strong>decapi.me:</strong> servizio pubblico di terze parti utilizzato esclusivamente per verificare se il canale Twitch <em>manbagatv</em> è in diretta. Il sito invia una richiesta HTTP a <code>https://decapi.me/twitch/uptime/manbagatv</code> ogni 60 secondi; tale richiesta comporta la trasmissione dell'indirizzo IP dell'utente ai server di decapi.me come residuo tecnico della connessione HTTP. Il servizio non imposta cookie e non trasmette dati personali aggiuntivi. La risposta è una stringa di testo (durata della diretta oppure "offline").
+                </li>
+                <li>
+                    <strong>Twitch (Twitch Interactive, Inc. — Amazon):</strong> player video integrato nella sezione "Resta sempre aggiornato". Il player viene caricato automaticamente quando il canale <em>manbagatv</em> è in diretta, oppure su click dell'utente per la visione del video. Il caricamento del player comporta connessioni ai server Twitch (<code>player.twitch.tv</code>) e può determinare l'impostazione di cookie di sessione da parte di Twitch. Twitch Interactive ha sede negli USA; i dati sono trattati secondo la propria informativa privacy.
+                    <a href="https://www.twitch.tv/p/it-it/legal/privacy-notice/" target="_blank" rel="noopener">Privacy Policy Twitch ↗</a>
                 </li>
             </ul>
             <p style="margin-top:12px">
