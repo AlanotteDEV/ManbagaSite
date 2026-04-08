@@ -1682,7 +1682,7 @@ function loadTwitchEmbed() {
         window.open('https://www.twitch.tv/videos/2741699514', '_blank', 'noopener,noreferrer');
     };
 
-    wrap.style.cssText = 'aspect-ratio:16/3;border:2px solid rgba(145,70,255,0.5);overflow:hidden;position:relative';
+    wrap.style.cssText = 'aspect-ratio:16/9;border:2px solid rgba(145,70,255,0.5);overflow:hidden;position:relative';
     card.remove();
     wrap.appendChild(iframe);
 }

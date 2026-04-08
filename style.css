@@ -1491,7 +1491,7 @@ section[id], footer[id] {
     overflow: hidden;
     text-decoration: none;
     transition: border-color 0.2s, transform 0.2s var(--ease-bounce);
-    aspect-ratio: 16 / 3;
+    aspect-ratio: 16 / 9;
 }
 .twitch-card:hover {
     border-color: rgba(145,70,255,0.7);
@@ -1563,7 +1563,7 @@ section[id], footer[id] {
 }
 
 @media (max-width: 560px) {
-    .twitch-card { aspect-ratio: 16 / 7; }
+    .twitch-card { aspect-ratio: 16 / 9; }
     .twitch-card-body { gap: 16px; padding: 0 20px; }
     .twitch-card-logo svg { width: 32px; height: 32px; }
     .twitch-card-play { width: 48px; height: 48px; }
