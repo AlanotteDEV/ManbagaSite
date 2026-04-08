@@ -1469,7 +1469,7 @@ section[id], footer[id] {
 
 /* ---- Twitch preview ---- */
 .twitch-preview {
-    max-width: 820px;
+    max-width: 480px;
     margin: 44px auto 0;
 }
 .twitch-preview-label {
