@@ -268,6 +268,93 @@ var _STATUS_LABELS = {
     'in-arrivo': 'In Arrivo', 'in-corso': 'In Corso', 'completato': 'Completato'
 };
 
+/* ============================================================
+   COUNTDOWN EVENTI
+   ============================================================ */
+var _MONTH_MAP = {
+    'GENNAIO':1,'FEBBRAIO':2,'MARZO':3,'APRILE':4,
+    'MAGGIO':5,'GIUGNO':6,'LUGLIO':7,'AGOSTO':8,
+    'SETTEMBRE':9,'OTTOBRE':10,'NOVEMBRE':11,'DICEMBRE':12,
+    'GEN':1,'FEB':2,'MAR':3,'APR':4,
+    'MAG':5,'GIU':6,'LUG':7,'AGO':8,
+    'SET':9,'OTT':10,'NOV':11,'DIC':12
+};
+
+function _parseEventMs(e) {
+    var m = _MONTH_MAP[(e.month || '').toUpperCase()];
+    if (!m) return null;
+    var d = parseInt(e.day, 10);
+    var y = parseInt(e.year, 10) || new Date().getFullYear();
+    if (!d) return null;
+    var h = 0, mi = 0;
+    if (e.time) {
+        var parts = e.time.split(':');
+        h = parseInt(parts[0], 10) || 0;
+        mi = parseInt(parts[1], 10) || 0;
+    }
+    return new Date(y, m - 1, d, h, mi, 0, 0).getTime();
+}
+
+function _buildCountdownHtml(e) {
+    var ms = _parseEventMs(e);
+    if (!ms || ms <= Date.now()) return '';
+    return '<div class="ev-countdown" data-target="' + ms + '">'
+        + '<span class="ev-cd-label">&#9200; manca</span>'
+        + '<div class="ev-cd-units">'
+        + '<div class="ev-cd-unit"><span class="ev-cd-num" data-cd="d">--</span><span class="ev-cd-lbl">gg</span></div>'
+        + '<span class="ev-cd-sep">:</span>'
+        + '<div class="ev-cd-unit"><span class="ev-cd-num" data-cd="h">--</span><span class="ev-cd-lbl">ore</span></div>'
+        + '<span class="ev-cd-sep">:</span>'
+        + '<div class="ev-cd-unit"><span class="ev-cd-num" data-cd="m">--</span><span class="ev-cd-lbl">min</span></div>'
+        + '<span class="ev-cd-sep">:</span>'
+        + '<div class="ev-cd-unit"><span class="ev-cd-num" data-cd="s">--</span><span class="ev-cd-lbl">sec</span></div>'
+        + '</div>'
+        + '</div>';
+}
+
+var _cdInterval = null;
+
+function _startCountdowns() {
+    if (_cdInterval) clearInterval(_cdInterval);
+    _tickCountdowns();
+    _cdInterval = setInterval(_tickCountdowns, 1000);
+}
+
+function _tickCountdowns() {
+    var now = Date.now();
+    var els = document.querySelectorAll('.ev-countdown[data-target]');
+    if (!els.length) return;
+    for (var i = 0; i < els.length; i++) {
+        var el = els[i];
+        var target = parseInt(el.getAttribute('data-target'), 10);
+        var diff = target - now;
+        if (diff <= 0) {
+            el.innerHTML = '<span class="ev-cd-live">&#128308; OGGI!</span>';
+            continue;
+        }
+        var dd = Math.floor(diff / 86400000);
+        var hh = Math.floor((diff % 86400000) / 3600000);
+        var mm = Math.floor((diff % 3600000) / 60000);
+        var ss = Math.floor((diff % 60000) / 1000);
+        var dn = el.querySelector('[data-cd="d"]');
+        var hn = el.querySelector('[data-cd="h"]');
+        var mn = el.querySelector('[data-cd="m"]');
+        var sn = el.querySelector('[data-cd="s"]');
+        if (dn) dn.textContent = String(dd).padStart(2, '0');
+        if (hn) hn.textContent = String(hh).padStart(2, '0');
+        if (mn) mn.textContent = String(mm).padStart(2, '0');
+        if (sn) {
+            var newS = String(ss).padStart(2, '0');
+            if (sn.textContent !== newS) {
+                sn.textContent = newS;
+                sn.classList.remove('ev-cd-tick');
+                void sn.offsetWidth;
+                sn.classList.add('ev-cd-tick');
+            }
+        }
+    }
+}
+
 function switchEvTab(type) {
     _evTab = type;
     document.querySelectorAll('.ev-tab').forEach(function(btn) {
@@ -302,6 +389,7 @@ function renderEvents() {
     container.innerHTML = filtered.map(function(e) {
         return ((e.type || 'evento') === 'competizione') ? _renderCompCard(e) : _renderEventCard(e);
     }).join('');
+    _startCountdowns();
 }
 
 function _renderEventCard(e) {
@@ -321,6 +409,7 @@ function _renderEventCard(e) {
         + (e.time  ? '<span>⏰ ' + _escHtml(e.time) + '</span>' : '')
         + (e.price ? '<span>' + _escHtml(e.price) + '</span>' : '')
         + '</div>'
+        + _buildCountdownHtml(e)
         + (safeLink ? '<a href="' + _escHtml(safeLink) + '" target="_blank" rel="noopener noreferrer" class="event-link-btn" onclick="event.stopPropagation()">Iscriviti &#8594;</a>' : '')
         + '</div>'
         + '</div>';
@@ -369,6 +458,7 @@ function _renderCompCard(e) {
         + (e.price      ? '<span>' + _escHtml(e.price) + '</span>' : '')
         + (e.maxPlayers ? '<span>&#128101; Max ' + _escHtml(e.maxPlayers) + '</span>' : '')
         + '</div>'
+        + (status === 'in-arrivo' ? _buildCountdownHtml(e) : '')
         + (actions ? '<div class="ev-comp-actions">' + actions + '</div>' : '')
         + '</div>'
         + '</div>';

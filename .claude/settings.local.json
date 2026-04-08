@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node --check \"C:/Users/germi/ManbagaSite/script.js\")",
+      "Bash(node --check \"C:/Users/germi/ManbagaSite/quiz.js\")",
+      "Bash(node --check \"C:/Users/germi/ManbagaSite/poll.js\")",
+      "Bash(node:*)",
+      "Bash(git -C \"C:/Users/germi/ManbagaSite\" log --oneline --all)",
+      "Bash(git -C \"C:/Users/germi/ManbagaSite\" log --all --oneline --follow -- \"gestionale/gestionale/gestionale.html\")",
+      "Bash(ls /c/Users/germi/ManbagaSite/*.html)"
+    ]
+  }
+}

@@ -285,7 +285,7 @@
             <span style="font-size:20px;flex-shrink:0">📋</span>
             <div>
                 <strong>Informativa sintetica</strong> — Questo sito usa esclusivamente cookie tecnici necessari al funzionamento:
-                prenotazione tavoli (Firebase Auth + Realtime Database), catalogo prodotti, recensioni, preordini e profili giocatore (Firebase Firestore), modulo di contatto (EmailJS).
+                prenotazione tavoli (Firebase Auth + Realtime Database), catalogo prodotti, recensioni, preordini, profili giocatore e sondaggi interattivi (Firebase Firestore + Firebase Anonymous Auth), modulo di contatto (EmailJS).
                 I font tipografici sono ospitati direttamente sul nostro server — nessuna richiesta a Google Fonts.
                 Non usiamo cookie analitici, pubblicitari o di profilazione. Non vendiamo né cediamo i tuoi dati a terzi per scopi commerciali.
             </div>
@@ -334,6 +334,13 @@
             <p style="margin-top:12px"><strong style="color:var(--white)">Profilo Giocatore</strong></p>
             <ul>
                 <li><strong>Dati del profilo:</strong> nome e cognome, nickname (pubblicamente visibile nella pagina Giocatori), formato di gioco preferito e decklist del mazzo attuale (opzionale). I dati vengono memorizzati su Firebase Firestore e sono visibili a tutti i visitatori del sito. È richiesta la registrazione con account Firebase per creare o modificare il proprio profilo.</li>
+            </ul>
+
+            <p style="margin-top:12px"><strong style="color:var(--white)">Sondaggi Interattivi</strong></p>
+            <ul>
+                <li><strong>Identificativo anonimo:</strong> quando partecipi a un sondaggio, il sito crea automaticamente una sessione Firebase anonima (<em>Firebase Anonymous Authentication</em>). Viene generato un identificativo univoco casuale (UID) che non è collegato a nessun dato personale (nessuna email, nome o dispositivo). L'unico scopo è impedire il voto multiplo sullo stesso sondaggio.</li>
+                <li><strong>Voto espresso:</strong> la tua scelta (testo dell'opzione votata) e il timestamp vengono salvati su Firebase Firestore associati al tuo UID anonimo, esclusivamente per conteggiare i voti. L'UID anonimo viene inoltre memorizzato in <code>localStorage</code> sul tuo dispositivo per ricordare che hai già votato, anche senza dover interrogare il server.</li>
+                <li>Non è possibile risalire alla tua identità reale a partire dall'UID anonimo. I dati di voto sono accessibili esclusivamente al titolare tramite il gestionale interno.</li>
             </ul>
 
             <p style="margin-top:12px"><strong style="color:var(--white)">Dati Tecnici (raccolti automaticamente)</strong></p>
@@ -434,6 +441,18 @@
                         <td>Servizio di invio email per il modulo di contatto nella homepage. I dati del form (nome, email, messaggio) vengono trasmessi ai server EmailJS per l'inoltro.</td>
                     </tr>
                     <tr>
+                        <td>Firebase Anonymous Auth Token<br><small>(localStorage / IndexedDB)</small></td>
+                        <td><span class="badge-necessary">Necessario</span></td>
+                        <td>Persistente</td>
+                        <td>Mantiene la sessione anonima creata per la partecipazione ai sondaggi. Contiene un identificativo casuale (UID) senza dati personali. Serve esclusivamente a impedire il voto multiplo sullo stesso sondaggio.</td>
+                    </tr>
+                    <tr>
+                        <td><code>mb-voted-{id}</code>, <code>mb-v2-{id}-{uid}</code><br><small>(localStorage)</small></td>
+                        <td><span class="badge-necessary">Necessario</span></td>
+                        <td>Persistente</td>
+                        <td>Memorizza localmente il voto espresso su ciascun sondaggio (testo dell'opzione scelta) associato al tuo UID anonimo, per non mostrare di nuovo i pulsanti di voto a chi ha già partecipato. Nessun dato personale identificativo.</td>
+                    </tr>
+                    <tr>
                         <td><code>manbaga-products</code>, <code>manbaga-events</code>, <code>manbaga_categories</code><br><small>(localStorage)</small></td>
                         <td><span class="badge-necessary">Necessario</span></td>
                         <td>Persistente (aggiornata a ogni visita)</td>
@@ -485,7 +504,7 @@
                     <a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener">Privacy Policy Firebase ↗</a>
                 </li>
                 <li>
-                    <strong>Firebase Firestore (Google LLC):</strong> database per catalogo prodotti, eventi e recensioni.
+                    <strong>Firebase Firestore (Google LLC):</strong> database per catalogo prodotti, eventi, recensioni, preordini, profili giocatore e sondaggi (inclusi i voti anonimi).
                     <a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener">Privacy Policy Firebase ↗</a>
                 </li>
                 <li>

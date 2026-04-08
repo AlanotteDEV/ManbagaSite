@@ -34,6 +34,7 @@
     <!-- Firebase — lettura prodotti/eventi dal gestionale -->
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js" integrity="sha384-mLD+wdwynYnAhgHAkdPP5hroWJXJTNy5C2OhPKM55zuiV2vjzFD1LtBohaHq2Ex8" crossorigin="anonymous"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js" integrity="sha384-/SBCyt0JELVRyyrOp+QG5CdnpVoAry+uw9hdherLgyZxxePtHjOvQmJU5CHymUhT" crossorigin="anonymous"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js" crossorigin="anonymous"></script>
 
     <!-- EmailJS — servizio email gratuito (200 email/mese) -->
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4.4.1/dist/email.min.js" integrity="sha384-SALc35EccAf6RzGw4iNsyj7kTPr33K7RoGzYu+7heZhT8s0GZouafRiCg1qy44AS" crossorigin="anonymous"></script>
@@ -349,6 +350,30 @@
                 &#127942; Vedi cronologia tornei passati →
             </a>
         </div>
+    </div>
+</section>
+
+
+<!-- ============================================================
+     QUIZ MANGA & ANIME
+     ============================================================ -->
+<section id="quiz" class="section" style="display:none">
+    <div class="section-inner">
+        <div class="section-label">Metti alla prova</div>
+        <h2 class="section-title reveal">QUIZ<br>MANGA &amp; ANIME</h2>
+        <div id="quiz-display" class="quiz-grid"></div>
+    </div>
+</section>
+
+
+<!-- ============================================================
+     SONDAGGI
+     ============================================================ -->
+<section id="sondaggi" class="section" style="display:none">
+    <div class="section-inner">
+        <div class="section-label">La tua opinione conta</div>
+        <h2 class="section-title reveal">SONDAGGIO<br>DEL MOMENTO</h2>
+        <div id="poll-display"></div>
     </div>
 </section>
 
@@ -715,6 +740,15 @@
 </footer>
 
 
+<!-- Quiz Modal -->
+<div id="quiz-modal" class="quiz-modal hidden" role="dialog" aria-modal="true" aria-label="Quiz">
+    <div class="quiz-modal-backdrop" onclick="closeQuizModal()"></div>
+    <div class="quiz-modal-inner">
+        <button class="quiz-modal-close" onclick="closeQuizModal()" aria-label="Chiudi">&#10005;</button>
+        <div id="quiz-modal-content"></div>
+    </div>
+</div>
+
 <!-- Lightbox zoom immagine prodotto -->
 <div id="img-lightbox" class="img-lightbox hidden" onclick="closeImageZoom()">
     <button class="lightbox-close" onclick="closeImageZoom()" aria-label="Chiudi">&#10005;</button>
@@ -722,6 +756,8 @@
 </div>
 
 <script src="script.js" defer></script>
+<script src="quiz.js" defer></script>
+<script src="poll.js" defer></script>
 <script src="cookie-banner.js" defer></script>
 <script src="manga-mode.js" defer></script>
 
