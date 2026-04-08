@@ -410,10 +410,11 @@
     <div class="twitch-preview">
         <div class="twitch-preview-label">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="#9146FF" aria-hidden="true"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/></svg>
-            Ultimo video su Twitch
+            <span id="twitch-label-text">Ultimo video su Twitch</span>
         </div>
         <div class="twitch-card" id="twitch-card" role="button" tabindex="0" aria-label="Riproduci video Twitch MANBAGA" onclick="loadTwitchEmbed()" onkeydown="if(event.key==='Enter'||event.key===' ')loadTwitchEmbed()">
             <div class="twitch-card-bg" aria-hidden="true"></div>
+            <span class="twitch-live-badge" id="twitch-live-badge" aria-label="In diretta ora" style="display:none">&#9679; LIVE</span>
             <div class="twitch-card-body">
                 <div class="twitch-card-logo">
                     <svg width="44" height="44" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/></svg>
@@ -423,7 +424,7 @@
                 </div>
                 <div class="twitch-card-info">
                     <div class="twitch-card-channel">manbagatv</div>
-                    <div class="twitch-card-cta">Clicca per guardare ▶</div>
+                    <div class="twitch-card-cta" id="twitch-card-cta">Clicca per guardare ▶</div>
                 </div>
             </div>
         </div>

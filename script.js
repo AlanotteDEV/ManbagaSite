@@ -1657,14 +1657,46 @@ document.addEventListener('keydown', function(e) {
     };
 })();
 
-/* ── Twitch click-to-play ─────────────────────────────────────── */
+/* ── Twitch live check + click-to-play ───────────────────────── */
+var _twitchIsLive = false;
+
+function _checkTwitchLive(cb) {
+    fetch('https://decapi.me/twitch/uptime/manbagatv')
+        .then(function(r) { return r.text(); })
+        .then(function(t) { cb(!/offline|error/i.test(t.trim())); })
+        .catch(function()  { cb(false); });
+}
+
+function _updateTwitchCard(isLive) {
+    _twitchIsLive = isLive;
+    var badge = document.getElementById('twitch-live-badge');
+    var cta   = document.getElementById('twitch-card-cta');
+    var label = document.getElementById('twitch-label-text');
+    if (badge) badge.style.display = isLive ? '' : 'none';
+    if (cta)   cta.textContent     = isLive ? 'Guarda la diretta ▶' : 'Clicca per guardare ▶';
+    if (label) label.textContent   = isLive ? 'In diretta su Twitch' : 'Ultimo video su Twitch';
+}
+
+/* Check al caricamento + ogni 3 minuti */
+(function _initTwitchLiveCheck() {
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() { _checkTwitchLive(_updateTwitchCard); });
+    } else {
+        _checkTwitchLive(_updateTwitchCard);
+    }
+    setInterval(function() { _checkTwitchLive(_updateTwitchCard); }, 3 * 60 * 1000);
+})();
+
 function loadTwitchEmbed() {
     var card = document.getElementById('twitch-card');
     if (!card) return;
 
-    /* file:// o hostname vuoto → Twitch vieta l'embed, apriamo in nuova tab */
+    var liveUrl  = 'https://www.twitch.tv/manbagatv';
+    var videoUrl = 'https://www.twitch.tv/videos/2741699514';
+
+    /* file:// → apri in nuova tab */
     if (window.location.protocol === 'file:' || !window.location.hostname) {
-        window.open('https://www.twitch.tv/videos/2741699514', '_blank', 'noopener,noreferrer');
+        window.open(_twitchIsLive ? liveUrl : videoUrl, '_blank', 'noopener,noreferrer');
         return;
     }
 
@@ -1672,14 +1704,15 @@ function loadTwitchEmbed() {
     var wrap     = card.parentNode;
 
     var iframe = document.createElement('iframe');
-    iframe.src = 'https://player.twitch.tv/?video=2741699514&parent=' + hostname + '&autoplay=true';
+    iframe.src = _twitchIsLive
+        ? 'https://player.twitch.tv/?channel=manbagatv&parent=' + hostname + '&autoplay=true'
+        : 'https://player.twitch.tv/?video=2741699514&parent=' + hostname + '&autoplay=true';
     iframe.setAttribute('allowfullscreen', '');
     iframe.style.cssText = 'width:100%;height:100%;border:none;display:block';
-    iframe.title = 'Ultimo video Twitch — MANBAGA';
+    iframe.title = _twitchIsLive ? 'MANBAGA in diretta su Twitch' : 'Ultimo video Twitch — MANBAGA';
 
-    /* Se Twitch blocca comunque l'embed, fallback → apri in tab */
     iframe.onerror = function() {
-        window.open('https://www.twitch.tv/videos/2741699514', '_blank', 'noopener,noreferrer');
+        window.open(_twitchIsLive ? liveUrl : videoUrl, '_blank', 'noopener,noreferrer');
     };
 
     wrap.style.cssText = 'aspect-ratio:16/9;border:2px solid rgba(145,70,255,0.5);position:relative';

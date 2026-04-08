@@ -1484,6 +1484,26 @@ section[id], footer[id] {
     margin-bottom: 14px;
     justify-content: center;
 }
+.twitch-live-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 10;
+    background: #DC2626;
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 4px 10px;
+    border-radius: 4px;
+    animation: twitch-live-pulse 1.4s ease-in-out infinite;
+}
+@keyframes twitch-live-pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.6; }
+}
+
 .twitch-card {
     display: block;
     position: relative;
