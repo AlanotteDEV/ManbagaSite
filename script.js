@@ -1674,7 +1674,7 @@ function loadTwitchEmbed() {
     var iframe = document.createElement('iframe');
     iframe.src = 'https://player.twitch.tv/?video=2741699514&parent=' + hostname + '&autoplay=true';
     iframe.setAttribute('allowfullscreen', '');
-    iframe.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;border:none';
+    iframe.style.cssText = 'width:100%;height:100%;border:none;display:block';
     iframe.title = 'Ultimo video Twitch — MANBAGA';
 
     /* Se Twitch blocca comunque l'embed, fallback → apri in tab */
@@ -1682,7 +1682,7 @@ function loadTwitchEmbed() {
         window.open('https://www.twitch.tv/videos/2741699514', '_blank', 'noopener,noreferrer');
     };
 
-    wrap.style.cssText = 'position:relative;padding-top:56.25%;border:2px solid rgba(145,70,255,0.5);overflow:hidden';
+    wrap.style.cssText = 'aspect-ratio:16/3;border:2px solid rgba(145,70,255,0.5);overflow:hidden;position:relative';
     card.remove();
     wrap.appendChild(iframe);
 }

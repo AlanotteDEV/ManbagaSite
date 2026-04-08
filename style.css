@@ -1469,7 +1469,7 @@ section[id], footer[id] {
 
 /* ---- Twitch preview ---- */
 .twitch-preview {
-    max-width: 480px;
+    max-width: 820px;
     margin: 44px auto 0;
 }
 .twitch-preview-label {
@@ -1491,7 +1491,7 @@ section[id], footer[id] {
     overflow: hidden;
     text-decoration: none;
     transition: border-color 0.2s, transform 0.2s var(--ease-bounce);
-    aspect-ratio: 16 / 5;
+    aspect-ratio: 16 / 3;
 }
 .twitch-card:hover {
     border-color: rgba(145,70,255,0.7);
