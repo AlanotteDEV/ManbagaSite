@@ -10,14 +10,17 @@
     /* ---- Auth anonima ----------------------------------------- */
     function _ensureAuth(cb) {
         try {
-            var auth = firebase.auth();
+            /* Usa la stessa app di _fbMainDb (named 'main'), non il default app.
+               Così il token auth viene incluso nelle richieste Firestore. */
+            var auth = (typeof _fbMainApp !== 'undefined' && _fbMainApp)
+                ? _fbMainApp.auth()
+                : firebase.app('main').auth();
             var user = auth.currentUser;
             if (user) { _uid = user.uid; cb(); return; }
             auth.signInAnonymously()
                 .then(function(r) { _uid = r.user.uid; cb(); })
                 .catch(function()  { _uid = null;       cb(); });
         } catch(e) {
-            /* firebase-auth non caricato: modalità degradata (solo localStorage) */
             _uid = null;
             cb();
         }
