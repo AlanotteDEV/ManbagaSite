@@ -338,9 +338,7 @@
 
         _fbMainDb.collection('quiz_results')
             .where('quizId', '==', fid)
-            .orderBy('score', 'desc')
-            .orderBy('duration', 'asc')
-            .limit(10)
+            .limit(50)
             .get()
             .then(function(snap) {
                 if (snap.empty) {
@@ -348,12 +346,17 @@
                     return;
                 }
                 var rows = snap.docs.map(function(d) { return d.data(); });
+                // ordina client-side: punteggio desc, poi durata asc
+                rows.sort(function(a, b) {
+                    if (b.score !== a.score) return b.score - a.score;
+                    return (a.duration || 0) - (b.duration || 0);
+                });
+                rows = rows.slice(0, 10);
                 el.innerHTML = _buildLeaderboard(rows, myName);
             })
             .catch(function(err) {
-                // Firestore potrebbe richiedere un indice composito — link in console
-                console.warn('[quiz] leaderboard index needed:', err.message);
-                el.innerHTML = '<p class="qm-lb-empty">Classifica non disponibile.<br><small>Crea l\'indice su Firestore: score↓ + duration↑</small></p>';
+                console.warn('[quiz] leaderboard error:', err.message);
+                el.innerHTML = '<p class="qm-lb-empty">Classifica non disponibile.</p>';
             });
     }
 
