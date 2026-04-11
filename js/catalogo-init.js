@@ -240,10 +240,15 @@ var catPage = (function () {
         if (isSearching) {
             var q = _query.trim().toLowerCase();
             filtered = allProducts.filter(function (p) {
+                var vol = (p.volume || '').toLowerCase();
+                var volStripped = vol.replace(/vol\.\s*/gi, '');
+                var titleLower  = (p.title || '').toLowerCase();
                 return (p.cat) && (
-                    (p.title  || '').toLowerCase().includes(q) ||
-                    (p.volume || '').toLowerCase().includes(q) ||
-                    (p.desc   || '').toLowerCase().includes(q)
+                    titleLower.includes(q) ||
+                    vol.includes(q) ||
+                    volStripped.includes(q) ||
+                    (titleLower + ' ' + volStripped).includes(q) ||
+                    (p.desc || '').toLowerCase().includes(q)
                 );
             });
         } else {
