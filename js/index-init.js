@@ -38,6 +38,18 @@
                 if (typeof closeProductModal === 'function') closeProductModal();
                 if (typeof closeAdminModal === 'function') closeAdminModal();
             }
+
+            /* ── Product card carosello "Appena Arrivati" ── */
+            var card = e.target.closest('.product-card[data-pid]');
+            if (card && typeof openProductModal === 'function') {
+                openProductModal(card.dataset.pid); return;
+            }
+
+            /* ── Zoom immagine nel modal prodotto ── */
+            var imgWrap = e.target.closest('.pd-img-wrap[data-img]');
+            if (imgWrap && typeof zoomProductImage === 'function') {
+                zoomProductImage(imgWrap.dataset.img, imgWrap.dataset.title); return;
+            }
         });
 
         /* ── Tab eventi ── */

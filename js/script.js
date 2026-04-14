@@ -183,7 +183,8 @@ function _subscribeFirestoreProducts() {
         function(snap) {
             _fbProducts = snap.docs.map(function(doc) {
                 var d = doc.data();
-                if (!d.id) d.id = d.firestoreId || doc.id;
+                d.firestoreId = doc.id;          /* Firestore doc ID — usato da gestionale */
+                if (!d.id) d.id = doc.id;
                 /* Normalizza imageUrl → image per compatibilità */
                 if (d.imageUrl && !d.image) d.image = d.imageUrl;
                 return d;
@@ -525,7 +526,7 @@ function renderProducts() {
 
     track.innerHTML = products.map(function (p) {
         var isOos = (p.badge === 'OUT OF STOCK' || p.badge === 'ESAURITO');
-        return '<div class="product-card' + (isOos ? ' product-card--oos' : '') + '" data-badge="' + _escHtml(p.badge || '') + '" data-pid="' + _escHtml(String(p.id)) + '" onclick="openProductModal(this.dataset.pid)">'
+        return '<div class="product-card' + (isOos ? ' product-card--oos' : '') + '" data-badge="' + _escHtml(p.badge || '') + '" data-pid="' + _escHtml(String(p.id)) + '" style="cursor:pointer">'
             + '<div class="product-badge" data-badge="' + _escHtml(p.badge || 'Disponibile') + '">' + _escHtml(p.badge || 'Disponibile') + '</div>'
             + '<div class="product-img-wrap">'
             + '<img class="product-img" src="' + _escHtml(p.image) + '" alt="' + _escHtml(p.title) + '" loading="lazy">'
@@ -734,8 +735,9 @@ function openProductModal(productId) {
     var _pid = String(product.id);
     /* Valida _pid: solo caratteri sicuri per attributi HTML e onclick literal */
     if (!/^[a-zA-Z0-9_-]{1,128}$/.test(_pid)) { _pid = ''; }
+    var isOos = (product.badge === 'OUT OF STOCK' || product.badge === 'ESAURITO');
     var actionBtn = isPreorder
-        ? '<button class="btn btn-primary" style="clip-path:none;flex:1;border-radius:0;min-width:160px;background:#4F46E5;border:none" onclick="showPreorderForm(\'' + _pid + '\')">'
+        ? '<button class="btn btn-primary" style="clip-path:none;flex:1;border-radius:0;min-width:160px;background:#4F46E5;border:none" data-action="show-preorder" data-pid="' + _pid + '">'
             + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 12v6a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h6"/><polyline points="16 2 22 2 22 8"/><line x1="11" y1="13" x2="22" y2="2"/></svg>'
             + ' Richiedi Preordine'
             + '</button>'
@@ -744,14 +746,23 @@ function openProductModal(productId) {
             + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'
             + ' Prossimamente'
             + '</button>'
-        : '<button class="btn btn-primary" style="clip-path:none;flex:1;border-radius:0;min-width:140px" onclick="window.open(\'https://www.instagram.com/_manbaga_/\',\'_blank\')">'
+        : '<button class="btn btn-primary" style="clip-path:none;flex:1;border-radius:0;min-width:140px" data-action="instagram-link">'
             + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>'
             + ' Vedi su Instagram'
             + '</button>';
 
+    /* Bottone "Ritira in Negozio" — visibile solo se disponibile */
+    var maxQty = parseInt(product.quantity) || 0;
+    var ritiroBtn = (!isOos && !isInArrivo && !isPreorder)
+        ? '<button class="btn" style="clip-path:none;flex:1;border-radius:0;min-width:160px;background:#15803D;border:none;color:#fff" data-action="show-ritiro" data-pid="' + _pid + '">'
+            + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>'
+            + ' Ritira in Negozio'
+            + '</button>'
+        : '';
+
     document.getElementById('product-detail-content').innerHTML =
         '<div class="pd-grid">'
-        + '<div class="pd-img-wrap" data-img="' + _escHtml(product.image) + '" data-title="' + _escHtml(product.title) + '" onclick="zoomProductImage(this.dataset.img,this.dataset.title)">'
+        + '<div class="pd-img-wrap" data-img="' + _escHtml(product.image) + '" data-title="' + _escHtml(product.title) + '" style="cursor:zoom-in">'
         + '<img class="pd-img" src="' + _escHtml(product.image) + '" alt="' + _escHtml(product.title) + '">'
         + '<div class="pd-zoom-hint"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg> Clicca per ingrandire</div>'
         + '</div>'
@@ -766,6 +777,7 @@ function openProductModal(productId) {
         + '</div>'
         + '<div style="display:flex;gap:10px;flex-wrap:wrap">'
         + actionBtn
+        + ritiroBtn
         + '</div>'
         /* Form preordine (nascosto) */
         + '<div id="preorder-form-' + _pid + '" class="preorder-panel hidden" data-product-id="' + _pid + '">'
@@ -782,10 +794,40 @@ function openProductModal(productId) {
         + 'I dati (nome, contatto) saranno usati esclusivamente per contattarti riguardo a questo preordine e non ceduti a terzi.'
         + '</p>'
         + '<div style="display:flex;gap:8px;margin-top:4px">'
-        + '<button class="btn btn-primary" style="clip-path:none;flex:1;border-radius:0;background:#4F46E5;border:none" onclick="submitPreorder(\'' + _pid + '\')">'
+        + '<button class="btn btn-primary" style="clip-path:none;flex:1;border-radius:0;background:#4F46E5;border:none" data-action="submit-preorder" data-pid="' + _pid + '">'
         + '&#10003; INVIA RICHIESTA'
         + '</button>'
-        + '<button class="btn" style="border-radius:0;min-width:100px;background:#f3f4f6;color:#374151;border:1px solid #d1d5db" onclick="hidePreorderForm(\'' + _pid + '\')">Annulla</button>'
+        + '<button class="btn" style="border-radius:0;min-width:100px;background:#f3f4f6;color:#374151;border:1px solid #d1d5db" data-action="hide-preorder" data-pid="' + _pid + '">Annulla</button>'
+        + '</div>'
+        + '</div>'
+        /* Form ritiro in negozio (nascosto) */
+        + '<div id="ritiro-form-' + _pid + '" class="preorder-panel hidden" style="border-color:#15803D;border-top-color:#15803D;background:rgba(21,128,61,0.04)" data-product-id="' + _pid + '">'
+        + '<div class="preorder-panel-head" style="color:#15803D;border-bottom-color:rgba(21,128,61,0.2)">&#127968; Ritira in Negozio — ' + _escHtml(product.title) + '</div>'
+        + (maxQty > 0 ? '<div style="font-size:12px;color:#15803D;font-weight:600;margin-bottom:14px;padding:6px 10px;background:rgba(21,128,61,0.08);border-radius:4px">Disponibili: ' + maxQty + ' pz.</div>' : '')
+        + '<div class="form-row"><label class="form-label">Il tuo nome *</label>'
+        + '<input type="text" id="rt-name-' + _pid + '" class="form-input" placeholder="Es. Marco" maxlength="60"></div>'
+        + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'
+        + '<div class="form-row"><label class="form-label">Quantità *</label>'
+        + '<input type="number" id="rt-qty-' + _pid + '" class="form-input" value="1" min="1"' + (maxQty > 0 ? ' max="' + maxQty + '"' : '') + '></div>'
+        + '<div class="form-row"><label class="form-label">Data ritiro *</label>'
+        + '<input type="date" id="rt-date-' + _pid + '" class="form-input"></div>'
+        + '</div>'
+        + '<div class="form-row"><label class="form-label">Orario preferito *</label>'
+        + '<select id="rt-time-' + _pid + '" class="form-input">'
+        + '<option value="">— seleziona —</option>'
+        + '<option value="Mattina (10:00 – 12:00)">Mattina (10:00 – 12:00)</option>'
+        + '<option value="Pomeriggio (15:00 – 18:00)">Pomeriggio (15:00 – 18:00)</option>'
+        + '<option value="Sera (18:00 – 20:00)">Sera (18:00 – 20:00)</option>'
+        + '</select></div>'
+        + '<p style="font-size:11px;color:#555;line-height:1.5;margin:8px 0 4px">'
+        + 'Il ritiro è soggetto a disponibilità. Ti contatteremo per conferma. '
+        + 'Dati trattati ai sensi del <a href="privacy.html" target="_blank" style="color:#15803D;text-decoration:underline">GDPR e della nostra Privacy Policy</a>.'
+        + '</p>'
+        + '<div style="display:flex;gap:8px;margin-top:4px">'
+        + '<button class="btn" style="clip-path:none;flex:1;border-radius:0;background:#15803D;border:none;color:#fff" data-action="submit-ritiro" data-pid="' + _pid + '">'
+        + '&#10003; PRENOTA RITIRO'
+        + '</button>'
+        + '<button class="btn" style="border-radius:0;min-width:100px;background:#f3f4f6;color:#374151;border:1px solid #d1d5db" data-action="hide-ritiro" data-pid="' + _pid + '">Annulla</button>'
         + '</div>'
         + '</div>'
         + '</div>'
@@ -903,6 +945,130 @@ function _preorderSuccess(productId, btn) {
     }
     if (btn) { btn.disabled = false; }
 }
+
+/* ============================================================
+   RITIRO IN NEGOZIO — funzioni
+   ============================================================ */
+function showRitiroForm(productId) {
+    var panel = document.getElementById('ritiro-form-' + productId);
+    if (!panel) return;
+    /* Imposta data minima = oggi */
+    var dateInput = document.getElementById('rt-date-' + productId);
+    if (dateInput && !dateInput.value) {
+        var today = new Date();
+        var yyyy = today.getFullYear();
+        var mm   = String(today.getMonth() + 1).padStart(2, '0');
+        var dd   = String(today.getDate() + 1).padStart(2, '0'); /* almeno domani */
+        dateInput.min   = yyyy + '-' + mm + '-' + dd;
+        dateInput.value = yyyy + '-' + mm + '-' + dd;
+    }
+    panel.classList.remove('hidden');
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function hideRitiroForm(productId) {
+    var panel = document.getElementById('ritiro-form-' + productId);
+    if (panel) panel.classList.add('hidden');
+}
+
+function submitRitiro(productId) {
+    var product = getProducts().find(function (p) { return String(p.id) === String(productId); });
+    if (!product) return;
+
+    var nome  = (document.getElementById('rt-name-' + productId) || {}).value;
+    var qty   = (document.getElementById('rt-qty-'  + productId) || {}).value;
+    var data  = (document.getElementById('rt-date-' + productId) || {}).value;
+    var ora   = (document.getElementById('rt-time-' + productId) || {}).value;
+
+    nome = (nome || '').trim();
+    qty  = parseInt(qty) || 1;
+
+    if (!nome) { mbNotify('Inserisci il tuo nome per procedere.', 'error'); return; }
+    if (nome.length > 60) { mbNotify('Il nome non può superare 60 caratteri.', 'error'); return; }
+    if (!data) { mbNotify('Seleziona la data di ritiro.', 'error'); return; }
+    if (!ora)  { mbNotify('Seleziona l\'orario preferito.', 'error'); return; }
+
+    var maxQty = parseInt(product.quantity) || 0;
+    if (maxQty > 0 && qty > maxQty) {
+        mbNotify('Quantità massima disponibile: ' + maxQty + ' pz.', 'error');
+        return;
+    }
+    if (qty < 1) { mbNotify('Quantità minima: 1.', 'error'); return; }
+
+    /* Rate limiting: max 1 richiesta ogni 30s */
+    var _lastRt = parseInt(localStorage.getItem('mb_ritiro_last') || '0', 10);
+    if (Date.now() - _lastRt < 30000) {
+        mbNotify('Attendi un momento prima di inviare un\'altra richiesta.', 'error');
+        return;
+    }
+
+    var submitBtn = document.querySelector('#ritiro-form-' + productId + ' [data-action="submit-ritiro"]');
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Invio…'; }
+
+    if (!_fbMainDb) {
+        mbNotify('Connessione non disponibile. Riprova tra un momento.', 'error');
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = '✓ PRENOTA RITIRO'; }
+        return;
+    }
+
+    _fbMainDb.collection('ritiri').add({
+        nome:                nome,
+        quantita:            qty,
+        dataRitiro:          data,
+        oraRitiro:           ora,
+        productId:           String(productId),
+        productFirestoreId:  product.firestoreId || '',   /* Firestore doc ID per update diretto */
+        productTitle:        product.title  || '',
+        productPrice:        product.price  || '',
+        stato:               'nuovo',
+        createdAt:           firebase.firestore.FieldValue.serverTimestamp()
+    }).then(function () {
+        localStorage.setItem('mb_ritiro_last', String(Date.now()));
+        var panel = document.getElementById('ritiro-form-' + productId);
+        if (panel) {
+            panel.innerHTML = '<div class="preorder-success">'
+                + '<div class="preorder-success-icon" style="color:#15803D">&#10003;</div>'
+                + '<div class="preorder-success-title">Prenotazione inviata!</div>'
+                + '<p class="preorder-success-msg">Passeremo il tuo ordine in rassegna e ti avviseremo per la conferma.<br>'
+                + '<strong>A presto in negozio!</strong></p>'
+                + '</div>';
+        }
+    }).catch(function (err) {
+        var msg = (err && err.message) ? err.message : String(err);
+        if (msg.toLowerCase().includes('permission') || msg.toLowerCase().includes('insufficient')) {
+            msg = 'Servizio temporaneamente non disponibile. Contattaci su Instagram o WhatsApp.';
+        }
+        mbNotify('Errore durante l\'invio: ' + msg, 'error');
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = '✓ PRENOTA RITIRO'; }
+    });
+}
+
+/* ============================================================
+   EVENT DELEGATION — bottoni generati dinamicamente nel modal
+   ============================================================ */
+document.addEventListener('click', function (e) {
+    var action = (e.target.closest('[data-action]') || {}).dataset;
+    if (!action || !action.action) return;
+
+    switch (action.action) {
+        case 'show-preorder':
+            showPreorderForm(action.pid); break;
+        case 'hide-preorder':
+            hidePreorderForm(action.pid); break;
+        case 'submit-preorder':
+            submitPreorder(action.pid); break;
+        case 'show-ritiro':
+            showRitiroForm(action.pid); break;
+        case 'hide-ritiro':
+            hideRitiroForm(action.pid); break;
+        case 'submit-ritiro':
+            submitRitiro(action.pid); break;
+        case 'instagram-link':
+            window.open('https://www.instagram.com/_manbaga_/', '_blank'); break;
+        case 'expand-reviews':
+            if (typeof window._expandReviews === 'function') window._expandReviews(); break;
+    }
+});
 
 /* ============================================================
    DEMO SEED
@@ -1508,7 +1674,7 @@ function renderRecensioni(list) {
     }
     if (hasMore) {
         var remaining = _rvAllList.length - REVIEWS_LIMIT;
-        moreBtn.innerHTML = '<button onclick="window._expandReviews()" style="background:transparent;border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.75);padding:10px 28px;border-radius:20px;font-size:13px;cursor:pointer;font-family:inherit;transition:all .2s" onmouseover="this.style.borderColor=\'#dc2626\';this.style.color=\'#dc2626\'" onmouseout="this.style.borderColor=\'rgba(255,255,255,.25)\';this.style.color=\'rgba(255,255,255,.75)\'">'
+        moreBtn.innerHTML = '<button data-action="expand-reviews" style="background:transparent;border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.75);padding:10px 28px;border-radius:20px;font-size:13px;cursor:pointer;font-family:inherit;transition:all .2s">'
             + 'Vedi altre ' + remaining + ' recensioni ▼</button>';
         window._expandReviews = function() {
             container.innerHTML = _rvAllList.map(function(r, idx) {

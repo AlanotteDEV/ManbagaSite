@@ -574,6 +574,12 @@ document.addEventListener('DOMContentLoaded', function () {
         if (rv && typeof openProductModal === 'function') {
             openProductModal(parseInt(rv.dataset.rvPid, 10)); return;
         }
+
+        /* Product image zoom */
+        var imgWrap = e.target.closest('.pd-img-wrap[data-img]');
+        if (imgWrap && typeof zoomProductImage === 'function') {
+            zoomProductImage(imgWrap.dataset.img, imgWrap.dataset.title); return;
+        }
     });
 
     /* Recently viewed thumbnail hover effect via delegation */
