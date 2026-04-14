@@ -84,6 +84,7 @@ var catPage = (function () {
     var _query = '';
     var _page  = 0;
     var PAGE_SIZE = 25;
+    var _onlyAvailable = false;
 
     function _parseUrl() {
         var params = new URLSearchParams(window.location.search);
@@ -267,6 +268,13 @@ var catPage = (function () {
 
         filtered = _sortProducts(filtered);
 
+        /* Filtro "Solo disponibili" */
+        if (_onlyAvailable) {
+            filtered = filtered.filter(function(p) {
+                return p.badge !== 'ESAURITO' && p.badge !== 'OUT OF STOCK';
+            });
+        }
+
         _updateCounts(allProducts);
         _updateSidebar();
         _updateMobTabs();
@@ -437,15 +445,22 @@ var catPage = (function () {
         render();
     }
 
+    function setOnlyAvailable(val) {
+        _onlyAvailable = !!val;
+        _page = 0;
+        render();
+    }
+
     return {
-        setCat:       setCat,
-        setSub:       setSub,
-        render:       render,
-        init:         init,
-        setSearch:    setSearch,
-        clearSearch:  clearSearch,
-        goPage:       goPage,
-        refreshCats:  refreshCats
+        setCat:            setCat,
+        setSub:            setSub,
+        render:            render,
+        init:              init,
+        setSearch:         setSearch,
+        clearSearch:       clearSearch,
+        goPage:            goPage,
+        refreshCats:       refreshCats,
+        setOnlyAvailable:  setOnlyAvailable
     };
 })();
 
@@ -519,6 +534,10 @@ document.addEventListener('DOMContentLoaded', function () {
     /* Sort select */
     var sortSelect = document.getElementById('cp-sort');
     if (sortSelect) sortSelect.addEventListener('change', function() { catPage.render(); });
+
+    /* Solo disponibili checkbox */
+    var availChk = document.getElementById('cp-only-available');
+    if (availChk) availChk.addEventListener('change', function() { catPage.setOnlyAvailable(this.checked); });
 
     /* Clear recently viewed */
     var clearRvBtn = document.getElementById('clear-rv-btn');

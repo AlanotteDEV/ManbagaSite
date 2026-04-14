@@ -3507,6 +3507,27 @@ textarea.form-input {
     text-transform: uppercase;
 }
 
+.cp-avail-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+}
+.cp-avail-toggle input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+    accent-color: #DC2626;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
 /* ---- Product grid ---- */
 .cp-grid {
     display: grid;

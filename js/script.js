@@ -815,9 +815,8 @@ function openProductModal(productId) {
         + '<div class="form-row"><label class="form-label">Orario preferito *</label>'
         + '<select id="rt-time-' + _pid + '" class="form-input">'
         + '<option value="">— seleziona —</option>'
-        + '<option value="Mattina (10:00 – 12:00)">Mattina (10:00 – 12:00)</option>'
-        + '<option value="Pomeriggio (15:00 – 18:00)">Pomeriggio (15:00 – 18:00)</option>'
-        + '<option value="Sera (18:00 – 20:00)">Sera (18:00 – 20:00)</option>'
+        + '<option value="Mattina (10:00 – 13:30)">Mattina (10:00 – 13:30)</option>'
+        + '<option value="Sera (18:00 – 20:30)">Sera (18:00 – 20:30)</option>'
         + '</select></div>'
         + '<p style="font-size:11px;color:#555;line-height:1.5;margin:8px 0 4px">'
         + 'Il ritiro è soggetto a disponibilità. Ti contatteremo per conferma. '
@@ -958,7 +957,7 @@ function showRitiroForm(productId) {
         var today = new Date();
         var yyyy = today.getFullYear();
         var mm   = String(today.getMonth() + 1).padStart(2, '0');
-        var dd   = String(today.getDate() + 1).padStart(2, '0'); /* almeno domani */
+        var dd   = String(today.getDate()).padStart(2, '0');
         dateInput.min   = yyyy + '-' + mm + '-' + dd;
         dateInput.value = yyyy + '-' + mm + '-' + dd;
     }
