@@ -4,6 +4,9 @@ const { getFirestore }                 = require('firebase-admin/firestore');
 
 function getDb() {
     if (!getApps().length) {
+        console.log('[DEBUG] FIREBASE_PROJECT_ID:', process.env.FIREBASE_PROJECT_ID);
+        console.log('[DEBUG] FIREBASE_CLIENT_EMAIL:', process.env.FIREBASE_CLIENT_EMAIL);
+        console.log('[DEBUG] FIREBASE_PRIVATE_KEY starts:', (process.env.FIREBASE_PRIVATE_KEY || '').slice(0, 30));
         initializeApp({ credential: cert({
             projectId:   process.env.FIREBASE_PROJECT_ID,
             clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
