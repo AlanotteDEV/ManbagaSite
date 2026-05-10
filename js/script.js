@@ -206,8 +206,19 @@ function _subscribeFirestoreEvents() {
             _fbEvents = snap.docs.map(function(doc) {
                 var d = doc.data();
                 if (!d.id) d.id = doc.id;
-                d._fid = doc.id; /* Firestore doc ID for torneo.html links */
+                d._fid = doc.id;
                 return d;
+            });
+            /* futuri: ascendente (prossimo prima); passati: discendente (più recente prima) */
+            var now = Date.now();
+            _fbEvents.sort(function(a, b) {
+                var ta = _parseEventMs(a) || 0;
+                var tb = _parseEventMs(b) || 0;
+                var aFuture = ta >= now;
+                var bFuture = tb >= now;
+                if (aFuture && bFuture) return ta - tb;
+                if (!aFuture && !bFuture) return tb - ta;
+                return aFuture ? -1 : 1;
             });
             try { localStorage.setItem('manbaga-events', JSON.stringify(_fbEvents)); } catch(e){}
             renderEvents();
@@ -753,6 +764,17 @@ function openProductModal(productId) {
 
     /* Bottone "Ritira in Negozio" — visibile solo se disponibile */
     var maxQty = parseInt(product.quantity) || 0;
+    var addToCartBtn = (!isOos && !isInArrivo && !isPreorder)
+        ? '<button class="btn-add-to-cart"'
+            + ' data-cart-add="' + _escHtml(product.firestoreId || String(_pid)) + '"'
+            + ' data-cart-title="' + _escHtml(product.title) + '"'
+            + ' data-cart-price="' + _escHtml(product.price || '') + '"'
+            + ' data-cart-image="' + _escHtml(product.image || '') + '"'
+            + ' data-cart-maxqty="' + (maxQty || 99) + '">'
+            + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 001.95-1.56l1.65-7.44H6"/></svg>'
+            + ' Aggiungi al Carrello'
+            + '</button>'
+        : '';
     var ritiroBtn = (!isOos && !isInArrivo && !isPreorder)
         ? '<button class="btn" style="clip-path:none;flex:1;border-radius:0;min-width:160px;background:#15803D;border:none;color:#fff" data-action="show-ritiro" data-pid="' + _pid + '">'
             + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>'
@@ -776,6 +798,7 @@ function openProductModal(productId) {
         + '<p>' + _escHtml(product.desc).replace(/\n/g, '<br>') + '</p>'
         + '</div>'
         + '<div style="display:flex;gap:10px;flex-wrap:wrap">'
+        + addToCartBtn
         + actionBtn
         + ritiroBtn
         + '</div>'
@@ -1914,3 +1937,62 @@ function loadTwitchEmbed() {
     card.remove();
     wrap.appendChild(iframe);
 }
+
+/* ============================================================
+   RICHIEDI ARTICOLO
+   ============================================================ */
+function initRichiestaForm() {
+    var btn = document.getElementById('rq-submit-btn');
+    if (!btn) return;
+    btn.addEventListener('click', function() {
+        var nome    = (document.getElementById('rq-nome')    || {}).value || '';
+        var email   = (document.getElementById('rq-email')   || {}).value || '';
+        var artic   = (document.getElementById('rq-articolo')|| {}).value || '';
+        var note    = (document.getElementById('rq-note')    || {}).value || '';
+
+        if (!nome.trim() || !email.trim() || !artic.trim()) {
+            mbNotify('Compila nome, email e articolo desiderato.', 'error');
+            return;
+        }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+            mbNotify('Inserisci un\'email valida.', 'error');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = 'Invio...';
+
+        if (!_fbMainDb) {
+            mbNotify('Servizio non disponibile. Riprova tra poco.', 'error');
+            btn.disabled = false;
+            btn.textContent = 'Invia Richiesta';
+            return;
+        }
+
+        _fbMainDb.collection('richieste_articoli').add({
+            nome:     nome.trim(),
+            email:    email.trim(),
+            articolo: artic.trim(),
+            note:     note.trim(),
+            letto:    false,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(function() {
+            var form = document.getElementById('richiesta-form');
+            var successEl = document.getElementById('rq-success');
+            if (form) {
+                form.querySelectorAll('input, textarea').forEach(function(el) { el.value = ''; });
+            }
+            if (successEl) successEl.style.display = 'block';
+            btn.style.display = 'none';
+        }).catch(function(err) {
+            console.error('Richiesta articolo error:', err);
+            mbNotify('Errore invio. Riprova o scrivici su Instagram.', 'error');
+            btn.disabled = false;
+            btn.textContent = 'Invia Richiesta';
+        });
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.getElementById('rq-submit-btn')) initRichiestaForm();
+});

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrello — MANBAGA Comics &amp; Games</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="WhatsApp_Image_2026-03-10_at_11.15.27-removebg-preview.png">
+    <link rel="stylesheet" href="fonts/fonts.css">
+</head>
+<body>
+
+<nav id="nav">
+    <div class="nav-inner">
+        <a class="nav-logo" href="index.html">MANBAGA</a>
+        <ul class="nav-links" id="nav-links">
+            <li><a href="catalogo.html">Catalogo</a></li>
+            <li><a href="tavoli.html">Tavoli</a></li>
+            <li><a href="chi-siamo.html">Chi Siamo</a></li>
+            <li><a href="giocatori.html">Giocatori</a></li>
+            <li>
+                <a href="carrello.html" class="cart-nav-link">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 001.95-1.56l1.65-7.44H6"/></svg>
+                    <span class="cart-badge">0</span>
+                </a>
+            </li>
+        </ul>
+        <button class="nav-burger" id="nav-burger" aria-label="Apri menu">&#9776;</button>
+    </div>
+</nav>
+
+<main class="cart-page">
+    <h1>Il tuo Carrello</h1>
+    <div id="cart-root"></div>
+</main>
+
+<script src="js/cart.js"></script>
+<script>
+(function () {
+    var root = document.getElementById('cart-root');
+
+    function priceNum(str) {
+        var n = parseFloat(String(str).replace(/[^0-9.,]/g, '').replace(',', '.'));
+        return isNaN(n) ? 0 : n;
+    }
+
+    function render() {
+        var items = MBCart.getAll();
+        if (items.length === 0) {
+            root.innerHTML = '<div class="cart-empty">'
+                + '<p style="font-size:3rem">&#128722;</p>'
+                + '<p>Il carrello è vuoto.</p>'
+                + '<a href="catalogo.html">Torna al catalogo &rarr;</a>'
+                + '</div>';
+            return;
+        }
+
+        var total = items.reduce(function (s, i) { return s + priceNum(i.price) * i.qty; }, 0);
+
+        var rows = items.map(function (item) {
+            return '<tr data-fid="' + item.firestoreId + '">'
+                + '<td><div style="display:flex;align-items:center;gap:12px">'
+                + '<img class="cart-item-img" src="' + (item.image || 'https://placehold.co/56x72/0d0d0d/333?text=Cover') + '" alt="' + item.title + '">'
+                + '<span class="cart-item-name">' + item.title + '</span>'
+                + '</div></td>'
+                + '<td class="cart-item-price">' + item.price + '</td>'
+                + '<td><div class="cart-qty-ctrl">'
+                + '<button data-qty-dec="' + item.firestoreId + '">&minus;</button>'
+                + '<span>' + item.qty + '</span>'
+                + '<button data-qty-inc="' + item.firestoreId + '" ' + (item.qty >= item.maxQty ? 'disabled' : '') + '>+</button>'
+                + '</div></td>'
+                + '<td class="cart-item-price">&euro;' + (priceNum(item.price) * item.qty).toFixed(2) + '</td>'
+                + '<td><button class="cart-remove-btn" data-remove="' + item.firestoreId + '" title="Rimuovi">&times;</button></td>'
+                + '</tr>';
+        }).join('');
+
+        root.innerHTML = '<table class="cart-table">'
+            + '<thead><tr><th>Prodotto</th><th>Prezzo</th><th>Qt&agrave;</th><th>Subtotale</th><th></th></tr></thead>'
+            + '<tbody>' + rows + '</tbody>'
+            + '</table>'
+            + '<div class="cart-summary">'
+            + '<div class="cart-total">Totale: &euro;' + total.toFixed(2) + '</div>'
+            + '<div class="cart-legal">'
+            + '<label><input type="checkbox" id="accept-terms"> '
+            + 'Ho letto e accetto le <a href="condizioni-vendita.html" target="_blank">condizioni di vendita</a> e la <a href="privacy.html" target="_blank">privacy policy</a>.'
+            + '</label>'
+            + '</div>'
+            + '<div id="cart-error" class="cart-error" style="display:none"></div>'
+            + '<button class="cart-checkout-btn" id="checkout-btn">Procedi al Pagamento &rarr;</button>'
+            + '</div>';
+
+        document.getElementById('checkout-btn').addEventListener('click', startCheckout);
+    }
+
+    function startCheckout() {
+        var checkbox = document.getElementById('accept-terms');
+        var errEl    = document.getElementById('cart-error');
+        if (!checkbox.checked) {
+            errEl.style.display = 'block';
+            errEl.textContent   = 'Devi accettare le condizioni di vendita per procedere.';
+            return;
+        }
+        errEl.style.display = 'none';
+
+        var btn   = document.getElementById('checkout-btn');
+        btn.disabled    = true;
+        btn.textContent = 'Caricamento...';
+
+        var items = MBCart.getAll().map(function (i) {
+            return { firestoreId: i.firestoreId, qty: i.qty };
+        });
+
+        fetch('/api/create-checkout', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ items: items }),
+        })
+        .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, data: d }; }); })
+        .then(function (res) {
+            if (!res.ok) {
+                errEl.style.display = 'block';
+                errEl.textContent   = res.data.error || 'Errore durante il checkout. Riprova.';
+                btn.disabled    = false;
+                btn.textContent = 'Procedi al Pagamento →';
+                return;
+            }
+            MBCart.clear();
+            window.location.href = res.data.url;
+        })
+        .catch(function () {
+            errEl.style.display = 'block';
+            errEl.textContent   = 'Errore di rete. Controlla la connessione e riprova.';
+            btn.disabled    = false;
+            btn.textContent = 'Procedi al Pagamento →';
+        });
+    }
+
+    document.addEventListener('click', function (e) {
+        var dec = e.target.closest('[data-qty-dec]');
+        if (dec) {
+            var itemDec = MBCart.getAll().find(function(i){ return i.firestoreId === dec.dataset.qtyDec; });
+            if (itemDec) MBCart.setQty(dec.dataset.qtyDec, itemDec.qty - 1);
+            render(); return;
+        }
+
+        var inc = e.target.closest('[data-qty-inc]');
+        if (inc) {
+            var itemInc = MBCart.getAll().find(function(i){ return i.firestoreId === inc.dataset.qtyInc; });
+            if (itemInc) MBCart.setQty(inc.dataset.qtyInc, itemInc.qty + 1);
+            render(); return;
+        }
+
+        var rem = e.target.closest('[data-remove]');
+        if (rem) { MBCart.remove(rem.dataset.remove); render(); return; }
+    });
+
+    render();
+})();
+</script>
+</body>
+</html>

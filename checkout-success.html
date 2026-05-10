@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ordine Confermato — MANBAGA Comics</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="fonts/fonts.css">
+    <link rel="icon" type="image/png" href="WhatsApp_Image_2026-03-10_at_11.15.27-removebg-preview.png">
+    <style>
+        .success-wrap {
+            max-width: 560px;
+            margin: 100px auto 60px;
+            padding: 0 24px;
+            text-align: center;
+        }
+        .success-icon { font-size: 4rem; margin-bottom: 16px; }
+        .success-wrap h1 {
+            font-family: 'Bangers', sans-serif;
+            font-size: 2.4rem;
+            letter-spacing: .08em;
+            margin-bottom: 12px;
+        }
+        .success-wrap p { color: #6b7280; line-height: 1.6; margin-bottom: 32px; }
+        .success-wrap a.btn {
+            display: inline-block;
+            padding: 12px 32px;
+            background: var(--red);
+            color: #fff;
+            text-decoration: none;
+            font-family: 'Bangers', sans-serif;
+            font-size: 1.1rem;
+            letter-spacing: .08em;
+        }
+        .order-id { font-size: 13px; color: #9ca3af; margin-top: 24px; }
+    </style>
+</head>
+<body>
+<nav id="nav">
+    <div class="nav-inner">
+        <a class="nav-logo" href="index.html">MANBAGA</a>
+    </div>
+</nav>
+
+<div class="success-wrap">
+    <div class="success-icon">&#10003;</div>
+    <h1>Ordine Confermato!</h1>
+    <p>Il pagamento è andato a buon fine. Riceverai una email di conferma con il riepilogo del tuo ordine a breve.<br><br>
+    Grazie per aver acquistato da MANBAGA Comics!</p>
+    <a href="catalogo.html" class="btn">Torna al Catalogo</a>
+    <p class="order-id" id="order-id"></p>
+</div>
+
+<script>
+(function () {
+    var params    = new URLSearchParams(window.location.search);
+    var sessionId = params.get('session_id');
+    if (sessionId) {
+        var shortId = sessionId.slice(-8).toUpperCase();
+        document.getElementById('order-id').textContent = 'Numero ordine: #' + shortId;
+    }
+})();
+</script>
+</body>
+</html>

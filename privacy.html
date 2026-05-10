@@ -258,9 +258,8 @@
             <li><a href="index.html#catalogo">Catalogo</a></li>
             <li><a href="index.html#nuovi-arrivi">Novit&#224;</a></li>
             <li><a href="index.html#eventi">Eventi</a></li>
-            <li><a href="index.html#recensioni">Recensioni</a></li>
             <li><a href="tavoli.html">Tavoli</a></li>
-            <li><a href="cronologia-tornei.html">Cronologia</a></li>
+            <li><a href="chi-siamo.html">Chi Siamo</a></li>
             <li><a href="giocatori.html">Giocatori</a></li>
             <li><a href="index.html#contatti" class="nav-cta">Contatti</a></li>
         </ul>
@@ -285,7 +284,7 @@
             <span style="font-size:20px;flex-shrink:0">📋</span>
             <div>
                 <strong>Informativa sintetica</strong> — Questo sito usa esclusivamente cookie tecnici necessari al funzionamento:
-                prenotazione tavoli (Firebase Auth + Realtime Database), catalogo prodotti, recensioni, preordini, profili giocatore e sondaggi interattivi (Firebase Firestore + Firebase Anonymous Auth), modulo di contatto (EmailJS).
+                prenotazione tavoli (Firebase Auth + Realtime Database), catalogo prodotti, recensioni, preordini, richieste articoli, profili giocatore e sondaggi interattivi (Firebase Firestore + Firebase Anonymous Auth), modulo di contatto (EmailJS).
                 La sezione "Resta sempre aggiornato" controlla automaticamente ogni minuto se il canale Twitch <strong>manbagatv</strong> è in diretta tramite il servizio <strong>decapi.me</strong> (solo indirizzo IP, nessun cookie); il player <strong>Twitch</strong> viene caricato <strong>solo su click esplicito dell'utente</strong> e può impostare propri cookie di sessione funzionali.
                 I font tipografici sono ospitati direttamente sul nostro server — nessuna richiesta a Google Fonts.
                 Non usiamo cookie analitici, pubblicitari o di profilazione. Non vendiamo né cediamo i tuoi dati a terzi per scopi commerciali.
@@ -332,6 +331,19 @@
                 <li><strong>Dati del preordine:</strong> nome, numero di telefono o indirizzo email di contatto, titolo/prodotto richiesto. I dati vengono memorizzati su Firebase Firestore e sono accessibili esclusivamente al titolare tramite il gestionale interno. Non è richiesta registrazione.</li>
             </ul>
 
+            <p style="margin-top:12px"><strong style="color:var(--white)">Richiesta Articoli</strong></p>
+            <ul>
+                <li><strong>Dati della richiesta:</strong> nome, indirizzo email, articolo desiderato e note facoltative. I dati vengono memorizzati su Firebase Firestore e sono accessibili esclusivamente al titolare tramite il gestionale interno. Non è richiesta registrazione. Vengono utilizzati esclusivamente per rispondere alla richiesta entro 24 ore.</li>
+            </ul>
+
+            <p style="margin-top:12px"><strong style="color:var(--white)">Acquisti online e trattamento dati ordini</strong></p>
+            <ul>
+                <li><strong>Dati raccolti:</strong> in fase di acquisto online vengono raccolti nome, indirizzo email e dati di pagamento. I dati di pagamento sono gestiti esclusivamente da Stripe — MANBAGA Comics non accede mai ai dati della carta.</li>
+                <li><strong>Finalità e base giuridica:</strong> i dati sono trattati per eseguire il contratto di vendita (art. 6.1.b GDPR) e per adempiere agli obblighi fiscali e legali (art. 6.1.c GDPR).</li>
+                <li><strong>Conservazione:</strong> i dati degli ordini vengono conservati per 10 anni in ottemperanza agli obblighi fiscali italiani (art. 2220 c.c.).</li>
+                <li><strong>Fornitori terzi:</strong> <em>Stripe</em> (processore pagamenti, USA/EU) — DPA disponibile su stripe.com/legal/dpa; <em>Resend</em> (servizio email transazionale) — DPA disponibile su resend.com/legal/dpa.</li>
+            </ul>
+
             <p style="margin-top:12px"><strong style="color:var(--white)">Profilo Giocatore</strong></p>
             <ul>
                 <li><strong>Dati del profilo:</strong> nome e cognome, nickname (pubblicamente visibile nella pagina Giocatori), formato di gioco preferito e decklist del mazzo attuale (opzionale). I dati vengono memorizzati su Firebase Firestore e sono visibili a tutti i visitatori del sito. È richiesta la registrazione con account Firebase per creare o modificare il proprio profilo.</li>
@@ -361,6 +373,7 @@
                 <li>Visualizzare il catalogo prodotti ed eventi del negozio (dati gestiti internamente, non personali).</li>
                 <li>Rispondere alle richieste di contatto inviate tramite il modulo nella homepage.</li>
                 <li>Ricevere e gestire le richieste di preordine di prodotti, contattare il cliente quando il prodotto è disponibile.</li>
+                <li>Ricevere e gestire le richieste di articoli non presenti in catalogo, verificare la disponibilità e ricontattare il cliente entro 24 ore.</li>
                 <li>Creare e mostrare pubblicamente il profilo giocatore nella sezione Tornei, incluso nickname e mazzo registrato, a fini comunitari e organizzativi.</li>
                 <li>Garantire la sicurezza del servizio e prevenire usi fraudolenti.</li>
             </ul>
@@ -588,45 +601,9 @@
             </ul>
         </div>
 
-        <!-- 8 - Diritti -->
+        <!-- 8 - Sicurezza -->
         <div class="section">
-            <h2 class="section-title"><span class="s-icon">🛡️</span> 8. I Tuoi Diritti (GDPR)</h2>
-            <p>
-                In conformità al Regolamento (UE) 2016/679 (GDPR), hai diritto a:
-            </p>
-            <ul>
-                <li><strong>Accesso (art. 15)</strong> — richiedere copia dei tuoi dati personali in nostro possesso.</li>
-                <li><strong>Rettifica (art. 16)</strong> — correggere dati inesatti o incompleti.</li>
-                <li><strong>Cancellazione (art. 17)</strong> — richiedere l'eliminazione dei tuoi dati ("diritto all'oblio").</li>
-                <li><strong>Limitazione (art. 18)</strong> — richiedere la sospensione temporanea del trattamento.</li>
-                <li><strong>Portabilità (art. 20)</strong> — ricevere i tuoi dati in formato strutturato e leggibile da macchina.</li>
-                <li><strong>Opposizione (art. 21)</strong> — opporsi al trattamento basato su legittimo interesse in qualsiasi momento.</li>
-                <li><strong>Revoca del consenso (art. 7.3)</strong> — ritirare il consenso senza pregiudizio per il trattamento pregresso.</li>
-            </ul>
-            <p>
-                Per esercitare questi diritti scrivi a <a href="mailto:manbagacomics@gmail.com">manbagacomics@gmail.com</a> indicando chiaramente la tua richiesta.
-                Risponderemo entro 30 giorni.
-            </p>
-            <p>
-                Hai inoltre il diritto di proporre reclamo al <strong>Garante per la protezione dei dati personali</strong>
-                (<a href="https://www.garanteprivacy.it" target="_blank" rel="noopener">garanteprivacy.it ↗</a>)
-                qualora ritenga che il trattamento dei tuoi dati violi la normativa vigente.
-            </p>
-        </div>
-
-        <!-- 9 - Minori -->
-        <div class="section">
-            <h2 class="section-title"><span class="s-icon">👶</span> 9. Minori</h2>
-            <p>
-                I servizi del sito sono accessibili a tutti. I minori di 14 anni devono ottenere il consenso
-                di un genitore o tutore legale prima di registrarsi o fornire dati personali,
-                ai sensi dell'art. 8 del GDPR e dell'art. 2-quinquies del Codice Privacy italiano (D.Lgs. 196/2003 e s.m.i.).
-            </p>
-        </div>
-
-        <!-- 10 - Sicurezza -->
-        <div class="section">
-            <h2 class="section-title"><span class="s-icon">🔒</span> 10. Sicurezza dei Dati</h2>
+            <h2 class="section-title"><span class="s-icon">🔒</span> 8. Sicurezza dei Dati</h2>
             <p>
                 Adottiamo misure tecniche e organizzative adeguate per proteggere i dati personali da accessi non autorizzati,
                 perdita o divulgazione accidentale:
@@ -640,9 +617,9 @@
             </ul>
         </div>
 
-        <!-- 11 - Violazioni dei Dati -->
+        <!-- 9 - Violazioni dei Dati -->
         <div class="section">
-            <h2 class="section-title"><span class="s-icon">🚨</span> 11. Violazioni dei Dati Personali (Data Breach)</h2>
+            <h2 class="section-title"><span class="s-icon">🚨</span> 9. Violazioni dei Dati Personali (Data Breach)</h2>
             <p>
                 In caso di violazione dei dati personali (data breach) che possa comportare un rischio per i diritti e le libertà
                 degli interessati, il Titolare notificherà l'accaduto al <strong>Garante per la protezione dei dati personali</strong>
@@ -658,9 +635,9 @@
             </p>
         </div>
 
-        <!-- 12 - Diritti -->
+        <!-- 10 - Diritti -->
         <div class="section">
-            <h2 class="section-title"><span class="s-icon">🛡️</span> 12. I Tuoi Diritti (GDPR)</h2>
+            <h2 class="section-title"><span class="s-icon">🛡️</span> 10. I Tuoi Diritti (GDPR)</h2>
             <p>
                 In conformità al Regolamento (UE) 2016/679 (GDPR), hai diritto a:
             </p>
@@ -684,9 +661,9 @@
             </p>
         </div>
 
-        <!-- 13 - Minori -->
+        <!-- 11 - Minori -->
         <div class="section">
-            <h2 class="section-title"><span class="s-icon">👶</span> 13. Minori</h2>
+            <h2 class="section-title"><span class="s-icon">👶</span> 11. Minori</h2>
             <p>
                 I servizi del sito sono accessibili a tutti. I minori di 14 anni devono ottenere il consenso
                 di un genitore o tutore legale prima di registrarsi o fornire dati personali,
@@ -699,9 +676,9 @@
             </p>
         </div>
 
-        <!-- 14 - Modifiche -->
+        <!-- 12 - Modifiche -->
         <div class="section">
-            <h2 class="section-title"><span class="s-icon">🔄</span> 14. Modifiche alla Policy</h2>
+            <h2 class="section-title"><span class="s-icon">🔄</span> 12. Modifiche alla Policy</h2>
             <p>
                 Ci riserviamo il diritto di aggiornare questa informativa per riflettere eventuali modifiche ai servizi
                 o agli obblighi normativi. Le modifiche sostanziali saranno segnalate tramite un avviso visibile sul sito.
@@ -713,6 +690,8 @@
         </div>
 
     </div>
+
+
 </main>
 
 <footer id="footer">

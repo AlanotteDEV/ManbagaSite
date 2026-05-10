@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir \"C:\\\\Users\\\\germi\\\\ManbagaSite\\\\gestionale\" /s /b)",
+      "WebFetch(domain:www.psacard.com)",
+      "WebFetch(domain:www.graad.eu)",
+      "WebFetch(domain:graad.eu)",
+      "WebFetch(domain:upload.wikimedia.org)",
+      "Bash(powershell -Command \"\\(Get-Content 'C:\\\\Users\\\\germi\\\\ManbagaSite\\\\style.css'\\).Count\")",
+      "mcp__plugin_context-mode_context-mode__ctx_execute_file",
+      "Bash(powershell *)",
+      "Bash(mkdir -p stripe-sample)",
+      "Bash(unzip -o stripe-sample-code.zip -d stripe-sample)",
+      "Bash(npm install)",
+      "mcp__plugin_context-mode_context-mode__ctx_batch_execute",
+      "Bash(rm -f \"C:/Users/germi/ManbagaSite/server.js\" \"C:/Users/germi/ManbagaSite/package.json\" \"C:/Users/germi/ManbagaSite/package-lock.json\" \"C:/Users/germi/ManbagaSite/stripe-sample-code.zip\")",
+      "Bash(mkdir -p \"C:/Users/germi/ManbagaSite/functions\")",
+      "Bash(node --check \"C:/Users/germi/ManbagaSite/functions/index.js\")",
+      "PowerShell(Get-ChildItem \"C:\\\\Users\\\\germi\\\\ManbagaSite\" -Exclude \".git\",\".claude\",\".qodo\" | Where-Object { -not $_.PSIsContainer } | Sort-Object Name | Select-Object Name)",
+      "PowerShell(Get-ChildItem \"C:\\\\Users\\\\germi\\\\ManbagaSite\\\\js\" | ForEach-Object { $_.Name })",
+      "Bash(git add *)",
+      "Bash(git commit *)"
+    ]
+  }
+}

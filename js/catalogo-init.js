@@ -211,6 +211,7 @@ var catPage = (function () {
 
     function _cardHtml(p) {
         var isOos = (p.badge === 'OUT OF STOCK' || p.badge === 'ESAURITO');
+        var isInArrivo = (p.badge === 'IN ARRIVO');
         var html = '<div class="cp-card' + (isOos ? ' cp-card--oos' : '') + '" data-pid="' + p.id + '">';
         html += '<div class="product-badge" data-badge="' + (p.badge || 'Disponibile') + '">' + (p.badge || 'Disponibile') + '</div>';
         html += '<div class="cp-card-img-wrap">'
@@ -222,7 +223,19 @@ var catPage = (function () {
             + '<div class="cp-card-title">' + _esc(p.title) + '</div>';
         if (p.volume) html += '<div class="cp-card-vol">' + _esc(p.volume) + '</div>';
         if (p.price)  html += '<div class="cp-card-price">' + _esc(p.price) + '</div>';
-        html += '</div></div>';
+        html += '</div>'; /* close cp-card-body */
+        if (!isOos && !isInArrivo) {
+            html += '<button class="cp-card-cart-btn"'
+                + ' data-cart-add="' + (p.firestoreId || p.id) + '"'
+                + ' data-cart-title="' + _esc(p.title) + '"'
+                + ' data-cart-price="' + _esc(p.price || '') + '"'
+                + ' data-cart-image="' + _esc(p.image || '') + '"'
+                + ' data-cart-maxqty="' + (parseInt(p.quantity) || 99) + '"'
+                + ' title="Aggiungi al carrello">'
+                + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 001.95-1.56l1.65-7.44H6"/></svg>'
+                + '</button>';
+        }
+        html += '</div>'; /* close cp-card */
         return html;
     }
 
@@ -581,6 +594,24 @@ document.addEventListener('DOMContentLoaded', function () {
         /* Pagination → goPage */
         var pagBtn = e.target.closest('#cp-pagination .cp-pag-btn[data-page]');
         if (pagBtn && !pagBtn.disabled) { catPage.goPage(parseInt(pagBtn.dataset.page, 10)); return; }
+
+        /* Add to cart — card e modal */
+        var cartAddBtn = e.target.closest('[data-cart-add]');
+        if (cartAddBtn && typeof MBCart !== 'undefined') {
+            e.stopPropagation();
+            var ds = cartAddBtn.dataset;
+            MBCart.add({
+                firestoreId: ds.cartAdd,
+                title:       ds.cartTitle || ds.cartAdd,
+                image:       ds.cartImage || '',
+                price:       ds.cartPrice || '',
+                maxQty:      parseInt(ds.cartMaxqty) || 99,
+            });
+            var origHtml = cartAddBtn.innerHTML;
+            cartAddBtn.textContent = '✓';
+            setTimeout(function () { cartAddBtn.innerHTML = origHtml; }, 1200);
+            return;
+        }
 
         /* Product card → openProductModal */
         var card = e.target.closest('.cp-card[data-pid]');

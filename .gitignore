@@ -1,0 +1,9 @@
+.env
+.env.local
+node_modules/
+stripe-sample/
+functions/node_modules/
+functions/.env
+
+.vercel
+.env*.local
