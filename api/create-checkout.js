@@ -29,7 +29,13 @@ module.exports = async function handler(req, res) {
     if (!Array.isArray(items) || items.length === 0)
         return res.status(400).json({ error: 'Carrello vuoto' });
 
-    const db = getDb();
+    if (!process.env.FIREBASE_CLIENT_EMAIL) return res.status(500).json({ error: 'ENV MANCANTE: FIREBASE_CLIENT_EMAIL' });
+    if (!process.env.FIREBASE_PROJECT_ID)   return res.status(500).json({ error: 'ENV MANCANTE: FIREBASE_PROJECT_ID' });
+    if (!process.env.FIREBASE_PRIVATE_KEY)  return res.status(500).json({ error: 'ENV MANCANTE: FIREBASE_PRIVATE_KEY' });
+    if (!process.env.STRIPE_SECRET_KEY)     return res.status(500).json({ error: 'ENV MANCANTE: STRIPE_SECRET_KEY' });
+
+    let db;
+    try { db = getDb(); } catch(e) { return res.status(500).json({ error: 'Firebase init error: ' + e.message }); }
     const lineItems = [];
     const validatedItems = [];
 
