@@ -70,7 +70,7 @@ module.exports = async function handler(req, res) {
         validatedItems.push({ firestoreId: item.firestoreId, title: p.title, qty: item.qty, unitAmount });
     }
 
-    const origin = process.env.SITE_ORIGIN || 'https://manbaga-site.vercel.app';
+    const origin = (process.env.SITE_ORIGIN || 'https://manbagacomicsandgames.vercel.app').replace(/\/$/, '');
 
     const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
