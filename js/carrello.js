@@ -80,6 +80,61 @@
                 + '</div>';
         }
 
+        /* ── Personaggio manga SVG ── */
+        var mangaChar = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 118" fill="none" class="manga-char-svg" aria-hidden="true">'
+            /* capelli spike */
+            + '<path d="M12 32 L8 8 L20 21 L25 4 L33 19 L38 1 L43 19 L51 4 L56 21 L65 9 L62 33" fill="#0d0d0d"/>'
+            /* testa */
+            + '<ellipse cx="38" cy="40" rx="24" ry="22" fill="#f5f0e8" stroke="#0d0d0d" stroke-width="2"/>'
+            /* occhio sinistro */
+            + '<ellipse cx="28" cy="38" rx="7" ry="8" fill="#0d0d0d"/>'
+            + '<ellipse cx="26" cy="35" rx="2.5" ry="3" fill="white"/>'
+            + '<circle cx="27" cy="36" r="1" fill="white"/>'
+            /* occhio destro */
+            + '<ellipse cx="48" cy="38" rx="7" ry="8" fill="#0d0d0d"/>'
+            + '<ellipse cx="46" cy="35" rx="2.5" ry="3" fill="white"/>'
+            + '<circle cx="47" cy="36" r="1" fill="white"/>'
+            /* sopracciglia animate */
+            + '<path d="M21 27 Q28 23 34 28" stroke="#0d0d0d" fill="none" stroke-width="2" stroke-linecap="round"/>'
+            + '<path d="M42 28 Q48 23 55 27" stroke="#0d0d0d" fill="none" stroke-width="2" stroke-linecap="round"/>'
+            /* rossori */
+            + '<ellipse cx="15" cy="45" rx="6" ry="3" fill="#DC2626" opacity="0.28"/>'
+            + '<ellipse cx="61" cy="45" rx="6" ry="3" fill="#DC2626" opacity="0.28"/>'
+            /* bocca entusiasta */
+            + '<path d="M31 52 Q38 59 45 52" stroke="#0d0d0d" stroke-width="2" fill="rgba(220,38,38,.45)" stroke-linecap="round"/>'
+            /* collo */
+            + '<rect x="32" y="60" width="12" height="8" fill="#f5f0e8" stroke="#0d0d0d" stroke-width="1.5"/>'
+            /* corpo */
+            + '<rect x="15" y="66" width="46" height="34" rx="7" fill="#f5f0e8" stroke="#0d0d0d" stroke-width="2"/>'
+            /* colletto V rosso */
+            + '<path d="M30 66 L38 79 L46 66" stroke="#DC2626" fill="none" stroke-width="2"/>'
+            /* braccio sinistro */
+            + '<path d="M16 76 L2 68 L4 74 L19 82 Z" fill="#f5f0e8" stroke="#0d0d0d" stroke-width="1.5"/>'
+            /* braccio destro che punta IN BASSO verso il pulsante */
+            + '<path d="M59 73 Q68 88 70 105" stroke="#0d0d0d" stroke-width="7" stroke-linecap="round" fill="none"/>'
+            + '<path d="M59 73 Q68 88 70 105" stroke="#f5f0e8" stroke-width="4.5" stroke-linecap="round" fill="none"/>'
+            /* dito che punta */
+            + '<circle cx="70" cy="108" r="5.5" fill="#f5f0e8" stroke="#0d0d0d" stroke-width="2"/>'
+            + '<line x1="70" y1="113" x2="72" y2="118" stroke="#0d0d0d" stroke-width="2.5" stroke-linecap="round"/>'
+            /* gambe */
+            + '<rect x="18" y="97" width="15" height="14" rx="5" fill="#f5f0e8" stroke="#0d0d0d" stroke-width="2"/>'
+            + '<rect x="43" y="97" width="15" height="14" rx="5" fill="#f5f0e8" stroke="#0d0d0d" stroke-width="2"/>'
+            /* scarpe */
+            + '<ellipse cx="25" cy="111" rx="11" ry="5" fill="#0d0d0d"/>'
+            + '<ellipse cx="50" cy="111" rx="11" ry="5" fill="#0d0d0d"/>'
+            /* linee azione */
+            + '<line x1="63" y1="12" x2="70" y2="5" stroke="#DC2626" stroke-width="1.5" stroke-linecap="round"/>'
+            + '<line x1="66" y1="19" x2="74" y2="17" stroke="#DC2626" stroke-width="1.5" stroke-linecap="round"/>'
+            + '<line x1="59" y1="7" x2="63" y2="0" stroke="#DC2626" stroke-width="1" stroke-linecap="round"/>'
+            /* punto esclamativo */
+            + '<text x="1" y="17" font-family="Impact,Arial,sans-serif" font-size="15" font-weight="bold" fill="#DC2626">!</text>'
+            + '</svg>';
+
+        var mangaSpeech = '<div class="manga-speech">'
+            + '<div class="manga-speech-text">Cosa aspetti?!</div>'
+            + '<span class="manga-speech-sub">&#9889; Clicca e paga!</span>'
+            + '</div>';
+
         root.innerHTML = '<div class="cart-layout">'
             + '<div>'
             + '<div class="cart-items-list">' + cards + '</div>'
@@ -94,7 +149,7 @@
             + '<div class="cart-summary-row">'
             + '<span>Spedizione</span>'
             + (shipping === 0
-                ? '<span style="color:#22c55e;font-weight:700">Gratuita &#10003;</span>'
+                ? '<span style="color:#15803d;font-weight:700">Gratuita &#10003;</span>'
                 : '<span>&euro;' + shipping.toFixed(2) + '</span>')
             + '</div>'
             + (shipping > 0
@@ -111,6 +166,8 @@
             + '<span>&euro;' + total.toFixed(2) + '</span>'
             + '</div>'
             + couponHtml
+            + '<div class="manga-cta">'
+            + '<div class="manga-cta-header">' + mangaChar + mangaSpeech + '</div>'
             + '<div class="cart-legal">'
             + '<label><input type="checkbox" id="accept-terms"> '
             + 'Ho letto e accetto le <a href="condizioni-vendita.html" target="_blank">condizioni di vendita</a> e la <a href="privacy.html" target="_blank">privacy policy</a>.'
@@ -122,8 +179,9 @@
             + 'Procedi al Pagamento'
             + '</button>'
             + '<div class="cart-secure-badge">'
-            + '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>'
+            + '<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>'
             + 'Pagamento sicuro SSL &mdash; Stripe'
+            + '</div>'
             + '</div>'
             + '</div>'
             + '</div>';

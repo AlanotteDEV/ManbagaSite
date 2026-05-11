@@ -7834,87 +7834,108 @@ textarea.form-input {
 }
 .cart-remove-btn:hover { color: #f87171; background: rgba(248,113,113,.1); }
 
-/* ── Pannello riepilogo ── */
+/* ── Pannello riepilogo — TAVOLA MANGA ── */
 .cart-summary {
-    background: linear-gradient(160deg, #1d1d1d 0%, #171717 100%);
-    border: 1px solid rgba(245,240,232,.1);
-    border-radius: 18px;
-    padding: 24px 22px;
+    background: #f5f0e8;
+    border: 3px solid #0d0d0d;
+    border-radius: 2px;
+    padding: 22px 20px 18px;
     position: sticky;
     top: 90px;
-    box-shadow: 0 8px 32px rgba(0,0,0,.4);
+    box-shadow: 7px 7px 0 #0d0d0d;
+    color: #1a1a1a;
+    overflow: hidden;
 }
+/* Retino halftone */
+.cart-summary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(0,0,0,0.055) 1.2px, transparent 1.2px);
+    background-size: 9px 9px;
+    pointer-events: none;
+    z-index: 0;
+}
+.cart-summary > * { position: relative; z-index: 1; }
+
 .cart-summary-title {
     font-family: 'Bangers', sans-serif;
-    font-size: 1.25rem;
-    letter-spacing: .07em;
-    color: var(--white);
-    margin-bottom: 18px;
-    padding-bottom: 14px;
-    border-bottom: 1px solid rgba(245,240,232,.07);
+    font-size: 1.2rem;
+    letter-spacing: .08em;
+    color: #0d0d0d;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 2.5px solid #0d0d0d;
 }
 .cart-summary-row {
     display: flex;
     justify-content: space-between;
     font-size: 13px;
-    color: rgba(245,240,232,.55);
-    margin-bottom: 9px;
+    color: rgba(0,0,0,.55);
+    margin-bottom: 8px;
     line-height: 1.4;
 }
 .cart-summary-row.total {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     font-weight: 800;
-    color: var(--white);
-    margin-top: 14px;
-    padding-top: 14px;
-    border-top: 1px solid rgba(245,240,232,.08);
+    color: #0d0d0d;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 2.5px solid #0d0d0d;
     margin-bottom: 0;
 }
 .cart-summary-row.total span:last-child {
-    color: var(--red);
+    color: #DC2626;
     font-family: 'Bangers', sans-serif;
-    font-size: 1.4rem;
+    font-size: 1.45rem;
     letter-spacing: .04em;
 }
-.cart-item-price { color: var(--red); font-weight: 700; }
+.cart-summary-row.discount span:first-child { color: rgba(0,0,0,.6); }
+.cart-summary-row.discount span:last-child  { color: #15803d; font-weight: 700; }
+.cart-item-price { color: #DC2626; font-weight: 700; }
 
 .cart-legal {
-    font-size: 11.5px;
-    color: rgba(245,240,232,.35);
+    font-size: 11px;
+    color: rgba(245,240,232,.55);
     line-height: 1.5;
-    margin: 16px 0 12px;
+    margin: 12px 0 10px;
 }
-.cart-legal a { color: rgba(245,240,232,.6); text-decoration: underline; }
+.cart-legal a { color: rgba(245,240,232,.75); text-decoration: underline; }
 .cart-legal label { display: flex; align-items: flex-start; gap: 8px; cursor: pointer; }
-.cart-legal input[type="checkbox"] { margin-top: 3px; accent-color: var(--red); flex-shrink: 0; }
+.cart-legal input[type="checkbox"] { margin-top: 3px; accent-color: #DC2626; flex-shrink: 0; }
 
 .cart-checkout-btn {
     width: 100%;
-    padding: 15px 20px;
-    background: linear-gradient(135deg, #DC2626 0%, #b91c1c 100%);
+    padding: 15px 16px;
+    background: linear-gradient(135deg, #DC2626 0%, #9b1c1c 100%);
     color: #fff;
-    border: none;
-    border-radius: 12px;
+    border: 2.5px solid #0d0d0d;
+    border-radius: 3px;
     font-family: 'Bangers', sans-serif;
     font-size: 1.15rem;
     letter-spacing: .1em;
     cursor: pointer;
-    transition: transform .15s, box-shadow .15s, filter .15s;
+    transition: transform .1s, box-shadow .1s;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    box-shadow: 0 4px 16px rgba(220,38,38,.35);
+    box-shadow: 4px 4px 0 #0d0d0d;
+    text-shadow: 1px 1px 0 rgba(0,0,0,.35);
+    margin-top: 4px;
 }
 .cart-checkout-btn:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(220,38,38,.45);
-    filter: brightness(1.08);
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 #0d0d0d;
 }
-.cart-checkout-btn:active:not(:disabled) { transform: translateY(0); }
+.cart-checkout-btn:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 #0d0d0d;
+}
 .cart-checkout-btn:disabled {
-    background: linear-gradient(135deg,#374151,#2d3748);
-    box-shadow: none; cursor: default;
+    background: linear-gradient(135deg,#4b5563,#374151);
+    box-shadow: 3px 3px 0 rgba(0,0,0,.5);
+    cursor: default;
 }
 
 .cart-secure-badge {
@@ -7922,21 +7943,21 @@ textarea.form-input {
     align-items: center;
     justify-content: center;
     gap: 5px;
-    margin-top: 10px;
-    font-size: 11px;
-    color: rgba(245,240,232,.3);
+    margin-top: 8px;
+    font-size: 10px;
+    color: rgba(245,240,232,.38);
 }
 .cart-secure-badge svg { opacity: .5; }
 
 .cart-error {
-    background: rgba(220,38,38,.1);
-    border: 1px solid rgba(220,38,38,.25);
-    border-radius: 8px;
+    background: rgba(220,38,38,.12);
+    border: 1px solid rgba(220,38,38,.3);
+    border-radius: 5px;
     color: #fca5a5;
-    font-size: 12px;
+    font-size: 11.5px;
     font-weight: 500;
-    padding: 10px 12px;
-    margin-top: 10px;
+    padding: 8px 10px;
+    margin-top: 8px;
     line-height: 1.5;
 }
 
@@ -7945,14 +7966,69 @@ textarea.form-input {
     align-items: center;
     gap: 6px;
     font-size: 11px;
-    color: #4ade80;
-    background: rgba(34,197,94,.07);
-    border: 1px solid rgba(34,197,94,.18);
-    border-radius: 8px;
-    padding: 7px 10px;
+    color: #15803d;
+    background: rgba(21,128,61,.08);
+    border: 1px solid rgba(21,128,61,.22);
+    border-radius: 5px;
+    padding: 6px 10px;
     margin-bottom: 6px;
 }
-.cart-free-shipping-hint::before { content: '🚚'; font-size: 13px; }
+.cart-free-shipping-hint::before { content: '🚚'; font-size: 12px; }
+
+/* ── Manga CTA — pannello con personaggio ── */
+.manga-cta {
+    background: #0d0d0d;
+    border: 2px solid #0d0d0d;
+    border-radius: 4px;
+    padding: 14px 14px 12px;
+    margin-top: 16px;
+}
+.manga-cta-header {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    margin-bottom: 10px;
+    min-height: 80px;
+}
+.manga-char-svg {
+    width: 72px;
+    min-width: 72px;
+    overflow: visible;
+}
+.manga-speech {
+    flex: 1;
+    background: #f5f0e8;
+    border: 2px solid #f5f0e8;
+    border-radius: 10px 10px 10px 4px;
+    padding: 9px 11px;
+    position: relative;
+    align-self: flex-start;
+    margin-top: 4px;
+}
+.manga-speech::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 12px;
+    border-left: 8px solid transparent;
+    border-right: 2px solid transparent;
+    border-top: 10px solid #f5f0e8;
+}
+.manga-speech-text {
+    font-family: 'Bangers', sans-serif;
+    font-size: 1.05rem;
+    letter-spacing: .05em;
+    color: #0d0d0d;
+    line-height: 1.2;
+}
+.manga-speech-sub {
+    display: block;
+    font-family: 'Bangers', sans-serif;
+    font-size: 11px;
+    color: #DC2626;
+    letter-spacing: .04em;
+    margin-top: 3px;
+}
 
 /* Tabella vecchia (compat) */
 .cart-table { display: none; }
@@ -7965,30 +8041,31 @@ textarea.form-input {
 }
 .cart-coupon {
     margin: 14px 0 4px;
-    padding: 14px 16px;
-    background: rgba(255,255,255,.03);
-    border: 1px solid rgba(245,240,232,.1);
-    border-radius: 10px;
+    padding: 12px 14px;
+    background: rgba(0,0,0,.06);
+    border: 1.5px solid rgba(0,0,0,.15);
+    border-radius: 6px;
 }
 .cart-coupon--applied {
-    background: rgba(34,197,94,.06);
-    border-color: rgba(34,197,94,.25);
+    background: rgba(21,128,61,.08);
+    border-color: rgba(21,128,61,.3);
 }
 .cart-coupon-title {
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: .08em;
-    color: rgba(245,240,232,.45);
-    margin-bottom: 10px;
+    color: rgba(0,0,0,.45);
+    margin-bottom: 9px;
 }
-.cart-coupon-row { display: flex; gap: 8px; }
+.cart-coupon-row { display: flex; gap: 8px; flex-wrap: wrap; }
 .cart-coupon-input {
     flex: 1;
-    background: rgba(255,255,255,.06);
-    border: 1px solid rgba(245,240,232,.15);
-    border-radius: 7px;
-    color: var(--cream);
-    padding: 9px 12px;
+    min-width: 110px;
+    background: rgba(255,255,255,.7);
+    border: 1.5px solid rgba(0,0,0,.2);
+    border-radius: 5px;
+    color: #0d0d0d;
+    padding: 8px 11px;
     font-size: 13px;
     text-transform: uppercase;
     letter-spacing: .05em;
@@ -7996,22 +8073,23 @@ textarea.form-input {
     transition: border-color .2s;
     font-family: inherit;
 }
-.cart-coupon-input::placeholder { color: rgba(245,240,232,.3); text-transform: none; letter-spacing: normal; }
-.cart-coupon-input:focus { border-color: rgba(245,240,232,.4); }
+.cart-coupon-input::placeholder { color: rgba(0,0,0,.3); text-transform: none; letter-spacing: normal; }
+.cart-coupon-input:focus { border-color: rgba(0,0,0,.5); }
 .cart-coupon-btn {
-    background: rgba(245,240,232,.1);
-    border: 1px solid rgba(245,240,232,.2);
-    border-radius: 7px;
-    color: var(--cream);
-    padding: 9px 16px;
+    background: #0d0d0d;
+    border: 1.5px solid #0d0d0d;
+    border-radius: 5px;
+    color: #f5f0e8;
+    padding: 8px 14px;
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
-    transition: background .2s;
+    transition: background .15s;
     white-space: nowrap;
     font-family: inherit;
+    flex-shrink: 0;
 }
-.cart-coupon-btn:hover:not(:disabled) { background: rgba(245,240,232,.18); }
+.cart-coupon-btn:hover:not(:disabled) { background: #2a2a2a; }
 .cart-coupon-btn:disabled { opacity: .45; cursor: default; }
 .cart-coupon-msg {
     margin-top: 8px;
@@ -8045,11 +8123,11 @@ textarea.form-input {
     font-weight: 700;
     letter-spacing: .06em;
     font-family: monospace;
-    color: var(--cream);
+    color: #0d0d0d;
 }
 .cart-coupon-applied-label {
     font-size: 11px;
-    color: #22c55e;
+    color: #15803d;
     margin-top: 2px;
 }
 .cart-remove-coupon {
@@ -8068,9 +8146,9 @@ textarea.form-input {
 .cart-summary-row.discount span:last-child  { color: #22c55e; font-weight: 700; }
 .cart-coupon-pill {
     display: inline-block;
-    background: rgba(34,197,94,.12);
-    border: 1px solid rgba(34,197,94,.25);
-    color: #22c55e;
+    background: rgba(21,128,61,.1);
+    border: 1px solid rgba(21,128,61,.3);
+    color: #15803d;
     font-size: 11px;
     font-weight: 700;
     letter-spacing: .05em;
