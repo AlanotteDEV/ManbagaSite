@@ -1,17 +1,19 @@
-const stripe    = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { Resend } = require('resend');
 const { initializeApp, cert, getApps } = require('firebase-admin/app');
-const { getFirestore, FieldValue }     = require('firebase-admin/firestore');
+const { getFirestore, FieldValue } = require('firebase-admin/firestore');
 
 /* Disabilita body parser Vercel — Stripe ha bisogno del raw body per verificare la firma */
 
 function getDb() {
     if (!getApps().length) {
-        initializeApp({ credential: cert({
-            projectId:   process.env.FIREBASE_PROJECT_ID,
-            clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-            privateKey:  (process.env.FIREBASE_PRIVATE_KEY || '').replace(/\\n/g, '\n'),
-        })});
+        initializeApp({
+            credential: cert({
+                projectId: process.env.FIREBASE_PROJECT_ID,
+                clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+                privateKey: (process.env.FIREBASE_PRIVATE_KEY || '').replace(/\\n/g, '\n'),
+            })
+        });
     }
     return getFirestore();
 }
@@ -20,15 +22,15 @@ async function getRawBody(req) {
     return new Promise(function (resolve, reject) {
         var chunks = [];
         req.on('data', function (c) { chunks.push(c); });
-        req.on('end',  function ()  { resolve(Buffer.concat(chunks)); });
+        req.on('end', function () { resolve(Buffer.concat(chunks)); });
         req.on('error', reject);
     });
 }
 
 async function sendConfirmationEmail(session, items) {
-    var resend  = new Resend(process.env.RESEND_API_KEY);
+    var resend = new Resend(process.env.RESEND_API_KEY);
     var orderId = session.id.slice(-8).toUpperCase();
-    var total   = (session.amount_total / 100).toFixed(2);
+    var total = (session.amount_total / 100).toFixed(2);
 
     var rowsHtml = items.map(function (item) {
         var unitPrice = (item.unitAmount / 100).toFixed(2);
@@ -45,8 +47,8 @@ async function sendConfirmationEmail(session, items) {
     var customerEmail = session.customer_details.email;
 
     await resend.emails.send({
-        from:    'MANBAGA Comics <onboarding@resend.dev>',
-        to:      'pumagerm10@gmail.com',
+        from: 'MANBAGA Comics <onboarding@resend.dev>',
+        to: process.env.RESEND_TEST_EMAIL || 'manbagacomics@gmail.com',
         subject: 'Ordine #' + orderId + ' confermato — MANBAGA Comics',
         html: '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="font-family:Arial,sans-serif;background:#f9fafb;margin:0;padding:20px">'
             + '<div style="max-width:600px;margin:0 auto;background:#fff;border-radius:4px;overflow:hidden">'
@@ -83,7 +85,7 @@ module.exports = async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).end();
 
     const rawBody = await getRawBody(req);
-    const sig     = req.headers['stripe-signature'];
+    const sig = req.headers['stripe-signature'];
     let event;
 
     try {
@@ -98,7 +100,7 @@ module.exports = async function handler(req, res) {
     }
 
     const session = event.data.object;
-    const db      = getDb();
+    const db = getDb();
 
     /* Leggi items validati salvati al momento del checkout */
     const pendingDoc = await db.collection('pending_checkouts').doc(session.id).get();
@@ -111,12 +113,12 @@ module.exports = async function handler(req, res) {
     /* Salva ordine */
     await db.collection('orders').doc(session.id).set({
         stripeSessionId: session.id,
-        customerEmail:   session.customer_details.email,
-        customerName:    (session.customer_details && session.customer_details.name) || '',
-        items:           items,
-        total:           session.amount_total / 100,
-        status:          'paid',
-        createdAt:       FieldValue.serverTimestamp(),
+        customerEmail: session.customer_details.email,
+        customerName: (session.customer_details && session.customer_details.name) || '',
+        items: items,
+        total: session.amount_total / 100,
+        status: 'paid',
+        createdAt: FieldValue.serverTimestamp(),
     });
 
     /* Decrementa stock con batch atomico per ogni prodotto */
