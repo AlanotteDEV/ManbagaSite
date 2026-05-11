@@ -4,7 +4,6 @@ const { initializeApp, cert, getApps } = require('firebase-admin/app');
 const { getFirestore, FieldValue }     = require('firebase-admin/firestore');
 
 /* Disabilita body parser Vercel — Stripe ha bisogno del raw body per verificare la firma */
-module.exports.config = { api: { bodyParser: false } };
 
 function getDb() {
     if (!getApps().length) {
@@ -46,7 +45,7 @@ async function sendConfirmationEmail(session, items) {
     var customerEmail = session.customer_details.email;
 
     await resend.emails.send({
-        from:    'MANBAGA Comics <ordini@manbaga.it>',
+        from:    'MANBAGA Comics <onboarding@resend.dev>',
         to:      customerEmail,
         subject: 'Ordine #' + orderId + ' confermato — MANBAGA Comics',
         html: '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="font-family:Arial,sans-serif;background:#f9fafb;margin:0;padding:20px">'
@@ -141,3 +140,5 @@ module.exports = async function handler(req, res) {
 
     return res.status(200).json({ received: true });
 };
+
+module.exports.config = { api: { bodyParser: false } };
