@@ -25,7 +25,7 @@ function parsePrice(priceStr) {
 module.exports = async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-    const { items, shipping: shippingRaw } = req.body || {};
+    const { items, shipping: shippingRaw, couponCode } = req.body || {};
     if (!Array.isArray(items) || items.length === 0)
         return res.status(400).json({ error: 'Carrello vuoto' });
     const shippingCost = (typeof shippingRaw === 'number' && shippingRaw >= 0) ? shippingRaw : null;
@@ -37,7 +37,8 @@ module.exports = async function handler(req, res) {
 
     let db;
     try { db = getDb(); } catch(e) { return res.status(500).json({ error: 'Firebase init error: ' + e.message }); }
-    const lineItems = [];
+
+    const lineItems      = [];
     const validatedItems = [];
 
     for (const item of items) {
@@ -86,24 +87,73 @@ module.exports = async function handler(req, res) {
         });
     }
 
-    const host = req.headers['x-forwarded-host'] || req.headers.host || '';
-    const proto = req.headers['x-forwarded-proto'] || 'https';
+    /* Coupon sconto — validazione server-side */
+    let stripeCouponId   = null;
+    let couponFirestoreId = null;
+    let discountCents    = 0;
+
+    if (couponCode && typeof couponCode === 'string' && couponCode.trim()) {
+        const normalized = couponCode.trim().toUpperCase();
+        const snap = await db.collection('coupons')
+            .where('code', '==', normalized)
+            .where('status', '==', 'attivo')
+            .limit(1)
+            .get();
+
+        if (!snap.empty) {
+            const couponDoc  = snap.docs[0];
+            const couponData = couponDoc.data();
+
+            /* Controlla scadenza */
+            let expired = false;
+            if (couponData.expiresAt) {
+                const expiry = couponData.expiresAt.toDate ? couponData.expiresAt.toDate() : new Date(couponData.expiresAt);
+                if (expiry < new Date()) expired = true;
+            }
+
+            if (!expired) {
+                const totalCents  = subtotalCents + shippingCents;
+                discountCents     = Math.min(Math.round(couponData.amount * 100), totalCents);
+                couponFirestoreId = couponDoc.id;
+
+                /* Crea coupon Stripe monouso per questo checkout */
+                const sc = await stripe.coupons.create({
+                    amount_off:      discountCents,
+                    currency:        'eur',
+                    duration:        'once',
+                    name:            `Sconto ${normalized}`,
+                    max_redemptions: 1,
+                });
+                stripeCouponId = sc.id;
+            }
+        }
+        /* Se coupon non trovato/scaduto, si procede senza sconto (non bloccare il checkout) */
+    }
+
+    const host   = req.headers['x-forwarded-host'] || req.headers.host || '';
+    const proto  = req.headers['x-forwarded-proto'] || 'https';
     const origin = host ? `${proto}://${host}` : (process.env.SITE_ORIGIN || 'https://manbagacomicsandgames.vercel.app').replace(/\/$/, '');
 
-    const session = await stripe.checkout.sessions.create({
+    const sessionParams = {
         payment_method_types: ['card'],
-        line_items:   lineItems,
-        mode:         'payment',
-        customer_creation: 'always',
-        locale:       'it',
-        success_url:  `${origin}/checkout-success.html?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url:   `${origin}/carrello.html`,
-    });
+        line_items:           lineItems,
+        mode:                 'payment',
+        customer_creation:    'always',
+        locale:               'it',
+        success_url:          `${origin}/checkout-success.html?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url:           `${origin}/carrello.html`,
+    };
+    if (stripeCouponId) {
+        sessionParams.discounts = [{ coupon: stripeCouponId }];
+    }
 
-    /* Salva items validati per il webhook (decremento stock) */
+    const session = await stripe.checkout.sessions.create(sessionParams);
+
+    /* Salva items e coupon per il webhook */
     await db.collection('pending_checkouts').doc(session.id).set({
-        items:     validatedItems,
-        createdAt: new Date(),
+        items:             validatedItems,
+        couponFirestoreId: couponFirestoreId || null,
+        createdAt:         new Date(),
     });
 
     return res.status(200).json({ url: session.url });

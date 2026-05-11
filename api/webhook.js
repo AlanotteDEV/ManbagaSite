@@ -108,7 +108,7 @@ module.exports = async function handler(req, res) {
         console.error('pending_checkout non trovato per session:', session.id);
         return res.status(200).json({ received: true });
     }
-    const { items } = pendingDoc.data();
+    const { items, couponFirestoreId } = pendingDoc.data();
 
     /* Salva ordine */
     await db.collection('orders').doc(session.id).set({
@@ -117,16 +117,23 @@ module.exports = async function handler(req, res) {
         customerName: (session.customer_details && session.customer_details.name) || '',
         items: items,
         total: session.amount_total / 100,
+        couponFirestoreId: couponFirestoreId || null,
         status: 'paid',
         createdAt: FieldValue.serverTimestamp(),
     });
 
-    /* Decrementa stock con batch atomico per ogni prodotto */
+    /* Decrementa stock e marca coupon usato in batch atomico */
     const batch = db.batch();
     items.forEach(function (item) {
         var ref = db.collection('products').doc(item.firestoreId);
         batch.update(ref, { quantity: FieldValue.increment(-item.qty) });
     });
+    if (couponFirestoreId) {
+        batch.update(db.collection('coupons').doc(couponFirestoreId), {
+            status: 'usato',
+            usedAt: FieldValue.serverTimestamp(),
+        });
+    }
     await batch.commit();
 
     /* Elimina pending_checkout */

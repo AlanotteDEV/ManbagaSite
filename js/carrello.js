@@ -1,5 +1,6 @@
 (function () {
     var root = document.getElementById('cart-root');
+    var appliedCoupon = null; /* { code, firestoreId, amount } */
 
     function esc(str) {
         return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -13,6 +14,7 @@
     function render() {
         var items = MBCart.getAll();
         if (items.length === 0) {
+            appliedCoupon = null;
             root.innerHTML = '<div class="cart-empty">'
                 + '<span class="cart-empty-icon">&#128722;</span>'
                 + '<p>Il carrello è vuoto.</p>'
@@ -24,10 +26,11 @@
         var SHIPPING_COST      = 5.90;
         var FREE_SHIPPING_OVER = 50.00;
 
-        var itemCount    = items.reduce(function(s, i) { return s + i.qty; }, 0);
-        var subtotal     = items.reduce(function(s, i) { return s + priceNum(i.price) * i.qty; }, 0);
-        var shipping     = subtotal >= FREE_SHIPPING_OVER ? 0 : SHIPPING_COST;
-        var total        = subtotal + shipping;
+        var itemCount = items.reduce(function(s, i) { return s + i.qty; }, 0);
+        var subtotal  = items.reduce(function(s, i) { return s + priceNum(i.price) * i.qty; }, 0);
+        var shipping  = subtotal >= FREE_SHIPPING_OVER ? 0 : SHIPPING_COST;
+        var discount  = appliedCoupon ? Math.min(appliedCoupon.amount, subtotal + shipping) : 0;
+        var total     = subtotal + shipping - discount;
 
         var cards = items.map(function (item) {
             var sub = (priceNum(item.price) * item.qty).toFixed(2);
@@ -49,10 +52,33 @@
 
         var summaryRows = items.map(function(item) {
             return '<div class="cart-summary-row">'
-                + '<span>' + item.title + ' &times;' + item.qty + '</span>'
+                + '<span>' + esc(item.title) + ' &times;' + item.qty + '</span>'
                 + '<span>&euro;' + (priceNum(item.price) * item.qty).toFixed(2) + '</span>'
                 + '</div>';
         }).join('');
+
+        var couponHtml;
+        if (appliedCoupon) {
+            couponHtml = '<div class="cart-coupon cart-coupon--applied">'
+                + '<div class="cart-coupon-applied-row">'
+                + '<span class="cart-coupon-check">&#10003;</span>'
+                + '<div class="cart-coupon-applied-info">'
+                + '<div class="cart-coupon-applied-code">' + esc(appliedCoupon.code) + '</div>'
+                + '<div class="cart-coupon-applied-label">Sconto di &euro;' + discount.toFixed(2) + ' applicato</div>'
+                + '</div>'
+                + '<button class="cart-remove-coupon" id="remove-coupon-btn" title="Rimuovi coupon">&times;</button>'
+                + '</div>'
+                + '</div>';
+        } else {
+            couponHtml = '<div class="cart-coupon">'
+                + '<div class="cart-coupon-title">Hai un codice sconto?</div>'
+                + '<div class="cart-coupon-row">'
+                + '<input type="text" class="cart-coupon-input" id="coupon-input" placeholder="Es. MANGA10" autocomplete="off" spellcheck="false">'
+                + '<button class="cart-coupon-btn" id="apply-coupon-btn">Applica</button>'
+                + '</div>'
+                + '<div class="cart-coupon-msg" id="coupon-msg"></div>'
+                + '</div>';
+        }
 
         root.innerHTML = '<div class="cart-layout">'
             + '<div>'
@@ -61,22 +87,30 @@
             + '<div class="cart-summary">'
             + '<div class="cart-summary-title">Riepilogo ordine</div>'
             + summaryRows
+            + '<div class="cart-summary-divider"></div>'
             + '<div class="cart-summary-row">'
             + '<span>Subtotale</span><span>&euro;' + subtotal.toFixed(2) + '</span>'
             + '</div>'
             + '<div class="cart-summary-row">'
             + '<span>Spedizione</span>'
             + (shipping === 0
-                ? '<span style="color:#22c55e;font-weight:700">Gratuita</span>'
+                ? '<span style="color:#22c55e;font-weight:700">Gratuita &#10003;</span>'
                 : '<span>&euro;' + shipping.toFixed(2) + '</span>')
             + '</div>'
             + (shipping > 0
                 ? '<div class="cart-free-shipping-hint">Aggiungi &euro;' + (FREE_SHIPPING_OVER - subtotal).toFixed(2) + ' per la spedizione gratuita</div>'
                 : '')
+            + (appliedCoupon
+                ? '<div class="cart-summary-row discount">'
+                    + '<span>Sconto <span class="cart-coupon-pill">' + esc(appliedCoupon.code) + '</span></span>'
+                    + '<span>-&euro;' + discount.toFixed(2) + '</span>'
+                    + '</div>'
+                : '')
             + '<div class="cart-summary-row total">'
             + '<span>Totale (' + itemCount + ' ' + (itemCount === 1 ? 'articolo' : 'articoli') + ')</span>'
             + '<span>&euro;' + total.toFixed(2) + '</span>'
             + '</div>'
+            + couponHtml
             + '<div class="cart-legal">'
             + '<label><input type="checkbox" id="accept-terms"> '
             + 'Ho letto e accetto le <a href="condizioni-vendita.html" target="_blank">condizioni di vendita</a> e la <a href="privacy.html" target="_blank">privacy policy</a>.'
@@ -88,6 +122,64 @@
             + '</div>';
 
         document.getElementById('checkout-btn').addEventListener('click', startCheckout);
+
+        var applyBtn = document.getElementById('apply-coupon-btn');
+        if (applyBtn) applyBtn.addEventListener('click', applyCoupon);
+
+        var removeBtn = document.getElementById('remove-coupon-btn');
+        if (removeBtn) removeBtn.addEventListener('click', function () { appliedCoupon = null; render(); });
+
+        var couponInput = document.getElementById('coupon-input');
+        if (couponInput) couponInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') applyCoupon();
+        });
+    }
+
+    function applyCoupon() {
+        var input = document.getElementById('coupon-input');
+        var msg   = document.getElementById('coupon-msg');
+        var btn   = document.getElementById('apply-coupon-btn');
+        if (!input) return;
+
+        var code = input.value.trim().toUpperCase();
+        if (!code) {
+            msg.textContent = 'Inserisci un codice coupon.';
+            msg.className   = 'cart-coupon-msg err';
+            return;
+        }
+
+        btn.disabled    = true;
+        btn.textContent = '...';
+        msg.textContent = '';
+        msg.className   = 'cart-coupon-msg';
+
+        fetch('/api/validate-coupon', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ code: code }),
+        })
+        .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, data: d }; }); })
+        .then(function (res) {
+            if (!res.ok) {
+                msg.textContent = res.data.error || 'Coupon non valido.';
+                msg.className   = 'cart-coupon-msg err';
+                btn.disabled    = false;
+                btn.textContent = 'Applica';
+                return;
+            }
+            appliedCoupon = {
+                code:        res.data.code,
+                firestoreId: res.data.firestoreId,
+                amount:      res.data.amount,
+            };
+            render();
+        })
+        .catch(function () {
+            msg.textContent = 'Errore di rete. Riprova.';
+            msg.className   = 'cart-coupon-msg err';
+            btn.disabled    = false;
+            btn.textContent = 'Applica';
+        });
     }
 
     function startCheckout() {
@@ -107,16 +199,20 @@
         var allItems  = MBCart.getAll();
         var subtotalC = allItems.reduce(function(s, i) { return s + parseFloat(String(i.price).replace(/[^0-9.,]/g,'').replace(',','.')) * i.qty; }, 0);
         var shippingC = subtotalC >= 50 ? 0 : 5.90;
-        var totalC    = subtotalC + shippingC;
+        var discountC = appliedCoupon ? Math.min(appliedCoupon.amount, subtotalC + shippingC) : 0;
+        var totalC    = subtotalC + shippingC - discountC;
 
         var items = allItems.map(function (i) {
             return { firestoreId: i.firestoreId, qty: i.qty };
         });
 
+        var body = { items: items, shipping: shippingC };
+        if (appliedCoupon) body.couponCode = appliedCoupon.code;
+
         fetch('/api/create-checkout', {
             method:  'POST',
             headers: { 'Content-Type': 'application/json' },
-            body:    JSON.stringify({ items: items, shipping: shippingC }),
+            body:    JSON.stringify(body),
         })
         .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, data: d }; }); })
         .then(function (res) {
@@ -127,12 +223,13 @@
                 btn.textContent = 'Procedi al Pagamento →';
                 return;
             }
-            /* Salva snapshot ordine per la pagina di conferma */
             try {
                 localStorage.setItem('mb_last_order', JSON.stringify({
                     items:    allItems,
                     subtotal: subtotalC.toFixed(2),
                     shipping: shippingC.toFixed(2),
+                    discount: discountC.toFixed(2),
+                    coupon:   appliedCoupon ? appliedCoupon.code : null,
                     total:    totalC.toFixed(2),
                     date:     new Date().toLocaleDateString('it-IT', { day: '2-digit', month: 'long', year: 'numeric' }),
                 }));
