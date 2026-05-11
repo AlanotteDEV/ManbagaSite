@@ -70,7 +70,9 @@ module.exports = async function handler(req, res) {
         validatedItems.push({ firestoreId: item.firestoreId, title: p.title, qty: item.qty, unitAmount });
     }
 
-    const origin = (process.env.SITE_ORIGIN || 'https://manbagacomicsandgames.vercel.app').replace(/\/$/, '');
+    const host = req.headers['x-forwarded-host'] || req.headers.host || '';
+    const proto = req.headers['x-forwarded-proto'] || 'https';
+    const origin = host ? `${proto}://${host}` : (process.env.SITE_ORIGIN || 'https://manbagacomicsandgames.vercel.app').replace(/\/$/, '');
 
     const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
