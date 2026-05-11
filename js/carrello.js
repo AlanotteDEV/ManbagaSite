@@ -117,7 +117,14 @@
             + '</label>'
             + '</div>'
             + '<div id="cart-error" class="cart-error" style="display:none"></div>'
-            + '<button class="cart-checkout-btn" id="checkout-btn">Procedi al Pagamento &rarr;</button>'
+            + '<button class="cart-checkout-btn" id="checkout-btn">'
+            + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'
+            + 'Procedi al Pagamento'
+            + '</button>'
+            + '<div class="cart-secure-badge">'
+            + '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>'
+            + 'Pagamento sicuro SSL &mdash; Stripe'
+            + '</div>'
             + '</div>'
             + '</div>';
 
