@@ -19,7 +19,8 @@
       "PowerShell(Get-ChildItem \"C:\\\\Users\\\\germi\\\\ManbagaSite\" -Exclude \".git\",\".claude\",\".qodo\" | Where-Object { -not $_.PSIsContainer } | Sort-Object Name | Select-Object Name)",
       "PowerShell(Get-ChildItem \"C:\\\\Users\\\\germi\\\\ManbagaSite\\\\js\" | ForEach-Object { $_.Name })",
       "Bash(git add *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "Bash(git push *)"
     ]
   }
 }
