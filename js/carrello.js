@@ -21,8 +21,13 @@
             return;
         }
 
-        var itemCount = items.reduce(function(s, i) { return s + i.qty; }, 0);
-        var total = items.reduce(function(s, i) { return s + priceNum(i.price) * i.qty; }, 0);
+        var SHIPPING_COST      = 5.90;
+        var FREE_SHIPPING_OVER = 50.00;
+
+        var itemCount    = items.reduce(function(s, i) { return s + i.qty; }, 0);
+        var subtotal     = items.reduce(function(s, i) { return s + priceNum(i.price) * i.qty; }, 0);
+        var shipping     = subtotal >= FREE_SHIPPING_OVER ? 0 : SHIPPING_COST;
+        var total        = subtotal + shipping;
 
         var cards = items.map(function (item) {
             var sub = (priceNum(item.price) * item.qty).toFixed(2);
@@ -56,6 +61,18 @@
             + '<div class="cart-summary">'
             + '<div class="cart-summary-title">Riepilogo ordine</div>'
             + summaryRows
+            + '<div class="cart-summary-row">'
+            + '<span>Subtotale</span><span>&euro;' + subtotal.toFixed(2) + '</span>'
+            + '</div>'
+            + '<div class="cart-summary-row">'
+            + '<span>Spedizione</span>'
+            + (shipping === 0
+                ? '<span style="color:#22c55e;font-weight:700">Gratuita</span>'
+                : '<span>&euro;' + shipping.toFixed(2) + '</span>')
+            + '</div>'
+            + (shipping > 0
+                ? '<div class="cart-free-shipping-hint">Aggiungi &euro;' + (FREE_SHIPPING_OVER - subtotal).toFixed(2) + ' per la spedizione gratuita</div>'
+                : '')
             + '<div class="cart-summary-row total">'
             + '<span>Totale (' + itemCount + ' ' + (itemCount === 1 ? 'articolo' : 'articoli') + ')</span>'
             + '<span>&euro;' + total.toFixed(2) + '</span>'
@@ -87,8 +104,10 @@
         btn.disabled    = true;
         btn.textContent = 'Caricamento...';
 
-        var allItems = MBCart.getAll();
-        var total    = allItems.reduce(function(s, i) { return s + parseFloat(String(i.price).replace(/[^0-9.,]/g,'').replace(',','.')) * i.qty; }, 0);
+        var allItems  = MBCart.getAll();
+        var subtotalC = allItems.reduce(function(s, i) { return s + parseFloat(String(i.price).replace(/[^0-9.,]/g,'').replace(',','.')) * i.qty; }, 0);
+        var shippingC = subtotalC >= 50 ? 0 : 5.90;
+        var totalC    = subtotalC + shippingC;
 
         var items = allItems.map(function (i) {
             return { firestoreId: i.firestoreId, qty: i.qty };
@@ -97,7 +116,7 @@
         fetch('/api/create-checkout', {
             method:  'POST',
             headers: { 'Content-Type': 'application/json' },
-            body:    JSON.stringify({ items: items }),
+            body:    JSON.stringify({ items: items, shipping: shippingC }),
         })
         .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, data: d }; }); })
         .then(function (res) {
@@ -111,9 +130,11 @@
             /* Salva snapshot ordine per la pagina di conferma */
             try {
                 localStorage.setItem('mb_last_order', JSON.stringify({
-                    items:   allItems,
-                    total:   total.toFixed(2),
-                    date:    new Date().toLocaleDateString('it-IT', { day: '2-digit', month: 'long', year: 'numeric' }),
+                    items:    allItems,
+                    subtotal: subtotalC.toFixed(2),
+                    shipping: shippingC.toFixed(2),
+                    total:    totalC.toFixed(2),
+                    date:     new Date().toLocaleDateString('it-IT', { day: '2-digit', month: 'long', year: 'numeric' }),
                 }));
             } catch(e) {}
             MBCart.clear();

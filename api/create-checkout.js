@@ -25,9 +25,10 @@ function parsePrice(priceStr) {
 module.exports = async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-    const { items } = req.body || {};
+    const { items, shipping: shippingRaw } = req.body || {};
     if (!Array.isArray(items) || items.length === 0)
         return res.status(400).json({ error: 'Carrello vuoto' });
+    const shippingCost = (typeof shippingRaw === 'number' && shippingRaw >= 0) ? shippingRaw : null;
 
     if (!process.env.FIREBASE_CLIENT_EMAIL) return res.status(500).json({ error: 'ENV MANCANTE: FIREBASE_CLIENT_EMAIL' });
     if (!process.env.FIREBASE_PROJECT_ID)   return res.status(500).json({ error: 'ENV MANCANTE: FIREBASE_PROJECT_ID' });
@@ -68,6 +69,21 @@ module.exports = async function handler(req, res) {
             quantity: item.qty,
         });
         validatedItems.push({ firestoreId: item.firestoreId, title: p.title, qty: item.qty, unitAmount });
+    }
+
+    /* Spedizione — €5.90 sotto €50, gratuita sopra */
+    const subtotalCents = validatedItems.reduce((s, i) => s + i.unitAmount * i.qty, 0);
+    const freeShipping  = subtotalCents >= 5000;
+    const shippingCents = freeShipping ? 0 : 590;
+    if (shippingCents > 0) {
+        lineItems.push({
+            price_data: {
+                currency: 'eur',
+                product_data: { name: 'Spedizione standard' },
+                unit_amount: shippingCents,
+            },
+            quantity: 1,
+        });
     }
 
     const host = req.headers['x-forwarded-host'] || req.headers.host || '';
