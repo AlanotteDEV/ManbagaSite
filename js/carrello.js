@@ -1,6 +1,10 @@
 (function () {
     var root = document.getElementById('cart-root');
 
+    function esc(str) {
+        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
     function priceNum(str) {
         var n = parseFloat(String(str).replace(/[^0-9.,]/g, '').replace(',', '.'));
         return isNaN(n) ? 0 : n;
@@ -22,11 +26,11 @@
 
         var cards = items.map(function (item) {
             var sub = (priceNum(item.price) * item.qty).toFixed(2);
-            return '<div class="cart-card" data-fid="' + item.firestoreId + '">'
-                + '<img class="cart-card-img" src="' + (item.image || 'https://placehold.co/64x82/161616/444?text=?') + '" alt="' + item.title + '">'
+            return '<div class="cart-card" data-fid="' + esc(item.firestoreId) + '">'
+                + '<img class="cart-card-img" src="' + esc(item.image || 'https://placehold.co/64x82/161616/444?text=?') + '" alt="' + esc(item.title) + '">'
                 + '<div class="cart-card-info">'
-                + '<div class="cart-card-title">' + item.title + '</div>'
-                + '<div class="cart-card-unit">Prezzo unitario: ' + item.price + '</div>'
+                + '<div class="cart-card-title">' + esc(item.title) + '</div>'
+                + '<div class="cart-card-unit">Prezzo unitario: ' + esc(item.price) + '</div>'
                 + '</div>'
                 + '<div class="cart-qty-ctrl">'
                 + '<button data-qty-dec="' + item.firestoreId + '">&minus;</button>'
