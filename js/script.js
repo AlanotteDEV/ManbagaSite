@@ -179,30 +179,42 @@ function _initMainFirebase() {
 
 function _subscribeFirestoreProducts() {
     if (!_fbMainDb) return;
-    _fbMainDb.collection('products').orderBy('createdAt', 'desc').onSnapshot(
-        function(snap) {
+    /* Carica da localStorage mentre aspetta Firestore */
+    try {
+        var cached = localStorage.getItem('manbaga-products');
+        if (cached) {
+            _fbProducts = JSON.parse(cached);
+            renderProducts();
+            if (typeof catPage !== 'undefined') catPage.render();
+        }
+    } catch(e) {}
+    _fbMainDb.collection('products').orderBy('createdAt', 'desc').get()
+        .then(function(snap) {
             _fbProducts = snap.docs.map(function(doc) {
                 var d = doc.data();
-                d.firestoreId = doc.id;          /* Firestore doc ID — usato da gestionale */
+                d.firestoreId = doc.id;
                 if (!d.id) d.id = doc.id;
-                /* Normalizza imageUrl → image per compatibilità */
                 if (d.imageUrl && !d.image) d.image = d.imageUrl;
                 return d;
             });
-            /* Aggiorna cache localStorage */
             try { localStorage.setItem('manbaga-products', JSON.stringify(_fbProducts)); } catch(e){}
-            /* Re-render */
             renderProducts();
             if (typeof catPage !== 'undefined') catPage.render();
-        },
-        function(err) { console.warn('Firestore products error:', err); }
-    );
+        })
+        .catch(function(err) { console.warn('Firestore products error:', err); });
 }
 
 function _subscribeFirestoreEvents() {
     if (!_fbMainDb) return;
-    _fbMainDb.collection('events').orderBy('createdAt', 'desc').onSnapshot(
-        function(snap) {
+    try {
+        var cached = localStorage.getItem('manbaga-events');
+        if (cached) {
+            _fbEvents = JSON.parse(cached);
+            renderEvents();
+        }
+    } catch(e) {}
+    _fbMainDb.collection('events').orderBy('createdAt', 'desc').get()
+        .then(function(snap) {
             _fbEvents = snap.docs.map(function(doc) {
                 var d = doc.data();
                 if (!d.id) d.id = doc.id;
@@ -222,9 +234,8 @@ function _subscribeFirestoreEvents() {
             });
             try { localStorage.setItem('manbaga-events', JSON.stringify(_fbEvents)); } catch(e){}
             renderEvents();
-        },
-        function(err) { console.warn('Firestore events error:', err); }
-    );
+        })
+        .catch(function(err) { console.warn('Firestore events error:', err); });
 }
 
 function _subscribeFirestoreCategories() {
@@ -1615,16 +1626,19 @@ function _subscribeRecensioni() {
     _fbMainDb.collection('recensioni')
         .where('approvata', '==', true)
         .orderBy('createdAt', 'desc')
-        .onSnapshot(function(snap) {
+        .get()
+        .then(function(snap) {
             var list = snap.docs.map(function(doc) {
                 var d = doc.data(); d.id = doc.id; return d;
             });
             renderRecensioni(list);
-        }, function(_err) {
+        })
+        .catch(function() {
             /* Se manca l'indice o i permessi, proviamo senza orderBy */
             _fbMainDb.collection('recensioni')
                 .where('approvata', '==', true)
-                .onSnapshot(function(snap2) {
+                .get()
+                .then(function(snap2) {
                     var list = snap2.docs.map(function(doc) {
                         var d = doc.data(); d.id = doc.id; return d;
                     });
