@@ -1,191 +1,332 @@
 (function () {
-    var root = document.getElementById('cart-root');
-    var appliedCoupon = null; /* { code, firestoreId, amount } */
+    // ============================================================
+    // LOYALTY TIER SYSTEM
+    // ============================================================
+    var TIER_THRESHOLDS = { bronze: 0, silver: 500, gold: 1200 };
 
-    function esc(str) {
-        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    var TIERS = {
+        bronze: {
+            key: 'bronze', label: 'BRONZO',
+            shippingFree: 50,
+            intro: null,
+            perks: ['Spedizione gratis sopra €50', 'Accesso al catalogo standard', 'Newsletter & anteprime']
+        },
+        silver: {
+            key: 'silver', label: 'SILVER',
+            shippingFree: 10,
+            intro: [{ firstOrders: 5, pct: 0.10 }],
+            perks: ['Spedizione gratis sopra €10', '−10% sui primi 5 ordini', 'Accesso pre-order anticipato']
+        },
+        gold: {
+            key: 'gold', label: 'GOLD',
+            shippingFree: 0,
+            intro: [{ firstOrders: 5, pct: 0.15 }, { firstOrders: 15, pct: 0.10 }],
+            perks: ['Spedizione sempre gratis', '−15% sui primi 5 ordini', '−10% sui successivi 10 ordini', 'Edizioni esclusive Gold']
+        }
+    };
+
+    function tierFromSpend(spent) {
+        if (spent >= TIER_THRESHOLDS.gold)   return 'gold';
+        if (spent >= TIER_THRESHOLDS.silver) return 'silver';
+        return 'bronze';
     }
 
+    function tierIntroDiscount(tierKey, ordersPlaced) {
+        var def = TIERS[tierKey];
+        if (!def || !def.intro) return 0;
+        var sorted = def.intro.slice().sort(function (a, b) { return a.firstOrders - b.firstOrders; });
+        for (var i = 0; i < sorted.length; i++) {
+            if (ordersPlaced < sorted[i].firstOrders) return sorted[i].pct;
+        }
+        return 0;
+    }
+
+    function getLoyalty() {
+        try {
+            var stored = JSON.parse(localStorage.getItem('mb_loyalty') || '{}');
+            return {
+                totalSpent:   Number(stored.totalSpent)   || 0,
+                ordersPlaced: Number(stored.ordersPlaced) || 0
+            };
+        } catch (e) {
+            return { totalSpent: 0, ordersPlaced: 0 };
+        }
+    }
+
+    // ============================================================
+    // CART STATE
+    // ============================================================
+    var root         = document.getElementById('cart-root');
+    var appliedCoupon = null;
+
+    function esc(str) {
+        return String(str)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
     function priceNum(str) {
         var n = parseFloat(String(str).replace(/[^0-9.,]/g, '').replace(',', '.'));
         return isNaN(n) ? 0 : n;
     }
 
+    // ============================================================
+    // TIER STRIP HTML
+    // ============================================================
+    function renderTierStrip(tierKey, tier, ordersPlaced, tierPct, totalSpent) {
+        var order       = ['bronze', 'silver', 'gold'];
+        var idx         = order.indexOf(tierKey);
+        var nextKey     = idx < order.length - 1 ? order[idx + 1] : null;
+        var overallPct  = Math.min(100, (totalSpent / TIER_THRESHOLDS.gold) * 100);
+        var silverStop  = (TIER_THRESHOLDS.silver / TIER_THRESHOLDS.gold) * 100;
+
+        var medalLetter = tierKey === 'bronze' ? 'B' : tierKey === 'silver' ? 'S' : 'G';
+        var medalGrad   = tierKey === 'bronze'
+            ? '<stop offset="0" stop-color="#c98a4e"/><stop offset="1" stop-color="#7a4a1f"/>'
+            : tierKey === 'silver'
+            ? '<stop offset="0" stop-color="#e8e8ec"/><stop offset="1" stop-color="#8d929a"/>'
+            : '<stop offset="0" stop-color="#ffe27a"/><stop offset="1" stop-color="#c88c00"/>';
+
+        var statusHtml;
+        if (tierPct > 0) {
+            statusHtml = '<div class="tier-pct">−' + Math.round(tierPct * 100) + '%</div>'
+                + '<div class="tier-pct-lab">sconto attivo<br>sul prossimo ordine</div>';
+        } else if (tierKey === 'bronze') {
+            statusHtml = '<div class="tier-upsell">PASSA A<br><b>SILVER</b></div>'
+                + '<div class="tier-pct-lab">per sbloccare<br>−10% e spedizione</div>';
+        } else {
+            statusHtml = '<div class="tier-pct" style="font-size:18px">✓</div>'
+                + '<div class="tier-pct-lab">benefici attivi<br>su questo ordine</div>';
+        }
+
+        var introHtml = '';
+        if (tier.intro) {
+            var introArr = tier.intro.slice().sort(function (a, b) { return a.firstOrders - b.firstOrders; });
+            introHtml = '<div class="tier-progress">';
+            for (var i = 0; i < introArr.length; i++) {
+                var rule  = introArr[i];
+                var prev  = i === 0 ? 0 : introArr[i - 1].firstOrders;
+                var inside = ordersPlaced < rule.firstOrders;
+                var used  = inside ? Math.max(0, ordersPlaced - prev) : (rule.firstOrders - prev);
+                var total = rule.firstOrders - prev;
+                var rem   = Math.max(0, rule.firstOrders - Math.max(prev, ordersPlaced));
+                introHtml += '<div class="tier-prog-item">'
+                    + '<div class="tier-prog-top"><span>−' + Math.round(rule.pct * 100) + '% sui prossimi</span>'
+                    + '<b>' + rem + '/' + total + '</b></div>'
+                    + '<div class="tier-prog-bar"><div class="tier-prog-fill" style="width:' + Math.min(100, (used / total) * 100) + '%"></div></div>'
+                    + '</div>';
+            }
+            introHtml += '</div>';
+        }
+
+        var perksHtml = tier.perks.map(function (p) {
+            return '<li><span class="dot"></span>' + esc(p) + '</li>';
+        }).join('');
+
+        return '<div class="tier tier-' + tierKey + '">'
+            + '<div class="tier-medal">'
+            + '<svg viewBox="0 0 80 80" width="64" height="64" aria-hidden="true">'
+            + '<defs><linearGradient id="medal-' + tierKey + '" x1="0" x2="1" y1="0" y2="1">' + medalGrad + '</linearGradient></defs>'
+            + '<path d="M22 50 L 14 78 L 28 70 L 32 62 Z" fill="#e1251b" stroke="#0c0c0c" stroke-width="2.5" stroke-linejoin="round"/>'
+            + '<path d="M58 50 L 66 78 L 52 70 L 48 62 Z" fill="#e1251b" stroke="#0c0c0c" stroke-width="2.5" stroke-linejoin="round"/>'
+            + '<path d="M40 4 L 47 18 L 62 12 L 58 28 L 74 32 L 60 42 L 70 56 L 54 54 L 50 70 L 40 58 L 30 70 L 26 54 L 10 56 L 20 42 L 6 32 L 22 28 L 18 12 L 33 18 Z" fill="#0c0c0c"/>'
+            + '<circle cx="40" cy="36" r="22" fill="url(#medal-' + tierKey + ')" stroke="#0c0c0c" stroke-width="3"/>'
+            + '<circle cx="40" cy="36" r="16" fill="none" stroke="#0c0c0c" stroke-width="1.5" opacity=".5"/>'
+            + '<text x="40" y="44" text-anchor="middle" font-family="Bowlby One,sans-serif" font-size="20" fill="#0c0c0c">' + medalLetter + '</text>'
+            + '</svg>'
+            + '</div>'
+            + '<div class="tier-info">'
+            + '<div class="tier-label">IL TUO LIVELLO <span class="tier-name">' + tier.label + '</span></div>'
+            + '<ul class="tier-perks">' + perksHtml + '</ul>'
+            + '<div class="tier-bar-wrap">'
+            + '<div class="tier-bar">'
+            + '<div class="tier-bar-fill" style="width:' + overallPct + '%"></div>'
+            + '<div class="tier-stop tier-stop-b' + (totalSpent >= TIER_THRESHOLDS.bronze ? ' reached' : '') + '"><span class="stop-dot">B</span></div>'
+            + '<div class="tier-stop' + (totalSpent >= TIER_THRESHOLDS.silver ? ' reached' : '') + '" style="left:' + silverStop + '%"><span class="stop-dot">S</span></div>'
+            + '<div class="tier-stop tier-stop-g' + (totalSpent >= TIER_THRESHOLDS.gold ? ' reached' : '') + '"><span class="stop-dot">G</span></div>'
+            + '</div>'
+            + '<div class="tier-bar-cap">' + (nextKey ? 'Progressi verso il livello <b>' + TIERS[nextKey].label + '</b>' : 'Hai raggiunto il massimo livello') + '</div>'
+            + '</div>'
+            + '</div>'
+            + '<div class="tier-status">' + statusHtml + introHtml + '</div>'
+            + '</div>';
+    }
+
+    // ============================================================
+    // RENDER
+    // ============================================================
     function render() {
-        var items = MBCart.getAll();
+        var items   = MBCart.getAll();
+        var loyalty = getLoyalty();
+        var tierKey = tierFromSpend(loyalty.totalSpent);
+        var tier    = TIERS[tierKey];
+        var tierPct = tierIntroDiscount(tierKey, loyalty.ordersPlaced);
+
+        var tierStripHtml = renderTierStrip(tierKey, tier, loyalty.ordersPlaced, tierPct, loyalty.totalSpent);
+
         if (items.length === 0) {
             appliedCoupon = null;
-            root.innerHTML = '<div class="cart-empty">'
+            root.innerHTML = tierStripHtml
+                + '<div style="max-width:1240px;margin:0 auto;padding:0 20px">'
+                + '<div class="cart-empty">'
                 + '<span class="cart-empty-icon">&#128722;</span>'
                 + '<p>Il carrello è vuoto.</p>'
                 + '<a href="catalogo.html">Torna al catalogo &rarr;</a>'
-                + '</div>';
+                + '</div></div>';
             return;
         }
 
+        var FREE_SHIPPING_OVER = tier.shippingFree;
         var SHIPPING_COST      = 5.90;
-        var FREE_SHIPPING_OVER = 50.00;
 
-        var itemCount = items.reduce(function(s, i) { return s + i.qty; }, 0);
-        var subtotal  = items.reduce(function(s, i) { return s + priceNum(i.price) * i.qty; }, 0);
-        var shipping  = subtotal >= FREE_SHIPPING_OVER ? 0 : SHIPPING_COST;
-        var discount  = appliedCoupon ? Math.min(appliedCoupon.amount, subtotal + shipping) : 0;
-        var total     = subtotal + shipping - discount;
+        var itemCount    = items.reduce(function (s, i) { return s + i.qty; }, 0);
+        var subtotal     = items.reduce(function (s, i) { return s + priceNum(i.price) * i.qty; }, 0);
+        var promoDisc    = appliedCoupon ? Math.min(appliedCoupon.amount, subtotal) : 0;
+        var tierDisc     = tierPct > 0 ? Math.max(0, subtotal - promoDisc) * tierPct : 0;
+        var afterDisc    = Math.max(0, subtotal - promoDisc - tierDisc);
+        var shipping     = (FREE_SHIPPING_OVER === 0 || afterDisc >= FREE_SHIPPING_OVER) ? 0 : SHIPPING_COST;
+        var remaining    = Math.max(0, FREE_SHIPPING_OVER - afterDisc);
+        var total        = afterDisc + shipping;
+        var shipBarPct   = FREE_SHIPPING_OVER === 0 ? 100 : Math.min(100, (afterDisc / FREE_SHIPPING_OVER) * 100);
 
+        /* Product cards */
         var cards = items.map(function (item) {
-            var sub = (priceNum(item.price) * item.qty).toFixed(2);
-            return '<div class="cart-card" data-fid="' + esc(item.firestoreId) + '">'
-                + '<img class="cart-card-img" src="' + esc(item.image || 'https://placehold.co/64x82/161616/444?text=?') + '" alt="' + esc(item.title) + '">'
-                + '<div class="cart-card-info">'
-                + '<div class="cart-card-title">' + esc(item.title) + '</div>'
-                + '<div class="cart-card-unit">Prezzo unitario: ' + esc(item.price) + '</div>'
+            var sub    = (priceNum(item.price) * item.qty).toFixed(2);
+            var imgSrc = esc(item.image || '');
+            var imgEl  = imgSrc
+                ? '<img class="cart-cover-img" src="' + imgSrc + '" alt="' + esc(item.title) + '">'
+                : '<div class="cart-cover-placeholder">' + esc((item.title || '?').charAt(0)) + '</div>';
+            return '<div class="c-product" data-fid="' + esc(item.firestoreId) + '">'
+                + '<div class="c-cover">' + imgEl + '</div>'
+                + '<div class="p-info">'
+                + '<h3 class="p-title">' + esc(item.title) + '</h3>'
+                + '<p class="p-meta">Prezzo unitario: ' + esc(item.price) + '</p>'
                 + '</div>'
-                + '<div class="cart-qty-ctrl">'
-                + '<button data-qty-dec="' + item.firestoreId + '">&minus;</button>'
-                + '<span>' + item.qty + '</span>'
-                + '<button data-qty-inc="' + item.firestoreId + '" ' + (item.qty >= item.maxQty ? 'disabled' : '') + '>+</button>'
+                + '<div class="c-qty">'
+                + '<button data-qty-dec="' + item.firestoreId + '">−</button>'
+                + '<div class="v">' + item.qty + '</div>'
+                + '<button data-qty-inc="' + item.firestoreId + '"' + (item.qty >= (item.maxQty || 99) ? ' disabled' : '') + '>+</button>'
                 + '</div>'
-                + '<div class="cart-card-price">&euro;' + sub + '</div>'
-                + '<button class="cart-remove-btn" data-remove="' + item.firestoreId + '" title="Rimuovi">&times;</button>'
+                + '<div class="c-price">€' + sub + '</div>'
+                + '<button class="c-kill" data-remove="' + item.firestoreId + '" aria-label="Rimuovi">×</button>'
                 + '</div>';
         }).join('');
 
-        var summaryRows = items.map(function(item) {
-            return '<div class="cart-summary-row">'
-                + '<span>' + esc(item.title) + ' &times;' + item.qty + '</span>'
-                + '<span>&euro;' + (priceNum(item.price) * item.qty).toFixed(2) + '</span>'
+        /* Summary rows */
+        var summaryRows = items.map(function (item) {
+            return '<div class="sum-row muted">'
+                + '<span style="max-width:65%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(item.title) + ' ×' + item.qty + '</span>'
+                + '<strong>€' + (priceNum(item.price) * item.qty).toFixed(2) + '</strong>'
                 + '</div>';
         }).join('');
 
-        var couponHtml;
-        if (appliedCoupon) {
-            couponHtml = '<div class="cart-coupon cart-coupon--applied">'
-                + '<div class="cart-coupon-applied-row">'
-                + '<span class="cart-coupon-check">&#10003;</span>'
-                + '<div class="cart-coupon-applied-info">'
-                + '<div class="cart-coupon-applied-code">' + esc(appliedCoupon.code) + '</div>'
-                + '<div class="cart-coupon-applied-label">Sconto di &euro;' + discount.toFixed(2) + ' applicato</div>'
+        /* Coupon section */
+        var couponHtml = appliedCoupon
+            ? '<div class="c-promo">'
+                + '<label class="promo-label">HAI UN CODICE SCONTO?</label>'
+                + '<div class="promo-applied">'
+                + '<span>✓ ' + esc(appliedCoupon.code) + ': −€' + promoDisc.toFixed(2) + '</span>'
+                + '<span class="promo-x" id="remove-coupon-btn">×</span>'
                 + '</div>'
-                + '<button class="cart-remove-coupon" id="remove-coupon-btn" title="Rimuovi coupon">&times;</button>'
                 + '</div>'
+            : '<div class="c-promo">'
+                + '<label class="promo-label">HAI UN CODICE SCONTO?</label>'
+                + '<div class="promo-row">'
+                + '<input type="text" class="promo-input" id="coupon-input" placeholder="ES. MANGA10" autocomplete="off" spellcheck="false">'
+                + '<button class="promo-apply" id="apply-coupon-btn">APPLICA</button>'
+                + '</div>'
+                + '<div class="promo-msg" id="coupon-msg"></div>'
                 + '</div>';
-        } else {
-            couponHtml = '<div class="cart-coupon">'
-                + '<div class="cart-coupon-title">Hai un codice sconto?</div>'
-                + '<div class="cart-coupon-row">'
-                + '<input type="text" class="cart-coupon-input" id="coupon-input" placeholder="Es. MANGA10" autocomplete="off" spellcheck="false">'
-                + '<button class="cart-coupon-btn" id="apply-coupon-btn">Applica</button>'
-                + '</div>'
-                + '<div class="cart-coupon-msg" id="coupon-msg"></div>'
-                + '</div>';
-        }
 
-        /* ── Personaggio manga SVG ── */
-        var mangaChar = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 118" fill="none" class="manga-char-svg" aria-hidden="true">'
-            /* capelli spike */
-            + '<path d="M12 32 L8 8 L20 21 L25 4 L33 19 L38 1 L43 19 L51 4 L56 21 L65 9 L62 33" fill="#0d0d0d"/>'
-            /* testa */
-            + '<ellipse cx="38" cy="40" rx="24" ry="22" fill="#f5f0e8" stroke="#0d0d0d" stroke-width="2"/>'
-            /* occhio sinistro */
-            + '<ellipse cx="28" cy="38" rx="7" ry="8" fill="#0d0d0d"/>'
-            + '<ellipse cx="26" cy="35" rx="2.5" ry="3" fill="white"/>'
-            + '<circle cx="27" cy="36" r="1" fill="white"/>'
-            /* occhio destro */
-            + '<ellipse cx="48" cy="38" rx="7" ry="8" fill="#0d0d0d"/>'
-            + '<ellipse cx="46" cy="35" rx="2.5" ry="3" fill="white"/>'
-            + '<circle cx="47" cy="36" r="1" fill="white"/>'
-            /* sopracciglia animate */
-            + '<path d="M21 27 Q28 23 34 28" stroke="#0d0d0d" fill="none" stroke-width="2" stroke-linecap="round"/>'
-            + '<path d="M42 28 Q48 23 55 27" stroke="#0d0d0d" fill="none" stroke-width="2" stroke-linecap="round"/>'
-            /* rossori */
-            + '<ellipse cx="15" cy="45" rx="6" ry="3" fill="#DC2626" opacity="0.28"/>'
-            + '<ellipse cx="61" cy="45" rx="6" ry="3" fill="#DC2626" opacity="0.28"/>'
-            /* bocca entusiasta */
-            + '<path d="M31 52 Q38 59 45 52" stroke="#0d0d0d" stroke-width="2" fill="rgba(220,38,38,.45)" stroke-linecap="round"/>'
-            /* collo */
-            + '<rect x="32" y="60" width="12" height="8" fill="#f5f0e8" stroke="#0d0d0d" stroke-width="1.5"/>'
-            /* corpo */
-            + '<rect x="15" y="66" width="46" height="34" rx="7" fill="#f5f0e8" stroke="#0d0d0d" stroke-width="2"/>'
-            /* colletto V rosso */
-            + '<path d="M30 66 L38 79 L46 66" stroke="#DC2626" fill="none" stroke-width="2"/>'
-            /* braccio sinistro */
-            + '<path d="M16 76 L2 68 L4 74 L19 82 Z" fill="#f5f0e8" stroke="#0d0d0d" stroke-width="1.5"/>'
-            /* braccio destro che punta IN BASSO verso il pulsante */
-            + '<path d="M59 73 Q68 88 70 105" stroke="#0d0d0d" stroke-width="7" stroke-linecap="round" fill="none"/>'
-            + '<path d="M59 73 Q68 88 70 105" stroke="#f5f0e8" stroke-width="4.5" stroke-linecap="round" fill="none"/>'
-            /* dito che punta */
-            + '<circle cx="70" cy="108" r="5.5" fill="#f5f0e8" stroke="#0d0d0d" stroke-width="2"/>'
-            + '<line x1="70" y1="113" x2="72" y2="118" stroke="#0d0d0d" stroke-width="2.5" stroke-linecap="round"/>'
-            /* gambe */
-            + '<rect x="18" y="97" width="15" height="14" rx="5" fill="#f5f0e8" stroke="#0d0d0d" stroke-width="2"/>'
-            + '<rect x="43" y="97" width="15" height="14" rx="5" fill="#f5f0e8" stroke="#0d0d0d" stroke-width="2"/>'
-            /* scarpe */
-            + '<ellipse cx="25" cy="111" rx="11" ry="5" fill="#0d0d0d"/>'
-            + '<ellipse cx="50" cy="111" rx="11" ry="5" fill="#0d0d0d"/>'
-            /* linee azione */
-            + '<line x1="63" y1="12" x2="70" y2="5" stroke="#DC2626" stroke-width="1.5" stroke-linecap="round"/>'
-            + '<line x1="66" y1="19" x2="74" y2="17" stroke="#DC2626" stroke-width="1.5" stroke-linecap="round"/>'
-            + '<line x1="59" y1="7" x2="63" y2="0" stroke="#DC2626" stroke-width="1" stroke-linecap="round"/>'
-            /* punto esclamativo */
-            + '<text x="1" y="17" font-family="Impact,Arial,sans-serif" font-size="15" font-weight="bold" fill="#DC2626">!</text>'
-            + '</svg>';
+        /* Burst */
+        var burstHtml = tier.shippingFree === 0
+            ? '<div class="c-burst burst-' + tierKey + '">SPED.<br>SEMPRE<span class="burst-small">GRATIS</span></div>'
+            : '<div class="c-burst burst-' + tierKey + '">SPED.<br>GRATIS<span class="burst-small">SOPRA €' + tier.shippingFree + '</span></div>';
 
-        var mangaSpeech = '<div class="manga-speech">'
-            + '<div class="manga-speech-text">Cosa aspetti?!</div>'
-            + '<span class="manga-speech-sub">&#9889; Clicca e paga!</span>'
-            + '</div>';
-
-        root.innerHTML = '<div class="cart-layout">'
-            + '<div>'
-            + '<div class="cart-items-list">' + cards + '</div>'
+        root.innerHTML = tierStripHtml
+            + '<div class="c-page">'
+            /* ===== LEFT ===== */
+            + '<section>'
+            + '<div class="c-crumb">'
+            + '<h1 class="c-title">IL TUO <em>CARRELLO</em></h1>'
+            + '<div class="c-steps">'
+            + '<div class="c-step c-step--done"><span class="c-step-num">1</span>CARRELLO</div>'
+            + '<div class="c-step c-step--active"><span class="c-step-num">2</span>RIEPILOGO</div>'
+            + '<div class="c-step"><span class="c-step-num">3</span>PAGAMENTO</div>'
+            + '</div></div>'
+            + '<div class="c-panel">'
+            + '<div class="c-halftone c-ht-tl"></div>'
+            + '<div class="c-panel-head">'
+            + '<span class="c-tag">01</span><span class="c-grow">I TUOI MANGA</span>'
+            + '<span class="c-cnt">' + items.length + ' ART.</span>'
             + '</div>'
-            + '<div class="cart-summary">'
-            + '<div class="cart-summary-title">Riepilogo ordine</div>'
+            + cards
+            + '<div class="c-halftone c-ht-br"></div>'
+            + '</div>'
+            + '<div class="c-trust">'
+            + '<div><div class="c-ico">🚚</div><div>'
+            + (tier.shippingFree === 0 ? 'Spedizione sempre gratis' : 'Spedizione gratis')
+            + '<br><span class="c-muted">'
+            + (tier.shippingFree === 0 ? 'per i Gold' : 'sopra €' + tier.shippingFree)
+            + '</span></div></div>'
+            + '<div><div class="c-ico c-ico--red">↩</div><div>Reso facile<br><span class="c-muted">entro 14 giorni</span></div></div>'
+            + '<div><div class="c-ico c-ico--white">🔒</div><div>Pagamento sicuro<br><span class="c-muted">SSL · Stripe</span></div></div>'
+            + '</div>'
+            + '</section>'
+            /* ===== RIGHT ===== */
+            + '<aside class="c-side">'
+            + '<div class="c-panel c-summary">'
+            + burstHtml
+            + '<div class="c-panel-head">'
+            + '<span class="c-tag">02</span><span class="c-grow">RIEPILOGO ORDINE</span>'
+            + '</div>'
+            + '<div class="c-sum-body">'
             + summaryRows
-            + '<div class="cart-summary-divider"></div>'
-            + '<div class="cart-summary-row">'
-            + '<span>Subtotale</span><span>&euro;' + subtotal.toFixed(2) + '</span>'
-            + '</div>'
-            + '<div class="cart-summary-row">'
-            + '<span>Spedizione</span>'
+            + '<hr class="c-hr">'
+            + '<div class="sum-row"><span>Subtotale</span><strong>€' + subtotal.toFixed(2) + '</strong></div>'
+            + (promoDisc > 0
+                ? '<div class="sum-row c-discount"><span>Codice <b>' + esc(appliedCoupon.code) + '</b></span><strong>−€' + promoDisc.toFixed(2) + '</strong></div>'
+                : '')
+            + (tierDisc > 0
+                ? '<div class="sum-row c-discount"><span>Sconto ' + tier.label + ' (' + Math.round(tierPct * 100) + '%)</span><strong>−€' + tierDisc.toFixed(2) + '</strong></div>'
+                : '')
+            + '<div class="sum-row"><span>Spedizione</span><strong>' + (shipping === 0 ? 'GRATIS' : '€' + shipping.toFixed(2)) + '</strong></div>'
+            + '<div class="c-ship-bar">'
+            + '<div class="ship-top"><span class="ship-truck"></span>'
             + (shipping === 0
-                ? '<span style="color:#15803d;font-weight:700">Gratuita &#10003;</span>'
-                : '<span>&euro;' + shipping.toFixed(2) + '</span>')
+                ? '<b style="color:#fff">Spedizione gratuita sbloccata!</b>'
+                : 'Aggiungi <b style="color:#fff">€' + remaining.toFixed(2) + '</b> per la spedizione gratuita')
             + '</div>'
-            + (shipping > 0
-                ? '<div class="cart-free-shipping-hint">Aggiungi &euro;' + (FREE_SHIPPING_OVER - subtotal).toFixed(2) + ' per la spedizione gratuita</div>'
-                : '')
-            + (appliedCoupon
-                ? '<div class="cart-summary-row discount">'
-                    + '<span>Sconto <span class="cart-coupon-pill">' + esc(appliedCoupon.code) + '</span></span>'
-                    + '<span>-&euro;' + discount.toFixed(2) + '</span>'
-                    + '</div>'
-                : '')
-            + '<div class="cart-summary-row total">'
-            + '<span>Totale (' + itemCount + ' ' + (itemCount === 1 ? 'articolo' : 'articoli') + ')</span>'
-            + '<span>&euro;' + total.toFixed(2) + '</span>'
+            + '<div class="ship-track"><div class="ship-fill" style="width:' + shipBarPct + '%"></div></div>'
+            + '</div>'
+            + '</div>'
+            + '<div class="c-total-row">'
+            + '<span class="c-total-lab">TOTALE<small>' + itemCount + ' articol' + (itemCount === 1 ? 'o' : 'i') + '</small></span>'
+            + '<span class="c-total-val">€' + total.toFixed(2) + '</span>'
             + '</div>'
             + couponHtml
-            + '<div class="manga-cta">'
-            + '<div class="manga-cta-header">' + mangaChar + mangaSpeech + '</div>'
-            + '<div class="cart-legal">'
-            + '<label><input type="checkbox" id="accept-terms"> '
-            + 'Ho letto e accetto le <a href="condizioni-vendita.html" target="_blank">condizioni di vendita</a> e la <a href="privacy.html" target="_blank">privacy policy</a>.'
-            + '</label>'
+            + '<div class="c-cta-zone">'
+            + '<div class="c-sfx">DON!</div>'
+            + '<div class="c-terms">'
+            + '<input type="checkbox" id="accept-terms" class="c-check">'
+            + '<label for="accept-terms">Ho letto e accetto le <a href="condizioni-vendita.html" target="_blank">condizioni di vendita</a> e la <a href="privacy.html" target="_blank">privacy policy</a>.</label>'
             + '</div>'
-            + '<div id="cart-error" class="cart-error" style="display:none"></div>'
-            + '<button class="cart-checkout-btn" id="checkout-btn">'
-            + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'
-            + 'Procedi al Pagamento'
+            + '<div id="cart-error" class="c-error" style="display:none"></div>'
+            + '<button class="c-cta-btn" id="checkout-btn">'
+            + '<span class="c-lock">🔒</span>'
+            + 'PROCEDI AL PAGAMENTO'
+            + '<span style="margin-left:auto;font-size:13px;opacity:.85">€' + total.toFixed(2) + ' →</span>'
             + '</button>'
-            + '<div class="cart-secure-badge">'
-            + '<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>'
-            + 'Pagamento sicuro SSL &mdash; Stripe'
+            + '<div class="c-secure"><span>PAGAMENTO SICURO</span>'
+            + '<div class="c-pills">'
+            + '<span class="c-pill">VISA</span><span class="c-pill">MC</span>'
+            + '<span class="c-pill">PAYPAL</span><span class="c-pill">STRIPE</span>'
+            + '</div></div>'
             + '</div>'
             + '</div>'
-            + '</div>'
+            + '</aside>'
             + '</div>';
 
+        /* Events */
         document.getElementById('checkout-btn').addEventListener('click', startCheckout);
 
         var applyBtn = document.getElementById('apply-coupon-btn');
@@ -195,28 +336,27 @@
         if (removeBtn) removeBtn.addEventListener('click', function () { appliedCoupon = null; render(); });
 
         var couponInput = document.getElementById('coupon-input');
-        if (couponInput) couponInput.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter') applyCoupon();
-        });
+        if (couponInput) couponInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') applyCoupon(); });
     }
 
+    // ============================================================
+    // COUPON
+    // ============================================================
     function applyCoupon() {
         var input = document.getElementById('coupon-input');
         var msg   = document.getElementById('coupon-msg');
         var btn   = document.getElementById('apply-coupon-btn');
         if (!input) return;
-
         var code = input.value.trim().toUpperCase();
         if (!code) {
             msg.textContent = 'Inserisci un codice coupon.';
-            msg.className   = 'cart-coupon-msg err';
+            msg.className   = 'promo-msg err';
             return;
         }
-
         btn.disabled    = true;
         btn.textContent = '...';
         msg.textContent = '';
-        msg.className   = 'cart-coupon-msg';
+        msg.className   = 'promo-msg';
 
         fetch('/api/validate-coupon', {
             method:  'POST',
@@ -227,26 +367,25 @@
         .then(function (res) {
             if (!res.ok) {
                 msg.textContent = res.data.error || 'Coupon non valido.';
-                msg.className   = 'cart-coupon-msg err';
+                msg.className   = 'promo-msg err';
                 btn.disabled    = false;
-                btn.textContent = 'Applica';
+                btn.textContent = 'APPLICA';
                 return;
             }
-            appliedCoupon = {
-                code:        res.data.code,
-                firestoreId: res.data.firestoreId,
-                amount:      res.data.amount,
-            };
+            appliedCoupon = { code: res.data.code, firestoreId: res.data.firestoreId, amount: res.data.amount };
             render();
         })
         .catch(function () {
             msg.textContent = 'Errore di rete. Riprova.';
-            msg.className   = 'cart-coupon-msg err';
+            msg.className   = 'promo-msg err';
             btn.disabled    = false;
-            btn.textContent = 'Applica';
+            btn.textContent = 'APPLICA';
         });
     }
 
+    // ============================================================
+    // CHECKOUT
+    // ============================================================
     function startCheckout() {
         var checkbox = document.getElementById('accept-terms');
         var errEl    = document.getElementById('cart-error');
@@ -261,17 +400,28 @@
         btn.disabled    = true;
         btn.textContent = 'Caricamento...';
 
-        var allItems  = MBCart.getAll();
-        var subtotalC = allItems.reduce(function(s, i) { return s + parseFloat(String(i.price).replace(/[^0-9.,]/g,'').replace(',','.')) * i.qty; }, 0);
-        var shippingC = subtotalC >= 50 ? 0 : 5.90;
-        var discountC = appliedCoupon ? Math.min(appliedCoupon.amount, subtotalC + shippingC) : 0;
-        var totalC    = subtotalC + shippingC - discountC;
+        var allItems = MBCart.getAll();
+        var loyalty  = getLoyalty();
+        var tierKey  = tierFromSpend(loyalty.totalSpent);
+        var tier     = TIERS[tierKey];
+        var tierPct  = tierIntroDiscount(tierKey, loyalty.ordersPlaced);
 
-        var items = allItems.map(function (i) {
-            return { firestoreId: i.firestoreId, qty: i.qty };
-        });
+        var subtotalC  = allItems.reduce(function (s, i) {
+            return s + parseFloat(String(i.price).replace(/[^0-9.,]/g, '').replace(',', '.')) * i.qty;
+        }, 0);
+        var promoDiscC = appliedCoupon ? Math.min(appliedCoupon.amount, subtotalC) : 0;
+        var tierDiscC  = tierPct > 0 ? Math.max(0, subtotalC - promoDiscC) * tierPct : 0;
+        var afterDiscC = Math.max(0, subtotalC - promoDiscC - tierDiscC);
+        var freeOver   = tier.shippingFree;
+        var shippingC  = (freeOver === 0 || afterDiscC >= freeOver) ? 0 : 5.90;
+        var totalC     = afterDiscC + shippingC;
 
-        var body = { items: items, shipping: shippingC };
+        var body = {
+            items:               allItems.map(function (i) { return { firestoreId: i.firestoreId, qty: i.qty }; }),
+            shipping:            shippingC,
+            tierKey:             tierKey,
+            tierDiscountCents:   Math.round(tierDiscC * 100),
+        };
         if (appliedCoupon) body.couponCode = appliedCoupon.code;
 
         fetch('/api/create-checkout', {
@@ -285,7 +435,7 @@
                 errEl.style.display = 'block';
                 errEl.textContent   = res.data.error || 'Errore durante il checkout. Riprova.';
                 btn.disabled    = false;
-                btn.textContent = 'Procedi al Pagamento →';
+                btn.textContent = 'PROCEDI AL PAGAMENTO';
                 return;
             }
             try {
@@ -293,12 +443,13 @@
                     items:    allItems,
                     subtotal: subtotalC.toFixed(2),
                     shipping: shippingC.toFixed(2),
-                    discount: discountC.toFixed(2),
+                    discount: (promoDiscC + tierDiscC).toFixed(2),
                     coupon:   appliedCoupon ? appliedCoupon.code : null,
+                    tier:     tierKey,
                     total:    totalC.toFixed(2),
                     date:     new Date().toLocaleDateString('it-IT', { day: '2-digit', month: 'long', year: 'numeric' }),
                 }));
-            } catch(e) {}
+            } catch (e) {}
             MBCart.clear();
             window.location.href = res.data.url;
         })
@@ -306,20 +457,23 @@
             errEl.style.display = 'block';
             errEl.textContent   = 'Errore di rete. Controlla la connessione e riprova.';
             btn.disabled    = false;
-            btn.textContent = 'Procedi al Pagamento →';
+            btn.textContent = 'PROCEDI AL PAGAMENTO';
         });
     }
 
+    // ============================================================
+    // EVENT DELEGATION (qty / remove)
+    // ============================================================
     document.addEventListener('click', function (e) {
         var dec = e.target.closest('[data-qty-dec]');
         if (dec) {
-            var itemDec = MBCart.getAll().find(function(i){ return i.firestoreId === dec.dataset.qtyDec; });
+            var itemDec = MBCart.getAll().find(function (i) { return i.firestoreId === dec.dataset.qtyDec; });
             if (itemDec) MBCart.setQty(dec.dataset.qtyDec, itemDec.qty - 1);
             render(); return;
         }
         var inc = e.target.closest('[data-qty-inc]');
         if (inc) {
-            var itemInc = MBCart.getAll().find(function(i){ return i.firestoreId === inc.dataset.qtyInc; });
+            var itemInc = MBCart.getAll().find(function (i) { return i.firestoreId === inc.dataset.qtyInc; });
             if (itemInc) MBCart.setQty(inc.dataset.qtyInc, itemInc.qty + 1);
             render(); return;
         }

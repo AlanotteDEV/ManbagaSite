@@ -25,7 +25,7 @@ function parsePrice(priceStr) {
 module.exports = async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-    const { items, shipping: shippingRaw, couponCode } = req.body || {};
+    const { items, shipping: shippingRaw, couponCode, tierKey, tierDiscountCents: tierDiscRaw } = req.body || {};
     if (!Array.isArray(items) || items.length === 0)
         return res.status(400).json({ error: 'Carrello vuoto' });
     const shippingCost = (typeof shippingRaw === 'number' && shippingRaw >= 0) ? shippingRaw : null;
@@ -72,9 +72,13 @@ module.exports = async function handler(req, res) {
         validatedItems.push({ firestoreId: item.firestoreId, title: p.title, qty: item.qty, unitAmount });
     }
 
-    /* Spedizione — €5.90 sotto €50, gratuita sopra */
+    /* Tier loyalty — soglie di spedizione gratuita per livello */
+    const TIER_FREE_SHIPPING = { bronze: 5000, silver: 1000, gold: 0 };
+    const resolvedTier       = ['bronze','silver','gold'].includes(tierKey) ? tierKey : 'bronze';
+    const freeThreshold      = TIER_FREE_SHIPPING[resolvedTier];
+
     const subtotalCents = validatedItems.reduce((s, i) => s + i.unitAmount * i.qty, 0);
-    const freeShipping  = subtotalCents >= 5000;
+    const freeShipping  = freeThreshold === 0 || subtotalCents >= freeThreshold;
     const shippingCents = freeShipping ? 0 : 590;
     if (shippingCents > 0) {
         lineItems.push({
@@ -87,10 +91,15 @@ module.exports = async function handler(req, res) {
         });
     }
 
+    /* Tier discount — validato lato server (capped al totale) */
+    const tierDiscCents = (Number.isInteger(tierDiscRaw) && tierDiscRaw > 0)
+        ? Math.min(tierDiscRaw, subtotalCents + shippingCents)
+        : 0;
+
     /* Coupon sconto — validazione server-side */
-    let stripeCouponId   = null;
+    let stripeCouponId    = null;
     let couponFirestoreId = null;
-    let discountCents    = 0;
+    let discountCents     = tierDiscCents; /* parte già con tier discount */
 
     if (couponCode && typeof couponCode === 'string' && couponCode.trim()) {
         const normalized = couponCode.trim().toUpperCase();
@@ -112,22 +121,35 @@ module.exports = async function handler(req, res) {
             }
 
             if (!expired) {
-                const totalCents  = subtotalCents + shippingCents;
-                discountCents     = Math.min(Math.round(couponData.amount * 100), totalCents);
-                couponFirestoreId = couponDoc.id;
+                const totalCents   = subtotalCents + shippingCents;
+                const couponCents  = Math.min(Math.round(couponData.amount * 100), totalCents - tierDiscCents);
+                discountCents      = tierDiscCents + couponCents;
+                couponFirestoreId  = couponDoc.id;
 
-                /* Crea coupon Stripe monouso per questo checkout */
+                /* Crea coupon Stripe monouso che include tier + promo */
                 const sc = await stripe.coupons.create({
-                    amount_off:      discountCents,
+                    amount_off:      Math.min(discountCents, totalCents),
                     currency:        'eur',
                     duration:        'once',
-                    name:            `Sconto ${normalized}`,
+                    name:            tierDiscCents > 0 ? `Sconto ${normalized} + Tier` : `Sconto ${normalized}`,
                     max_redemptions: 1,
                 });
                 stripeCouponId = sc.id;
             }
         }
         /* Se coupon non trovato/scaduto, si procede senza sconto (non bloccare il checkout) */
+    }
+
+    /* Solo tier discount (nessun coupon promo) */
+    if (!stripeCouponId && tierDiscCents > 0) {
+        const sc = await stripe.coupons.create({
+            amount_off:      Math.min(tierDiscCents, subtotalCents + shippingCents),
+            currency:        'eur',
+            duration:        'once',
+            name:            `Sconto livello ${resolvedTier}`,
+            max_redemptions: 1,
+        });
+        stripeCouponId = sc.id;
     }
 
     const host   = req.headers['x-forwarded-host'] || req.headers.host || '';
