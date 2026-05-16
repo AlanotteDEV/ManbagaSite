@@ -14,6 +14,54 @@ document.addEventListener('error', function(e) {
 
 var catPage = (function () {
 
+    /* ── WISHLIST ── */
+    var _wlSet  = {};
+    var _wlUser = null;
+
+    function _initWishlist() {
+        if (typeof firebase === 'undefined') return;
+        var auth = firebase.auth();
+        var db   = firebase.firestore();
+        auth.onAuthStateChanged(function(user) {
+            _wlUser = user;
+            if (!user) { _wlSet = {}; _refreshHearts(); return; }
+            db.collection('users').doc(user.uid).collection('wishlist').get()
+                .then(function(snap) {
+                    _wlSet = {};
+                    snap.forEach(function(d) { _wlSet[d.id] = true; });
+                    _refreshHearts();
+                }).catch(function() {});
+        });
+    }
+
+    function _refreshHearts() {
+        document.querySelectorAll('.wl-heart').forEach(function(btn) {
+            var id = btn.dataset.id;
+            btn.classList.toggle('wl-heart--on', !!_wlSet[id]);
+        });
+    }
+
+    window.toggleWishlist = function(productId, title, image, price, btn) {
+        if (!_wlUser) {
+            alert('Accedi al tuo account per salvare i prodotti nella wishlist.');
+            return;
+        }
+        var db  = firebase.firestore();
+        var ref = db.collection('users').doc(_wlUser.uid).collection('wishlist').doc(productId);
+        if (_wlSet[productId]) {
+            ref.delete().then(function() {
+                delete _wlSet[productId];
+                if (btn) btn.classList.remove('wl-heart--on');
+            });
+        } else {
+            ref.set({ title: title, image: image || '', price: price || '', addedAt: firebase.firestore.FieldValue.serverTimestamp() })
+                .then(function() {
+                    _wlSet[productId] = true;
+                    if (btn) btn.classList.add('wl-heart--on');
+                });
+        }
+    };
+
     var _JP_MAP = {
         manga:  { jp: 'マンガ・コミック', kanji: '漫' },
         libri:  { jp: '本・小説',         kanji: '本' },
@@ -235,6 +283,9 @@ var catPage = (function () {
                 + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 001.95-1.56l1.65-7.44H6"/></svg>'
                 + '</button>';
         }
+        html += '<button class="wl-heart" data-id="' + (p.firestoreId || p.id) + '"'
+            + ' onclick="event.stopPropagation();toggleWishlist(\'' + (p.firestoreId || p.id).replace(/'/g,"\\'") + '\',\'' + (p.title||'').replace(/'/g,"\\'") + '\',\'' + (p.image||'').replace(/'/g,"\\'") + '\',\'' + (p.price||'').replace(/'/g,"\\'") + '\',this)"'
+            + '>♡</button>';
         html += '</div>'; /* close cp-card */
         return html;
     }
@@ -517,6 +568,7 @@ function clearRecentlyViewed() {
 /* ---- Bootstrap on DOMContentLoaded ---- */
 document.addEventListener('DOMContentLoaded', function () {
     catPage.init();
+    _initWishlist();
     setTimeout(function () {
         if (typeof _initMainFirebase === 'function') _initMainFirebase();
     }, 0);
