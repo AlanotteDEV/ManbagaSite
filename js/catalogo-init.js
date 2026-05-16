@@ -260,7 +260,13 @@ var catPage = (function () {
     function _cardHtml(p) {
         var isOos = (p.badge === 'OUT OF STOCK' || p.badge === 'ESAURITO');
         var isInArrivo = (p.badge === 'IN ARRIVO');
+        var now = new Date();
+        var isPreorder = p.availableFrom && (p.availableFrom.toDate ? p.availableFrom.toDate() : new Date(p.availableFrom)) > now;
+        var availDateStr = isPreorder
+            ? (p.availableFrom.toDate ? p.availableFrom.toDate() : new Date(p.availableFrom)).toLocaleDateString('it-IT',{day:'2-digit',month:'long'})
+            : '';
         var html = '<div class="cp-card' + (isOos ? ' cp-card--oos' : '') + '" data-pid="' + p.id + '">';
+        html += (isPreorder ? '<div class="preorder-badge">PRE-ORDER · ' + availDateStr + '</div>' : '');
         html += '<div class="product-badge" data-badge="' + (p.badge || 'Disponibile') + '">' + (p.badge || 'Disponibile') + '</div>';
         html += '<div class="cp-card-img-wrap">'
             + '<img class="cp-card-img" src="' + p.image + '" alt="' + _esc(p.title) + '" loading="lazy">'

@@ -50,9 +50,17 @@ module.exports = async function handler(req, res) {
             return res.status(400).json({ error: `Prodotto non trovato: ${item.firestoreId}` });
 
         const p = doc.data();
-        const stock = parseInt(p.quantity) || 0;
-        if (stock < item.qty)
-            return res.status(409).json({ error: `Stock insufficiente per "${p.title}". Disponibili: ${stock}` });
+        const now2 = new Date();
+        const availFrom = p.availableFrom
+            ? (p.availableFrom.toDate ? p.availableFrom.toDate() : new Date(p.availableFrom))
+            : null;
+        const isPreorder = availFrom && availFrom > now2;
+
+        if (!isPreorder) {
+            const stock = parseInt(p.quantity) || 0;
+            if (stock < item.qty)
+                return res.status(409).json({ error: `Stock insufficiente per "${p.title}". Disponibili: ${stock}` });
+        }
 
         const unitAmount = parsePrice(p.price);
         if (unitAmount <= 0)
@@ -69,7 +77,7 @@ module.exports = async function handler(req, res) {
             },
             quantity: item.qty,
         });
-        validatedItems.push({ firestoreId: item.firestoreId, title: p.title, qty: item.qty, unitAmount });
+        validatedItems.push({ firestoreId: item.firestoreId, title: p.title, qty: item.qty, unitAmount, isPreorder: !!isPreorder });
     }
 
     /* Tier loyalty — soglie di spedizione gratuita per livello */
@@ -175,6 +183,7 @@ module.exports = async function handler(req, res) {
     await db.collection('pending_checkouts').doc(session.id).set({
         items:             validatedItems,
         couponFirestoreId: couponFirestoreId || null,
+        hasPreorder:       validatedItems.some(function(i) { return i.isPreorder; }),
         createdAt:         new Date(),
     });
 

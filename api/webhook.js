@@ -108,7 +108,7 @@ module.exports = async function handler(req, res) {
         console.error('pending_checkout non trovato per session:', session.id);
         return res.status(200).json({ received: true });
     }
-    const { items, couponFirestoreId } = pendingDoc.data();
+    const { items, couponFirestoreId, hasPreorder } = pendingDoc.data();
 
     /* Salva ordine */
     await db.collection('orders').doc(session.id).set({
@@ -118,13 +118,14 @@ module.exports = async function handler(req, res) {
         items: items,
         total: session.amount_total / 100,
         couponFirestoreId: couponFirestoreId || null,
-        status: 'paid',
+        status: hasPreorder ? 'pre-order' : 'ricevuto',
         createdAt: FieldValue.serverTimestamp(),
     });
 
     /* Decrementa stock e marca coupon usato in batch atomico */
     const batch = db.batch();
     items.forEach(function (item) {
+        if (item.isPreorder) return;
         var ref = db.collection('products').doc(item.firestoreId);
         batch.update(ref, { quantity: FieldValue.increment(-item.qty) });
     });
