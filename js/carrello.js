@@ -41,7 +41,10 @@
         return 0;
     }
 
+    var _loyaltyCache = null;
+
     function getLoyalty() {
+        if (_loyaltyCache) return _loyaltyCache;
         try {
             var stored = JSON.parse(localStorage.getItem('mb_loyalty') || '{}');
             return {
@@ -51,6 +54,22 @@
         } catch (e) {
             return { totalSpent: 0, ordersPlaced: 0 };
         }
+    }
+
+    function _initFirestoreLoyalty() {
+        if (typeof firebase === 'undefined' || !window._mbDb) return;
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (!user) { _loyaltyCache = null; render(); return; }
+            window._mbDb.collection('users').doc(user.uid).get().then(function(snap) {
+                if (!snap.exists) return;
+                var d = snap.data();
+                _loyaltyCache = {
+                    totalSpent:   Number(d.totalSpent)   || 0,
+                    ordersPlaced: Number(d.ordersPlaced) || 0
+                };
+                render();
+            }).catch(function() {});
+        });
     }
 
     // ============================================================
@@ -628,5 +647,8 @@
         }
     });
 
-    document.addEventListener('DOMContentLoaded', render);
+    document.addEventListener('DOMContentLoaded', function() {
+        render();
+        _initFirestoreLoyalty();
+    });
 })();
