@@ -41,6 +41,8 @@ var catPage = (function () {
         });
     }
 
+    window._mbInitWishlist = function() { _initWishlist(); };
+
     window.toggleWishlist = function(productId, title, image, price, btn) {
         if (!_wlUser) {
             alert('Accedi al tuo account per salvare i prodotti nella wishlist.');
@@ -574,7 +576,7 @@ function clearRecentlyViewed() {
 /* ---- Bootstrap on DOMContentLoaded ---- */
 document.addEventListener('DOMContentLoaded', function () {
     catPage.init();
-    _initWishlist();
+    if (typeof window._mbInitWishlist === 'function') try { window._mbInitWishlist(); } catch(e) {}
     setTimeout(function () {
         if (typeof _initMainFirebase === 'function') _initMainFirebase();
     }, 0);
