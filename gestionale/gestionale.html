@@ -959,6 +959,12 @@ input, textarea, select { font-family: inherit; color: inherit; }
 }
 .ordini-stat-card .stat-label { font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
 .ordini-stat-card .stat-value { font-size:22px; font-weight:800; }
+.ec-stato { display:inline-block; padding:2px 8px; border-radius:3px; font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; }
+.ec-stato-ricevuto        { background:rgba(100,116,139,.2); color:#94a3b8; }
+.ec-stato-in-preparazione { background:rgba(245,158,11,.15);  color:#fbbf24; }
+.ec-stato-spedito         { background:rgba(59,130,246,.15);   color:#60a5fa; }
+.ec-stato-consegnato      { background:rgba(16,185,129,.15);   color:#34d399; }
+.ec-stato-pre-order       { background:rgba(139,92,246,.15);   color:#a78bfa; }
 </style>
 </head>
 
@@ -1227,6 +1233,11 @@ input, textarea, select { font-family: inherit; color: inherit; }
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
         <span>Ordini Online</span>
         <span class="nav-badge" id="badge-ordini-nuovi">0</span>
+      </div>
+      <div class="nav-item" data-view="ecommerce" onclick="switchView('ecommerce')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        <span>Ordini E-Commerce</span>
+        <span class="nav-badge" id="badge-ecommerce-nuovi">0</span>
       </div>
 
       <div class="nav-item" data-view="richieste" onclick="switchView('richieste')">
@@ -1617,6 +1628,32 @@ input, textarea, select { font-family: inherit; color: inherit; }
         <div id="richieste-table-wrap">
             <div style="text-align:center;padding:60px 20px;color:rgba(240,237,232,.35);font-size:13px">Caricamento...</div>
         </div>
+    </div>
+
+    <!-- ===== VIEW: ORDINI E-COMMERCE ===== -->
+    <div class="view hidden" id="view-ecommerce">
+      <div class="view-header">
+        <div class="view-title-block">
+          <div class="view-label">Stripe</div>
+          <div class="view-title">Ordini E-Commerce</div>
+        </div>
+        <div class="view-actions">
+          <select id="ec-filter-stato" onchange="_renderEcommerce()" style="font-size:12px;padding:6px 10px;background:#1c1c1c;color:#f0ede8;border:1px solid rgba(255,255,255,.1);border-radius:4px">
+            <option value="tutti">Tutti gli stati</option>
+            <option value="ricevuto">Ricevuti</option>
+            <option value="in-preparazione">In Preparazione</option>
+            <option value="spedito">Spediti</option>
+            <option value="consegnato">Consegnati</option>
+            <option value="pre-order">Pre-Order</option>
+          </select>
+          <button class="btn btn-secondary btn-sm" onclick="loadEcommerce()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            Aggiorna
+          </button>
+        </div>
+      </div>
+      <div id="ec-stats" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:20px"></div>
+      <div id="ec-table-wrap"></div>
     </div>
 
     <!-- ===== VIEW: PREORDINI ===== -->
@@ -2999,6 +3036,7 @@ function renderCurrentView() {
         case 'vouchers':     loadVouchers();         break;
         case 'quiz':         loadQuizList();         break;
         case 'polls':        loadPollList();         break;
+        case 'ecommerce':    loadEcommerce();        break;
     }
 }
 
@@ -6739,6 +6777,116 @@ function toggleRichiestaLetta(id) {
         };
     }
 })();
+
+/* ─── ORDINI E-COMMERCE ─── */
+var _ecData = [];
+
+function loadEcommerce() {
+    if (!_db) return;
+    var wrap = document.getElementById('ec-table-wrap');
+    if (wrap) wrap.innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted);font-size:13px">Caricamento...</div>';
+    _db.collection('orders').orderBy('createdAt', 'desc').limit(200).get()
+        .then(function(snap) {
+            _ecData = snap.docs.map(function(doc) { var d = doc.data(); d._id = doc.id; return d; });
+            _renderEcommerce();
+        })
+        .catch(function(err) {
+            if (wrap) wrap.innerHTML = '<div style="color:#f87171;padding:20px">Errore: ' + _g(err.message) + '</div>';
+        });
+}
+
+function _renderEcommerce() {
+    var filtro = (document.getElementById('ec-filter-stato') || {}).value || 'tutti';
+    var data   = filtro === 'tutti' ? _ecData : _ecData.filter(function(o) { return o.status === filtro; });
+
+    var stats = document.getElementById('ec-stats');
+    if (stats) {
+        var nuovi   = _ecData.filter(function(o) { return o.status === 'ricevuto'; }).length;
+        var inPrep  = _ecData.filter(function(o) { return o.status === 'in-preparazione'; }).length;
+        var spediti = _ecData.filter(function(o) { return o.status === 'spedito'; }).length;
+        var totale  = _ecData.reduce(function(s, o) { return s + (parseFloat(o.total) || 0); }, 0);
+        stats.innerHTML =
+            '<div class="ordini-stat-card"><div class="stat-label">Totale Ordini</div><div class="stat-value">' + _ecData.length + '</div></div>'
+          + '<div class="ordini-stat-card"><div class="stat-label">Da Gestire</div><div class="stat-value" style="color:#60a5fa">' + nuovi + '</div></div>'
+          + '<div class="ordini-stat-card"><div class="stat-label">In Preparazione</div><div class="stat-value" style="color:#fbbf24">' + inPrep + '</div></div>'
+          + '<div class="ordini-stat-card"><div class="stat-label">Spediti</div><div class="stat-value" style="color:#34d399">' + spediti + '</div></div>'
+          + '<div class="ordini-stat-card"><div class="stat-label">Incasso Totale</div><div class="stat-value">€' + totale.toFixed(2) + '</div></div>';
+        var badge = document.getElementById('badge-ecommerce-nuovi');
+        if (badge) { badge.textContent = nuovi; badge.style.display = nuovi > 0 ? '' : 'none'; }
+    }
+
+    var wrap = document.getElementById('ec-table-wrap');
+    if (!wrap) return;
+    if (!data.length) { wrap.innerHTML = '<div style="text-align:center;padding:60px;color:var(--muted)">Nessun ordine.</div>'; return; }
+
+    var EC_STATUS_OPTS = [['ricevuto','Ricevuto'],['in-preparazione','In Preparazione'],['spedito','Spedito'],['consegnato','Consegnato']];
+    var html = '<div style="overflow-x:auto"><table class="ordini-table"><thead><tr>'
+        + '<th>Data</th><th>Ordine</th><th>Cliente</th><th>Prodotti</th><th>Totale</th><th>Stato</th><th>Azioni</th>'
+        + '</tr></thead><tbody>';
+
+    data.forEach(function(o) {
+        var dt      = o.createdAt && o.createdAt.toDate ? o.createdAt.toDate().toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+        var shortId = o._id.slice(-8).toUpperCase();
+        var status  = o.status || 'ricevuto';
+        var statusLabels = { ricevuto:'Ricevuto','in-preparazione':'In Preparazione',spedito:'Spedito',consegnato:'Consegnato','pre-order':'Pre-Order' };
+        var items   = (o.items || []).map(function(it) { return '· ' + _g(it.title) + ' ×' + it.qty; }).join('<br>');
+        var opts    = EC_STATUS_OPTS.map(function(s) { return '<option value="' + s[0] + '"' + (s[0]===status?' selected':'') + '>' + s[1] + '</option>'; }).join('');
+        html += '<tr>'
+            + '<td style="white-space:nowrap;font-size:11px">' + dt + '</td>'
+            + '<td style="font-family:monospace;font-size:12px;color:#dc2626">#' + shortId + '</td>'
+            + '<td style="font-size:12px"><strong>' + _g(o.customerName||'') + '</strong><br>' + _g(o.customerEmail||'') + '</td>'
+            + '<td><div class="ordine-items-list">' + (items||'—') + '</div></td>'
+            + '<td style="font-weight:700">€' + (parseFloat(o.total)||0).toFixed(2) + '</td>'
+            + '<td><span class="ec-stato ec-stato-' + _g(status) + '">' + (statusLabels[status]||status) + '</span></td>'
+            + '<td>'
+            + '<select style="font-size:11px;padding:4px 6px;background:#1c1c1c;color:#f0ede8;border:1px solid rgba(255,255,255,.1);border-radius:4px;cursor:pointer" onchange="ecChangeStato(\'' + o._id + '\',this.value,this)">' + opts + '</select>'
+            + '<div id="ec-tr-' + o._id + '" style="display:none;margin-top:4px">'
+            + '<input type="text" id="ec-tr-input-' + o._id + '" placeholder="Codice tracking" style="font-size:11px;padding:3px 6px;background:#111;border:1px solid rgba(255,255,255,.1);color:#f0ede8;width:130px">'
+            + '<button style="font-size:11px;padding:4px 8px;background:#3b82f6;color:#fff;border:none;cursor:pointer;border-radius:3px;margin-left:4px" onclick="ecConfirmSpedito(\'' + o._id + '\')">Conferma</button>'
+            + '</div></td>'
+            + '</tr>';
+    });
+    html += '</tbody></table></div>';
+    wrap.innerHTML = html;
+}
+
+function ecChangeStato(orderId, newStatus, selectEl) {
+    if (newStatus === 'spedito') {
+        var wrap = document.getElementById('ec-tr-' + orderId);
+        if (wrap) wrap.style.display = 'block';
+        return;
+    }
+    _ecUpdateStato(orderId, newStatus);
+}
+
+function ecConfirmSpedito(orderId) {
+    var input    = document.getElementById('ec-tr-input-' + orderId);
+    var tracking = input ? input.value.trim() : '';
+    _ecUpdateStato(orderId, 'spedito', tracking || null);
+    var wrap = document.getElementById('ec-tr-' + orderId);
+    if (wrap) wrap.style.display = 'none';
+}
+
+function _ecUpdateStato(orderId, status, trackingCode) {
+    var adminSecret = prompt('Inserisci ADMIN_SECRET per confermare:');
+    if (!adminSecret) return;
+    var body = { orderId: orderId, status: status };
+    if (trackingCode) body.trackingCode = trackingCode;
+    fetch('/api/update-order-status', {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json', 'x-admin-secret': adminSecret },
+        body: JSON.stringify(body)
+    })
+    .then(function(r) { return r.json().then(function(d) { return {ok:r.ok,data:d}; }); })
+    .then(function(res) {
+        if (!res.ok) { alert('Errore: ' + (res.data.error||'sconosciuto')); return; }
+        var o = _ecData.find(function(x) { return x._id === orderId; });
+        if (o) o.status = status;
+        _renderEcommerce();
+        if (typeof showToast === 'function') showToast('Stato aggiornato', 'success');
+    })
+    .catch(function(err) { alert('Errore rete: ' + err.message); });
+}
 </script>
 </body>
 </html>
