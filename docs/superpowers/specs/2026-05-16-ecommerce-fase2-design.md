@@ -21,7 +21,7 @@ Email/Password + Google OAuth via Firebase Auth.
 - `js/account-init.js` — tutta la logica auth
 
 ### Flusso
-1. Utente clicca "Account" in navbar → `account.html`
+1. Utente clicca "Account" che appare sopra in navbar solo dopo aver aperto il carrello → `account.html`
 2. Se non loggato: mostra form login/registrazione (tab)
 3. Se loggato: mostra profilo (tier, spesa totale, ordini), storico ordini, wishlist
 4. Logout disponibile in pagina
