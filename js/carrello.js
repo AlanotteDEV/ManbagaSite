@@ -262,6 +262,7 @@
             + cards
             + '<div class="c-halftone c-ht-br"></div>'
             + '</div>'
+            + '<div id="c-also" class="c-also"></div>'
             + '<div class="c-trust">'
             + '<div><div class="c-ico">🚚</div><div>'
             + (tier.shippingFree === 0 ? 'Spedizione sempre gratis' : 'Spedizione gratis')
@@ -326,6 +327,9 @@
             + '</aside>'
             + '</div>';
 
+        /* Prodotti consigliati */
+        loadRecommendations(items);
+
         /* Events */
         document.getElementById('checkout-btn').addEventListener('click', startCheckout);
 
@@ -337,6 +341,137 @@
 
         var couponInput = document.getElementById('coupon-input');
         if (couponInput) couponInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') applyCoupon(); });
+    }
+
+    // ============================================================
+    // PRODOTTI CONSIGLIATI
+    // ============================================================
+    function scoreProduct(product, cartKeywords) {
+        if (!product.title) return 0;
+        var titleWords = product.title.toLowerCase().split(/\s+/);
+        var score = 0;
+        cartKeywords.forEach(function (kw) {
+            titleWords.forEach(function (w) {
+                if (w === kw)                       score += 3;
+                else if (w.indexOf(kw) !== -1)      score += 2;
+                else if (kw.indexOf(w) !== -1)      score += 1;
+            });
+        });
+        /* boost stesso tag/categoria */
+        if (product.category) {
+            cartKeywords.forEach(function (kw) {
+                if (product.category.toLowerCase().indexOf(kw) !== -1) score += 2;
+            });
+        }
+        return score;
+    }
+
+    function extractKeywords(items) {
+        var stopWords = new Set(['di','del','della','il','la','lo','gli','le','un','una','uno','e','è','a','da','in','con','su','per','tra','fra','vol','volume','n','n.','the','of','and','to']);
+        var kws = {};
+        items.forEach(function (item) {
+            var words = (item.title || '').toLowerCase().split(/[\s\-_.,:;()[\]]+/);
+            words.forEach(function (w) {
+                if (w.length > 2 && !stopWords.has(w) && isNaN(w)) {
+                    kws[w] = (kws[w] || 0) + 1;
+                }
+            });
+        });
+        return Object.keys(kws).sort(function (a, b) { return kws[b] - kws[a]; }).slice(0, 12);
+    }
+
+    function renderAlso(products) {
+        var container = document.getElementById('c-also');
+        if (!container) return;
+        if (!products.length) { container.innerHTML = ''; return; }
+
+        var cards = products.map(function (p) {
+            var imgEl = p.image
+                ? '<img src="' + esc(p.image) + '" alt="' + esc(p.title) + '" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
+                  + '<div class="c-mini-ph" style="display:none">' + esc((p.title || '?').charAt(0)) + '</div>'
+                : '<div class="c-mini-ph">' + esc((p.title || '?').charAt(0)) + '</div>';
+            var ribbon = p.category
+                ? '<span class="c-mini-ribbon">' + esc(p.category.toUpperCase().slice(0, 8)) + '</span>'
+                : '';
+            var inCart = MBCart.getAll().some(function (i) { return i.firestoreId === p.id; });
+            return '<div class="c-mini">'
+                + '<div class="c-mini-cover">' + imgEl + ribbon + '</div>'
+                + '<h4>' + esc(p.title) + '</h4>'
+                + '<div class="c-mini-row">'
+                + '<span class="c-mini-price">' + esc(p.price || '') + '</span>'
+                + '<button class="c-mini-add" data-rec-id="' + esc(p.id) + '"'
+                + ' data-rec-title="' + esc(p.title) + '"'
+                + ' data-rec-img="' + esc(p.image || '') + '"'
+                + ' data-rec-price="' + esc(p.price || '') + '"'
+                + ' data-rec-maxqty="' + (p.quantity || 99) + '"'
+                + (inCart ? ' disabled title="Già nel carrello"' : ' aria-label="Aggiungi al carrello"')
+                + '>' + (inCart ? '✓' : '+') + '</button>'
+                + '</div>'
+                + '</div>';
+        }).join('');
+
+        container.innerHTML = '<div class="c-also">'
+            + '<div class="c-also-head">'
+            + '<h3>POTREBBE PIACERTI <span class="swish">↓</span></h3>'
+            + '<span>SELEZIONATI PER TE</span>'
+            + '</div>'
+            + '<div class="c-also-grid">' + cards + '</div>'
+            + '</div>';
+    }
+
+    function loadRecommendations(cartItems) {
+        var container = document.getElementById('c-also');
+        if (!container || !window._mbDb) return;
+
+        /* Skeleton */
+        var skelCards = [1,2,3,4].map(function () {
+            return '<div class="c-skel"><div class="c-skel-cover"></div><div class="c-skel-line"></div><div class="c-skel-line short"></div></div>';
+        }).join('');
+        container.innerHTML = '<div class="c-also">'
+            + '<div class="c-also-head"><h3>POTREBBE PIACERTI <span class="swish">↓</span></h3></div>'
+            + '<div class="c-also-loading">' + skelCards + '</div>'
+            + '</div>';
+
+        var cartIds   = cartItems.map(function (i) { return i.firestoreId; });
+        var keywords  = extractKeywords(cartItems);
+
+        window._mbDb.collection('products')
+            .where('quantity', '>', 0)
+            .limit(40)
+            .get()
+            .then(function (snap) {
+                var candidates = [];
+                snap.forEach(function (doc) {
+                    var d = doc.data();
+                    if (cartIds.indexOf(doc.id) !== -1) return;     /* già in carrello */
+                    if (!d.title || !d.price) return;               /* dati mancanti */
+                    candidates.push({
+                        id:       doc.id,
+                        title:    d.title,
+                        image:    d.image || d.imageUrl || '',
+                        price:    d.price,
+                        category: d.category || d.tipo || '',
+                        quantity: parseInt(d.quantity) || 1,
+                        score:    scoreProduct(d, keywords)
+                    });
+                });
+
+                /* Ordina: prima i più simili, poi per score > 0 */
+                candidates.sort(function (a, b) { return b.score - a.score; });
+
+                /* Se non ci sono risultati simili, mostra qualsiasi prodotto disponibile */
+                var shown = candidates.filter(function (c) { return c.score > 0; }).slice(0, 4);
+                if (shown.length < 4) {
+                    var extra = candidates.filter(function (c) { return c.score === 0; });
+                    shown = shown.concat(extra).slice(0, 4);
+                }
+
+                renderAlso(shown);
+            })
+            .catch(function () {
+                /* In caso di errore, nascondi la sezione silenziosamente */
+                if (container) container.innerHTML = '';
+            });
     }
 
     // ============================================================
@@ -479,6 +614,18 @@
         }
         var rem = e.target.closest('[data-remove]');
         if (rem) { MBCart.remove(rem.dataset.remove); render(); return; }
+
+        var rec = e.target.closest('[data-rec-id]');
+        if (rec) {
+            MBCart.add({
+                firestoreId: rec.dataset.recId,
+                title:       rec.dataset.recTitle,
+                image:       rec.dataset.recImg,
+                price:       rec.dataset.recPrice,
+                maxQty:      parseInt(rec.dataset.recMaxqty) || 99
+            });
+            render(); return;
+        }
     });
 
     document.addEventListener('DOMContentLoaded', render);

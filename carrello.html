@@ -8,6 +8,9 @@
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/png" href="WhatsApp_Image_2026-03-10_at_11.15.27-removebg-preview.png">
     <link rel="stylesheet" href="fonts/fonts.css">
+    <!-- Firebase — lettura prodotti consigliati -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js" integrity="sha384-mLD+wdwynYnAhgHAkdPP5hroWJXJTNy5C2OhPKM55zuiV2vjzFD1LtBohaHq2Ex8" crossorigin="anonymous"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js" integrity="sha384-/SBCyt0JELVRyyrOp+QG5CdnpVoAry+uw9hdherLgyZxxePtHjOvQmJU5CHymUhT" crossorigin="anonymous"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Bowlby+One&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -347,6 +350,51 @@ body.page-carrello{
 
 /* ============ OVERRIDE: cart-page heading ============ */
 .cart-page h1,.cart-page .cart-subtitle{display:none}
+
+/* ============ PRODOTTI CONSIGLIATI ============ */
+.c-also{margin-top:24px}
+.c-also-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.c-also-head h3{font-family:'Bowlby One',sans-serif;text-transform:uppercase;font-size:20px;margin:0;letter-spacing:.02em;color:var(--cink)}
+.c-also-head .swish{color:var(--cred)}
+.c-also-head span{font-size:12px;color:var(--cmuted);font-weight:600;letter-spacing:.06em}
+.c-also-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media(max-width:900px){.c-also-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:400px){.c-also-grid{grid-template-columns:repeat(2,1fr);gap:8px}}
+.c-mini{
+  background:var(--cpaper);border:3px solid #111;box-shadow:4px 4px 0 #111;
+  padding:10px;display:flex;flex-direction:column;gap:8px;cursor:pointer;
+  transition:transform .15s,box-shadow .15s;
+}
+.c-mini:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 #111}
+.c-mini-cover{
+  aspect-ratio:3/4;border:2px solid #111;position:relative;overflow:hidden;background:#1a1a1a;
+}
+.c-mini-cover img{width:100%;height:100%;object-fit:cover;display:block}
+.c-mini-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:'Bowlby One';font-size:24px;color:#555}
+.c-mini-ribbon{
+  position:absolute;top:8px;left:-2px;background:var(--cred);color:#fff;
+  font-family:'Bowlby One';font-size:10px;padding:2px 8px;letter-spacing:.06em;
+}
+.c-mini h4{font-family:'Bowlby One';margin:0;font-size:13px;line-height:1.15;text-transform:uppercase;color:var(--cink)}
+.c-mini-row{display:flex;align-items:center;justify-content:space-between;gap:4px}
+.c-mini-price{color:var(--cred);font-family:'Bowlby One';font-size:15px}
+.c-mini-add{
+  background:#111;color:#fff;border:none;width:28px;height:28px;cursor:pointer;
+  font-family:'Bowlby One';font-size:18px;display:grid;place-items:center;flex-shrink:0;
+}
+.c-mini-add:hover{background:var(--cred)}
+.c-mini-add:disabled{background:#999;cursor:not-allowed}
+
+/* skeleton loading */
+.c-also-loading{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:12px;
+}
+@media(max-width:900px){.c-also-loading{grid-template-columns:repeat(2,1fr)}}
+.c-skel{background:var(--cpaper);border:3px solid #ddd;}
+.c-skel-cover{aspect-ratio:3/4;background:linear-gradient(90deg,#e8e6e2 25%,#f5f3ef 50%,#e8e6e2 75%);background-size:200% 100%;animation:skel-shimmer 1.4s infinite}
+.c-skel-line{height:12px;margin:10px 10px 4px;background:linear-gradient(90deg,#e8e6e2 25%,#f5f3ef 50%,#e8e6e2 75%);background-size:200% 100%;animation:skel-shimmer 1.4s infinite}
+.c-skel-line.short{width:50%;height:10px;margin-top:4px}
+@keyframes skel-shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 </style>
 </head>
 
@@ -399,6 +447,18 @@ body.page-carrello{
         </div>
     </footer>
 
+    <script>
+    var MANBAGA_FIREBASE_CONFIG = {
+        apiKey:            'AIzaSyCG0-J2wxZGSz6eDh_E-aAe2uvpTGLmXz0',
+        authDomain:        'prenotazioninegozio-65eb1.firebaseapp.com',
+        projectId:         'prenotazioninegozio-65eb1',
+        storageBucket:     'prenotazioninegozio-65eb1.appspot.com',
+        messagingSenderId: '466874129336',
+        appId:             '1:466874129336:web:fd07925523c35921fe8d4d'
+    };
+    if (!firebase.apps.length) firebase.initializeApp(MANBAGA_FIREBASE_CONFIG);
+    var _mbDb = firebase.firestore();
+    </script>
     <script src="js/cart.js"></script>
     <script src="js/carrello.js"></script>
 </body>

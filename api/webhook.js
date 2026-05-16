@@ -48,7 +48,7 @@ async function sendConfirmationEmail(session, items) {
 
     await resend.emails.send({
         from: 'MANBAGA Comics <onboarding@resend.dev>',
-        to: process.env.RESEND_TEST_EMAIL || 'manbagacomics@gmail.com',
+        to: customerEmail,
         subject: 'Ordine #' + orderId + ' confermato — MANBAGA Comics',
         html: '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="font-family:Arial,sans-serif;background:#f9fafb;margin:0;padding:20px">'
             + '<div style="max-width:600px;margin:0 auto;background:#fff;border-radius:4px;overflow:hidden">'

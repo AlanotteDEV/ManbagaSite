@@ -224,13 +224,14 @@
         if (order.date) document.getElementById('order-date').textContent = order.date;
 
         if (Array.isArray(order.items) && order.items.length) {
+            var esc = function(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); };
             var html = order.items.map(function(item) {
                 var sub = (parseFloat(String(item.price).replace(/[^0-9.,]/g,'').replace(',','.')) * item.qty).toFixed(2);
                 return '<div class="order-item">'
-                    + '<img src="' + (item.image || 'https://placehold.co/52x66/161616/444?text=?') + '" alt="' + item.title + '">'
+                    + '<img src="' + esc(item.image || '') + '" alt="' + esc(item.title) + '">'
                     + '<div class="order-item-info">'
-                    + '<div class="order-item-title">' + item.title + '</div>'
-                    + '<div class="order-item-qty">Quantità: ' + item.qty + '</div>'
+                    + '<div class="order-item-title">' + esc(item.title) + '</div>'
+                    + '<div class="order-item-qty">Quantità: ' + parseInt(item.qty) + '</div>'
                     + '</div>'
                     + '<div class="order-item-price">&euro;' + sub + '</div>'
                     + '</div>';
@@ -243,6 +244,14 @@
             totalEl.style.display = 'flex';
             document.getElementById('order-total-amount').textContent = '€' + order.total;
         }
+
+        /* Aggiorna loyalty */
+        try {
+            var loyalty = JSON.parse(localStorage.getItem('mb_loyalty') || '{}');
+            loyalty.totalSpent   = (Number(loyalty.totalSpent)   || 0) + parseFloat(order.total  || 0);
+            loyalty.ordersPlaced = (Number(loyalty.ordersPlaced) || 0) + 1;
+            localStorage.setItem('mb_loyalty', JSON.stringify(loyalty));
+        } catch (e) {}
 
         /* Pulisce dopo la visualizzazione */
         localStorage.removeItem('mb_last_order');
