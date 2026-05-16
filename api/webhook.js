@@ -139,6 +139,24 @@ module.exports = async function handler(req, res) {
     /* Elimina pending_checkout */
     await db.collection('pending_checkouts').doc(session.id).delete();
 
+    /* Aggiorna loyalty utente registrato */
+    const customerEmail = session.customer_details.email;
+    const totalEur = session.amount_total / 100;
+    try {
+        const userSnap = await db.collection('users')
+            .where('email', '==', customerEmail)
+            .limit(1)
+            .get();
+        if (!userSnap.empty) {
+            await userSnap.docs[0].ref.update({
+                totalSpent:   FieldValue.increment(totalEur),
+                ordersPlaced: FieldValue.increment(1)
+            });
+        }
+    } catch (loyaltyErr) {
+        console.error('Loyalty update error:', loyaltyErr);
+    }
+
     /* Invia email conferma */
     try {
         await sendConfirmationEmail(session, items);
