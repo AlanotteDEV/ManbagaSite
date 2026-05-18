@@ -82,7 +82,6 @@
         document.getElementById('account-panel').style.display = '';
         _updateNavAccount(user);
         _populateHeader(user);
-        _mergeLoyalty(user);
         _ensureUserDoc(user);
         renderProfilo(user);
     });
@@ -112,24 +111,6 @@
                 });
             }
         });
-    }
-
-    function _mergeLoyalty(user) {
-        try {
-            var local = JSON.parse(localStorage.getItem('mb_loyalty') || '{}');
-            var localSpent  = Number(local.totalSpent)   || 0;
-            var localOrders = Number(local.ordersPlaced) || 0;
-            if (localSpent === 0 && localOrders === 0) return;
-            db.collection('users').doc(user.uid).get().then(function(snap) {
-                var fsSpent  = (snap.exists && snap.data().totalSpent)   || 0;
-                var fsOrders = (snap.exists && snap.data().ordersPlaced) || 0;
-                var updates  = {};
-                if (localSpent  > fsSpent)  updates.totalSpent   = localSpent;
-                if (localOrders > fsOrders) updates.ordersPlaced = localOrders;
-                if (Object.keys(updates).length) db.collection('users').doc(user.uid).update(updates);
-                localStorage.removeItem('mb_loyalty');
-            });
-        } catch(e) {}
     }
 
     function renderProfilo(user) {
