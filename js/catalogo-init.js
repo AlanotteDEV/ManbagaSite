@@ -60,16 +60,19 @@ var catPage = (function () {
         var db  = app.firestore();
         var ref = db.collection('users').doc(user.uid).collection('wishlist').doc(productId);
         if (_wlSet[productId]) {
-            ref.delete().then(function() {
-                delete _wlSet[productId];
-                if (btn) btn.classList.remove('wl-heart--on');
-            });
+            ref.delete()
+                .then(function() {
+                    delete _wlSet[productId];
+                    if (btn) btn.classList.remove('wl-heart--on');
+                })
+                .catch(function(err) { console.error('[WL] delete error:', err); });
         } else {
-            ref.set({ title: title, image: image || '', price: price || '', addedAt: firebase.firestore.FieldValue.serverTimestamp() })
+            ref.set({ title: title, image: image || '', price: price || '', addedAt: app.firestore.FieldValue ? app.firestore.FieldValue.serverTimestamp() : firebase.firestore.FieldValue.serverTimestamp() })
                 .then(function() {
                     _wlSet[productId] = true;
                     if (btn) btn.classList.add('wl-heart--on');
-                });
+                })
+                .catch(function(err) { console.error('[WL] set error:', err.code, err.message); });
         }
     };
 
