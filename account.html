@@ -1,211 +1,540 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Account — MANBAGA Comics &amp; Games</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="fonts/fonts.css">
-    <link rel="icon" type="image/png" href="WhatsApp_Image_2026-03-10_at_11.15.27-removebg-preview.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Account — MANBAGA Comics &amp; Games</title>
 
-    <!-- Firebase compat -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Bowlby+One&family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <style>
-    :root { --red:#dc2626; --white:#f5f0e8; --bg:#0d0d0d; --surface:#161616; --border:rgba(245,240,232,.1); }
-    *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
-    body { background: var(--bg); color: var(--white); }
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="icon" type="image/png" href="WhatsApp_Image_2026-03-10_at_11.15.27-removebg-preview.png">
 
-    .acc-page { max-width:960px; margin:110px auto 80px; padding:0 24px; }
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 
-    .auth-panel { max-width:440px; margin:0 auto; }
-    .auth-tabs { display:flex; gap:0; margin-bottom:0; border-bottom:2px solid var(--border); }
-    .auth-tab {
-        flex:1; padding:14px; background:none; border:none; cursor:pointer;
-        font-family:'Bangers',sans-serif; font-size:1.1rem; letter-spacing:.08em;
-        color:rgba(245,240,232,.4); border-bottom:2px solid transparent; margin-bottom:-2px;
-        transition:color .2s,border-color .2s;
-    }
-    .auth-tab.active { color:var(--white); border-bottom-color:var(--red); }
-    .auth-form { background:var(--surface); border:1px solid var(--border); padding:32px; margin-top:0; }
-    .auth-form h2 { font-family:'Bangers',sans-serif; font-size:1.8rem; letter-spacing:.06em; margin-bottom:24px; color:var(--white); }
-    .auth-field { margin-bottom:16px; }
-    .auth-field label { display:block; font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:rgba(245,240,232,.5); margin-bottom:6px; }
-    .auth-field input {
-        width:100%; padding:12px 14px; background:#111; border:1px solid var(--border);
-        color:var(--white); font-size:14px; font-family:inherit; outline:none;
-        transition:border-color .2s;
-    }
-    .auth-field input:focus { border-color:var(--red); }
-    .auth-btn {
-        width:100%; padding:14px; background:var(--red); color:#fff; border:none; cursor:pointer;
-        font-family:'Bangers',sans-serif; font-size:1.1rem; letter-spacing:.08em;
-        margin-top:8px; transition:background .15s;
-    }
-    .auth-btn:hover { background:#b91c1c; }
-    .auth-btn:disabled { opacity:.5; cursor:not-allowed; }
-    .auth-divider { text-align:center; margin:16px 0; color:rgba(245,240,232,.3); font-size:12px; }
-    .auth-google {
-        width:100%; padding:12px; background:transparent; border:1px solid var(--border);
-        color:var(--white); cursor:pointer; font-family:inherit; font-size:13px;
-        display:flex; align-items:center; justify-content:center; gap:10px; transition:border-color .2s;
-    }
-    .auth-google:hover { border-color:rgba(245,240,232,.4); }
-    .auth-msg { margin-top:12px; font-size:13px; min-height:20px; }
-    .auth-msg.err { color:#f87171; }
-    .auth-msg.ok  { color:#34d399; }
+<style>
+/* ---- page-level override: light comic theme ---- */
+body{background:#f5f3ef!important;background-image:radial-gradient(circle at 1px 1px,rgba(0,0,0,.08) 1px,transparent 1.4px)!important;background-size:14px 14px!important;color:#0c0c0c!important}
 
-    .acc-header { display:flex; align-items:center; gap:20px; margin-bottom:40px; }
-    .acc-avatar {
-        width:64px; height:64px; border-radius:50%; background:var(--red);
-        display:flex; align-items:center; justify-content:center;
-        font-family:'Bangers',sans-serif; font-size:1.8rem; color:#fff; flex-shrink:0;
-    }
-    .acc-name  { font-family:'Bangers',sans-serif; font-size:2rem; letter-spacing:.06em; color:var(--white); }
-    .acc-email { font-size:13px; color:rgba(245,240,232,.4); margin-top:2px; }
-    .acc-logout { margin-left:auto; padding:8px 18px; background:transparent; border:1px solid var(--border); color:rgba(245,240,232,.5); cursor:pointer; font-size:12px; font-family:inherit; transition:border-color .2s,color .2s; }
-    .acc-logout:hover { border-color:rgba(245,240,232,.4); color:var(--white); }
+/* ---- scoped vars ---- */
+#auth-panel,#account-panel,#acc-loading{
+  --bg:#f5f3ef;--ink:#0c0c0c;--paper:#ffffff;--paper-2:#f7f5f1;
+  --red:#e1251b;--red-deep:#b51810;--muted:#6b6b6b;--green:#138a5f;
+  --bronze:#a86b3c;--silver:#c9c9c9;--shadow:5px 5px 0 #0c0c0c;
+  font-family:'Space Grotesk','Inter',system-ui,sans-serif;color:#0c0c0c;
+}
 
-    .acc-tabs { display:flex; gap:0; border-bottom:2px solid var(--border); margin-bottom:32px; }
-    .acc-tab {
-        padding:12px 24px; background:none; border:none; cursor:pointer;
-        font-family:'Bangers',sans-serif; font-size:1rem; letter-spacing:.08em;
-        color:rgba(245,240,232,.4); border-bottom:2px solid transparent; margin-bottom:-2px;
-        transition:color .2s,border-color .2s;
-    }
-    .acc-tab.active { color:var(--white); border-bottom-color:var(--red); }
+/* ---- loading ---- */
+#acc-loading{
+  min-height:calc(100vh - 70px);margin-top:110px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Bowlby One',sans-serif;font-size:18px;letter-spacing:.14em;color:#6b6b6b;text-transform:uppercase;
+}
 
-    .tier-card { background:var(--surface); border:1px solid var(--border); padding:24px; margin-bottom:24px; }
-    .tier-card-head { display:flex; align-items:center; gap:16px; margin-bottom:20px; }
-    .tier-badge { padding:4px 14px; font-family:'Bangers',sans-serif; letter-spacing:.1em; font-size:.9rem; border-radius:2px; }
-    .tier-badge.bronze { background:#7a4a1f; color:#c98a4e; }
-    .tier-badge.silver { background:#2a2d33; color:#c0c4cc; }
-    .tier-badge.gold   { background:#3d2e00; color:#ffe27a; }
-    .tier-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
-    .tier-stat-val { font-family:'Bangers',sans-serif; font-size:1.6rem; letter-spacing:.04em; color:var(--red); }
-    .tier-stat-lab { font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:rgba(245,240,232,.4); margin-top:2px; }
+/* ---- auth panel wrap ---- */
+#auth-panel{
+  min-height:calc(100vh - 70px);margin-top:110px;
+  display:flex;align-items:center;justify-content:center;padding:40px 24px;
+}
+.auth-panel-inner{max-width:440px;width:100%}
+.auth-tabs{display:flex;border-bottom:3px solid #0c0c0c}
+.auth-tab{
+  flex:1;padding:14px;background:none;border:none;cursor:pointer;
+  font-family:'Bowlby One',sans-serif;font-size:1rem;letter-spacing:.08em;text-transform:uppercase;
+  color:#6b6b6b;border-bottom:3px solid transparent;margin-bottom:-3px;transition:color .2s,border-color .2s;
+}
+.auth-tab.active{color:#0c0c0c;border-bottom-color:#e1251b}
+.auth-form{background:#fff;border:3px solid #0c0c0c;box-shadow:5px 5px 0 #0c0c0c;padding:32px}
+.auth-form h2{font-family:'Bowlby One',sans-serif;font-size:1.8rem;letter-spacing:.06em;margin:0 0 24px;text-transform:uppercase}
+.auth-field{margin-bottom:16px}
+.auth-field label{display:block;font-family:'Bowlby One',sans-serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#6b6b6b;margin-bottom:6px}
+.auth-field input{width:100%;padding:12px 14px;background:#fff;border:2.5px solid #0c0c0c;color:#0c0c0c;font-size:14px;font-family:inherit;outline:none;transition:border-color .2s,box-shadow .2s}
+.auth-field input:focus{border-color:#e1251b;box-shadow:3px 3px 0 #0c0c0c}
+.auth-btn{width:100%;padding:14px;background:#e1251b;color:#fff;border:3px solid #0c0c0c;cursor:pointer;font-family:'Bowlby One',sans-serif;font-size:1.1rem;letter-spacing:.08em;text-transform:uppercase;margin-top:8px;box-shadow:4px 4px 0 #0c0c0c;transition:transform .1s,box-shadow .1s}
+.auth-btn:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 #0c0c0c}
+.auth-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:4px 4px 0 #0c0c0c}
+.auth-divider{text-align:center;margin:16px 0;color:#6b6b6b;font-size:12px;font-weight:600;letter-spacing:.06em}
+.auth-google{width:100%;padding:12px;background:transparent;border:2.5px solid #0c0c0c;color:#0c0c0c;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:10px;transition:background .15s,color .15s}
+.auth-google:hover{background:#0c0c0c;color:#fff}
+.auth-msg{margin-top:12px;font-size:13px;min-height:20px;font-weight:600}
+.auth-msg.err{color:#dc2626}
+.auth-msg.ok{color:#138a5f}
 
-    .order-card { background:var(--surface); border:1px solid var(--border); margin-bottom:12px; }
-    .order-card-head { display:flex; justify-content:space-between; align-items:center; padding:16px 20px; cursor:pointer; user-select:none; }
-    .order-card-head:hover { background:rgba(255,255,255,.02); }
-    .order-num  { font-family:'Bangers',sans-serif; font-size:1.2rem; letter-spacing:.08em; color:var(--red); }
-    .order-meta { font-size:12px; color:rgba(245,240,232,.4); }
-    .order-status { padding:3px 10px; font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; border-radius:2px; }
-    .order-status.ricevuto          { background:rgba(100,116,139,.2); color:#94a3b8; }
-    .order-status.in-preparazione   { background:rgba(245,158,11,.15); color:#fbbf24; }
-    .order-status.spedito           { background:rgba(59,130,246,.15);  color:#60a5fa; }
-    .order-status.consegnato        { background:rgba(16,185,129,.15);  color:#34d399; }
-    .order-status.pre-order         { background:rgba(139,92,246,.15);  color:#a78bfa; }
-    .order-body { padding:0 20px 16px; display:none; }
-    .order-body.open { display:block; }
-    .order-item-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border); font-size:13px; }
-    .order-item-row:last-child { border-bottom:none; }
-    .order-total { text-align:right; padding-top:12px; font-family:'Bangers',sans-serif; font-size:1.2rem; color:var(--red); }
+/* ---- account panel layout ---- */
+#account-panel{margin-top:110px}
+.crumb{max-width:1240px;margin:0 auto;padding:24px 32px 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px}
+.crumb h1{font-family:'Bowlby One',sans-serif;font-size:30px;margin:0;letter-spacing:.02em;text-transform:uppercase}
+.crumb h1 em{color:#e1251b;font-style:normal}
+.crumb-sub{font-size:12px;color:#6b6b6b;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-top:4px;display:block}
+.exit-cta{font-family:'Bowlby One';letter-spacing:.06em;text-transform:uppercase;font-size:13px;background:#fff;color:#0c0c0c;border:3px solid #0c0c0c;padding:10px 16px;box-shadow:4px 4px 0 #0c0c0c;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:10px;transition:transform .12s,box-shadow .12s}
+.exit-cta:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 #0c0c0c;background:#e1251b;color:#fff}
+.page{max-width:1240px;margin:0 auto;padding:22px 32px 80px;display:flex;flex-direction:column;gap:24px}
+.row-2{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:24px;align-items:stretch}
 
-    .wishlist-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:16px; }
-    .wl-card { background:var(--surface); border:1px solid var(--border); padding:12px; }
-    .wl-img  { width:100%; aspect-ratio:2/3; object-fit:cover; display:block; margin-bottom:10px; background:#222; }
-    .wl-title { font-size:12px; font-weight:700; color:var(--white); margin-bottom:6px; line-height:1.3; }
-    .wl-price { font-family:'Bangers',sans-serif; font-size:1rem; color:var(--red); margin-bottom:8px; }
-    .wl-actions { display:flex; gap:6px; }
-    .wl-add    { flex:1; padding:8px; background:var(--red); color:#fff; border:none; cursor:pointer; font-family:inherit; font-size:11px; font-weight:700; }
-    .wl-remove { padding:8px; background:transparent; border:1px solid var(--border); color:rgba(245,240,232,.4); cursor:pointer; font-size:14px; transition:color .2s; }
-    .wl-remove:hover { color:#f87171; }
+/* ---- panels ---- */
+.panel{background:#fff;border:3px solid #111;box-shadow:5px 5px 0 #0c0c0c;position:relative}
+.panel-head{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:3px solid #0c0c0c;background:#0c0c0c;color:#fff;font-family:'Bowlby One',sans-serif;letter-spacing:.06em;text-transform:uppercase;font-size:14px;background-image:radial-gradient(circle at 1px 1px,rgba(255,255,255,.10) 1px,transparent 1.4px);background-size:8px 8px}
+.panel-head .grow{flex:1}
+.panel-head .pill{background:#fff;color:#0c0c0c;padding:2px 10px;font-size:11px;border:2px solid #fff}
+.panel-head .pill.red{background:#e1251b;color:#fff;border-color:#fff}
+.panel-body{padding:20px}
 
-    .acc-empty { text-align:center; padding:60px 20px; color:rgba(245,240,232,.3); font-size:14px; }
-    .acc-empty a { color:var(--red); text-decoration:none; }
-    .acc-loading { text-align:center; padding:40px; color:rgba(245,240,232,.4); font-size:13px; }
+/* ---- character card ---- */
+.char-card{position:relative;overflow:hidden;display:grid;grid-template-columns:auto 1fr;gap:22px;padding:24px;align-items:stretch}
+.char-card::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 20px 20px,rgba(0,0,0,.08) 1.4px,transparent 1.6px) 0 0/14px 14px,repeating-linear-gradient(45deg,transparent 0 30px,rgba(225,37,27,.05) 30px 31px);pointer-events:none}
+.char-card::after{content:"";position:absolute;right:-40px;top:-40px;width:220px;height:220px;background:radial-gradient(circle,#111 1.6px,transparent 1.8px);background-size:10px 10px;opacity:.18;pointer-events:none;mask-image:radial-gradient(circle,#000 30%,transparent 75%)}
+.avatar-frame{position:relative;z-index:1;width:180px;display:flex;flex-direction:column;align-items:stretch;gap:10px}
+.avatar{width:180px;height:220px;background:#0c0c0c;border:3px solid #0c0c0c;box-shadow:5px 5px 0 #e1251b;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.av-initial{font-family:'Bowlby One';font-size:80px;color:rgba(255,255,255,.18);line-height:1;letter-spacing:.04em;user-select:none;position:relative;z-index:1}
+.speed-lines{position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(115deg,transparent 0 8px,rgba(255,255,255,.06) 8px 9px)}
+.badge-corner{position:absolute;left:-2px;bottom:-2px;background:#e1251b;color:#fff;font-family:'Bowlby One';font-size:11px;letter-spacing:.06em;padding:4px 9px;border:2px solid #0c0c0c}
+.id-tag{background:#0c0c0c;color:#fff;font-family:'Bowlby One';font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:7px 10px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.id-tag .v{background:#fff;color:#0c0c0c;padding:1px 6px;font-size:11px;letter-spacing:.04em}
+.char-info{position:relative;z-index:1;display:flex;flex-direction:column;gap:14px;min-width:0;justify-content:center}
+.char-name{font-family:'Bowlby One',sans-serif;font-size:38px;line-height:.95;letter-spacing:.02em;text-transform:uppercase;margin:0;word-break:break-word}
+.char-name em{color:#e1251b;font-style:normal}
+.char-meta{display:flex;flex-wrap:wrap;gap:8px 14px;font-size:13px;font-weight:600;color:#0c0c0c}
+.char-meta .it{display:inline-flex;align-items:center;gap:6px}
+.char-meta .ic{width:22px;height:22px;background:#fff;border:2px solid #0c0c0c;display:inline-grid;place-items:center;font-size:11px;font-weight:800}
+.tier-medal-big{display:inline-flex;align-items:center;gap:12px;background:#fff;border:3px solid #0c0c0c;box-shadow:3px 3px 0 #0c0c0c;padding:8px 14px 8px 8px;align-self:flex-start}
+.tier-medal-big .coin{width:44px;height:44px;border-radius:50%;background:#a86b3c;display:grid;place-items:center;font-family:'Bowlby One';color:#fff;font-size:13px;letter-spacing:.04em;box-shadow:inset 0 0 0 3px rgba(0,0,0,.3),inset 0 6px 0 rgba(255,255,255,.18);border:2px solid #0c0c0c}
+.tier-medal-big .coin.silver{background:#c9c9c9;color:#0c0c0c}
+.tier-medal-big .coin.gold{background:#e1251b}
+.tier-medal-big .lab{display:flex;flex-direction:column;line-height:1.05}
+.tier-medal-big .lab .small{font-size:10px;letter-spacing:.14em;color:#6b6b6b;font-weight:700;text-transform:uppercase}
+.tier-medal-big .lab .big{font-family:'Bowlby One';font-size:18px;letter-spacing:.04em;text-transform:uppercase}
+.char-actions{display:flex;flex-wrap:wrap;gap:8px}
+.btn-sm{font-family:'Bowlby One';font-size:11px;letter-spacing:.08em;text-transform:uppercase;background:#fff;color:#0c0c0c;border:2px solid #0c0c0c;padding:7px 12px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;box-shadow:2px 2px 0 #0c0c0c;transition:transform .1s,box-shadow .1s}
+.btn-sm:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 #0c0c0c;background:#0c0c0c;color:#fff}
+.btn-sm.red{background:#e1251b;color:#fff;border-color:#0c0c0c}
+.btn-sm.red:hover{background:#0c0c0c}
+.sfx{position:absolute;font-family:'Bangers',sans-serif;font-size:34px;color:#e1251b;-webkit-text-stroke:1.5px #0c0c0c;letter-spacing:.04em;pointer-events:none;text-shadow:3px 3px 0 #0c0c0c;z-index:2}
+.sfx.top-right{top:14px;right:18px;transform:rotate(8deg)}
 
-    @media (max-width:600px) {
-        .acc-page { margin-top:80px; }
-        .tier-stats { grid-template-columns:repeat(2,1fr); }
-        .acc-tab { padding:10px 14px; font-size:.9rem; }
-    }
-    </style>
+/* ---- tier progress panel ---- */
+.tier-panel{display:flex;flex-direction:column}
+.tier-panel .panel-body{display:flex;flex-direction:column;gap:18px;flex:1;justify-content:space-between}
+.tier-line{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:end}
+.tier-line .cap{font-family:'Bowlby One';font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#6b6b6b}
+.tier-line .now{font-family:'Bowlby One';font-size:24px;color:#0c0c0c;line-height:1}
+.tier-line .now em{color:#e1251b;font-style:normal}
+.tier-line .right{text-align:right}
+.tier-bar-wrap{display:flex;flex-direction:column}
+.tier-bar{position:relative;height:14px;background:#f0eee7;border:2.5px solid #0c0c0c}
+.tier-bar-fill{position:absolute;top:0;left:0;bottom:0;background:#e1251b;width:0%;transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.tier-bar-fill::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(135deg,transparent 0 6px,rgba(255,255,255,.18) 6px 7px)}
+.tier-stops{position:relative;height:64px;margin-top:-15px}
+.tier-stop{position:absolute;top:0;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:4px}
+.tier-stop .dot{width:30px;height:30px;border-radius:50%;background:#fff;border:3px solid #0c0c0c;display:grid;place-items:center;font-family:'Bowlby One';font-size:11px;color:#0c0c0c;position:relative;z-index:1}
+.tier-stop.bronze .dot{background:#a86b3c;color:#fff}
+.tier-stop.silver .dot{background:#fff;color:#0c0c0c}
+.tier-stop.gold .dot{background:#e1251b;color:#fff}
+.tier-stop .lab{font-family:'Bowlby One';font-size:10px;letter-spacing:.08em;color:#0c0c0c;text-transform:uppercase;margin-top:2px}
+.tier-stop .amt{font-size:10px;font-weight:700;color:#6b6b6b}
+.tier-stop.is-current .dot{box-shadow:0 0 0 3px #fff,0 0 0 6px #e1251b}
+.next-perks{background:#0c0c0c;color:#fff;padding:14px 16px;border:2.5px solid #0c0c0c;position:relative}
+.next-perks::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:#e1251b}
+.next-perks .hd{font-family:'Bowlby One';font-size:13px;letter-spacing:.08em;text-transform:uppercase;display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.next-perks .hd b{color:#e1251b}
+.next-perks ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px;font-size:13px}
+.next-perks li{display:flex;align-items:center;gap:8px}
+.next-perks li::before{content:"";width:7px;height:7px;background:#e1251b;display:inline-block;flex-shrink:0}
+
+/* ---- stats strip ---- */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);background:#fff;border:3px solid #0c0c0c;box-shadow:5px 5px 0 #0c0c0c}
+.stat{padding:20px 18px;display:flex;flex-direction:column;gap:6px;position:relative}
+.stat+.stat{border-left:2px dashed #0c0c0c}
+.stat .lab{font-family:'Bowlby One';font-size:11px;letter-spacing:.1em;color:#6b6b6b;text-transform:uppercase}
+.stat .val{font-family:'Bowlby One';font-size:34px;line-height:1;color:#0c0c0c;letter-spacing:.02em}
+.stat .val em{color:#e1251b;font-style:normal}
+.stat .delta{font-size:11.5px;font-weight:600;color:#6b6b6b}
+.stat .delta a{color:#e1251b;text-decoration:none;font-weight:800}
+.stat .ic{position:absolute;top:14px;right:14px;width:28px;height:28px;background:#0c0c0c;color:#fff;display:grid;place-items:center;font-size:14px;font-family:'Bowlby One'}
+.stat .ic.red{background:#e1251b}
+
+/* ---- perks strip ---- */
+.perks-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.perk{background:#fff;border:3px solid #0c0c0c;box-shadow:5px 5px 0 #0c0c0c;padding:18px;position:relative;display:flex;flex-direction:column;gap:10px}
+.perk.bronze{background:linear-gradient(135deg,#fff 60%,#f4e6d4)}
+.perk.silver{background:linear-gradient(135deg,#fff 60%,#ececec)}
+.perk.gold{background:linear-gradient(135deg,#fff 60%,#ffdedb)}
+.perk-head{display:flex;align-items:center;gap:10px}
+.perk-coin{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-family:'Bowlby One';color:#fff;font-size:11px;letter-spacing:.04em;border:2.5px solid #0c0c0c;box-shadow:inset 0 0 0 3px rgba(0,0,0,.25),inset 0 5px 0 rgba(255,255,255,.18)}
+.perk-coin.bronze{background:#a86b3c}
+.perk-coin.silver{background:#c9c9c9;color:#0c0c0c}
+.perk-coin.gold{background:#e1251b}
+.perk h4{font-family:'Bowlby One';font-size:16px;letter-spacing:.04em;text-transform:uppercase;margin:0}
+.perk .req{font-size:11px;color:#6b6b6b;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.perk ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;font-size:13.5px;line-height:1.4}
+.perk ul li{display:flex;align-items:flex-start;gap:8px}
+.perk ul li::before{content:"";width:7px;height:7px;background:#e1251b;display:inline-block;margin-top:7px;flex-shrink:0}
+.perk-state{position:absolute;top:-10px;right:14px;font-family:'Bowlby One';font-size:10px;letter-spacing:.06em;padding:3px 9px;border:2px solid #0c0c0c;text-transform:uppercase}
+.perk-state.current{background:#e1251b;color:#fff}
+.perk-state.locked{background:#fff;color:#0c0c0c}
+
+/* ---- tabs ---- */
+.tabs{display:flex;gap:6px;border-bottom:3px solid #0c0c0c;padding:0 0 0 6px}
+.tab{font-family:'Bowlby One';font-size:13px;letter-spacing:.08em;text-transform:uppercase;padding:12px 18px;background:#f0ede5;border:3px solid #0c0c0c;border-bottom:none;cursor:pointer;color:#0c0c0c;margin-bottom:-3px;display:inline-flex;align-items:center;gap:8px}
+.tab:hover{background:#fff}
+.tab.active{background:#fff;position:relative}
+.tab.active::after{content:"";position:absolute;left:0;right:0;bottom:-3px;height:6px;background:#fff}
+.tab:not(.active){color:#6b6b6b}
+.tab-shell{background:#fff;border:3px solid #0c0c0c;box-shadow:5px 5px 0 #0c0c0c}
+
+/* ---- profile form ---- */
+.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;padding:22px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field.full{grid-column:1/-1}
+.field label{font-family:'Bowlby One';font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#0c0c0c}
+.field input,.field select{background:#fff;border:2.5px solid #0c0c0c;padding:11px 12px;font-size:14px;font-family:inherit;outline:none;font-weight:500}
+.field input:focus,.field select:focus{background:#fff7d6;box-shadow:3px 3px 0 #0c0c0c}
+.field input[readonly]{opacity:.55;cursor:not-allowed}
+.field .hint{font-size:11px;color:#6b6b6b;font-weight:500}
+.form-foot{padding:16px 22px;border-top:3px solid #0c0c0c;background:#f7f5f1;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.save-btn{background:#e1251b;color:#fff;border:3px solid #0c0c0c;font-family:'Bowlby One';font-size:14px;letter-spacing:.06em;text-transform:uppercase;padding:12px 22px;cursor:pointer;box-shadow:4px 4px 0 #0c0c0c;transition:transform .1s,box-shadow .1s;display:inline-flex;align-items:center;gap:10px}
+.save-btn:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 #0c0c0c}
+.save-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* ---- empty states ---- */
+.empty{padding:48px 22px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:16px;position:relative;overflow:hidden}
+.empty::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent 0 24px,rgba(0,0,0,.025) 24px 25px);pointer-events:none}
+.empty-illu{width:120px;height:120px;background:#fff;border:3px solid #0c0c0c;box-shadow:5px 5px 0 #e1251b;display:grid;place-items:center;position:relative;z-index:1}
+.empty-illu .glyph{font-family:'Bowlby One';font-size:54px;color:#0c0c0c;line-height:1}
+.empty-illu .stamp{position:absolute;top:-12px;right:-18px;background:#e1251b;color:#fff;font-family:'Bangers';font-size:20px;letter-spacing:.04em;padding:4px 10px;border:2px solid #0c0c0c;transform:rotate(-8deg);text-transform:uppercase}
+.empty h3{font-family:'Bowlby One';font-size:24px;letter-spacing:.04em;text-transform:uppercase;margin:0;position:relative;z-index:1}
+.empty h3 em{color:#e1251b;font-style:normal}
+.empty p{margin:0;max-width:400px;color:#6b6b6b;font-size:14px;line-height:1.5;position:relative;z-index:1}
+.empty-cta{background:#e1251b;color:#fff;border:3px solid #0c0c0c;font-family:'Bowlby One';font-size:13px;letter-spacing:.06em;text-transform:uppercase;padding:12px 20px;cursor:pointer;box-shadow:4px 4px 0 #0c0c0c;text-decoration:none;display:inline-flex;align-items:center;gap:10px;transition:transform .1s,box-shadow .1s;position:relative;z-index:1}
+.empty-cta:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 #0c0c0c}
+
+/* ---- orders list ---- */
+.order-list{display:flex;flex-direction:column}
+.order{display:grid;grid-template-columns:90px 1fr auto auto;gap:18px;align-items:center;padding:16px 22px;border-bottom:2px dashed #0c0c0c}
+.order:last-child{border-bottom:none}
+.o-cover{width:90px;height:120px;background:#222;border:2.5px solid #0c0c0c;box-shadow:3px 3px 0 #0c0c0c;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.o-cover img{display:block;width:100%;height:100%;object-fit:cover}
+.o-glyph{font-family:'Bowlby One';font-size:32px;color:rgba(255,255,255,.3)}
+.o-info{min-width:0;display:flex;flex-direction:column;gap:4px}
+.o-id{font-family:'Bowlby One';font-size:11px;letter-spacing:.08em;color:#6b6b6b;text-transform:uppercase}
+.o-title{font-family:'Bowlby One';font-size:16px;letter-spacing:.02em;text-transform:uppercase;margin:0;line-height:1.2}
+.o-meta{font-size:12.5px;color:#6b6b6b}
+.o-status{font-family:'Bowlby One';font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:5px 10px;border:2px solid #0c0c0c;background:#fff;white-space:nowrap}
+.o-status.consegnato{background:#dff6ea;border-color:#138a5f;color:#0c5b3e}
+.o-status.spedito{background:#e1251b;color:#fff;border-color:#0c0c0c}
+.o-status.pre-order{background:#f3e8ff;border-color:#7c3aed;color:#5b21b6}
+.o-status.in-preparazione{background:#fef9c3;border-color:#a16207;color:#713f12}
+.o-total{font-family:'Bowlby One';font-size:18px;color:#e1251b;text-align:right;min-width:80px}
+
+/* ---- wishlist grid ---- */
+.wl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;padding:22px}
+.wl-card{background:#fff;border:3px solid #0c0c0c;box-shadow:4px 4px 0 #0c0c0c;padding:14px;display:flex;flex-direction:column;gap:10px}
+.wl-img{width:100%;aspect-ratio:2/3;background:#f0ede5;border:2px solid #0c0c0c;display:flex;align-items:center;justify-content:center;font-family:'Bowlby One';font-size:2rem;color:rgba(0,0,0,.15);overflow:hidden}
+.wl-img img{width:100%;height:100%;object-fit:cover;display:block}
+.wl-title{font-family:'Bowlby One';font-size:13px;letter-spacing:.02em;text-transform:uppercase;line-height:1.2;color:#0c0c0c}
+.wl-price{font-family:'Bowlby One';font-size:1.1rem;color:#e1251b;letter-spacing:.04em}
+.wl-actions{display:flex;gap:6px}
+.wl-add{flex:1;padding:8px;background:#e1251b;color:#fff;border:2px solid #0c0c0c;cursor:pointer;font-family:'Bowlby One';font-size:11px;letter-spacing:.06em;box-shadow:2px 2px 0 #0c0c0c;transition:transform .1s,box-shadow .1s}
+.wl-add:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 #0c0c0c}
+.wl-add:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.wl-remove{padding:8px 10px;background:transparent;border:2px solid #0c0c0c;color:#6b6b6b;cursor:pointer;font-size:14px;box-shadow:2px 2px 0 #0c0c0c;transition:color .2s,background .2s}
+.wl-remove:hover{color:#dc2626;background:#fff0f0}
+
+/* ---- inline load/empty ---- */
+.acc-inline-load{padding:40px;text-align:center;font-family:'Bowlby One';font-size:13px;letter-spacing:.1em;color:#6b6b6b;text-transform:uppercase}
+.acc-inline-empty{padding:48px 22px;text-align:center;color:#6b6b6b;font-size:14px;font-weight:600}
+.acc-inline-empty a{color:#e1251b;text-decoration:none;font-weight:800}
+
+/* ---- save message ---- */
+#prof-msg{font-size:13px;font-weight:700;min-height:20px}
+
+/* ---- responsive ---- */
+@media(max-width:1100px){
+  .row-2{grid-template-columns:1fr}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .stats .stat:nth-child(3){border-left:none;border-top:2px dashed #0c0c0c}
+  .stats .stat:nth-child(4){border-top:2px dashed #0c0c0c}
+  .perks-strip{grid-template-columns:1fr}
+}
+@media(max-width:640px){
+  #account-panel{margin-top:80px}
+  #acc-loading{margin-top:80px}
+  #auth-panel{margin-top:80px}
+  .char-card{grid-template-columns:1fr;padding:18px}
+  .avatar-frame{width:100%;max-width:220px;margin:0 auto}
+  .avatar{width:100%;height:auto;aspect-ratio:4/5}
+  .char-name{font-size:28px}
+  .stats{grid-template-columns:1fr}
+  .stats .stat{border-left:none!important;border-top:2px dashed #0c0c0c}
+  .stats .stat:first-child{border-top:none}
+  .form-grid{grid-template-columns:1fr;padding:18px}
+  .order{grid-template-columns:70px 1fr;gap:12px}
+  .o-status,.o-total{grid-column:2}
+  .tabs{flex-wrap:wrap}
+  .wl-grid{grid-template-columns:repeat(2,1fr);padding:14px}
+  .crumb{padding:16px 18px 0}
+  .page{padding:16px 18px 60px}
+}
+</style>
 </head>
 <body>
+
+<!-- NAV -->
 <nav id="nav">
-    <div class="nav-inner">
-        <a class="nav-logo" href="index.html">MAN<span class="dot">B</span>AGA<span class="dot">.</span></a>
-        <ul class="nav-links" id="nav-links">
-            <li><a href="catalogo.html">Catalogo</a></li>
-            <li><a href="tavoli.html">Tavoli</a></li>
-            <li>
-                <a href="carrello.html" class="cart-nav-link">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 001.95-1.56l1.65-7.44H6"/></svg>
-                    <span class="cart-badge">0</span>
-                </a>
-            </li>
-            <li><a href="account.html" class="cart-nav-link" style="gap:6px">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                <span id="nav-account-label" style="font-size:12px;font-weight:700;letter-spacing:.04em">Account</span>
-            </a></li>
-        </ul>
-        <button class="nav-burger" id="nav-burger" aria-label="Apri menu">
-            <span></span><span></span><span></span>
-        </button>
-    </div>
+  <div class="nav-inner">
+    <a class="nav-logo" href="index.html">MAN<span class="dot">B</span>AGA<span class="dot">.</span></a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="catalogo.html">Catalogo</a></li>
+      <li><a href="tavoli.html">Tavoli</a></li>
+      <li>
+        <a href="carrello.html" class="cart-nav-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 001.95-1.56l1.65-7.44H6"/></svg>
+          <span class="cart-badge">0</span>
+        </a>
+      </li>
+      <li>
+        <a href="account.html" class="cart-nav-link" style="gap:6px">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span id="nav-account-label" style="font-size:12px;font-weight:700;letter-spacing:.04em">Account</span>
+        </a>
+      </li>
+    </ul>
+    <button class="nav-burger" id="nav-burger" aria-label="Apri menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
 </nav>
 
-<div class="acc-page" id="acc-page">
-    <div class="acc-loading" id="acc-loading">Caricamento...</div>
+<!-- LOADING -->
+<div id="acc-loading">CARICAMENTO...</div>
 
-    <!-- AUTH PANEL -->
-    <div class="auth-panel" id="auth-panel" style="display:none">
-        <div class="auth-tabs">
-            <button class="auth-tab active" id="tab-login"    onclick="showAuthTab('login')">ACCEDI</button>
-            <button class="auth-tab"        id="tab-register" onclick="showAuthTab('register')">REGISTRATI</button>
-        </div>
-        <div class="auth-form">
-            <div id="form-login">
-                <h2>Bentornato</h2>
-                <div class="auth-field"><label>Email</label><input type="email" id="login-email" placeholder="nome@email.com" autocomplete="email"></div>
-                <div class="auth-field"><label>Password</label><input type="password" id="login-pwd" placeholder="••••••••" autocomplete="current-password"></div>
-                <button class="auth-btn" id="login-btn" onclick="doLogin()">ACCEDI</button>
-                <div class="auth-divider">oppure</div>
-                <button class="auth-google" onclick="doGoogleLogin()">
-                    <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-                    Continua con Google
-                </button>
-                <div class="auth-msg" id="login-msg"></div>
-            </div>
-            <div id="form-register" style="display:none">
-                <h2>Crea Account</h2>
-                <div class="auth-field"><label>Nome</label><input type="text" id="reg-name" placeholder="Il tuo nome" autocomplete="given-name"></div>
-                <div class="auth-field"><label>Email</label><input type="email" id="reg-email" placeholder="nome@email.com" autocomplete="email"></div>
-                <div class="auth-field"><label>Password</label><input type="password" id="reg-pwd" placeholder="min. 6 caratteri" autocomplete="new-password"></div>
-                <button class="auth-btn" id="reg-btn" onclick="doRegister()">CREA ACCOUNT</button>
-                <div class="auth-divider">oppure</div>
-                <button class="auth-google" onclick="doGoogleLogin()">
-                    <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-                    Continua con Google
-                </button>
-                <div class="auth-msg" id="reg-msg"></div>
-            </div>
-        </div>
+<!-- AUTH PANEL -->
+<div id="auth-panel" style="display:none">
+  <div class="auth-panel-inner">
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login"    onclick="showAuthTab('login')">ACCEDI</button>
+      <button class="auth-tab"        id="tab-register" onclick="showAuthTab('register')">REGISTRATI</button>
     </div>
+    <div class="auth-form">
+      <div id="form-login">
+        <h2>Bentornato</h2>
+        <div class="auth-field"><label>Email</label><input type="email" id="login-email" placeholder="nome@email.com" autocomplete="email"></div>
+        <div class="auth-field"><label>Password</label><input type="password" id="login-pwd" placeholder="••••••••" autocomplete="current-password"></div>
+        <button class="auth-btn" id="login-btn" onclick="doLogin()">ACCEDI</button>
+        <div class="auth-divider">oppure</div>
+        <button class="auth-google" onclick="doGoogleLogin()">
+          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Continua con Google
+        </button>
+        <div class="auth-msg" id="login-msg"></div>
+      </div>
+      <div id="form-register" style="display:none">
+        <h2>Crea Account</h2>
+        <div class="auth-field"><label>Nome</label><input type="text" id="reg-name" placeholder="Il tuo nome" autocomplete="given-name"></div>
+        <div class="auth-field"><label>Email</label><input type="email" id="reg-email" placeholder="nome@email.com" autocomplete="email"></div>
+        <div class="auth-field"><label>Password</label><input type="password" id="reg-pwd" placeholder="min. 6 caratteri" autocomplete="new-password"></div>
+        <button class="auth-btn" id="reg-btn" onclick="doRegister()">CREA ACCOUNT</button>
+        <div class="auth-divider">oppure</div>
+        <button class="auth-google" onclick="doGoogleLogin()">
+          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Continua con Google
+        </button>
+        <div class="auth-msg" id="reg-msg"></div>
+      </div>
+    </div>
+  </div>
+</div>
 
-    <!-- ACCOUNT PANEL -->
-    <div id="account-panel" style="display:none">
-        <div class="acc-header">
-            <div class="acc-avatar" id="acc-avatar">?</div>
+<!-- ACCOUNT PANEL -->
+<div id="account-panel" style="display:none">
+
+  <div class="crumb">
+    <div>
+      <h1>IL TUO <em>ACCOUNT</em></h1>
+      <span class="crumb-sub" id="crumb-sub">Tessera socio · attiva</span>
+    </div>
+    <button class="exit-cta" onclick="doLogout()">⎋ ESCI</button>
+  </div>
+
+  <main class="page">
+
+    <!-- ROW 1: CHARACTER + TIER -->
+    <section class="row-2">
+
+      <div class="panel char-card">
+        <span class="sfx top-right">WELCOME!</span>
+        <div class="avatar-frame">
+          <div class="avatar">
+            <div class="av-initial" id="acc-avatar">?</div>
+            <div class="speed-lines"></div>
+            <div class="badge-corner" id="tier-level-badge">BRZ</div>
+          </div>
+          <div class="id-tag">
+            <span>SOCIO DAL</span>
+            <span class="v" id="member-since">—</span>
+          </div>
+        </div>
+        <div class="char-info">
+          <h2 class="char-name" id="acc-name">—</h2>
+          <div class="char-meta">
+            <span class="it"><span class="ic">@</span><span id="acc-email">—</span></span>
+          </div>
+          <div class="tier-medal-big">
+            <span class="coin" id="tier-coin">BRZ</span>
+            <span class="lab">
+              <span class="small">Livello fedeltà</span>
+              <span class="big" id="tier-label">BRONZO</span>
+            </span>
+          </div>
+          <div class="char-actions">
+            <button class="btn-sm" onclick="showAccTab('profilo')">✎ Modifica profilo</button>
+            <a href="catalogo.html" class="btn-sm red">🎮 Sfoglia catalogo</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel tier-panel">
+        <div class="panel-head">
+          <span>Progresso livello</span>
+          <span class="grow"></span>
+          <span class="pill red" id="tier-pts-pill">+0 PT</span>
+        </div>
+        <div class="panel-body">
+          <div class="tier-line">
             <div>
-                <div class="acc-name"  id="acc-name">—</div>
-                <div class="acc-email" id="acc-email">—</div>
+              <div class="cap">Totale speso</div>
+              <div class="now"><em id="tier-spent-val">€0,00</em></div>
             </div>
-            <button class="acc-logout" onclick="doLogout()">ESCI</button>
+            <div class="right">
+              <div class="cap">Al prossimo livello</div>
+              <div class="now" id="tier-next-val">€500</div>
+            </div>
+          </div>
+          <div class="tier-bar-wrap">
+            <div class="tier-bar">
+              <div class="tier-bar-fill" id="tier-fill"></div>
+            </div>
+            <div class="tier-stops">
+              <div class="tier-stop bronze is-current" id="ts-bronze" style="left:0%">
+                <span class="dot">B</span><span class="lab">Bronzo</span><span class="amt">€0</span>
+              </div>
+              <div class="tier-stop silver" id="ts-silver" style="left:50%">
+                <span class="dot">S</span><span class="lab">Silver</span><span class="amt">€500</span>
+              </div>
+              <div class="tier-stop gold" id="ts-gold" style="left:100%">
+                <span class="dot">G</span><span class="lab">Gold</span><span class="amt">€1.500</span>
+              </div>
+            </div>
+          </div>
+          <div class="next-perks" id="next-perks-box">
+            <div class="hd">Sblocca <b>SILVER</b> →</div>
+            <ul>
+              <li>Sconto <b>5%</b> su tutto il catalogo</li>
+              <li>Spedizione gratis sopra €39</li>
+              <li>Accesso anticipato alle uscite</li>
+            </ul>
+          </div>
         </div>
-        <div class="acc-tabs">
-            <button class="acc-tab active" id="atab-profilo"  onclick="showAccTab('profilo')">PROFILO</button>
-            <button class="acc-tab"        id="atab-ordini"   onclick="showAccTab('ordini')">I MIEI ORDINI</button>
-            <button class="acc-tab"        id="atab-wishlist" onclick="showAccTab('wishlist')">WISHLIST</button>
+      </div>
+
+    </section>
+
+    <!-- STATS STRIP -->
+    <section class="stats">
+      <div class="stat">
+        <span class="ic red">€</span>
+        <span class="lab">Totale speso</span>
+        <span class="val"><em id="stat-spent">€0,00</em></span>
+        <span class="delta"><a href="catalogo.html">Sfoglia il catalogo →</a></span>
+      </div>
+      <div class="stat">
+        <span class="ic">📦</span>
+        <span class="lab">Ordini effettuati</span>
+        <span class="val" id="stat-orders">0</span>
+        <span class="delta" id="stat-orders-sub">Nessun ordine ancora</span>
+      </div>
+      <div class="stat">
+        <span class="ic">♥</span>
+        <span class="lab">In wishlist</span>
+        <span class="val" id="stat-wishlist">—</span>
+        <span class="delta">Articoli salvati</span>
+      </div>
+      <div class="stat">
+        <span class="ic red">🎲</span>
+        <span class="lab">Tavoli prenotati</span>
+        <span class="val">0</span>
+        <span class="delta"><a href="tavoli.html">Prenota una serata →</a></span>
+      </div>
+    </section>
+
+    <!-- PERKS STRIP -->
+    <section class="perks-strip">
+      <div class="perk bronze">
+        <span class="perk-state current" id="perk-state-bronze">Attuale</span>
+        <div class="perk-head">
+          <span class="perk-coin bronze">BRZ</span>
+          <div><h4>Bronzo</h4><div class="req">Da €0 spesi</div></div>
         </div>
-        <div id="acc-profilo"></div>
-        <div id="acc-ordini"   style="display:none"></div>
-        <div id="acc-wishlist" style="display:none"></div>
-    </div>
+        <ul>
+          <li>Accesso al catalogo completo</li>
+          <li>Punti fedeltà su ogni acquisto</li>
+          <li>Newsletter settimanale con novità</li>
+        </ul>
+      </div>
+      <div class="perk silver">
+        <span class="perk-state locked" id="perk-state-silver">€500 al traguardo</span>
+        <div class="perk-head">
+          <span class="perk-coin silver">SLV</span>
+          <div><h4>Silver</h4><div class="req">Da €500 spesi</div></div>
+        </div>
+        <ul>
+          <li>Sconto 5% su tutto</li>
+          <li>Spedizione gratis sopra €39</li>
+          <li>Accesso anticipato alle uscite</li>
+        </ul>
+      </div>
+      <div class="perk gold">
+        <span class="perk-state locked" id="perk-state-gold">€1.500 al traguardo</span>
+        <div class="perk-head">
+          <span class="perk-coin gold">GLD</span>
+          <div><h4>Gold</h4><div class="req">Da €1.500 spesi</div></div>
+        </div>
+        <ul>
+          <li>Sconto 10% + omaggio mensile</li>
+          <li>Spedizione gratis sempre</li>
+          <li>Tavolo VIP riservato nel weekend</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- TABS -->
+    <section>
+      <div class="tabs" role="tablist">
+        <button class="tab active" id="atab-profilo"   onclick="showAccTab('profilo')">Profilo</button>
+        <button class="tab"        id="atab-ordini"    onclick="showAccTab('ordini')">I Miei Ordini</button>
+        <button class="tab"        id="atab-wishlist"  onclick="showAccTab('wishlist')">Wishlist</button>
+        <button class="tab"        id="atab-indirizzi" onclick="showAccTab('indirizzi')">Indirizzi</button>
+      </div>
+      <div class="tab-shell">
+        <div id="acc-profilo"><div class="acc-inline-load">Caricamento...</div></div>
+        <div id="acc-ordini"    style="display:none"></div>
+        <div id="acc-wishlist"  style="display:none"></div>
+        <div id="acc-indirizzi" style="display:none">
+          <div class="panel-head"><span>I tuoi indirizzi</span><span class="grow"></span><span class="pill">In arrivo</span></div>
+          <div class="empty">
+            <div class="empty-illu"><span class="glyph">📍</span><span class="stamp">PRESTO!</span></div>
+            <h3>Gestione <em>indirizzi</em></h3>
+            <p>La gestione degli indirizzi di spedizione sarà disponibile a breve.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
 </div>
 
 <script src="js/cart.js"></script>
@@ -222,14 +551,14 @@ if (!firebase.apps.length) firebase.initializeApp(MANBAGA_FIREBASE_CONFIG);
 </script>
 <script src="js/account-init.js"></script>
 <script>
-(function() {
-    var burger = document.getElementById('nav-burger');
-    var links  = document.getElementById('nav-links');
-    if (!burger || !links) return;
-    burger.addEventListener('click', function() {
-        var open = links.classList.toggle('open');
-        burger.classList.toggle('open', open);
-    });
+(function(){
+  var burger = document.getElementById('nav-burger');
+  var links  = document.getElementById('nav-links');
+  if(!burger||!links) return;
+  burger.addEventListener('click',function(){
+    var open = links.classList.toggle('open');
+    burger.classList.toggle('open',open);
+  });
 })();
 </script>
 </body>
