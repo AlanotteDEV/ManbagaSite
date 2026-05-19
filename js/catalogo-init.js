@@ -18,10 +18,16 @@ var catPage = (function () {
     var _wlSet  = {};
     var _wlUser = null;
 
+    function _getApp() {
+        try { return firebase.app('main'); } catch(e) { return null; }
+    }
+
     function _initWishlist() {
         if (typeof firebase === 'undefined') return;
-        var auth = firebase.auth();
-        var db   = firebase.firestore();
+        var app = _getApp();
+        if (!app) return;
+        var auth = app.auth();
+        var db   = app.firestore();
         auth.onAuthStateChanged(function(user) {
             _wlUser = user;
             if (!user) { _wlSet = {}; _refreshHearts(); return; }
@@ -44,13 +50,14 @@ var catPage = (function () {
     window._mbInitWishlist = function() { _initWishlist(); };
 
     window.toggleWishlist = function(productId, title, image, price, btn) {
-        var user = _wlUser || (typeof firebase !== 'undefined' ? firebase.auth().currentUser : null);
+        var app  = _getApp();
+        var user = _wlUser || (app ? app.auth().currentUser : null);
         if (!user) {
             alert('Accedi al tuo account per salvare i prodotti nella wishlist.');
             return;
         }
         if (!_wlUser) { _wlUser = user; }
-        var db  = firebase.firestore();
+        var db  = app.firestore();
         var ref = db.collection('users').doc(user.uid).collection('wishlist').doc(productId);
         if (_wlSet[productId]) {
             ref.delete().then(function() {
@@ -579,9 +586,9 @@ function clearRecentlyViewed() {
 /* ---- Bootstrap on DOMContentLoaded ---- */
 document.addEventListener('DOMContentLoaded', function () {
     catPage.init();
-    if (typeof window._mbInitWishlist === 'function') try { window._mbInitWishlist(); } catch(e) {}
     setTimeout(function () {
         if (typeof _initMainFirebase === 'function') _initMainFirebase();
+        if (typeof window._mbInitWishlist === 'function') try { window._mbInitWishlist(); } catch(e) {}
     }, 0);
     setTimeout(renderRecentlyViewed, 300);
 
