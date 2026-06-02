@@ -1,7 +1,7 @@
 // js/shopify-api.js
 var ShopifyAPI = (function() {
-    var DOMAIN    = 'YOUR_STORE.myshopify.com';
-    var SF_TOKEN  = 'YOUR_STOREFRONT_TOKEN';
+    var DOMAIN    = 'bbd6ku-jz.myshopify.com';
+    var SF_TOKEN  = '401d08bb9630121d4dc0185c89c15c1a';
     var VERSION   = '2024-10';
     var AUTH_KEY  = 'mb_customer_token';
     var CART_KEY  = 'mb_cart_id';

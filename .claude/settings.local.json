@@ -23,7 +23,13 @@
       "Bash(git push *)",
       "mcp__plugin_context-mode_context-mode__ctx_search",
       "mcp__plugin_context-mode_context-mode__ctx_execute",
-      "mcp__plugin_context-mode_context-mode__ctx_fetch_and_index"
+      "mcp__plugin_context-mode_context-mode__ctx_fetch_and_index",
+      "Skill(superpowers:brainstorming)",
+      "Skill(superpowers:writing-plans)",
+      "Skill(superpowers:subagent-driven-development)",
+      "Bash(Remove-Item *)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\germi\\\\ManbagaSite\" -Recurse -Name -Include \"vercel.json\", \"*.js\", \"package.json\")",
+      "Bash(Select-Object -First 20)"
     ]
   }
 }
