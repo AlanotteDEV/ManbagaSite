@@ -23,21 +23,18 @@ var catPage = (function () {
     }
 
     function _initWishlist() {
-        if (typeof firebase === 'undefined') return;
-        var app = _getApp();
-        if (!app) return;
-        var auth = app.auth();
-        var db   = app.firestore();
-        auth.onAuthStateChanged(function(user) {
-            _wlUser = user;
-            if (!user) { _wlSet = {}; _refreshHearts(); return; }
-            db.collection('users').doc(user.uid).collection('wishlist').get()
-                .then(function(snap) {
-                    _wlSet = {};
-                    snap.forEach(function(d) { _wlSet[d.id] = true; });
-                    _refreshHearts();
-                }).catch(function() {});
-        });
+        var token = ShopifyAPI.getCustomerToken();
+        if (!token) { _wlSet = {}; _refreshHearts(); return; }
+        ShopifyAPI.sfApi(
+            'query getWishlist($token: String!) { customer(customerAccessToken: $token) { metafield(namespace: "wishlist", key: "product_ids") { value } } }',
+            { token: token }
+        ).then(function(res) {
+            var raw = res.data && res.data.customer && res.data.customer.metafield && res.data.customer.metafield.value;
+            _wlSet = {};
+            try { (JSON.parse(raw || '[]')).forEach(function(id) { _wlSet[id] = true; }); } catch(e) {}
+            _wlUser = true;
+            _refreshHearts();
+        }).catch(function() {});
     }
 
     function _refreshHearts() {
@@ -50,30 +47,14 @@ var catPage = (function () {
     window._mbInitWishlist = function() { _initWishlist(); };
 
     window.toggleWishlist = function(productId, title, image, price, btn) {
-        var app  = _getApp();
-        var user = _wlUser || (app ? app.auth().currentUser : null);
-        if (!user) {
-            alert('Accedi al tuo account per salvare i prodotti nella wishlist.');
-            return;
-        }
-        if (!_wlUser) { _wlUser = user; }
-        var db  = app.firestore();
-        var ref = db.collection('users').doc(user.uid).collection('wishlist').doc(productId);
-        if (_wlSet[productId]) {
-            ref.delete()
-                .then(function() {
-                    delete _wlSet[productId];
-                    if (btn) btn.classList.remove('wl-heart--on');
-                })
-                .catch(function(err) { console.error('[WL] delete error:', err); });
-        } else {
-            ref.set({ title: title, image: image || '', price: price || '', addedAt: app.firestore.FieldValue ? app.firestore.FieldValue.serverTimestamp() : firebase.firestore.FieldValue.serverTimestamp() })
-                .then(function() {
-                    _wlSet[productId] = true;
-                    if (btn) btn.classList.add('wl-heart--on');
-                })
-                .catch(function(err) { console.error('[WL] set error:', err.code, err.message); });
-        }
+        var token = ShopifyAPI.getCustomerToken();
+        if (!token) { alert('Accedi al tuo account per salvare i prodotti nella wishlist.'); return; }
+        var action = _wlSet[productId] ? 'remove' : 'add';
+        ShopifyAPI.apiPost('/api/wishlist', { action: action, productId: productId }).then(function(res) {
+            if (!res.ok) return;
+            if (action === 'add') { _wlSet[productId] = true; if (btn) btn.classList.add('wl-heart--on'); }
+            else { delete _wlSet[productId]; if (btn) btn.classList.remove('wl-heart--on'); }
+        }).catch(function(err) { console.error('[WL] toggle error:', err); });
     };
 
     var _JP_MAP = {
@@ -294,7 +275,7 @@ var catPage = (function () {
         html += '</div>'; /* close cp-card-body */
         if (!isOos && !isInArrivo) {
             html += '<button class="cp-card-cart-btn"'
-                + ' data-cart-add="' + (p.firestoreId || p.id) + '"'
+                + ' data-cart-add="' + (p.variantId || p.id) + '"'
                 + ' data-cart-title="' + _esc(p.title) + '"'
                 + ' data-cart-price="' + _esc(p.price || '') + '"'
                 + ' data-cart-image="' + _esc(p.image || '') + '"'
@@ -586,13 +567,58 @@ function clearRecentlyViewed() {
     if (section) section.style.display = 'none';
 }
 
+/* ---- Shopify product fetcher ---- */
+function _fetchShopifyProducts() {
+    var cached = ShopifyAPI.getProductsCache();
+    if (cached) {
+        window._shopifyProducts = cached;
+        catPage.init();
+        return;
+    }
+    var query = 'query getProducts($cursor: String) { products(first: 250, after: $cursor) { pageInfo { hasNextPage endCursor } edges { node { id title productType tags availableForSale priceRange { minVariantPrice { amount } } images(first: 1) { edges { node { url } } } variants(first: 1) { edges { node { id availableForSale quantityAvailable } } } badgeMeta: metafield(namespace: "catalog", key: "badge") { value } subcatMeta: metafield(namespace: "catalog", key: "subcat") { value } volumeMeta: metafield(namespace: "catalog", key: "volume") { value } availFromMeta: metafield(namespace: "catalog", key: "available_from") { value } } } } }';
+    function fetchPage(cursor, acc) {
+        return ShopifyAPI.sfApi(query, cursor ? { cursor: cursor } : {}).then(function(res) {
+            var conn = res.data && res.data.products;
+            if (!conn) return acc;
+            conn.edges.forEach(function(e) {
+                var n = e.node;
+                var variant = n.variants && n.variants.edges[0] && n.variants.edges[0].node;
+                var catTag  = (n.tags || []).find(function(t) { return t.startsWith('cat:'); });
+                var cat     = catTag ? catTag.replace('cat:', '') : (n.productType || '').toLowerCase();
+                acc.push({
+                    id:            n.id,
+                    firestoreId:   n.id,
+                    variantId:     variant ? variant.id : null,
+                    title:         n.title,
+                    cat:           cat,
+                    subcat:        (n.subcatMeta && n.subcatMeta.value) || '',
+                    badge:         (n.badgeMeta  && n.badgeMeta.value)  || '',
+                    volume:        (n.volumeMeta && n.volumeMeta.value) || '',
+                    price:         n.priceRange ? '€' + parseFloat(n.priceRange.minVariantPrice.amount).toFixed(2) : '',
+                    image:         n.images && n.images.edges[0] ? n.images.edges[0].node.url : '',
+                    quantity:      variant ? (variant.quantityAvailable || 0) : 0,
+                    availableFrom: n.availFromMeta ? n.availFromMeta.value : null
+                });
+            });
+            if (conn.pageInfo.hasNextPage) return fetchPage(conn.pageInfo.endCursor, acc);
+            return acc;
+        });
+    }
+    fetchPage(null, []).then(function(products) {
+        ShopifyAPI.setProductsCache(products);
+        window._shopifyProducts = products;
+        catPage.init();
+    }).catch(function(err) {
+        console.error('[Catalogo] Shopify fetch error:', err);
+        catPage.init();
+    });
+}
+window.getProducts = function() { return window._shopifyProducts || []; };
+
 /* ---- Bootstrap on DOMContentLoaded ---- */
 document.addEventListener('DOMContentLoaded', function () {
-    catPage.init();
-    setTimeout(function () {
-        if (typeof _initMainFirebase === 'function') _initMainFirebase();
-        if (typeof window._mbInitWishlist === 'function') try { window._mbInitWishlist(); } catch(e) {}
-    }, 0);
+    _fetchShopifyProducts();
+    _initWishlist();
     setTimeout(renderRecentlyViewed, 300);
 
     /* ── Static HTML event listeners ── */
@@ -674,7 +700,7 @@ document.addEventListener('DOMContentLoaded', function () {
             e.stopPropagation();
             var ds = cartAddBtn.dataset;
             MBCart.add({
-                firestoreId: ds.cartAdd,
+                variantId:   ds.cartAdd,
                 title:       ds.cartTitle || ds.cartAdd,
                 image:       ds.cartImage || '',
                 price:       ds.cartPrice || '',

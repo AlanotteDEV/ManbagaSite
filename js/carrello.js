@@ -56,20 +56,16 @@
         }
     }
 
-    function _initFirestoreLoyalty() {
-        if (typeof firebase === 'undefined' || !window._mbDb) return;
-        firebase.auth().onAuthStateChanged(function(user) {
-            if (!user) { _loyaltyCache = null; render(); return; }
-            window._mbDb.collection('users').doc(user.uid).get().then(function(snap) {
-                if (!snap.exists) return;
-                var d = snap.data();
-                _loyaltyCache = {
-                    totalSpent:   Number(d.totalSpent)   || 0,
-                    ordersPlaced: Number(d.ordersPlaced) || 0
-                };
-                render();
-            }).catch(function() {});
-        });
+    function _initShopifyLoyalty() {
+        var token = ShopifyAPI.getCustomerToken();
+        if (!token) { render(); return; }
+        ShopifyAPI.sfApi(
+            'query { customer(customerAccessToken: "' + token.replace(/"/g,'') + '") { loyaltySpent: metafield(namespace:"loyalty",key:"total_spent") { value } loyaltyOrders: metafield(namespace:"loyalty",key:"orders_placed") { value } } }'
+        ).then(function(res) {
+            var cust = res.data && res.data.customer;
+            if (cust) { _loyaltyCache = { totalSpent: parseFloat((cust.loyaltySpent&&cust.loyaltySpent.value)||'0')||0, ordersPlaced: parseInt((cust.loyaltyOrders&&cust.loyaltyOrders.value)||'0')||0 }; }
+            render();
+        }).catch(function(){ render(); });
     }
 
     // ============================================================
@@ -214,19 +210,19 @@
             var imgEl  = imgSrc
                 ? '<img class="cart-cover-img" src="' + imgSrc + '" alt="' + esc(item.title) + '">'
                 : '<div class="cart-cover-placeholder">' + esc((item.title || '?').charAt(0)) + '</div>';
-            return '<div class="c-product" data-fid="' + esc(item.firestoreId) + '">'
+            return '<div class="c-product" data-fid="' + esc(item.lineId) + '">'
                 + '<div class="c-cover">' + imgEl + '</div>'
                 + '<div class="p-info">'
                 + '<h3 class="p-title">' + esc(item.title) + '</h3>'
                 + '<p class="p-meta">Prezzo unitario: ' + esc(item.price) + '</p>'
                 + '</div>'
                 + '<div class="c-qty">'
-                + '<button data-qty-dec="' + item.firestoreId + '">−</button>'
+                + '<button data-qty-dec="' + item.lineId + '">−</button>'
                 + '<div class="v">' + item.qty + '</div>'
-                + '<button data-qty-inc="' + item.firestoreId + '"' + (item.qty >= (item.maxQty || 99) ? ' disabled' : '') + '>+</button>'
+                + '<button data-qty-inc="' + item.lineId + '"' + (item.qty >= (item.maxQty || 99) ? ' disabled' : '') + '>+</button>'
                 + '</div>'
                 + '<div class="c-price">€' + sub + '</div>'
-                + '<button class="c-kill" data-remove="' + item.firestoreId + '" aria-label="Rimuovi">×</button>'
+                + '<button class="c-kill" data-remove="' + item.lineId + '" aria-label="Rimuovi">×</button>'
                 + '</div>';
         }).join('');
 
@@ -412,7 +408,7 @@
             var ribbon = p.category
                 ? '<span class="c-mini-ribbon">' + esc(p.category.toUpperCase().slice(0, 8)) + '</span>'
                 : '';
-            var inCart = MBCart.getAll().some(function (i) { return i.firestoreId === p.id; });
+            var inCart = MBCart.getAll().some(function (i) { return i.variantId === p.id; });
             return '<div class="c-mini">'
                 + '<div class="c-mini-cover">' + imgEl + ribbon + '</div>'
                 + '<h4>' + esc(p.title) + '</h4>'
@@ -440,57 +436,19 @@
 
     function loadRecommendations(cartItems) {
         var container = document.getElementById('c-also');
-        if (!container || !window._mbDb) return;
-
-        /* Skeleton */
-        var skelCards = [1,2,3,4].map(function () {
-            return '<div class="c-skel"><div class="c-skel-cover"></div><div class="c-skel-line"></div><div class="c-skel-line short"></div></div>';
-        }).join('');
-        container.innerHTML = '<div class="c-also">'
-            + '<div class="c-also-head"><h3>POTREBBE PIACERTI <span class="swish">↓</span></h3></div>'
-            + '<div class="c-also-loading">' + skelCards + '</div>'
-            + '</div>';
-
-        var cartIds   = cartItems.map(function (i) { return i.firestoreId; });
-        var keywords  = extractKeywords(cartItems);
-
-        window._mbDb.collection('products')
-            .where('quantity', '>', 0)
-            .limit(40)
-            .get()
-            .then(function (snap) {
-                var candidates = [];
-                snap.forEach(function (doc) {
-                    var d = doc.data();
-                    if (cartIds.indexOf(doc.id) !== -1) return;     /* già in carrello */
-                    if (!d.title || !d.price) return;               /* dati mancanti */
-                    candidates.push({
-                        id:       doc.id,
-                        title:    d.title,
-                        image:    d.image || d.imageUrl || '',
-                        price:    d.price,
-                        category: d.category || d.tipo || '',
-                        quantity: parseInt(d.quantity) || 1,
-                        score:    scoreProduct(d, keywords)
-                    });
-                });
-
-                /* Ordina: prima i più simili, poi per score > 0 */
-                candidates.sort(function (a, b) { return b.score - a.score; });
-
-                /* Se non ci sono risultati simili, mostra qualsiasi prodotto disponibile */
-                var shown = candidates.filter(function (c) { return c.score > 0; }).slice(0, 4);
-                if (shown.length < 4) {
-                    var extra = candidates.filter(function (c) { return c.score === 0; });
-                    shown = shown.concat(extra).slice(0, 4);
-                }
-
-                renderAlso(shown);
-            })
-            .catch(function () {
-                /* In caso di errore, nascondi la sezione silenziosamente */
-                if (container) container.innerHTML = '';
-            });
+        if (!container) return;
+        container.innerHTML = '<div class="c-also"><div class="c-also-head"><h3>POTREBBE PIACERTI <span class="swish">↓</span></h3></div><div class="c-also-loading">' + [1,2,3,4].map(function(){return '<div class="c-skel"><div class="c-skel-cover"></div><div class="c-skel-line"></div><div class="c-skel-line short"></div></div>';}).join('') + '</div></div>';
+        var cartVariantIds = cartItems.map(function(i){ return i.variantId; });
+        var keywords = extractKeywords(cartItems);
+        var products = ShopifyAPI.getProductsCache();
+        if (!products || !products.length) { container.innerHTML = ''; return; }
+        var candidates = products
+            .filter(function(p){ return p.variantId && cartVariantIds.indexOf(p.variantId)===-1 && p.quantity>0; })
+            .map(function(p){ return { id:p.variantId, title:p.title, image:p.image, price:p.price, category:p.cat, quantity:p.quantity, score:scoreProduct(p,keywords) }; });
+        candidates.sort(function(a,b){ return b.score-a.score; });
+        var shown = candidates.filter(function(c){ return c.score>0; }).slice(0,4);
+        if (shown.length<4) shown = shown.concat(candidates.filter(function(c){ return c.score===0; })).slice(0,4);
+        renderAlso(shown);
     }
 
     // ============================================================
@@ -542,77 +500,15 @@
     // ============================================================
     function startCheckout() {
         var checkbox = document.getElementById('accept-terms');
-        var errEl    = document.getElementById('cart-error');
-        if (!checkbox.checked) {
-            errEl.style.display = 'block';
-            errEl.textContent   = 'Devi accettare le condizioni di vendita per procedere.';
-            return;
-        }
+        var errEl = document.getElementById('cart-error');
+        if (!checkbox.checked) { errEl.style.display='block'; errEl.textContent='Devi accettare le condizioni di vendita per procedere.'; return; }
         errEl.style.display = 'none';
-
         var btn = document.getElementById('checkout-btn');
-        btn.disabled    = true;
-        btn.textContent = 'Caricamento...';
-
-        var allItems = MBCart.getAll();
-        var loyalty  = getLoyalty();
-        var tierKey  = tierFromSpend(loyalty.totalSpent);
-        var tier     = TIERS[tierKey];
-        var tierPct  = tierIntroDiscount(tierKey, loyalty.ordersPlaced);
-
-        var subtotalC  = allItems.reduce(function (s, i) {
-            return s + parseFloat(String(i.price).replace(/[^0-9.,]/g, '').replace(',', '.')) * i.qty;
-        }, 0);
-        var promoDiscC = appliedCoupon ? Math.min(appliedCoupon.amount, subtotalC) : 0;
-        var tierDiscC  = tierPct > 0 ? Math.max(0, subtotalC - promoDiscC) * tierPct : 0;
-        var afterDiscC = Math.max(0, subtotalC - promoDiscC - tierDiscC);
-        var freeOver   = tier.shippingFree;
-        var shippingC  = (freeOver === 0 || afterDiscC >= freeOver) ? 0 : 5.90;
-        var totalC     = afterDiscC + shippingC;
-
-        var body = {
-            items:               allItems.map(function (i) { return { firestoreId: i.firestoreId, qty: i.qty }; }),
-            shipping:            shippingC,
-            tierKey:             tierKey,
-            tierDiscountCents:   Math.round(tierDiscC * 100),
-        };
-        if (appliedCoupon) body.couponCode = appliedCoupon.code;
-
-        fetch('/api/create-checkout', {
-            method:  'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body:    JSON.stringify(body),
-        })
-        .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, data: d }; }); })
-        .then(function (res) {
-            if (!res.ok) {
-                errEl.style.display = 'block';
-                errEl.textContent   = res.data.error || 'Errore durante il checkout. Riprova.';
-                btn.disabled    = false;
-                btn.textContent = 'PROCEDI AL PAGAMENTO';
-                return;
-            }
-            try {
-                localStorage.setItem('mb_last_order', JSON.stringify({
-                    items:    allItems,
-                    subtotal: subtotalC.toFixed(2),
-                    shipping: shippingC.toFixed(2),
-                    discount: (promoDiscC + tierDiscC).toFixed(2),
-                    coupon:   appliedCoupon ? appliedCoupon.code : null,
-                    tier:     tierKey,
-                    total:    totalC.toFixed(2),
-                    date:     new Date().toLocaleDateString('it-IT', { day: '2-digit', month: 'long', year: 'numeric' }),
-                }));
-            } catch (e) {}
-            MBCart.clear();
-            window.location.href = res.data.url;
-        })
-        .catch(function () {
-            errEl.style.display = 'block';
-            errEl.textContent   = 'Errore di rete. Controlla la connessione e riprova.';
-            btn.disabled    = false;
-            btn.textContent = 'PROCEDI AL PAGAMENTO';
-        });
+        btn.disabled = true; btn.textContent = 'Caricamento...';
+        var checkoutUrl = MBCart.getCheckoutUrl();
+        if (!checkoutUrl) { errEl.style.display='block'; errEl.textContent='Carrello non trovato. Ricarica la pagina.'; btn.disabled=false; btn.textContent='PROCEDI AL PAGAMENTO'; return; }
+        if (appliedCoupon && appliedCoupon.code) checkoutUrl = checkoutUrl + '?discount=' + encodeURIComponent(appliedCoupon.code);
+        window.location.href = checkoutUrl;
     }
 
     // ============================================================
@@ -621,23 +517,23 @@
     document.addEventListener('click', function (e) {
         var dec = e.target.closest('[data-qty-dec]');
         if (dec) {
-            var itemDec = MBCart.getAll().find(function (i) { return i.firestoreId === dec.dataset.qtyDec; });
-            if (itemDec) MBCart.setQty(dec.dataset.qtyDec, itemDec.qty - 1);
-            render(); return;
+            var itemDec = MBCart.getAll().find(function (i) { return i.lineId === dec.dataset.qtyDec; });
+            if (itemDec) MBCart.setQty(dec.dataset.qtyDec, itemDec.qty - 1).then(render);
+            return;
         }
         var inc = e.target.closest('[data-qty-inc]');
         if (inc) {
-            var itemInc = MBCart.getAll().find(function (i) { return i.firestoreId === inc.dataset.qtyInc; });
-            if (itemInc) MBCart.setQty(inc.dataset.qtyInc, itemInc.qty + 1);
-            render(); return;
+            var itemInc = MBCart.getAll().find(function (i) { return i.lineId === inc.dataset.qtyInc; });
+            if (itemInc) MBCart.setQty(inc.dataset.qtyInc, itemInc.qty + 1).then(render);
+            return;
         }
         var rem = e.target.closest('[data-remove]');
-        if (rem) { MBCart.remove(rem.dataset.remove); render(); return; }
+        if (rem) { MBCart.remove(rem.dataset.remove).then(render); return; }
 
         var rec = e.target.closest('[data-rec-id]');
         if (rec) {
             MBCart.add({
-                firestoreId: rec.dataset.recId,
+                variantId: rec.dataset.recId,
                 title:       rec.dataset.recTitle,
                 image:       rec.dataset.recImg,
                 price:       rec.dataset.recPrice,
@@ -648,7 +544,9 @@
     });
 
     document.addEventListener('DOMContentLoaded', function() {
-        render();
-        _initFirestoreLoyalty();
+        MBCart.load().then(function() {
+            render();
+            _initShopifyLoyalty();
+        });
     });
 })();
