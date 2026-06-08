@@ -1,5 +1,7 @@
 .env
 .env.local
+serviceAccountKey.json
+shopify-products.csv
 node_modules/
 stripe-sample/
 functions/node_modules/
